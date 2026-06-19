@@ -1,15 +1,8 @@
 # opencode-drewgent
 
-Drewgent configuration for [opencode](https://opencode.ai) — agent profiles, skills, kanban task pipeline, and automation tooling designed for autonomous software engineering.
+Drewgent is an **autonomous software engineering agent system** built on [opencode](https://opencode.ai). It orchestrates specialized subagents through a kanban-backed pipeline, providing structured context handoff, failure tracking, and background automation.
 
-This is **not** a standalone agent framework. It's the configuration and extension layer that sits on top of opencode, providing:
-
-- 14 specialized agent profiles with role-based model assignment
-- Kanban-backed multi-agent task pipeline with automatic context handoff
-- 100+ skills for domain-specific workflows
-- Launchd/cron-based background automation
-- Discord bot gateway for remote agent interaction
-- MCP server integrations (gbrain, lazyweb, specification.website)
+This is **not** a standalone agent framework. It's the configuration and extension layer — agent profiles, skills, scripts, tools, and automation — that sits on top of opencode.
 
 ## Quick Start
 
@@ -25,7 +18,7 @@ cd ~/.drewgent
 cp .env.example .env
 # Edit .env with your LLM provider API keys
 
-# 4. Start using opencode with Drewgent configuration
+# 4. Start opencode
 opencode
 ```
 
@@ -34,91 +27,195 @@ opencode
 - **macOS** or **Linux**
 - **opencode** CLI (v1.x+)
 - **Python** 3.11+
-- **API key** for your LLM provider (OpenRouter, MiniMax, etc.)
+- **API key** for your LLM provider
 
-## Architecture
+---
 
-### Overview
+## Obsidian Vault
+
+The entire `~/.drewgent/` directory is an **Obsidian vault**. P0 through P6 form a connected wiki with wikilinks (`[[Page Name]]`), YAML frontmatter, and typed tags. This is not documentation-as-decoration — it's a living knowledge graph that agents query and write to.
 
 ```
-opencode CLI session
-  ├── opencode.jsonc          (MCP servers, skill paths, model config)
-  ├── AGENTS.md               (system instructions — loaded by opencode)
-  ├── agents/*.md             (14 subagent profiles for delegate_task)
-  ├── skills/                 (domain-specific skill definitions)
-  ├── tools/                  (tool implementations: kanban, file ops, etc.)
-  └── cron/jobs.json          (scheduled background jobs)
-        └── scripts/
-              ├── run_kanban_worker.py    (kanban task executor)
-              ├── drewgent_cron.py        (60s cron dispatcher via launchd)
-              ├── discord_bot.py          (Discord ↔ opencode gateway)
-              └── ...
+~/.drewgent/               ← Obsidian vault root
+├── P0-brainstem/          ← Governance rules
+├── P1-limbic/             ← Identity and persona
+├── P2-hippocampus/        ← Memory and knowledge (runtime)
+├── P3-sensors/            ← Skills and gateway docs
+├── P4-cortex/             ← Growth, references, plans
+├── P5-ego/                ← Self-model
+├── P6-prefrontal/         ← Strategy, proposals, incidents
+└── AGENTS.md              ← Agent system guide (also vault doc)
 ```
+
+### Wikilinks Across Layers
+
+Files reference each other across layers via `[[wikilinks]]`. For example:
+
+- `AGENTS.md` links to `[[P5-ego/SELF_MODEL]]`, `[[P0-brainstem/brain/rules]]`, `[[P1-limbic/persona/SOUL]]`
+- `P0-brainstem/brain/rules.md` links to specific `.neuron` constraint files
+- Skill files link to architecture docs and other skills
+- Proposal documents link to incident reports and plans
+
+This cross-linking creates a **knowledge graph** that agents can traverse — not a flat file tree.
+
+### Graph Connectivity
+
+The vault is designed for high backlink density. Key principles:
+
+- Every architectural decision in `P6-prefrontal/proposals/` links to related incidents and skills
+- Every skill documents its trigger context and provenance in frontmatter
+- Every agent profile links to its governing rules and related profiles
+- Skills from `P3-sensors/skills/` are loaded by opencode alongside `skills/`
+
+### Obsidian-Specific Conventions
+
+- **Frontmatter**: Every `.md` file has YAML frontmatter with `title`, `type`, `space`, `tags`, and `links`
+- **Naming**: Slugs are kebab-case, unique across the vault to prevent wikilink ambiguity
+- **Tags**: Used for cross-cutting categorization (`concept`, `guide`, `incident`, `proposal`)
+- **Wiki-attachment images**: Referenced via `![[file.png]]` syntax
+- **Excluded from Obsidian**: Runtime data directories (`P2-hippocampus/kanban/`, `logs/`, `cache/`, etc.) — configured in `.obsidian/` at runtime (not in repo)
+
+### Querying the Vault
+
+Agents query the vault via gbrain (MCP server for hybrid search):
+
+```
+gbrain_query("auth patterns")             → semantic + keyword search
+gbrain_get_backlinks("P5-ego/SELF_MODEL") → find all pages that reference self-model
+gbrain_find_orphans()                      → find pages with no inbound links
+```
+
+For local Obsidian CLI operations, the `skills/obsidian-cli/` skill provides workflows.
+
+---
+
+## Table of Contents
+
+- [Architecture Overview](#architecture-overview)
+  - [7-Layer Brain Architecture](#7-layer-brain-architecture)
+  - [Multi-Agent Pipeline](#multi-agent-pipeline)
+  - [Complexity Tiers](#complexity-tiers)
+- [Agent Profiles](#agent-profiles)
+  - [Flash Tier](#flash-tier)
+  - [Pro Tier](#pro-tier)
+  - [Max Tier](#max-tier)
+  - [Handoff Contract](#handoff-contract)
+- [Pipeline Stages](#pipeline-stages)
+- [Subagent System](#subagent-system)
+  - [delegate_task](#delegate_task)
+  - [Kanban Pipeline Auto-Decomposition](#kanban-pipeline-auto-decomposition)
+  - [Context Handoff Protocol](#context-handoff-protocol)
+  - [ESCALATE Mechanism](#escalate-mechanism)
+  - [Ponytail Principle](#ponytail-principle)
+- [Configuration](#configuration)
+  - [opencode.jsonc](#opencodejsonc)
+  - [MCP Servers](#mcp-servers)
+- [Cron & Automation](#cron--automation)
+- [Skills](#skills)
+- [Discord Integration](#discord-integration)
+- [Repository Structure](#repository-structure)
+  - [What's in the Repo](#whats-in-the-repo)
+  - [What's NOT in the Repo (Personal Data)](#whats-not-in-the-repo-personal-data)
+- [Related](#related)
+- [License](#license)
+
+---
+
+## Architecture Overview
+
+### 7-Layer Brain Architecture
+
+Drewgent models its architecture on the hierarchical structure of the human brain. Each layer has a distinct role:
+
+```
+P6-prefrontal  Strategy    Long-term planning, proposals, incident reports
+P5-ego         Identity    Self-model, self-awareness, calibration
+P4-cortex      Growth      Learning, pattern recognition, taste development
+P3-sensors     Input       Tool routing, gateway integration, skill dispatch
+P2-hippocampus Memory      Session persistence, knowledge base, kanban state
+P1-limbic      Values      Persona, tone, writing style, SOUL
+P0-brainstem   Survival    Absolute rules (禁), governance as code
+```
+
+**Bottom-up flow:** P3 detects input → P2 loads context → P4 recognizes patterns → P5 integrates → P6 decides
+
+**Top-down flow:** P5 shapes behavior → P1 influences tone → P3 selects tools → P0 blocks violations
+
+**P0 overrides everything:** Brainstem rules (`.neuron` files) are enforced at runtime and cannot be bypassed by any upper layer. These are not advisory — they are active constraints embedded in the signal processing system.
 
 ### Multi-Agent Pipeline
 
-Drewgent's core workflow is a kanban-backed pipeline where each stage is handled by a specialized agent profile. The pipeline automatically manages dependencies, context handoff, and failure recovery:
+Drewgent's core workflow is a kanban-backed pipeline where each stage is handled by a specialized agent:
 
-```python
+```
 kanban_create(
     title="Add login validation",
     pipeline=["explorer", "implementer", "tester", "reviewer", "archiver"],
 )
 ```
 
-This creates 5 sequential tasks with dependency ordering:
+This creates 5 sequential tasks with automatic dependency management:
 
 ```
-explorer → implementer → tester → reviewer → archiver
-   │            │            │         │          │
-   │  findings  │  changes   │  test   │  review  │  docs
-   └────────────┘────────────┘─────────┘──────────┘
-              ↓ Each stage auto-receives structured context
-         Context from previous step:
-           **Findings:** auth code in src/auth/*.ts
-           **Risks:** no refresh token rotation
-           **Next:** implement token refresh
+explorer ──→ implementer ──→ tester ──→ reviewer ──→ archiver
+    │              │            │           │            │
+    │  findings    │  changes   │  tests    │  review    │  docs
+    └──────┬───────┴─────┬──────┴─────┬─────┴──────┬─────┘
+           │             │            │            │
+           ↓             ↓            ↓            ↓
+     Context from previous step automatically injected into prompt:
+     **Findings:** auth code in src/auth/*.ts
+     **Risks:** no refresh token rotation
+     **Next:** implement token refresh
 ```
 
 **Key properties:**
-- **Automatic context handoff**: Each stage receives `findings`, `risks`, and `next` from the previous stage as structured JSON — no manual context forwarding
-- **Failure tracking**: Unparseable handoffs are logged as `handoff_failed` events and visually marked in the prompt
-- **Fan-in support**: Tasks can have multiple parents; context from all parents is merged
+- **Automatic context handoff**: Each stage receives `findings`, `risks`, `next` as structured JSON
+- **Failure tracking**: Unparseable handoffs fire `handoff_failed` events and visually mark the prompt
+- **Fan-in support**: Tasks with multiple parents merge context from all sources
+- **Worker-side resolution**: Worker reads parent results at runtime — no DB migration, no promotion-time injection
 
 ### Complexity Tiers
-
-Not every task needs the full pipeline. The orchestrator adapts based on tier:
 
 | Tier | Pipeline | Use Case |
 |------|----------|----------|
 | **1** (simple) | Implementer → Archiver | Typo fix, config change, trivial rename |
 | **2** (moderate) | Explorer → Implementer ↔ Tester → Archiver | New function, moderate feature |
-| **3** (complex) | Planner → Explorer → Implementer ↔ Tester → Reviewer → Security → Archiver | Architecture change, cross-cutting, auth |
+| **3** (complex) | Planner → Explorer → Implementer ↔ Tester → Reviewer → Security → Archiver | Architecture change, cross-cutting, auth-sensitive |
+
+---
 
 ## Agent Profiles
 
-14 specialized subagent roles, each with a specific model, toolset, and instructions. Invoked via `delegate_task(agent_profile="<name>", goal="...")`.
+14 specialized subagent roles. Each defines: model, provider, toolsets, and system instructions. Invoked via `delegate_task(agent_profile="<name>", goal="...")`.
 
-### Flash Tier ($0 marginal cost — OpenCode Go subscription)
+### Flash Tier
 
-| Profile | Model | Role |
-|---------|-------|------|
-| **explorer** | deepseek-v4-flash | Read-only codebase analysis, context gathering |
-| **implementer** | deepseek-v4-flash | Code implementation, file creation |
-| **tester** | deepseek-v4-flash | Test writing and verification |
-| **archiver** | deepseek-v4-flash | Documentation, changelog, completion summary |
-| **designer** | deepseek-v4-flash | UI/UX mockups, SVG assets, design tokens |
-| **sre** | deepseek-v4-flash | Infrastructure, launchd, cron, incident response |
+OpenCode Go subscription ($0 marginal cost per call). Fast, for most day-to-day work.
 
-### Pro Tier (stronger reasoning)
+| Profile | Model | Role | ESCALATE |
+|---------|-------|------|----------|
+| **explorer** | deepseek-v4-flash | Read-only codebase analysis | ✅ |
+| **implementer** | deepseek-v4-flash | Code implementation | ✅ |
+| **tester** | deepseek-v4-flash | Test writing and verification | ✅ |
+| **archiver** | deepseek-v4-flash | Documentation, changelog | ❌ |
+| **designer** | deepseek-v4-flash | UI/UX mockups, SVG assets | ✅ |
+| **sre** | deepseek-v4-flash | Infrastructure, incident response | ✅ |
+| **analyst** | deepseek-v4-flash | Data analysis, kanban/git queries | ❌ |
+
+### Pro Tier
+
+Stronger reasoning, for quality-critical steps.
 
 | Profile | Model | Role |
 |---------|-------|------|
 | **reviewer** | deepseek-v4-pro | Code review (logic, edge cases, style) |
 | **editor** | deepseek-v4-pro | Content QA, Korean language quality |
-| **content-manager** | deepseek-v4-pro | CMO agent — observes work, produces multi-format content |
+| **content-manager** | deepseek-v4-pro | CMO agent — observes work, produces drafts |
 
-### Max Tier (deep reasoning)
+### Max Tier
+
+Deep reasoning for architecture, planning, and security.
 
 | Profile | Model | Role |
 |---------|-------|------|
@@ -129,12 +226,12 @@ Not every task needs the full pipeline. The orchestrator adapts based on tier:
 
 ### Handoff Contract
 
-Every pipeline-capable profile includes a `## Handoff Contract` section in its instructions. When completing a pipeline task, agents structure their `result` as JSON with three fields:
+Every pipeline-capable profile includes a structured handoff section. When completing a pipeline task, agents structure their `result` as JSON:
 
 ```python
 kanban_complete(
     task_id="t_xxx",
-    summary="Human-readable completion summary",
+    summary="Human-readable completion report",
     result=json.dumps({
         "findings": ["What was discovered or produced"],
         "risks": ["Concerns for the next stage"],
@@ -147,107 +244,139 @@ kanban_complete(
 - `risks` — edge cases, incomplete parts, blocking issues
 - `next` — what the next profile should focus on
 
-All fields are optional. If the result is not valid JSON, the system falls back to plain text with a warning.
+All fields are optional. If `result` is not valid JSON, the system logs a `handoff_failed` event, prints a warning to stdout, and visually marks the fallback in the prompt. This ensures failures are visible and traceable.
+
+---
 
 ## Pipeline Stages
 
-| Stage | What it does | Handoff output |
-|-------|-------------|----------------|
-| **Explorer** | Analyzes codebase, finds patterns, identifies risks | `findings`: file paths, patterns. `risks`: concerns. `next`: implementation recommendations |
-| **Implementer** | Writes code, creates patches | `findings`: files changed, approach. `risks`: edge cases. `next`: test focus areas |
-| **Tester** | Writes and runs tests | `findings`: test results, bugs found. `risks`: flaky tests. `next`: reviewer attention points |
-| **Reviewer** | Reviews code quality and logic | `findings`: issues with severity. `risks`: blocking issues. `next`: APPROVE/CHANGES_REQUESTED |
-| **Security** | Security audit | `findings`: vulnerabilities. `risks`: CRITICAL/HIGH. `next`: required fixes |
-| **Archiver** | Documents changes | `findings`: docs produced. `risks`: coverage gaps. `next`: future doc needs |
+| Stage | What it does | Files it touches | Handoff output |
+|-------|-------------|------------------|----------------|
+| **Explorer** | Analyzes codebase, finds patterns | Read-only | `findings`: file paths, patterns. `risks`: concerns. `next`: implementation recommendations |
+| **Implementer** | Writes code, creates patches | Source files | `findings`: files changed, approach. `risks`: edge cases. `next`: test focus areas |
+| **Tester** | Writes and runs tests | Test files | `findings`: test results, bugs found. `risks`: flaky tests. `next`: reviewer attention points |
+| **Reviewer** | Reviews code quality | Read-only | `findings`: issues with severity. `risks`: blocking issues. `next`: APPROVE/CHANGES_REQUESTED |
+| **Security** | Security audit | Read-only | `findings`: vulnerabilities with CWE. `risks`: CRITICAL/HIGH. `next`: required fixes |
+| **Archiver** | Documents changes | Docs | `findings`: docs produced. `risks`: coverage gaps. `next`: future doc needs |
+| **Planner** | Designs the task graph | Plan docs | `findings`: plan structure. `risks`: complexity. `next`: execution order |
+| **Designer** | Creates mockups, SVGs | HTML, SVG | `findings`: design decisions. `risks`: accessibility. `next`: dev handoff |
+| **Editor** | Polishes content | Drafts | `findings`: edits made. `risks`: remaining concerns. `next`: ACCEPT/REJECT |
+| **Content Manager** | Produces multi-format drafts | Drafts | `findings`: content produced. `risks`: timing. `next`: editor focus |
 
-## Directory Structure
+---
+
+## Subagent System
+
+### delegate_task
+
+The primary mechanism for invoking subagents within a session:
+
+```python
+delegate_task(
+    agent_profile="reviewer",
+    goal="Review the auth changes in src/auth/*.ts",
+    context="Files changed: src/auth/login.ts, src/auth/refresh.ts",
+)
+```
+
+The `agent_profile` parameter:
+1. Reads the profile file from `~/.drewgent/agents/<name>.md`
+2. Overrides model/provider/toolsets from the profile's frontmatter
+3. Prepends the profile's system instructions to the subagent's context
+4. Spawns the subagent in an isolated session
+
+### Kanban Pipeline Auto-Decomposition
+
+For multi-stage work that should survive crashes and allow human review:
+
+```python
+kanban_create(
+    title="Add login validation",
+    pipeline=["explorer", "implementer", "tester", "reviewer", "archiver"],
+    body="Implement login with email + password, JWT tokens, refresh token rotation",
+)
+```
+
+This creates N sequential tasks linked via `task_links`:
+- First task starts as `ready`
+- Each subsequent task starts as `todo` (waits for parent)
+- When a parent completes, dependency engine checks all parents — if all done, child promotes to `ready`
+- Each task is dispatched as a separate worker process
+
+### Context Handoff Protocol
+
+When a child task starts, the worker (`scripts/run_kanban_worker.py`) automatically:
+
+1. Queries `task_links` for parent task IDs
+2. Reads each parent's `tasks.result`
+3. Tries JSON parsing — if valid dict with `findings`/`risks`/`next`, formats as structured markdown
+4. If not valid JSON, logs a `handoff_failed` event + warning + visual marker in the prompt
+5. Prepends the context block to the current task's body
+
+This happens at runtime in the worker — zero DB migration, zero schema changes, 100% backward compatible.
+
+### ESCALATE Mechanism
+
+Flash-tier profiles (explorer, implementer, tester, designer, sre, analyst) can signal that a task exceeds their capability:
 
 ```
-~/.drewgent/
-├── opencode.jsonc           # opencode configuration (model, MCP, skill paths)
-├── AGENTS.md                # System instructions loaded by opencode
-├── agents/                  # 14 subagent profile definitions
-│   ├── explorer.md
-│   ├── implementer.md
-│   ├── tester.md
-│   ├── reviewer.md
-│   ├── planner.md
-│   └── ...
-├── skills/                  # 100+ skill definitions
-│   ├── ui/
-│   │   └── baseline-ui/     # UI quality bar (12 priority tiers)
-│   ├── devops/
-│   │   ├── kanban-orchestrator/
-│   │   └── kanban-worker/
-│   ├── software-development/
-│   ├── mlops/
-│   ├── creative/
-│   └── ...
-├── scripts/                 # Runtime automation scripts
-│   ├── run_kanban_worker.py # Kanban task executor
-│   ├── drewgent_cron.py     # Cron dispatcher (60s interval)
-│   ├── discord_bot.py       # Discord ↔ opencode gateway
-│   ├── discord_send.py      # Discord message chunk sender
-│   ├── n8n_trigger_runner.py# LLM-generated cron triggers
-│   ├── brain_html_dashboard.py  # Agent dashboard generator
-│   ├── agent_dashboard_push.py  # Cloudflare dashboard pusher
-│   ├── opencode_health_check.py # LLM health monitor
-│   ├── cron_trend_harvester.py  # AI trend collection
-│   ├── cron_seo_harvester.py    # SEO article collection
-│   └── ...
-├── tools/                   # Tool implementations
-│   ├── kanban_tools.py      # Task queue (create, complete, claim, link)
-│   ├── delegate_tool.py     # Subagent delegation (agent_profile support)
-│   ├── registry.py          # Tool registration
-│   ├── terminal_tool.py     # Terminal execution
-│   ├── gbrain_tool.py       # Hybrid search tool
-│   └── ...
-├── cron/                    # Scheduled job definitions
-│   ├── jobs.json            # Job schedule (every 2min, 5min, 6h, daily, etc.)
-│   ├── scheduler.py         # Schedule resolver
-│   └── jobs.py              # Job data management
-├── hooks/
-│   └── kanban-notify/       # Kanban completion notification hooks
-├── P6-prefrontal/           # Architecture documentation
-│   ├── proposals/           # Design proposals (with tier, leverage score)
-│   ├── incidents/           # Incident reports and recovery patterns
-│   ├── plans/               # Long-term plans
-│   └── migrations/          # Architecture migration records
-├── .github/workflows/       # CI: tests, Docker publish, docs checks
-├── .env.example             # API key configuration template
-├── Dockerfile               # Containerized deployment
-└── LICENSE                  # MIT
+ESCALATE: This refactoring involves cross-module dependency analysis
+that requires stronger reasoning. Recommend routing to planner + reviewer.
 ```
+
+The caller detects this pattern and re-routes to a Max-tier model.
+
+### Ponytail Principle
+
+Before writing code, every agent applies the minimization checklist:
+1. Is this code really needed? (YAGNI) → no: don't write it
+2. Does the standard library have it? → use it
+3. Does the native platform support it? → use it (`<input type="date">` etc.)
+4. Does an installed dependency solve it? → use it (no new deps)
+5. Can it be one line? → one line
+6. Still needed? → minimum viable implementation
+
+---
 
 ## Configuration
 
 ### opencode.jsonc
 
-The main configuration file for opencode. Key sections:
-
 ```jsonc
 {
-  // Default model for the main agent
   "model": "opencode-go/deepseek-v4-flash",
 
-  // Skill directories (loaded in order)
+  "small_model": "opencode-go/deepseek-v4-pro",
+
+  "instructions": ["AGENTS.md"],
+
   "skills": {
     "paths": [
-      "~/.drewgent/skills",           // Drewgent custom skills
-      "~/.config/opencode/skills"     // opencode built-in skills
+      "~/.drewgent/skills",
+      "~/.drewgent/P3-sensors/skills",
+      "~/.config/opencode/skills"
     ]
   },
 
-  // MCP servers
   "mcp": {
     "gbrain": {
-      "command": ["gbrain", "serve"],  // Local PGLite brain
-      "enabled": true
+      "type": "local",
+      "command": ["gbrain", "serve"],
+      "enabled": true,
+      "timeout": 120000
     },
     "lazyweb": {
-      "type": "remote",                 // UI design reference search
+      "type": "remote",
       "url": "https://www.lazyweb.com/mcp",
-      "headers": { "Authorization": "Bearer {env:LAZYWEB_API_KEY}" }
+      "enabled": true,
+      "headers": { "Authorization": "Bearer {env:LAZYWEB_API_KEY}" },
+      "timeout": 60000
+    },
+    "specification-website": {
+      "type": "remote",
+      "url": "https://mcp.specification.website/mcp",
+      "enabled": true,
+      "timeout": 60000
     }
   }
 }
@@ -255,59 +384,232 @@ The main configuration file for opencode. Key sections:
 
 ### MCP Servers
 
-| Server | Type | Purpose |
-|--------|------|---------|
-| **gbrain** | local (stdio) | Hybrid search over personal knowledge base. PGLite-backed vector + keyword search, call graph analysis, entity tracking |
-| **lazyweb** | remote (HTTP) | 281k+ real app screenshots for UI design reference. Paywall/pricing/onboarding pattern research |
-| **specification-website** | remote (HTTP) | Web spec checklists (SEO, a11y, security, performance). Site audit reference |
+| Server | Type | Purpose | Auth |
+|--------|------|---------|------|
+| **gbrain** | local (stdio) | Hybrid search over personal knowledge base. PGLite-backed vector + keyword search, code call graph analysis, entity tracking, takes/calibration | `OPENAI_API_KEY` env |
+| **lazyweb** | remote (HTTP) | 281k+ real app screenshots for UI design reference. Paywall, pricing, onboarding, checkout pattern research | `LAZYWEB_API_KEY` env |
+| **specification-website** | remote (HTTP) | Web spec checklists: SEO, accessibility, security, performance, resilience, i18n. Site audit reference | None (public) |
 
-## Cron Jobs
+---
 
-Drewgent uses a launchd-driven 60-second tick that dispatches `drewgent_cron.py`. The scheduler in `cron/jobs.json` defines the job roster:
+## Cron & Automation
 
-| Interval | Job | Script |
-|----------|-----|--------|
-| 2 min | trend-evaluate | n8n_trigger_runner.py |
-| 5 min | launchd watchdog, dashboard push | shell / agent_dashboard_push.py |
-| 15 min | gbrain watchdog | shell |
-| 6 hours | trend-collect, seo-harvester | cron_trend_harvester.py |
-| Daily 04:00 | log rotation | shell |
-| Daily 06:00 | usage watch | minimax_usage.py |
-| Daily 09:00 | harmony check | shell |
-| Daily 12:00 | seo-analyze | n8n_trigger_runner.py |
-| Daily 20:00 | daily retro | n8n_trigger_runner.py |
-| Monthly | trend-retire, seo-trend report | n8n_trigger_runner.py |
-| Tue/Fri 10:00 | taste review | n8n_trigger_runner.py |
+Drewgent uses a launchd-driven 60-second tick that dispatches `scripts/drewgent_cron.py`. The scheduler (`cron/scheduler.py`) reads `cron/jobs.json` and fires jobs at their scheduled intervals.
+
+| Interval | Job | Description | Script |
+|----------|-----|-------------|--------|
+| 2 min | trend-evaluate | Evaluate collected trends against philosophy filter | n8n_trigger_runner.py |
+| 5 min | launchd watchdog | Check all services are running | shell |
+| 5 min | dashboard push | Push agent state to Cloudflare dashboard | agent_dashboard_push.py |
+| 15 min | gbrain watchdog | Ensure gbrain brain sync is healthy | shell |
+| 6 hours | trend-collect | Scrape GitHub trending repos | cron_trend_harvester.py |
+| 6 hours | seo-harvester | Collect SEO articles from RSS feeds | cron_seo_harvester.py |
+| Daily 04:00 | log rotation | Rotate and compress logs | shell |
+| Daily 06:00 | usage watch | Track token usage and costs | minimax_usage.py |
+| Daily 09:00 | harmony check | Verify vault graph integrity | shell |
+| Daily 12:00 | seo-analyze | Analyze collected SEO articles | n8n_trigger_runner.py |
+| Daily 20:00 | daily retro | Generate daily work summary | n8n_trigger_runner.py |
+| Monthly | trend-retire | Retire stale evaluated trends | n8n_trigger_runner.py |
+| Monthly | seo-trend report | Generate SEO trend report | n8n_trigger_runner.py |
+| Tue/Fri 10:00 | taste review | Deep analysis of high-quality tools | n8n_trigger_runner.py |
+
+---
 
 ## Skills
 
-Skills are Markdown files with YAML frontmatter that provide specialized instructions for specific tasks. Drewgent includes 100+ skills organized by category:
+Skills are Markdown files with YAML frontmatter that provide specialized instructions for specific tasks. The opencode `skill()` tool loads them on demand.
 
-| Category | Description |
-|----------|-------------|
-| `ui/` | Baseline UI quality bar, design system conventions |
-| `devops/` | Kanban orchestration, cron, deployment, LLM cost audit |
-| `software-development/` | Refactoring, code review, payment integration, testing |
-| `creative/` | SVG/HTML mockups, infographics (21 layouts × 21 styles), music gen |
-| `mlops/` | Axolotl, Unsloth, vLLM, fine-tuning (LoRA/QLoRA/GRPO) |
-| `content/` | Content pipeline, WordPress publishing, SEO |
-| `brain/` | Memory management, vault health, daily retro |
-| `mcp/` | MCP server integration (gbrain, mcporter, native) |
+Included categories (~100+ skills total):
+
+| Category | Description | Example Skills |
+|----------|-------------|----------------|
+| `ui/` | UI quality bar, design system | baseline-ui (12 priority tiers) |
+| `devops/` | Infrastructure and deployment | kanban-orchestrator, kanban-worker, cron-script-fastpath, llm-cost-audit, wordpress-deployment |
+| `software-development/` | Engineering practices | ponytail, codebase-refactoring, subagent-profiles, payment-integration, mpa-url-state-bridge, m-log-development |
+| `creative/` | Visual and audio content | baoyu-infographic (21 layouts × 21 styles), sketch, claude-design, architecture-diagram, comfyui, audiocraft, pretext |
+| `mlops/` | ML training and inference | axolotl, unsloth, trl-fine-tuning, grpo-rl-training, vllm, guidances, outlines, gguf |
+| `brain/` | Agent system maintenance | memory-md-cleanup, vault-naming-convention, daily-retro, drewgent-runtime-checkup |
+| `content/` | Content production pipeline | content-pipeline, content-manager, seo-article-harvester, wordpress-cms |
+| `mcp/` | MCP server integration | gbrain-integration, native-mcp, mcporter |
+| `security/` | Security audit (from P3-sensors) | security-reviewer checks, godmode (red-teaming) |
+| `autonomous-ai-agents/` | Agent architecture patterns | acp-thinking-spinner, hermes-agent, content-management, drewgent-update-checker |
+| `gaming/` | Game automation | pokemon-player, minecraft-modpack-server |
+| `nas-synology-ssh-automation/` | NAS management | read-only diagnostics, supervised operations |
+| `taste-review/` | Trend analysis framework | 5-question analysis framework, leverage scoring |
+| `agent-profiles/` | Profile system documentation | agent-profile authoring, delegate_task patterns |
+
+Skills are loaded via:
+```
+skill("baseline-ui")
+skill("ponytail")
+```
+
+---
 
 ## Discord Integration
 
-Drewgent includes a Discord bot gateway (`scripts/discord_bot.py`) that bridges Discord channels to opencode:
+`scripts/discord_bot.py` connects Discord channels to the opencode agent:
 
-- Connects to the opencode daemon via `--attach` mode
-- Creates threads for each conversation
-- Routes messages to the appropriate agent context
-- Supports file attachments and long message chunking
+- Connects via opencode's `--attach` mode (port 8642)
+- Creates a thread for each conversation
+- Routes messages to the agent for processing
+- Supports file attachments (images, documents, code)
+- Chunks long messages (>2000 chars) across multiple messages
+- Configured as a launchd service (`ai.drewgent.discord-bot`) with auto-recovery
+
+---
+
+## Repository Structure
+
+### What's in the Repo
+
+```
+~/.drewgent/
+│
+├── opencode.jsonc              opencode configuration (model, MCP, skills)
+├── AGENTS.md                   System instructions loaded by opencode
+├── .env.example                API key configuration template
+├── Dockerfile                  Containerized deployment
+├── .gitignore                  Excludes personal runtime data
+│
+├── agents/                     14 subagent profile definitions
+│   ├── explorer.md             Read-only analysis (flash)
+│   ├── implementer.md          Code implementation (flash)
+│   ├── tester.md               Test writing (flash)
+│   ├── reviewer.md             Code review (pro)
+│   ├── reviewer-critical.md    Architecture review (max)
+│   ├── security-reviewer.md    Security audit (max)
+│   ├── planner.md              Task decomposition (max)
+│   ├── orchestrator.md         Pipeline orchestration (max)
+│   ├── designer.md             UI/UX design (flash)
+│   ├── editor.md               Content editing (pro)
+│   ├── content-manager.md      Content production (pro)
+│   ├── archiver.md             Documentation (flash)
+│   ├── sre.md                  Infrastructure (flash)
+│   ├── analyst.md              Data analysis (flash)
+│   └── README.md
+│
+├── skills/                     100+ skill definitions
+│   ├── ui/                     UI quality standards
+│   ├── devops/                 Infrastructure and automation
+│   ├── software-development/   Engineering practices
+│   ├── creative/               Visual and audio content
+│   ├── mlops/                  ML training and inference
+│   ├── brain/                  Agent maintenance
+│   ├── content/                Content pipeline
+│   └── ...
+│
+├── P3-sensors/skills/          Additional architecture skills
+│   ├── agent-architecture/     Brain signal system, self-replicating agent
+│   ├── agent-protocol/         Goose ACP integration
+│   ├── brain-broken-link-fix/  Vault health maintenance
+│   ├── brain-dashboard-system/ Brain monitoring dashboard
+│   ├── trend-harvester/        AI trend collection and filtering
+│   ├── session-pattern-archiver/
+│   ├── harsh-critic/           Utility
+│   └── ...
+│
+├── scripts/                    39 automation scripts
+│   ├── run_kanban_worker.py    Kanban task executor
+│   ├── drewgent_cron.py        Cron dispatcher (60s interval)
+│   ├── discord_bot.py          Discord ↔ opencode gateway
+│   ├── discord_send.py         Discord message chunk sender
+│   ├── n8n_trigger_runner.py   LLM-generated cron triggers
+│   ├── opencode_health_check.py Health monitoring
+│   ├── agent_dashboard_push.py Cloudflare dashboard
+│   ├── brain_html_dashboard.py Agent dashboard generator
+│   ├── cron_trend_harvester.py AI trend collection
+│   ├── cron_seo_harvester.py   SEO article collection
+│   └── ...
+│
+├── tools/                      57 tool implementations
+│   ├── kanban_tools.py         Task queue (create, complete, link, claim)
+│   ├── delegate_tool.py        Subagent delegation
+│   ├── registry.py             Tool registration system
+│   ├── terminal_tool.py        Terminal execution
+│   ├── gbrain_tool.py          Hybrid search brain tool
+│   ├── file_tools.py           File operations
+│   ├── web_tools.py            Web fetching and search
+│   └── ...
+│
+├── cron/                       Scheduled job definitions
+│   ├── jobs.json               Job schedule (intervals, scripts)
+│   ├── scheduler.py            Schedule resolver and dispatcher
+│   └── cron_agent.py           Agent-based job executor
+│
+├── hooks/                      Event hooks
+│   └── kanban-notify/          Kanban completion notifications
+│
+├── P0-brainstem/               Survival layer — governance rules
+│   ├── brain/rules.md           P0 rule documentation
+│   └── brain/Drewgent-brain/   18 .neuron constraint files
+│
+├── P1-limbic/                  Identity layer
+│   ├── persona/SOUL.md          Agent identity and personality
+│   └── persona/writing-style-guide.md  Communication conventions
+│
+├── P2-hippocampus/             Memory layer (stub — data gitignored)
+│   └── README.md
+│
+├── P3-sensors/                 Input layer
+│   ├── skills/                 Architecture-specific skills
+│   └── gateway/drewgent-architecture-dataflow.md  Data flow docs
+│
+├── P4-cortex/                  Growth layer
+│   ├── knowledge/              Architecture references, UX wiki, templates
+│   │   ├── NEURONFS_RULES.md
+│   │   ├── OPENCRAB_ONTOLOGY.md
+│   │   ├── laws-of-ux-wiki/
+│   │   └── prd-template.md
+│   ├── growth/                 Implementation plans and reviews
+│   │   ├── KANBAN-USER-GUIDE.md
+│   │   ├── drewgent-kanban-implementation-plan.md
+│   │   └── ...
+│   └── README.md
+│
+├── P5-ego/                     Identity layer
+│   ├── SELF_MODEL.md            Self-model and integration rules
+│   └── README.md
+│
+├── P6-prefrontal/              Strategy layer
+│   ├── proposals/              Design proposals (tier + leverage score)
+│   ├── incidents/              Incident reports and recovery patterns
+│   ├── plans/                  Long-term growth plans
+│   └── migrations/             Architecture migration records
+│
+└── .github/workflows/          CI: tests, Docker, docs checks
+```
+
+### What's NOT in the Repo (Personal Data)
+
+These directories exist in `~/.drewgent` at runtime but are excluded from git:
+
+| Directory | Contents | Why Excluded |
+|-----------|----------|--------------|
+| `P2-hippocampus/kanban/` | Kanban task board SQLite | Personal task data |
+| `P2-hippocampus/knowledge/` | SEO article collection | Personal research |
+| `P2-hippocampus/memories/` | Session insights | Personal learnings |
+| `P4-cortex/content/` | Brand guide, narrative arc | Personal branding |
+| `P4-cortex/growth/` | Runtime growth state | Generated state |
+| `P4-cortex/insights/` | Extracted patterns | Personal |
+| `P5-ego/config/` | API keys, secrets | Security |
+| `P5-ego/state/` | Runtime metrics | Generated state |
+| `P3-sensors/cron/output/` | Cron job output | Generated |
+| `P3-sensors/gateway_state/` | Gateway runtime state | Generated |
+| `config.yaml` | Personal configuration | API keys, paths |
+| `kanban.db` | Kanban database | Personal tasks |
+| Any `.db`, `.log`, `cache/` | Runtime data | Generated |
+
+The `.gitignore` is configured to exclude all of these. If you clone this repo, you'll get the architecture and tooling without any personal data.
+
+---
 
 ## Related
 
 - [opencode](https://opencode.ai) — The CLI agent platform Drewgent runs on
-- [gbrain](https://github.com/anomalyco/gbrain) — Local brain server for hybrid search
-- [lazyweb](https://lazyweb.com) — UI design reference search
+- [gbrain](https://github.com/anomalyco/gbrain) — Local PGLite brain server for hybrid search
+- [lazyweb](https://lazyweb.com) — 281k+ real app screenshots for UI design reference
+- [specification.website](https://specification.website) — Web spec checklists and best practices
 
 ## License
 
