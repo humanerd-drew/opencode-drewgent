@@ -9,7 +9,7 @@ Learning, pattern recognition, content production, and taste development. Runtim
 | `content/` | Brand guide, content inventory, narrative arc | ❌ personal |
 | `growth/` | Growth engine state, skill usage stats | ❌ runtime |
 | `insights/` | Extracted session insights | ❌ personal |
-| `knowledge/` | Learned patterns, reference material | ❌ personal |
+| `knowledge/` | Architecture references (NEURONFS, UX wiki, PRD template, etc.) | ✅ selected |
 | `plans/` | Development plans | ❌ personal |
 | `taste-reviews/` | Taste review analysis (from trend-harvester) | ❌ personal |
 | `scripts/` | Growth engine scripts | ❌ runtime |
