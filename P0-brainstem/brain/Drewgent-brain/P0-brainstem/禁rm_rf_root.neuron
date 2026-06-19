@@ -1,0 +1,52 @@
+---
+title: 禁rm_rf_root
+type: policy
+space: policy
+rule_token: 禁rm_rf_root
+rule_priority: P0 (HIGHEST)
+rule_source: NeuronFS Governance Defaults
+created: 2026-05-20
+updated: 2026-05-20
+promotion_status: validated
+links:
+  - "[[P0-brainstem/brain/rules]]"
+  - "[[P5-ego/SELF_MODEL]]"
+  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁brain_obsidian_graph]]"
+  - "[[P1-limbic/persona/SOUL]]"
+---
+# Rule: 禁rm_rf_root
+# Token: 禁rm_rf_root
+# Priority: P0 (HIGHEST)
+# Source: NeuronFS Governance Defaults
+
+禁rm_rf_root 必vorq
+
+FORBIDDEN: rm -rf on root directory or system paths
+REASON: Catastrophic data loss risk — irreversible
+
+SCOPE:
+    /, /home, /usr, /etc, /var, ~, $HOME, ./*
+
+GUARD:
+    Must confirm with user before ANY rm -rf
+    Must verify target path explicitly
+
+EXCEPTION:
+    - Only in explicitly scoped temp directories
+    - Only with user confirmation
+    - Only after verifying directory contents
+
+EXAMPLE VIOLATION:
+    rm -rf ~          # BAD ❌
+    rm -rf /*        # BAD ❌ (obviously)
+    rm -rf .         # BAD ❌
+    rm -rf $HOME/*   # BAD ❌
+
+ACCEPTABLE (with user confirmation):
+    rm -rf /tmp/my-cache/*
+
+## Links
+- [[P0-brainstem/brain/rules]]
+- [[P5-ego/SELF_MODEL]]
+- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁brain_obsidian_graph]]
+- [[P1-limbic/persona/SOUL]]

@@ -59,14 +59,33 @@ cron/jobs.json.bak
 /state/
 /sandboxes/
 
-# Personal vault data
-/P0-brainstem/
-/P1-limbic/
+# Personal vault data — P2/ are personal memories, P4/ is personal growth
 /P2-hippocampus/
-/P3-sensors/
 /P4-cortex/
-/P5-ego/
 /.obsidian/
+
+# P-layer runtime artifacts (not architecture docs)
+P0-brainstem/brain/active_brain.txt
+P0-brainstem/brain/brain_dashboard.html
+P0-brainstem/brain/brain_rule_state.json
+P0-brainstem/brain/brain_snapshot.json
+P0-brainstem/brain/neuronfs.py
+P0-brainstem/_agent/
+P0-brainstem/agent/
+P0-brainstem/bin/
+P0-brainstem/verification/
+P1-limbic/verification/
+P3-sensors/cron/
+P3-sensors/gateway/
+P3-sensors/gateway_state/
+P3-sensors/sandboxes/
+P3-sensors/tools/
+P3-sensors/resolver/
+P3-sensors/channel_directory.json
+P3-sensors/discord_threads.json
+P3-sensors/feishu_seen_message_ids.json
+P5-ego/config/
+P5-ego/state/
 
 # Secrets
 /secrets/
