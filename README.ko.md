@@ -621,6 +621,14 @@ bash ~/.drewgent/scripts/rename-drewgent.sh "alexgent"
 
 ---
 
+## 기여하기
+
+[CONTRIBUTING.md](CONTRIBUTING.md) 참조 — PR당 하나의 변경, 새 의존성 금지, 출처 포함.
+
+## 보안
+
+[SECURITY.md](SECURITY.md) 참조 — 취약점은 공개 이슈가 아닌 이메일로 보고.
+
 ## 관련 프로젝트
 
 - [opencode](https://opencode.ai) — Drewgent가 동작하는 CLI 에이전트 플랫폼
