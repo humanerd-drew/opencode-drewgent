@@ -59,10 +59,24 @@ cron/jobs.json.bak
 /state/
 /sandboxes/
 
-# Personal vault data — P2/ are personal memories, P4/ is personal growth
-/P2-hippocampus/
-/P4-cortex/
+# Personal vault data
 /.obsidian/
+
+# P2-hippocampus — personal memory (README.md only in repo)
+P2-hippocampus/kanban/
+P2-hippocampus/knowledge/
+P2-hippocampus/memories/
+P2-hippocampus/qa-evidence/
+
+# P4-cortex — personal growth (README.md only in repo)
+P4-cortex/content/
+P4-cortex/growth/
+P4-cortex/insights/
+P4-cortex/knowledge/
+P4-cortex/plans/
+P4-cortex/portfolio/
+P4-cortex/scripts/
+P4-cortex/taste-reviews/
 
 # P-layer runtime artifacts (not architecture docs)
 P0-brainstem/brain/active_brain.txt
