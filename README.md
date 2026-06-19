@@ -1,5 +1,7 @@
 # opencode-drewgent
 
+[🇰🇷 한국어](README.ko.md)
+
 Drewgent is an **autonomous software engineering agent system** built on [opencode](https://opencode.ai). It orchestrates specialized subagents through a kanban-backed pipeline, providing structured context handoff, failure tracking, and background automation.
 
 This is **not** a standalone agent framework. It's the configuration and extension layer — agent profiles, skills, scripts, tools, and automation — that sits on top of opencode.
