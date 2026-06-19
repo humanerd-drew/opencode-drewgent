@@ -1,0 +1,86 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# Secrets & config
+.env
+.env.local
+config.yaml
+config.local.yaml
+*.pem
+*.ppk
+auth.json
+auth.lock
+vault-ontology.jsonl
+secrets_registry.json
+secrets_vault.json
+/run/
+
+# Runtime databases
+*.db
+*.db-shm
+*.db-wal
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# Runtime state
+state/
+cache/
+monitor/
+checkpoints/
+pastes/
+session_checkpoint.json
+processes.json
+feedback.jsonl
+channel_directory.json
+
+# Generated dashboards
+brain_dashboard.html
+cron-jobs.html
+kanban-board.html
+
+# Cron runtime
+cron/output/
+cron/.tick.lock
+cron/jobs.json.bak
+
+# Runtime data dirs
+/sessions/
+/memories/
+/logs/
+/cache/
+/state/
+/sandboxes/
+
+# Personal vault data
+/P0-brainstem/
+/P1-limbic/
+/P2-hippocampus/
+/P3-sensors/
+/P4-cortex/
+/P5-ego/
+/.obsidian/
+
+# Secrets
+/secrets/
+
+# P6 runtime artifacts
+P6-prefrontal/archive/
+P6-prefrontal/checkpoints/
+P6-prefrontal/recovery-journal/
+P6-prefrontal/logs/
+
+# Deps
+node_modules/
+.target/
+
+# OS
+.DS_Store
+Thumbs.db

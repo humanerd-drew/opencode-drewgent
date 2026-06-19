@@ -1,0 +1,74 @@
+# PortOne V2 SDK requestPayment — Full Parameter Reference
+
+Source: @portone/browser-sdk v0.1.7 type definitions (PaymentRequestBase)
+
+## Required Fields
+| Field | Type | Description |
+|-------|------|-------------|
+| storeId | string | 상점 ID (admin.portone.io → 연동정보) |
+| paymentId | string | 고유 주문번호 (중복 시 실패) |
+| orderName | string | 주문명 |
+| totalAmount | number | 결제 금액 (KRW=1배, USD=100배, JPY=1배) |
+| currency | 'KRW' \| 'USD' \| ... | ISO 4217 통화코드 |
+| payMethod | 'CARD' \| 'EASY_PAY' \| 'TRANSFER' \| ... | 결제수단 |
+
+## Optional Fields
+| Field | Type | Description |
+|-------|------|-------------|
+| channelKey | string | 채널 키 (storeId와 함께 필수 중 하나) |
+| channelGroupId | string | 채널그룹 ID (channelKey 대신 사용) |
+| customer | Customer | 구매자 정보 (email, fullName, phoneNumber, etc.) |
+| redirectUrl | string | 모바일 리디렉션 URL |
+| windowType | 'POPUP' \| 'REDIRECTION' \| 'IFRAME' | 창 유형 |
+| forceRedirect | boolean | 강제 리디렉션 |
+| noticeUrls | string[] | 웹훅 수신 URL |
+| appScheme | string | WebView 앱 복귀 URL scheme |
+| locale | Locale | UI 언어 |
+| customData | object | 커스텀 JSON |
+| productType | ProductType | 상품 유형 |
+| offerPeriod | OfferPeriod | 서비스 제공 기간 |
+| bypass | PaymentBypass | PG사 bypass 값 |
+| easyPay.easyPayProvider | 'NAVERPAY' \| 'KAKAOPAY' \| ... | 간편결제 직접 호출 |
+
+## Customer Object
+| Field | Type | Description |
+|-------|------|-------------|
+| customerId | string | 구매자 ID |
+| fullName | string | 전체 이름 |
+| firstName | string | 이름 (페이팔) |
+| lastName | string | 성 (페이팔) |
+| phoneNumber | string | 휴대폰 번호 (KG이니시스 필수) |
+| email | string | 이메일 (올바른 형식 필수) |
+| address | Address | 주소 |
+| zipcode | string | 우편번호 |
+| gender | Gender | 성별 |
+| birthYear/Month/Day | string | 생년월일 (KG이니시스 통합인증 필수) |
+
+## PaymentResponse
+| Field | Type | Description |
+|-------|------|-------------|
+| transactionType | 'PAYMENT' | 항상 PAYMENT |
+| txId | string | 결제 시도 ID |
+| paymentId | string | 결제 ID |
+| paymentToken | string | 수동 승인 토큰 |
+| code | string | 실패 시 오류 코드 |
+| message | string | 실패 시 오류 메시지 |
+
+## PortOne REST API (Server-side)
+
+### Payment Inquiry
+```
+GET https://api.portone.io/payments/{paymentId}
+Authorization: PortOne {API_SECRET}
+```
+Response status: 'PAID' | 'READY' | 'FAILED' | 'CANCELLED'
+
+### Payment Confirm (manual approval only)
+```
+POST https://api.portone.io/payments/{paymentId}/confirm
+Authorization: PortOne {API_SECRET}
+```
+
+## CDN URLs
+- SDK loader: `https://cdn.jsdelivr.net/npm/@portone/browser-sdk@0.1.7/dist/v2.js`
+- SDK core: `https://cdn.portone.io/v2/browser-sdk.js`

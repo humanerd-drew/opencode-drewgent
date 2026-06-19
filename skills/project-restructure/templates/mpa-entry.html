@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>M-LOG | PAGE_TITLE</title>
+  <link rel="manifest" href="/app/manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Original CSS variables + components — MUST use these, NOT new hardcoded styles -->
+  <link rel="stylesheet" href="/app/shared/theme/variables.css">
+  <link rel="stylesheet" href="/app/css/index.css">
+  <link rel="stylesheet" href="/app/css/z-override.css">
+  <link rel="icon" type="image/png" href="/assets/m-log_logo.png">
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module">
+    import { mount } from 'svelte'
+    import Page from '../src/pages/PAGE.svelte'
+    mount(Page, { target: document.getElementById('app') })
+  </script>
+</body>
+</html>

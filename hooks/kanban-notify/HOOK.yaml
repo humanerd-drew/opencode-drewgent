@@ -1,0 +1,9 @@
+name: kanban-notify
+description: >
+  Send kanban task notifications (completed/blocked/crashed) to the original
+  platform+chat where the task was created. Uses adapters registered at
+  gateway:startup to deliver messages via the live platform adapters.
+
+events:
+  - gateway:startup    # register adapter refs
+  - agent:end          # check if response contains kanban task result → notify

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "model": "opencode-go/deepseek-v4-flash",
+  "small_model": "opencode-go/deepseek-v4-pro",
+
+  "instructions": ["AGENTS.md"],
+
+  "skills": {
+    "paths": [
+      "~/.drewgent/skills",
+      "~/.drewgent/P3-sensors/skills",
+      "~/.config/opencode/skills"
+    ]
+  },
+
+  "mcp": {
+    "gbrain": {
+      "type": "local",
+      "command": ["gbrain", "serve"],
+
+      "enabled": true,
+      "environment": { "OPENAI_API_KEY": "ollama-local" },
+      "timeout": 120000
+    },
+    "lazyweb": {
+      "type": "remote",
+      "url": "https://www.lazyweb.com/mcp",
+      "enabled": true,
+      "headers": { "Authorization": "Bearer {env:LAZYWEB_API_KEY}" },
+      "timeout": 60000
+    },
+    "specification-website": {
+      "type": "remote",
+      "url": "https://mcp.specification.website/mcp",
+      "enabled": true,
+      "timeout": 60000
+    }
+  }
+}
