@@ -744,6 +744,14 @@ The rename skill is at `skills/software-development/rename-drewgent/SKILL.md`.
 - [lazyweb](https://lazyweb.com) — 281k+ real app screenshots for UI design reference
 - [specification.website](https://specification.website) — Web spec checklists and best practices
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) — one change per PR, no new deps, include provenance.
+
+## Security
+
+See [SECURITY.md](SECURITY.md) — report vulnerabilities by email, not public issues.
+
 ## License
 
 MIT — see [LICENSE](LICENSE)
