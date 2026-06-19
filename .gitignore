@@ -70,7 +70,6 @@ P2-hippocampus/qa-evidence/
 
 # P4-cortex — exclude runtime state, keep arch docs
 P4-cortex/content/
-P4-cortex/growth/
 P4-cortex/insights/
 P4-cortex/plans/
 P4-cortex/portfolio/
@@ -94,7 +93,6 @@ P0-brainstem/bin/
 P0-brainstem/verification/
 P1-limbic/verification/
 P3-sensors/cron/
-P3-sensors/gateway/
 P3-sensors/gateway_state/
 P3-sensors/sandboxes/
 P3-sensors/tools/
