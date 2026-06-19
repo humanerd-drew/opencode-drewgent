@@ -604,6 +604,40 @@ The `.gitignore` is configured to exclude all of these. If you clone this repo, 
 
 ---
 
+## Naming Convention
+
+**Drewgent** = **Drew** + A**gent**.
+
+The name reflects that this is a personalized agent system — your name, your rules, your workflows. The convention is designed for easy forking:
+
+```
+<yourname>gent
+```
+
+Examples:
+- `drewgent` (Drew + agent) — this repo
+- `alexgent` (Alex + agent)
+- `saragent` (Sara + agent)
+- `devgent` (Dev + agent)
+
+### Renaming
+
+If you fork this repo for your own use, run the rename skill:
+
+```
+skill("rename-drewgent")
+```
+
+This will:
+1. Replace all "drewgent" → "<yourname>gent" across 2000+ references
+2. Rename `~/.drewgent` → `~/.<yourname>gent`
+3. Update config paths in opencode.jsonc, scripts, and skills
+4. Update AGENTS.md and all documentation references
+
+The rename skill is at `skills/software-development/rename-drewgent/SKILL.md`.
+
+---
+
 ## Related
 
 - [opencode](https://opencode.ai) — The CLI agent platform Drewgent runs on
