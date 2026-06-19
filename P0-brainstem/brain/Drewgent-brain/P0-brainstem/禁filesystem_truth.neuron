@@ -1,0 +1,69 @@
+---
+title: 禁filesystem_truth
+type: policy
+space: policy
+rule_token: 禁filesystem_truth
+rule_priority: P0 (HIGHEST)
+rule_source: Loopy-Era HARD Hooks - Hugh Kim's Claude Code Harness
+created: 2026-05-20
+updated: 2026-05-20
+promotion_status: validated
+links:
+  - "[[P0-brainstem/brain/rules]]"
+  - "[[P5-ego/SELF_MODEL]]"
+  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁brain_obsidian_graph]]"
+  - "[[P3-sensors/resolver/RESOLVER]]"
+---
+# Rule: 禁filesystem_truth
+# Token: 禁filesystem_truth
+# Priority: P0 (HIGHEST)
+# Source: Loopy-Era HARD Hooks - Hugh Kim's Claude Code Harness
+# FILESYSTEM = TRUTH principle
+# Adapted for Drewgent P0-brainstem
+
+禁filesystem_truth 必fs
+
+FORBIDDEN: Depend on external MCP/tools for file content instead of reading directly
+REASON: External dependencies can fail, change, or be unavailable. Files are the single source of truth.
+
+FILESYSTEM = TRUTH PRINCIPLE:
+    - Never rely on tool output that duplicates file content
+    - Always read file directly to get current state
+    - Use file content as the ground truth for decisions
+    - External MCP results are supplementary, not authoritative
+
+REQUIRED SEQUENCE:
+    1. When file content is needed for decision:
+       → Read file directly (read_file tool)
+       → DO NOT trust tool descriptions as truth
+    2. When comparing state:
+       → Re-read file after operations
+       → DO NOT assume tool output reflects final state
+    3. When passing context to specialist/subagent:
+       → Read fresh file content
+       → DO NOT rely on cached/stale context
+
+EXAMPLE VIOLATION:
+    Trust tool output: "file contains X" without reading      ❌
+    Use outdated context for decisions                          ❌
+    Pass tool output summary instead of actual file content    ❌
+
+CORRECT:
+    # Always read actual file for truth
+    content = read_file("project/config.yaml")
+    # Use content directly for decisions
+    
+    # Re-read after operations
+    patch("config.yaml", old, new)
+    verify = read_file("config.yaml")  # Confirm change
+
+## Links
+- [[P0-brainstem/brain/rules]]
+- [[P5-ego/SELF_MODEL]]
+- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁brain_obsidian_graph]]
+- [[P3-sensors/resolver/RESOLVER]]
+## Related Incidents
+- [[launchd-mass-failure-20260610]]
+- [[gateway-scheduler-double-fire-20260610]]
+- [[cron-jobs-stalled-20260601]]
+- [[cron-runner-launchd-detached-20260601]]

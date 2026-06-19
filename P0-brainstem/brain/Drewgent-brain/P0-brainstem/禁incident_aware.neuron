@@ -1,0 +1,150 @@
+---
+title: 禁incident_aware
+type: policy
+space: policy
+rule_token: 禁incident_aware
+rule_priority: P0 (HIGHEST)
+rule_source: Drewgent 2026-06-10 launchd mass-failure incident — auto-load skill on detection
+created: 2026-06-10
+updated: 2026-06-10
+promotion_status: draft
+links:
+  - "[[P0-brainstem/brain/rules]]"
+  - "[[P5-ego/SELF_MODEL]]"
+  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁brain_obsidian_graph]]"
+  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth]]"
+  - "[[P6-prefrontal/incidents/launchd-mass-failure-20260610]]"
+  - "[[skills/launchd-process-health-check/SKILL]]"
+---
+
+# Rule: 禁incident_aware
+# Token: 禁incident_aware
+# Priority: P0 (HIGHEST)
+# Source: 2026-06-10 launchd mass-failure incident
+# 4-6일 undetected, no incident-detection protocol
+
+禁incident_aware 必incident_protocol
+
+FORBIDDEN: Begin work on a launchd/cron/jobs.json/keepalive/harmony question
+           without first loading 2026-06-10 incident context + relevant skill.
+REASON: Without protocol, agent will re-discover the same 6 root causes from
+        scratch (gateway SIGTERM, n8n exit 0 trap, quartz KeepAlive:false,
+        cron in-memory state dead, plist label mismatch, memory vs reality
+        drift). The 2026-06-10 incident is the canonical reference.
+
+## Trigger Conditions
+
+This neuron fires when Drewgent detects ANY of:
+
+1. **Watchdog alert from `drewgent_launchd_watchdog.sh`** (any of 6 watched
+   services in `not running` state with non-zero exit, or "not registered")
+2. **`hermes cron list` output contains "Gateway is not running"**
+3. **`jobs.json` `next_run_at` in the past for an enabled job** (Pattern A
+   from `cron-jobs-stalled` skill)
+4. **Multiple launchd services with PID=- and stale exit codes** (Pattern C)
+5. **User asks for "에이전트 상태 점검" or "agent health check" or similar**
+6. **`脑 incident detected` self-signal** (e.g. signal_processor fired
+   `awareness.integrity` for system anomaly)
+
+## Required Sequence
+
+When triggered:
+
+1. **Read incident doc first**:
+   ```
+   ~/.drewgent/P6-prefrontal/incidents/launchd-mass-failure-20260610.md
+   ```
+   This is the canonical reference for "what went wrong + how to detect
+   cross-layer drift". Section 2 enumerates 8 root causes; section 6.5
+   lists known open follow-ups.
+
+2. **Load skill `launchd-process-health-check`** — provides 3 hard evidence
+   signals (launchctl list vs lsof vs ps aux) to distinguish:
+   - Real dead process (action: kickstart or restart plist)
+   - launchd tracking failure on detached process (action: do nothing,
+     update known-soft-fail list)
+   - Process running under wrong binary (action: fix plist ProgramArguments)
+
+3. **Cross-layer diff** (use `drewgent_harmony_check.sh` helper if available,
+   else inline shell):
+   ```
+   jobs.json last_run_at vs jobs.json next_run_at vs cron-runner.log mtime
+   plist Label vs plist filename vs launchd list label
+   watchdog service state vs ps aux | grep <service>
+   memory "복구됨" claim vs filesystem plist existence
+   ```
+   See `~/.hermes/scripts/drewgent_harmony_check.sh` for the canonical diff.
+
+4. **Cite incident in user response** — any incident-related response should
+   reference the 2026-06-10 doc as ground truth, so user can audit the
+   decision chain.
+
+## What This Neuron Does NOT Do
+
+- Does NOT auto-fix without user confirmation for destructive ops
+  (file truncation, plist overwrites, gateway restart)
+- Does NOT pretend the layer drift is the same as 6/10 — 6/11+ incidents
+  may have new root causes
+- Does NOT disable the watchdog — this neuron is *response* protocol, not
+  *prevention* (prevention is plist KeepAlive + log rotation, separate)
+
+## Implementation Pattern
+
+```python
+# Pseudocode — when signal_processor fires system anomaly
+def _on_incident_detected(self, event: BrainEvent) -> None:
+    """禁incident_aware: ensure protocol loaded before fix attempts."""
+    skill_loaded = "launchd-process-health-check" in self._loaded_skills
+    incident_read = self._check_recent_reference(
+        "launchd-mass-failure-20260610"
+    )
+    if not (skill_loaded and incident_read):
+        self._bus.emit("awareness.integrity", {
+            "type": "incident_protocol_missing",
+            "severity": "medium",
+            "message": (
+                "System anomaly detected but incident protocol not loaded. "
+                "Read ~/.drewgent/P6-prefrontal/incidents/"
+                "launchd-mass-failure-20260610.md and load "
+                "launchd-process-health-check skill before acting."
+            ),
+        })
+```
+
+## EXCEPTION
+
+If incident is so trivial (single service, well-known plist, no cross-layer
+drift suspected) — e.g. user explicitly says "kickstart n8n" — direct
+action is allowed. The neuron is for the *detection* path, not for
+*user-directed maintenance*.
+
+## EXAMPLE VIOLATION
+
+User: "에이전트 상태 점검해줘"
+Agent: starts launching `hermes cron list` and `launchctl list` directly,
+        without loading incident doc or skill
+        → re-discovers the same 6 root causes from 6/10, takes 3x as long
+        → ❌禁incident_aware violation
+
+## CORRECT
+
+User: "에이전트 상태 점검해줘"
+Agent:
+  1. Read `P6-prefrontal/incidents/launchd-mass-failure-20260610.md`
+     (recognize this is the SAME failure mode)
+  2. Load `brain/launchd-process-health-check` skill
+  3. Run `bash ~/.hermes/scripts/drewgent_harmony_check.sh` (cross-layer diff)
+  4. Apply fixes from incident doc's section 3 (resolution) directly
+  5. Cite incident doc in response
+  → fast, deterministic, auditable
+
+## Links
+- [[P0-brainstem/brain/rules]]
+- [[P5-ego/SELF_MODEL]]
+- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁brain_obsidian_graph]]
+- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth]]
+- [[P6-prefrontal/incidents/launchd-mass-failure-20260610]]
+- [[skills/launchd-process-health-check/SKILL]]
+## Related Incidents
+- [[launchd-mass-failure-20260610]]
+- [[cron-runner-launchd-detached-20260601]]

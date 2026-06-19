@@ -1,0 +1,101 @@
+---
+title: 禁karpathy_coding_principles
+type: policy
+space: concept
+rule_token: 禁karpathy_coding_principles
+rule_priority: P0 (HIGHEST)
+rule_source: Drewgent P0-brainstem — Karpathy-inspired coding principles
+created: 2026-05-20
+updated: 2026-05-20
+promotion_status: validated
+links:
+  - "[[P0-brainstem/brain/rules]]"
+  - "[[P5-ego/SELF_MODEL]]"
+  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁brain_obsidian_graph]]"
+  - "[[P1-limbic/persona/SOUL]]"
+  - "[[P4-cortex/knowledge/NEURONFS_RULES]]"
+---
+# Rule: 禁karpathy_coding_principles
+# Token: 禁karpathy_coding_principles
+# Priority: P0 (HIGHEST)
+# Source: Drewgent P0-brainstem — Karpathy-inspired coding principles
+# Target: All coding tasks in Drewgent workflow
+
+禁karpathy_coding_principles 必enforce
+
+FORBIDDEN: Violate any of the 4 Karpathy coding principles during a coding task.
+REASON: Without these principles, Drewgent repeats common LLM coding mistakes:
+  - Wrong assumptions presented as fact
+  - Overcomplicated code (200 lines when 50 would do)
+  - Surgical violations (touching code that wasn't asked to change)
+  - No verifiable success criteria (weak "make it work" instead of test-first)
+
+## 4 KARPATHY PRINCIPLES (in order of priority)
+
+### 1. Think Before Coding (Highest)
+  BEFORE writing any code:
+  - State your assumptions explicitly. If uncertain, ask.
+  - Present multiple interpretations if ambiguity exists. Don't pick silently.
+  - If a simpler approach exists, say so and push back.
+  - If something is unclear, STOP. Name what's confusing. Ask.
+  IF YOU DON'T KNOW: Say you don't know. Do not guess and present as fact.
+
+### 2. Simplicity First
+  Minimum code that solves the problem. Nothing speculative.
+  - No features beyond what was asked
+  - No abstractions for single-use code
+  - No "flexibility" or "configurability" that wasn't requested
+  - No error handling for impossible scenarios
+  - If 200 lines could be 50, rewrite it
+  TEST: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+
+### 3. Surgical Changes
+  Touch only what you must. Clean up only your own mess.
+  WHEN EDITING:
+  - Don't "improve" adjacent code, comments, or formatting
+  - Don't refactor things that aren't broken
+  - Match existing style, even if you'd do it differently
+  WHEN YOUR CHANGES CREATE ORPHANS:
+  - Remove imports/variables/functions that YOUR changes made unused
+  - Don't remove pre-existing dead code unless explicitly asked
+  TEST: Every changed line should trace directly to the user's request.
+
+### 4. Goal-Driven Execution
+  Define success criteria. Loop until verified.
+  TRANSFORM:
+  - "Add validation" → "Write tests for invalid inputs, then make them pass"
+  - "Fix the bug" → "Write a test that reproduces it, then make it pass"
+  - "Refactor X" → "Ensure tests pass before and after"
+  FOR MULTI-STEP TASKS, state a brief plan:
+    1. [Step] → verify: [check]
+    2. [Step] → verify: [check]
+    3. [Step] → verify: [check]
+  Strong success criteria let you loop independently.
+
+## VIOLATION EXAMPLES
+
+| Violation | Example | Classification |
+|-----------|----------|----------------|
+| Hidden assumption | Proceed with interpretation A without stating assumption | EXTREME |
+| Overcomplication | Write 200 lines when 50 would solve the problem | HIGH |
+| Surgical violation | "Improve" adjacent code unrelated to the request | EXTREME |
+| No success criteria | "make it work" without specifying what "work" means | HIGH |
+| Silent interpretation pick | Choose between A/B without mentioning ambiguity | HIGH |
+| Speculative feature | Add "flexibility" or configurability not requested | MEDIUM |
+| No verification loop | Declare done without running tests or checks | EXTREME |
+
+## TRADE-OFF NOTE
+
+These principles bias toward caution over speed.
+For trivial tasks (simple typo fixes, obvious one-liners), use judgment.
+Not every change needs the full rigor — only non-trivial work.
+
+ENFORCEMENT: If a coding task is detected and these principles are violated,
+block with a specific reference to which principle was violated.
+
+## Links
+- [[P0-brainstem/brain/rules]]
+- [[P5-ego/SELF_MODEL]]
+- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁brain_obsidian_graph]]
+- [[P1-limbic/persona/SOUL]]
+- [[P4-cortex/knowledge/NEURONFS_RULES]]
