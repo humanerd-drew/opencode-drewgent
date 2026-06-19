@@ -4,6 +4,103 @@ Drewgent is an **autonomous software engineering agent system** built on [openco
 
 This is **not** a standalone agent framework. It's the configuration and extension layer — agent profiles, skills, scripts, tools, and automation — that sits on top of opencode.
 
+## Philosophy
+
+### Why "Drewgent"?
+
+**Drew** + A**gent**. Your name, your rules, your workflows.
+
+Most agent systems are generic — one-size-fits-none. Drewgent starts from the opposite premise: **an agent should be as unique as the person building it.** The name is the first assertion of that identity. Fork it, rename it, make it yours. The `rename-drewgent` skill exists so you don't have to edit 2000+ files by hand.
+
+### Why a 7-Layer Brain?
+
+Most agent architectures are flat: one model, one context window, one prompt. Drewgent models itself on the **hierarchical structure of the human brain** — not because it's trendy, but because it solves a real problem: **how do you make an agent that remembers, governs itself, and grows over time?**
+
+```
+P0-brainstem    → Survival. Absolute rules that cannot be overridden.
+P1-limbic       → Values. Tone, persona, communication style.
+P2-hippocampus  → Memory. Session persistence, knowledge base.
+P3-sensors      → Input. Tool routing, skill dispatch, gateway integration.
+P4-cortex       → Growth. Pattern recognition, learning, taste.
+P5-ego          → Identity. Self-model, calibration, awareness.
+P6-prefrontal   → Strategy. Planning, proposals, incident reflection.
+```
+
+The hierarchy emerges from what overrides what:
+
+- **Bottom-up** (sensation → action): P3 detects input → P2 loads context → P4 recognizes patterns → P5 and P6 decide
+- **Top-down** (identity governs behavior): P5 says "I am thorough" → P1 shapes tone → P3 selects careful tools → P0 blocks dangerous operations
+- **P0 always wins**: A brainstem rule like `禁rm_rf_root` cannot be bypassed by any upper layer, no matter how clever the argument
+
+This is not documentation. These are **enforced constraints** — the `.neuron` files in `P0-brainstem/` are loaded at runtime and actively gate behavior.
+
+### Why Obsidian as the Knowledge Graph?
+
+The agent needs a persistent memory that:
+1. **Survives restarts** — no "blank slate" on every session
+2. **Is queryable by both humans and agents** — you can open the same files in Obsidian
+3. **Has structure** — not a flat pile of text, but a connected graph
+4. **Can be version-controlled** — git tracks every change, every decision, every incident
+
+A database can do 1 and 2. Only **files with wikilinks** can do all four.
+
+The P-layer directories *are* an Obsidian vault. Every file has YAML frontmatter, typed tags, and `[[wikilinks]]` to other files. This means:
+- An agent can `gbrain_query("what's the refresh token policy?")` and get a ranked answer from the knowledge graph
+- A human can open the same directory in Obsidian and see the exact same graph, with backlinks, graph views, and local graphs
+- Git tracks who changed what, when, and why — the full audit trail of every architectural decision
+
+### Filesystem = Truth
+
+Most agent systems store state in ephemeral context windows or opaque databases. Drewgent's principle: **the filesystem is the canonical source.**
+
+- Kanban board? SQLite file at `P2-hippocampus/kanban/state/drewgent_tasks.db`
+- Session history? SQLite with FTS5 full-text search
+- Agent profiles? `.md` files in `agents/`
+- Skills? `.md` files in `skills/`
+- Architecture decisions? `.md` files in `P6-prefrontal/proposals/`
+- Governance rules? `.neuron` files in `P0-brainstem/`
+
+If it matters, it's on disk. If it's on disk, it's in git (or gitignored by design). No opaque state, no "trust me, the agent remembers."
+
+### Governance as Code
+
+Rules in Drewgent are not advisory prompts — they are **enforced constraints** written as `.neuron` files in `P0-brainstem/`. Each rule is a self-contained constraint that the signal processor checks at runtime:
+
+```
+禁blind_write         → Cannot write a file without reading it first
+禁task_qa_gate        → Cannot declare done without verification
+禁secrets_in_code     → API keys detected in code → blocked
+禁karpathy_coding     → Over-engineering, speculative abstraction → flagged
+```
+
+These are not "best practices." They are **gates** — the signal processor fires violations at `turn.end`, the awareness reporter surfaces them, and the agent cannot bypass them by saying "I'll be careful this time."
+
+### Taste Over Volume
+
+Drewgent prioritizes **decision quality over output quantity**. Every kanban task includes a leverage score: "If this is solved well, how many other problems disappear?"
+
+| Score | Meaning | Example |
+|-------|---------|---------|
+| 5 | Root cause, eliminates entire class | Architecture change removes whole module |
+| 4 | Solves multiple sub-problems | Shared utility removes N duplicates |
+| 3 | Clear improvement + 1-2 side effects | Config cleanup eliminates manual step |
+| 2 | Local improvement, no ripple | Bug fix |
+| 1 | Surface change, minimal impact | Typo, docs update |
+
+Low-leverage work (score 1-2) is not rejected — but it's deprioritized behind high-leverage work. The system is designed to **find the highest-leverage thing to do next**, not to generate busywork.
+
+### Provenance Convention
+
+Every architectural decision in this repo records **why it was made**:
+
+- Skill frontmatter includes `trigger` and `provenance` fields
+- Proposals include `tier`, `leverage_score`, and session context
+- Kanban tasks include origin, session, and decision rationale
+
+The principle: **the prompt is more informative than the output.** When you read a completed proposal six months later, the provenance tells you *why*, not just *what*.
+
+---
+
 ## Quick Start
 
 ```bash
