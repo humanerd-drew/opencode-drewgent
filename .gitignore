@@ -68,15 +68,19 @@ P2-hippocampus/knowledge/
 P2-hippocampus/memories/
 P2-hippocampus/qa-evidence/
 
-# P4-cortex — personal growth (README.md only in repo)
+# P4-cortex — exclude runtime state, keep arch docs
 P4-cortex/content/
 P4-cortex/growth/
 P4-cortex/insights/
-P4-cortex/knowledge/
 P4-cortex/plans/
 P4-cortex/portfolio/
 P4-cortex/scripts/
 P4-cortex/taste-reviews/
+P4-cortex/knowledge/bus.py
+P4-cortex/knowledge/drewgent_hidden_state.json
+P4-cortex/knowledge/drewgent_knowledge.json
+P4-cortex/knowledge/growth_engine_sync.json
+P4-cortex/knowledge/harvester_sync_state.json
 
 # P-layer runtime artifacts (not architecture docs)
 P0-brainstem/brain/active_brain.txt
