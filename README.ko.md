@@ -293,6 +293,27 @@ cat logs/office-autopilot.log
 
 ---
 
+## 크레딧
+
+opencode-drewgent은 아래 오픈소스 프로젝트들을 기반으로 동작합니다. 감사합니다.
+
+| 프로젝트 | 저자 | 용도 | 라이선스 |
+|---------|------|------|---------|
+| [opencode](https://opencode.ai) | [Anomaly](https://github.com/anomalyco) | AI 코딩 에이전트 플랫폼 | MIT |
+| [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) | [code-yeongyu](https://github.com/code-yeongyu) | 멀티 에이전트 오케스트레이션 (Sisyphus, ultrawork) | SUL-1.0 |
+| [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode) | [Yeachan-Heo](https://github.com/Yeachan-Heo) | 팀 모드 멀티 에이전트 패턴 참고 | MIT |
+| [gbrain](https://github.com/garry-example/gbrain) | — | MCP 기반 지식 그래프 | — |
+| [codebase-memory-mcp](https://github.com/anomalyco/opencode) | Anomaly | 코드베이스 지식 그래프 | MIT |
+| [lazyweb](https://lazyweb.com) | — | UI 디자인 참고 MCP | — |
+| [Karpathy LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) | Andrej Karpathy | 컴파일 패턴 지식베이스 개념 | — |
+| [Ponytail](https://github.com/DietrichGebert/ponytail) | Dietrich Gebert | 코드 최소화 체크리스트 | — |
+| [NeuronFS](https://github.com/drewgent/neuronfs) | — | 뇌 기반 거버넌스 시스템 | — |
+| [specification.website](https://specification.website) | — | 웹 스펙 체크리스트 MCP | — |
+
+이 프로젝트들은 각각의 라이선스를 따릅니다. 코드를 직접 포함하지 않으며, 설정/참조로만 사용됩니다.
+
+---
+
 ## 라이선스
 
 MIT
