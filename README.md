@@ -757,11 +757,11 @@ opencode-drewgent is built on the shoulders of these open-source projects:
 | [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode) | [Yeachan-Heo](https://github.com/Yeachan-Heo) | Team mode multi-agent pattern reference | MIT |
 | [gbrain](https://github.com/anomalyco/gbrain) | Anomaly | MCP-based knowledge graph & hybrid search | — |
 | [codebase-memory-mcp](https://github.com/anomalyco/opencode) | Anomaly | Codebase knowledge graph | MIT |
-| [lazyweb](https://lazyweb.com) | — | UI design reference MCP | — |
+| [lazyweb](https://lazyweb.com) | [Ali Boulata](https://github.com/aboul3ata) | UI design reference MCP | — |
 | [Karpathy LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) | Andrej Karpathy | Compile-pattern knowledge base concept | — |
 | [Ponytail](https://github.com/DietrichGebert/ponytail) | Dietrich Gebert | Code minimalization checklist | — |
-| [NeuronFS](https://github.com/drewgent/neuronfs) | — | Brain-based governance system | — |
-| [specification.website](https://specification.website) | — | Web spec checklists MCP | — |
+| [NeuronFS](https://github.com/drewgent/neuronfs) | HUMANERD | Brain-based governance system | — |
+| [specification.website](https://specification.website) | [Joost de Valk](https://github.com/jdevalk) | Web spec checklists MCP | — |
 
 No third-party source code is directly included — all dependencies are referenced or installed via package managers. Each project respects its own license.
 
