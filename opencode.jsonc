@@ -17,8 +17,7 @@
   "mcp": {
     "gbrain": {
       "type": "local",
-      "command": ["gbrain", "serve"],
-
+      "command": ["/Users/drew/.bun/bin/gbrain", "serve"],
       "enabled": true,
       "environment": { "OPENAI_API_KEY": "ollama-local" },
       "timeout": 120000
