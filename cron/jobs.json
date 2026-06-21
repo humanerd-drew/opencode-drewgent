@@ -34,110 +34,6 @@
       "origin": null
     },
     {
-      "id": "d1ef68ced116",
-      "name": "kanban-dispatcher",
-      "prompt": "Kanban Dispatcher \u2014 assign ready tasks to workers via dispatch_once().\n\nSteps:\n1. from tools.drewgent_kanban_db import dispatch_once\n2. result = dispatch_once(board=\"default\", max_spawn=3, failure_limit=3)\n3. Report: reclaimed=N, claimed=N, spawned=N, skipped=N\n4. If reclaimed > 0 or claimed > 0: show details\n5. If all empty: respond with [SILENT]\n\nImportant: dispatcher runs in the same process. Do NOT spawn subprocess agents manually \u2014\ndispatch_once() handles reclaiming stale tasks, claiming ready tasks, and spawning worker processes internally.\n",
-      "skills": [
-        "kanban-worker"
-      ],
-      "skill": "kanban-worker",
-      "model": null,
-      "provider": null,
-      "base_url": null,
-      "script": null,
-      "schedule": {
-        "kind": "cron",
-        "expr": "*/1 * * * *",
-        "display": "*/1 * * * *"
-      },
-      "schedule_display": "*/1 * * * *",
-      "repeat": {
-        "times": null,
-        "completed": 1094
-      },
-      "enabled": false,
-      "state": "paused",
-      "paused_at": "2026-06-10T14:48:56.567024+00:00",
-      "paused_reason": "T4 fix: redundant with drewgent-cron-runner-001. LLM job blocked tick loop causing gateway cron stall.",
-      "created_at": "2026-05-18T23:56:31.297016+09:00",
-      "next_run_at": "2026-06-10T23:58:00+09:00",
-      "last_run_at": "2026-06-10T23:57:56.927917+09:00",
-      "last_status": "ok",
-      "last_error": null,
-      "deliver": "local",
-      "origin": null
-    },
-    {
-      "id": "e2f30aa1b444",
-      "name": "linear-activity-logger",
-      "prompt": "Linear Activity Logger \u2014 monitor Discord sessions for work patterns and create kanban cards.\n\nSteps:\n1. cd ~/.drewgent/source/drewgent-agent\n2. python3 scripts/linear_activity_logger.py\n3. Report: sessions_scanned=N, messages_processed=N, cards_created=N\n4. If cards_created > 0: show card titles\n5. If all empty: respond with [SILENT]\n\nEnvironment:\n- LINEAR_API_KEY (optional): for Linear issue creation\n- LINEAR_TEAM_ID (optional): team for Linear issues\n\nThis job scans recent session files for work trigger patterns (\uc9c4\ud589\ud574\uc918, \ub05d\ub0ac\uc5b4, \ud574\uc918, etc.)\nand creates kanban cards in drewgent_tasks.db. Idempotent \u2014 same message never creates duplicate cards.\n",
-      "skills": [],
-      "skill": null,
-      "model": null,
-      "provider": null,
-      "base_url": null,
-      "script": null,
-      "schedule": {
-        "kind": "cron",
-        "expr": "*/5 * * * *",
-        "display": "*/5 * * * *"
-      },
-      "schedule_display": "*/5 * * * *",
-      "repeat": {
-        "times": null,
-        "completed": 2
-      },
-      "enabled": false,
-      "state": "paused",
-      "paused_at": "2026-06-10T17:30:00+09:00",
-      "paused_reason": "P0 \u7981no_linear_workflow: Linear workflow permanently removed. No script exists.",
-      "created_at": "2026-05-19T12:04:00.000000+09:00",
-      "next_run_at": "2026-06-10T17:30:00+09:00",
-      "last_run_at": "2026-06-10T17:28:14.193184+09:00",
-      "last_status": "ok",
-      "last_error": null,
-      "deliver": "local",
-      "origin": null
-    },
-    {
-      "id": "2d9a31f2b661",
-      "name": "Drewgent launchd watchdog",
-      "prompt": "",
-      "skills": [],
-      "skill": null,
-      "model": null,
-      "provider": null,
-      "base_url": null,
-      "script": "drewgent_launchd_watchdog.sh",
-      "no_agent": true,
-      "context_from": null,
-      "schedule": {
-        "kind": "interval",
-        "minutes": 5,
-        "display": "every 5m"
-      },
-      "schedule_display": "every 5m",
-      "repeat": {
-        "times": null,
-        "completed": 1464
-      },
-      "enabled": true,
-      "state": "scheduled",
-      "paused_at": null,
-      "paused_reason": null,
-      "created_at": "2026-06-10T16:28:51.436943+09:00",
-      "next_run_at": "2026-06-16T12:04:15.204821+09:00",
-      "last_run_at": "2026-06-16T11:59:15.204821+09:00",
-      "last_status": "ok",
-      "last_error": null,
-      "last_delivery_error": null,
-      "deliver": "local",
-      "origin": null,
-      "enabled_toolsets": null,
-      "workdir": null,
-      "profile": null
-    },
-    {
       "id": "6596a0876cb9",
       "name": "Drewgent log rotation",
       "prompt": "",
@@ -231,47 +127,9 @@
       "last_error": null
     },
     {
-      "id": "f0b39d211970",
-      "name": "Drewgent customize smoke test (weekly)",
-      "prompt": "",
-      "skills": [],
-      "skill": null,
-      "model": null,
-      "provider": null,
-      "base_url": null,
-      "script": "customize_smoke_test.sh",
-      "no_agent": true,
-      "context_from": null,
-      "schedule": {
-        "kind": "cron",
-        "expr": "0 10 * * 0",
-        "display": "0 10 * * 0"
-      },
-      "schedule_display": "0 10 * * 0",
-      "repeat": {
-        "times": null,
-        "completed": 1
-      },
-      "enabled": true,
-      "state": "scheduled",
-      "paused_at": null,
-      "paused_reason": null,
-      "created_at": "2026-06-10T19:36:17.676631+09:00",
-      "next_run_at": "2026-06-21T10:00:00+09:00",
-      "last_run_at": "2026-06-14T10:00:02.633130+09:00",
-      "last_status": "error",
-      "last_error": "Script not found: /Users/drew/.drewgent/scripts/customize_smoke_test.sh",
-      "last_delivery_error": null,
-      "deliver": "local",
-      "origin": null,
-      "enabled_toolsets": null,
-      "workdir": null,
-      "profile": null
-    },
-    {
       "id": "4f9e0a862d83",
       "name": "Daily Retro",
-      "prompt": "Run the daily retro workflow:\n1. Query kanban for tasks completed today (filter by today's date KST)\n2. Format a concise work summary \u2014 what was done, key decisions, taste moments\n3. Ask the 3 retro questions from the daily-retro skill\n4. Deliver the full message to Discord\n\nIf no tasks were completed today, say so honestly and still ask the questions.",
+      "prompt": "Run the daily retro workflow:\n1. Query kanban for tasks completed today (filter by today's date KST)\n2. Format a concise work summary — what was done, key decisions, taste moments\n3. Ask the 3 retro questions from the daily-retro skill\n4. Deliver the full message to Discord\n\nIf no tasks were completed today, say so honestly and still ask the questions.",
       "skills": [
         "daily-retro"
       ],
@@ -300,7 +158,7 @@
       "next_run_at": "2026-06-16T20:00:00+09:00",
       "last_run_at": "2026-06-15T20:22:06.451169+09:00",
       "last_status": "error",
-      "last_error": "TimeoutError: Cron job 'Daily Retro' idle for 604s (limit 600s) \u2014 last activity: waiting for provider response (streaming)",
+      "last_error": "TimeoutError: Cron job 'Daily Retro' idle for 604s (limit 600s) — last activity: waiting for provider response (streaming)",
       "last_delivery_error": null,
       "deliver": "discord:1492431680269713558",
       "origin": null,
@@ -349,7 +207,7 @@
     {
       "id": "4093dbee0282",
       "name": "trend-evaluate-trigger",
-      "prompt": "Trend Harvester \ud3c9\uac00 \ud2b8\ub9ac\uac70.\n\n\ubaa9\ud45c: analyzed/keep\uc5d0 \uc0c8 \ud56d\ubaa9\uc774 \uc788\ub294\uc9c0 \ud655\uc778\ud558\uace0, \uc788\uc73c\uba74 kanban evaluation task\ub97c \uc0dd\uc131\ud558\ub77c.\n\nSteps:\n1. ~/.drewgent/P4-cortex/growth/trend-harvester/analyzed/keep/ \uc5d0 JSON \ud30c\uc77c \ub9ac\uc2a4\ud2b8 \ud655\uc778\n2. ~/.drewgent/P4-cortex/growth/trend-harvester/evaluated/ \uc5d0 \ud3c9\uac00 \uc644\ub8cc\ub41c \ud30c\uc77c \ub9ac\uc2a4\ud2b8 \ud655\uc778\n3. evaluated/\uc5d0 \uc5c6\ub294 keep \ud30c\uc77c\uc774 \uc0c8 \ud56d\ubaa9 (evaluation \ub300\uc0c1)\n4. \uc0c8 \ud56d\ubaa9\uc774 \uc788\uc73c\uba74:\n   - kanban_create\ub85c evaluation task \uc0dd\uc131 (title: \"trend-evaluate: YYYY-MM-DD\", assignee: \"default\")\n   - task body\uc5d0 \uc0c8 \ud56d\ubaa9 \uc218\uc640 \uccab 3\uac1c \ud56d\ubaa9 preview \ud3ec\ud568\n   - Reply: \"Created trend evaluation task for N new items\"\n5. \uc0c8 \ud56d\ubaa9\uc774 \uc5c6\uc73c\uba74: \"[SILENT]\"\n\nImportant: \ube60\ub974\uac8c \uc644\ub8cc\ud560 \uac83. kanban_create \ud55c \ubc88 \ud638\ucd9c\ud558\uace0 \ub05d\ub0b4\uba74 \ub41c\ub2e4.",
+      "prompt": "Trend Harvester 평가 트리거.\n\n목표: analyzed/keep에 새 항목이 있는지 확인하고, 있으면 kanban evaluation task를 생성하라.\n\nSteps:\n1. ~/.drewgent/P4-cortex/growth/trend-harvester/analyzed/keep/ 에 JSON 파일 리스트 확인\n2. ~/.drewgent/P4-cortex/growth/trend-harvester/evaluated/ 에 평가 완료된 파일 리스트 확인\n3. evaluated/에 없는 keep 파일이 새 항목 (evaluation 대상)\n4. 새 항목이 있으면:\n   - kanban_create로 evaluation task 생성 (title: \"trend-evaluate: YYYY-MM-DD\", assignee: \"default\")\n   - task body에 새 항목 수와 첫 3개 항목 preview 포함\n   - Reply: \"Created trend evaluation task for N new items\"\n5. 새 항목이 없으면: \"[SILENT]\"\n\nImportant: 빠르게 완료할 것. kanban_create 한 번 호출하고 끝내면 된다.",
       "skills": [
         "trend-harvester"
       ],
@@ -427,7 +285,7 @@
     {
       "id": "97890eb305a2",
       "name": "trend-retire-trigger",
-      "prompt": "Trend Harvester \ud3d0\uae30 \ud2b8\ub9ac\uac70.\n\n\ubaa9\ud45c: usage report\uc5d0\uc11c stale \ud56d\ubaa9\uc744 \ud655\uc778\ud558\uace0, \uc788\uc73c\uba74 kanban retire task\ub97c \uc0dd\uc131\ud558\ub77c.\n\nSteps:\n1. ~/.drewgent/P4-cortex/growth/trend-harvester/.usage_report.json \uc77d\uae30\n2. stale_count > 0 \uc774\uba74:\n   - kanban_create\ub85c retire task \uc0dd\uc131 (title: \"trend-retire: YYYY-MM-DD\", assignee: \"default\")\n   - task body\uc5d0 stale \ud56d\ubaa9 \uc218\uc640 \ubaa9\ub85d \ud3ec\ud568\n   - Reply: \"Created trend retire task for N stale items\"\n3. stale_count == 0 \uc774\uba74: \"[SILENT]\"\n\nImportant: \ube60\ub974\uac8c \uc644\ub8cc\ud560 \uac83.",
+      "prompt": "Trend Harvester 폐기 트리거.\n\n목표: usage report에서 stale 항목을 확인하고, 있으면 kanban retire task를 생성하라.\n\nSteps:\n1. ~/.drewgent/P4-cortex/growth/trend-harvester/.usage_report.json 읽기\n2. stale_count > 0 이면:\n   - kanban_create로 retire task 생성 (title: \"trend-retire: YYYY-MM-DD\", assignee: \"default\")\n   - task body에 stale 항목 수와 목록 포함\n   - Reply: \"Created trend retire task for N stale items\"\n3. stale_count == 0 이면: \"[SILENT]\"\n\nImportant: 빠르게 완료할 것.",
       "skills": [
         "trend-harvester"
       ],
@@ -467,7 +325,7 @@
     {
       "id": "66d907f7bce4",
       "name": "taste-review-trigger",
-      "prompt": "Taste Review \ud2b8\ub9ac\uac70.\n\n\ubaa9\ud45c: Trend Harvester keep \ub9ac\uc2a4\ud2b8\uc5d0\uc11c \uc544\uc9c1 taste review \uc548 \ub41c \ud56d\ubaa9\uc774 \uc788\ub294\uc9c0 \ud655\uc778\ud558\uace0, \uc788\uc73c\uba74 kanban taste-review task\ub97c \uc0dd\uc131\ud558\ub77c.\n\nSteps:\n1. ~/.drewgent/P4-cortex/growth/trend-harvester/analyzed/keep/ \uc5d0 JSON \ud30c\uc77c \ub9ac\uc2a4\ud2b8 \ud655\uc778\n2. ~/.drewgent/P4-cortex/growth/trend-harvester/applied/ \uc5d0 \uc774\ubbf8 \ucc98\ub9ac\ub41c \ud30c\uc77c \ud655\uc778\n3. keep\uc5d0 \uc788\uace0 applied\uc5d0 \uc5c6\ub294 \ud56d\ubaa9\uc774 review \ub300\uc0c1\n4. \ub300\uc0c1\uc774 \uc788\uc73c\uba74:\n   - kanban_create\ub85c task \uc0dd\uc131 (title: \"taste-review: YYYY-MM-DD\", assignee: \"default\")\n   - body\uc5d0 \uccab 1\uac1c \ud56d\ubaa9\uc758 name, description, url \ud3ec\ud568 (\ud55c \ubc88\uc5d0 1\uac1c\ub9cc \ub9ac\ubdf0)\n   - task body\uc5d0 taste-review skill\uc744 \ub530\ub974\ub77c\uace0 \uba85\uc2dc (5-\uc9c8\ubb38 \ubd84\uc11d \ud504\ub808\uc784\uc6cc\ud06c \ud3ec\ud568)\n   - Reply: \"Created taste review task for [tool-name]\"\n5. \ub300\uc0c1\uc774 \uc5c6\uc73c\uba74: \"[SILENT]\"\n\nImportant: \ube60\ub974\uac8c \uc644\ub8cc\ud560 \uac83. kanban_create \ud55c \ubc88 \ud638\ucd9c\ud558\uace0 \ub05d.",
+      "prompt": "Taste Review 트리거.\n\n목표: Trend Harvester keep 리스트에서 아직 taste review 안 된 항목이 있는지 확인하고, 있으면 kanban taste-review task를 생성하라.\n\nSteps:\n1. ~/.drewgent/P4-cortex/growth/trend-harvester/analyzed/keep/ 에 JSON 파일 리스트 확인\n2. ~/.drewgent/P4-cortex/growth/trend-harvester/applied/ 에 이미 처리된 파일 확인\n3. keep에 있고 applied에 없는 항목이 review 대상\n4. 대상이 있으면:\n   - kanban_create로 task 생성 (title: \"taste-review: YYYY-MM-DD\", assignee: \"default\")\n   - body에 첫 1개 항목의 name, description, url 포함 (한 번에 1개만 리뷰)\n   - task body에 taste-review skill을 따르라고 명시 (5-질문 분석 프레임워크 포함)\n   - Reply: \"Created taste review task for [tool-name]\"\n5. 대상이 없으면: \"[SILENT]\"\n\nImportant: 빠르게 완료할 것. kanban_create 한 번 호출하고 끝.",
       "skills": [
         "taste-review"
       ],
@@ -545,7 +403,7 @@
     {
       "id": "064e11fcb2e8",
       "name": "seo-trend-trigger",
-      "prompt": "SEO \uc8fc\uac04 \ud2b8\ub80c\ub4dc \ub9ac\ud3ec\ud2b8 \ud2b8\ub9ac\uac70.\n\n\ubaa9\ud45c: \ucd5c\uadfc \ubd84\uc11d\ub41c SEO \uae30\uc0ac\uac00 \uc788\ub294\uc9c0 \ud655\uc778\ud558\uace0, \uc788\uc73c\uba74 kanban trend-report task\ub97c \uc0dd\uc131\ud558\ub77c.\n\nSteps:\n1. ~/.drewgent/P4-cortex/growth/seo/analyzed/ \ub514\ub809\ud1a0\ub9ac\uc5d0\uc11c \ucd5c\uadfc 7\uc77c \ub0b4 \ubd84\uc11d \uacb0\uacfc \ud655\uc778\n2. \ubd84\uc11d \uacb0\uacfc\uac00 \uc788\uc73c\uba74:\n   - kanban_create\ub85c trend report task \uc0dd\uc131 (title: \"seo-trend-report: YYYY-MM-DD\", assignee: \"default\")\n   - body\uc5d0 \ucd5c\uadfc \ubd84\uc11d\ub41c \uae30\uc0ac \uc218 \ud3ec\ud568\n   - Reply: \"Created seo trend report task for N analyzed articles\"\n3. \ubd84\uc11d \uacb0\uacfc\uac00 \uc5c6\uc73c\uba74: \"[SILENT]\"\n\nImportant: \ube60\ub974\uac8c \uc644\ub8cc\ud560 \uac83.",
+      "prompt": "SEO 주간 트렌드 리포트 트리거.\n\n목표: 최근 분석된 SEO 기사가 있는지 확인하고, 있으면 kanban trend-report task를 생성하라.\n\nSteps:\n1. ~/.drewgent/P4-cortex/growth/seo/analyzed/ 디렉토리에서 최근 7일 내 분석 결과 확인\n2. 분석 결과가 있으면:\n   - kanban_create로 trend report task 생성 (title: \"seo-trend-report: YYYY-MM-DD\", assignee: \"default\")\n   - body에 최근 분석된 기사 수 포함\n   - Reply: \"Created seo trend report task for N analyzed articles\"\n3. 분석 결과가 없으면: \"[SILENT]\"\n\nImportant: 빠르게 완료할 것.",
       "skills": [
         "seo-article-harvester"
       ],
@@ -583,88 +441,9 @@
       "profile": null
     },
     {
-      "id": "02e28cd0a6aa",
-      "name": "kanban-linear-sync",
-      "prompt": "Run kanban-linear-sync cleanup and check for issues needing attention. Use the script at ~/.drewgent/scripts/kanban_linear_sync.py with --prune to archive old completed issues (older than 7 days), then check for feedback-labelled issues with --feedback. Report any issues needing human attention.",
-      "skills": [],
-      "skill": null,
-      "model": null,
-      "provider": null,
-      "base_url": null,
-      "script": "kanban_linear_sync.py",
-      "no_agent": true,
-      "context_from": null,
-      "schedule": {
-        "kind": "interval",
-        "minutes": 120,
-        "display": "every 120m"
-      },
-      "schedule_display": "every 120m",
-      "repeat": {
-        "times": null,
-        "completed": 11
-      },
-      "enabled": false,
-      "state": "paused",
-      "paused_at": "2026-06-14T12:44:52.701224+09:00",
-      "paused_reason": null,
-      "created_at": "2026-06-13T20:53:12.884633+09:00",
-      "next_run_at": "2026-06-14T13:28:08.047498+09:00",
-      "last_run_at": "2026-06-14T11:28:08.047498+09:00",
-      "last_status": "ok",
-      "last_error": null,
-      "last_delivery_error": null,
-      "deliver": "local",
-      "origin": null,
-      "enabled_toolsets": [
-        "terminal",
-        "file"
-      ],
-      "workdir": null,
-      "profile": null
-    },
-    {
-      "id": "0fb33852686c",
-      "name": "gbrain-watchdog",
-      "prompt": "Check for orphaned gbrain processes and kill them.",
-      "skills": [],
-      "skill": null,
-      "model": null,
-      "provider": null,
-      "base_url": null,
-      "script": "drewgent_gbrain_watchdog.sh",
-      "no_agent": true,
-      "context_from": null,
-      "schedule": {
-        "kind": "interval",
-        "minutes": 15,
-        "display": "every 15m"
-      },
-      "schedule_display": "every 15m",
-      "repeat": {
-        "times": null,
-        "completed": 226
-      },
-      "enabled": true,
-      "state": "scheduled",
-      "paused_at": null,
-      "paused_reason": null,
-      "created_at": "2026-06-13T23:58:52.623963+09:00",
-      "next_run_at": "2026-06-16T12:06:41.514883+09:00",
-      "last_run_at": "2026-06-16T11:51:41.514883+09:00",
-      "last_status": "error",
-      "last_error": "Script not found: /Users/drew/.drewgent/scripts/drewgent_gbrain_watchdog.sh",
-      "last_delivery_error": null,
-      "deliver": "local",
-      "origin": null,
-      "enabled_toolsets": null,
-      "workdir": null,
-      "profile": null
-    },
-    {
       "id": "d0d0b98c845b",
       "name": "content-manager-periodic",
-      "prompt": "You are Drew's content manager / CMO. Proceed SILENTLY \u2014 no greetings.\n\n## Workflow\n\n### 1. Load Knowledge Base + Web Research\nRead all 4 files in /Users/drew/.drewgent/P4-cortex/content/\nOptionally web search for: related projects, technical context, memes/cultural references\n\n### 2. Gather Activity\nsession_search() + git log (7 days) in /Users/drew/.drewgent and /Users/drew/m-log\n\n### 3. Check Material\nAt most ONE story. SILENT if nothing new.\n\n### 4. Produce Content + Rich Visuals\n\n**Blog post** \u2192 `memories/insights/YYYY-MM-DD-slug.md`\n\n**SVG cover** \u2192 `memories/insights/YYYY-MM-DD-slug-cover.svg` (1200x630, rich illustration)\n\n**SVG meme** (optional) \u2192 `memories/insights/YYYY-MM-DD-slug-meme.svg` \u2014 if the story has a natural meme angle. Templates: Drake reject/approve, \"this is fine\", galaxy brain, distracted boyfriend.\n\n**Mermaid diagrams** inline for architecture flows\n\n**Excalidraw + PNG** if there's an architecture angle\n\n**X thread** \u2192 `memories/insights/YYYY-MM-DD-slug-thread.txt`\n\n**Update** narrative_arc.md + content-inventory.md\n\n### 5. Report\nkanban_complete with summary + metadata + artifacts (absolute paths to ALL created files)\n\nUse kanban_heartbeat() for long ops.",
+      "prompt": "You are Drew's content manager / CMO. Proceed SILENTLY — no greetings.\n\n## Workflow\n\n### 1. Load Knowledge Base + Web Research\nRead all 4 files in /Users/drew/.drewgent/P4-cortex/content/\nOptionally web search for: related projects, technical context, memes/cultural references\n\n### 2. Gather Activity\nsession_search() + git log (7 days) in /Users/drew/.drewgent and /Users/drew/m-log\n\n### 3. Check Material\nAt most ONE story. SILENT if nothing new.\n\n### 4. Produce Content + Rich Visuals\n\n**Blog post** → `memories/insights/YYYY-MM-DD-slug.md`\n\n**SVG cover** → `memories/insights/YYYY-MM-DD-slug-cover.svg` (1200x630, rich illustration)\n\n**SVG meme** (optional) → `memories/insights/YYYY-MM-DD-slug-meme.svg` — if the story has a natural meme angle. Templates: Drake reject/approve, \"this is fine\", galaxy brain, distracted boyfriend.\n\n**Mermaid diagrams** inline for architecture flows\n\n**Excalidraw + PNG** if there's an architecture angle\n\n**X thread** → `memories/insights/YYYY-MM-DD-slug-thread.txt`\n\n**Update** narrative_arc.md + content-inventory.md\n\n### 5. Report\nkanban_complete with summary + metadata + artifacts (absolute paths to ALL created files)\n\nUse kanban_heartbeat() for long ops.",
       "skills": [],
       "skill": null,
       "model": "deepseek-v4-pro",
@@ -707,85 +486,9 @@
       "profile": null
     },
     {
-      "id": "fc33f33c8b47",
-      "name": "huly-kanban-sync",
-      "prompt": "Run kanban\u2192Huly sync script. Creates Huly issues for recently completed kanban tasks.",
-      "skills": [],
-      "skill": null,
-      "model": null,
-      "provider": null,
-      "base_url": null,
-      "script": "huly_sync.sh",
-      "no_agent": true,
-      "context_from": null,
-      "schedule": {
-        "kind": "interval",
-        "minutes": 120,
-        "display": "every 120m"
-      },
-      "schedule_display": "every 120m",
-      "repeat": {
-        "times": null,
-        "completed": 22
-      },
-      "enabled": true,
-      "state": "scheduled",
-      "paused_at": null,
-      "paused_reason": null,
-      "created_at": "2026-06-14T15:23:26.228316+09:00",
-      "next_run_at": "2026-06-16T13:37:00.896141+09:00",
-      "last_run_at": "2026-06-16T11:37:00.896141+09:00",
-      "last_status": "ok",
-      "last_error": null,
-      "last_delivery_error": null,
-      "deliver": "local",
-      "origin": null,
-      "enabled_toolsets": null,
-      "workdir": null,
-      "profile": null
-    },
-    {
-      "id": "e38860f7e162",
-      "name": "huly-check-discord",
-      "prompt": "",
-      "skills": [],
-      "skill": null,
-      "model": null,
-      "provider": null,
-      "base_url": null,
-      "script": "huly_check.sh",
-      "no_agent": true,
-      "context_from": null,
-      "schedule": {
-        "kind": "interval",
-        "minutes": 30,
-        "display": "every 30m"
-      },
-      "schedule_display": "every 30m",
-      "repeat": {
-        "times": null,
-        "completed": 86
-      },
-      "enabled": true,
-      "state": "scheduled",
-      "paused_at": null,
-      "paused_reason": null,
-      "created_at": "2026-06-14T15:39:27.552571+09:00",
-      "next_run_at": "2026-06-16T12:17:10.096253+09:00",
-      "last_run_at": "2026-06-16T11:47:10.096253+09:00",
-      "last_status": "ok",
-      "last_error": null,
-      "last_delivery_error": null,
-      "deliver": "discord:1477909526274506753",
-      "origin": null,
-      "enabled_toolsets": null,
-      "workdir": null,
-      "profile": null
-    },
-    {
       "id": "31b99fb1d65e",
       "name": "agent-dashboard-push",
-      "prompt": "Agent dashboard data pusher \u2014 runs the local collection script and pushes status to the Cloudflare dashboard. This is a no-agent script-only job.",
+      "prompt": "Agent dashboard data pusher — runs the local collection script and pushes status to the Cloudflare dashboard. This is a no-agent script-only job.",
       "skills": [],
       "skill": null,
       "model": null,
@@ -819,7 +522,235 @@
       "enabled_toolsets": null,
       "workdir": null,
       "profile": null
+    },
+    {
+      "id": "office-autopilot",
+      "name": "Office Autopilot",
+      "prompt": "",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "office_autopilot.sh",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "interval",
+        "minutes": 5,
+        "display": "every 5m"
+      },
+      "schedule_display": "every 5m",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-21T02:52:36.802709+00:00",
+      "next_run_at": "2026-06-21T04:05:54.652274+00:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": null,
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    },
+    {
+      "id": "trend-evaluate-legacy",
+      "name": "Trend Evaluate (n8n trigger)",
+      "prompt": "",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "n8n_trigger_runner.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "interval",
+        "minutes": 2,
+        "display": "every 2m"
+      },
+      "schedule_display": "every 2m",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-21T02:52:36.802896+00:00",
+      "next_run_at": "2026-06-21T04:05:54.652274+00:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": null,
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    },
+    {
+      "id": "a7f3c92eb150",
+      "name": "Cron Health Check",
+      "prompt": "",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "cron_health_check.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 5 * * *",
+        "display": "0 5 * * * (daily 05:00)"
+      },
+      "schedule_display": "0 5 * * * (daily 05:00)",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-21T13:41:29.889891+09:00",
+      "next_run_at": null,
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1504328297419640872",
+      "origin": null,
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    },
+    {
+      "id": "d4e5f6012a93",
+      "name": "Orphan Audit (monthly)",
+      "prompt": "Audit the Drewgent system for orphan artifacts — cron output directories with no matching job, stale lock files, dead symlinks, and unused script references. Check these locations:\n\n1. ~/.drewgent/cron/output/ — list subdirectories, cross-ref with job IDs in jobs.json\n2. ~/.drewgent/cron/.tick.lock — age check\n3. ~/.drewgent/scripts/ — find .sh and .py files referenced in no jobs (only report, don't delete)\n4. ~/.drewgent/cron/jobs.json — find jobs with last_error containing 'Script not found'\n\nReport:\n- Total orphans found\n- List each with path and age\n- Do NOT modify anything — audit only\n\nIf zero orphans: respond with [SILENT]",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 10 1 * *",
+        "display": "0 10 1 * * (monthly day 1 at 10:00)"
+      },
+      "schedule_display": "0 10 1 * * (monthly day 1 at 10:00)",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-21T13:41:29.889891+09:00",
+      "next_run_at": null,
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1504328297419640872",
+      "origin": null,
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    },
+    {
+      "id": "c7d8e9f0a1b2",
+      "name": "wiki-compile",
+      "prompt": "Wiki Compile — compile knowledge from entire .drewgent vault into P5-ego/wiki/compiled/\n\nScan these knowledge sources:\n1. P2-hippocampus/ — memories, knowledge, sessions (raw data)\n2. P3-sensors/ — gateway integration docs, sensor architecture\n3. P4-cortex/ — taste reviews, growth records, skill index\n4. P6-prefrontal/incidents/ — postmortems, outage analysis\n5. skills/*/SKILL.md — design decisions behind each skill\n6. AGENTS.md — system documentation\n\nFor each topic cluster, create/update compiled/<topic>.md with:\n- Core decisions (what)\n- Rationale (why)\n- Alternatives considered\n- Current status as of today\n\nThen update P5-ego/wiki/index.md with links to all compiled pages.\n\nDO NOT scan: scripts/, cron/, logs/, customize/, kanban.db (infrastructure, not knowledge)",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 3 * * 0",
+        "display": "0 3 * * 0 (weekly Sunday 03:00)"
+      },
+      "schedule_display": "0 3 * * 0 (weekly Sunday 03:00)",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-21T13:41:29.889891+09:00",
+      "next_run_at": null,
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": null,
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": "archiver"
+    },
+    {
+      "id": "b2a1f0e9d8c7",
+      "name": "wiki-lint",
+      "prompt": "Daily wiki health check.\n\nSteps:\n1. Check all compiled pages in P5-ego/wiki/compiled/ exist and have valid frontmatter\n2. Check P5-ego/wiki/index.md exists and has frontmatter\n3. Compare compiled pages against raw P2 data sources — flag any pages where source data has changed but compiled page hasn't been updated\n4. Check for compiled pages with no corresponding P2 source data (orphans)\n5. Check for raw P2 data that hasn't been compiled in >7 days (stale)\n6. Update P5-ego/wiki/lint-report.md with findings\n7. If issues found, report count; otherwise [SILENT]",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 4 * * *",
+        "display": "0 4 * * * (daily 04:00)"
+      },
+      "schedule_display": "0 4 * * * (daily 04:00)",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-21T13:41:29.889891+09:00",
+      "next_run_at": null,
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": null,
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": "explorer"
     }
   ],
-  "updated_at": "2026-06-16T12:07:31.587012+09:00"
+  "updated_at": "2026-06-21T14:59:42.172739"
 }
