@@ -744,6 +744,29 @@ The rename skill is at `skills/software-development/rename-drewgent/SKILL.md`.
 - [lazyweb](https://lazyweb.com) — 281k+ real app screenshots for UI design reference
 - [specification.website](https://specification.website) — Web spec checklists and best practices
 
+---
+
+## Credits
+
+opencode-drewgent is built on the shoulders of these open-source projects:
+
+| Project | Author | Purpose | License |
+|---------|--------|---------|---------|
+| [opencode](https://opencode.ai) | [Anomaly](https://github.com/anomalyco) | AI coding agent platform | MIT |
+| [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) | [code-yeongyu](https://github.com/code-yeongyu) | Multi-agent orchestration (Sisyphus, ultrawork) | SUL-1.0 |
+| [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode) | [Yeachan-Heo](https://github.com/Yeachan-Heo) | Team mode multi-agent pattern reference | MIT |
+| [gbrain](https://github.com/anomalyco/gbrain) | Anomaly | MCP-based knowledge graph & hybrid search | — |
+| [codebase-memory-mcp](https://github.com/anomalyco/opencode) | Anomaly | Codebase knowledge graph | MIT |
+| [lazyweb](https://lazyweb.com) | — | UI design reference MCP | — |
+| [Karpathy LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) | Andrej Karpathy | Compile-pattern knowledge base concept | — |
+| [Ponytail](https://github.com/DietrichGebert/ponytail) | Dietrich Gebert | Code minimalization checklist | — |
+| [NeuronFS](https://github.com/drewgent/neuronfs) | — | Brain-based governance system | — |
+| [specification.website](https://specification.website) | — | Web spec checklists MCP | — |
+
+No third-party source code is directly included — all dependencies are referenced or installed via package managers. Each project respects its own license.
+
+---
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) — one change per PR, no new deps, include provenance.
