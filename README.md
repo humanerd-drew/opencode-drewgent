@@ -579,52 +579,151 @@ Full details in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Getting Started (Fork + Customize)
 
-This repository is designed as a **template** — fork it, customize it, and run your own agent.
+This repository is a **template** for building your own opencode-based AI agent. Fork it, rename it, configure it, and run.
+
+### Prerequisites
+
+- **[opencode](https://opencode.ai)** CLI installed (`brew install opencode` or via GitHub Releases)
+- **Git** with SSH access to GitHub
+- **Python 3.11+** (for agent scripts and cron tools)
+- **(Optional) [gbrain](https://github.com/garrytan/gbrain)** for persistent knowledge graph (MCP server)
 
 ### 1. Fork
 
 ```bash
-# Clone your fork
+# 1. Fork on GitHub → https://github.com/humanerd-drew/opencode-drewgent
+# 2. Clone your fork:
 git clone git@github.com:YOUR_USER/opencode-YOURAGENT.git
 cd opencode-YOURAGENT
 
-# Add upstream for updates
+# 3. Add upstream to receive future updates:
 git remote add upstream git@github.com:humanerd-drew/opencode-drewgent.git
+git fetch upstream
 ```
 
 ### 2. Rename
 
-```bash
-# Replace all "drewgent" references with your agent name
-bash scripts/rename-drewgent.sh "youragent"
+Two options — use the automated script or do it manually.
 
-# Or manually configure:
-# - opencode.jsonc → update skill paths, MCP commands
-# - cron/jobs.json → set your Discord channel IDs
-# - AGENTS.md → update references
+#### Option A: Automated (recommended)
+
+```bash
+bash scripts/rename-drewgent.sh "youragent"
 ```
 
-### 3. Configure
+This script replaces all `drewgent` references across 2000+ files:
 
-| File | What to Change |
+| What | Example Change |
 |------|---------------|
-| `opencode.jsonc` | MCP server commands, skill paths, model preferences |
-| `cron/jobs.json` | Replace `YOUR_CHANNEL_ID` with your Discord webhook/channel IDs |
-| `AGENTS.md` | Your agent's identity, rules, persona |
+| Directory name | `~/.drewgent/` → `~/.youragent/` |
+| Config paths | `~/.drewgent/skills` → `~/.youragent/skills` |
+| Env vars | `DREW_HOME` → `YOURAGENT_HOME` |
+| Project name | `Drewgent` → `Youragent` (capitalized) |
+| Code references | `drewgent` → `youragent` in inline paths |
+| Script headers | `Drewgent agent system` → `Youragent agent system` |
+| `opencode.jsonc` | Updated skill paths, MCP commands |
+| `AGENTS.md` | All references rewritten |
+
+After running, verify with:
+```bash
+grep -r "drewgent" . --include="*.md" --include="*.py" --include="*.json" --include="*.jsonc" 2>/dev/null | head -5
+# Should return nothing (all replaced)
+```
+
+#### Option B: Manual
+
+If the script doesn't fit your needs, update these files by hand:
+
+- **`opencode.jsonc`** — change `model`, skill `paths`, MCP server `command`
+- **`AGENTS.md`** — update project name, links, identity references
+- **`cron/jobs.json`** — set your Discord channel IDs in `deliver` fields
+- **`@identity/`** — rewrite `SELF_MODEL.md`, `SOUL.md`, `brain/rules.md` for your agent's persona
+- **`scripts/`** — update hardcoded paths in shell scripts
+- **`~/.config/opencode/opencode.jsonc`** — point to your fork's config
+
+### 3. Configure Core Files
+
+#### `opencode.jsonc`
+
+| Field | What to Set |
+|-------|-------------|
+| `model` | Your default model, e.g. `opencode-go/deepseek-v4-flash` |
+| `small_model` | Fallback model for simple tasks |
+| `skills.paths` | Directories where opencode looks for skills |
+| `mcp.gbrain` | gbrain MCP server command (set to `gbrain serve` or disable) |
+| `mcp.lazyweb` | Optional UI design MCP — set `enabled: false` if unused |
+| `mcp.specification-website` | Optional web spec MCP — set `enabled: false` if unused |
+
+#### `cron/jobs.json`
+
+Open `cron/jobs.json` and replace every `discord:YOUR_*_CHANNEL_ID` with your actual Discord channel IDs. Jobs with `"deliver": "local"` run without Discord delivery — they're safe as-is.
+
+Jobs include:
+- `kanban-dispatcher` — checks kanban tasks every minute (auto-enabled if you use kanban)
+- `trend-collect` — collects GitHub trending repos (requires Discord channel)
+- `seo-article-harvester` — RSS feed monitoring (requires Discord channel)
+- `wiki-compile` / `wiki-lint` — weekly wiki compilation
+- `daily retro` — daily work summary (requires Discord channel)
+
+#### `AGENTS.md`
+
+This is your agent's **constitution** — rewrite it for your persona:
+- Tone: how your agent communicates (concise? detailed? casual?)
+- Rules: P0-brainstem prohibitions (what must never be done)
+- Identity: what your agent knows about itself
+- Skills: which skills are loaded by default
+- Kanban pipeline: how work flows through your agent
+
+#### `@identity/` (Agent Identity)
+
+| File | Purpose |
+|------|---------|
+| `SELF_MODEL.md` | What your agent knows about itself — architecture, capabilities |
+| `SOUL.md` | Core personality, tone, and voice |
+| `brain/rules.md` | P0-brainstem absolute prohibitions |
+| `persona/writing-style-guide.md` | Writing conventions |
 
 ### 4. Run
 
 ```bash
-# Point opencode to your config
+# Start opencode with your config:
 opencode --config opencode.jsonc
 ```
+
+Your agent will load:
+1. `AGENTS.md` as system instructions
+2. All skills from configured paths
+3. MCP servers (gbrain for knowledge, optional servers)
+4. Cron jobs from `cron/jobs.json` (if cron is enabled)
 
 ### Staying Updated
 
 ```bash
 git pull upstream main
-# Resolve any conflicts in config files
 ```
+
+This pulls the latest v0.8+ updates from the template. If there are conflicts:
+
+```bash
+# Accept upstream changes for template files (losing your customizations):
+git checkout --theirs opencode.jsonc
+# Or keep your version:
+git checkout --ours opencode.jsonc
+# Then commit the merge:
+git commit
+```
+
+**Important:** The `rename-drewgent.sh` script and `README.md` are designed to be overwritten by upstream — your personal config lives in `opencode.jsonc`, `cron/jobs.json`, `AGENTS.md`, and `@identity/`.
+
+### Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `opencode` not found | Install opencode: `brew install anomalyco/tap/opencode` or download from [releases](https://github.com/anomalyco/opencode/releases) |
+| `gbrain` not found | Install from [garrytan/gbrain](https://github.com/garrytan/gbrain) or set `"enabled": false` in `opencode.jsonc` |
+| Rename script fails on macOS `sed` | macOS `sed` handles BSD syntax. If you see errors, install GNU sed: `brew install gnu-sed` |
+| Cron jobs don't trigger | Check `cron/` directory exists and `jobs.json` has `"enabled": true`. Cron requires `drewgent_cron.py` scheduler running |
+| Merge conflicts on `git pull upstream` | `git checkout --ours <file>` to keep your version, or `--theirs` to accept upstream. Then commit |
 
 ---
 
