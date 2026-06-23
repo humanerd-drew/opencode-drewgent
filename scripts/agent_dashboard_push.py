@@ -4,7 +4,7 @@ agent_dashboard_push.py — Collect local agent status and push to Cloudflare da
 
 Runs every 5 minutes via cron. Gathers:
   - System stats (uptime, load, disk, memory)
-  - Launchd services (ai.drewgent.* + ai.hermes.*)
+  - Launchd services (ai.drewgent.*)
   - Kanban board
   - Cron jobs
   - Network services
@@ -15,6 +15,7 @@ Usage:
   python3 agent_dashboard_push.py [--dry-run] [--endpoint URL] [--secret TOKEN]
 """
 
+import calendar
 import json
 import os
 import subprocess
@@ -25,19 +26,18 @@ import urllib.error
 
 HOME = os.path.expanduser("~")
 DREWGENT = os.path.join(HOME, ".drewgent")
-HERMES = os.path.join(HOME, ".hermes")
+LOG_FILE = os.path.join(DREWGENT, "logs", "opencode.stderr.log")
+OLD_LOG_FILE = os.path.join(DREWGENT, "logs", "agent.log")
 
-# Ensure hermes CLI is findable when run from cron (no-agent mode)
 _EXTRA_PATH = os.pathsep.join([
     os.path.join(HOME, ".local", "bin"),
-    os.path.join(HOME, ".hermes", "hermes-agent", ".venv", "bin"),
     "/opt/homebrew/bin",
     "/usr/local/bin",
 ])
 _EXTRA_ENV = {"PATH": _EXTRA_PATH + os.pathsep + os.environ.get("PATH", "")}
 
 # Defaults — override via env or CLI
-ENDPOINT = os.environ.get("AGENT_DASHBOARD_URL", "https://agent-dashboard.humanerd-me.workers.dev")
+ENDPOINT = os.environ.get("AGENT_DASHBOARD_URL", "http://localhost:8766")
 PUSH_SECRET = os.environ.get("AGENT_DASHBOARD_SECRET", "")
 
 
@@ -90,9 +90,6 @@ def collect_system():
     out, _, _ = run("python3 --version 2>/dev/null")
     python = out.strip() or "?"
 
-    out, _, _ = run(HERMES + "/hermes-agent/.venv/bin/python -c \"import hermes; print(hermes.__version__)\" 2>/dev/null || echo '?'")
-    hermes_ver = out.strip() or "?"
-
     return {
         "uptime": uptime,
         "load": load,
@@ -103,17 +100,16 @@ def collect_system():
         "os_version": os_version,
         "kernel": kernel,
         "python": python,
-        "hermes_version": hermes_ver,
     }
 
 
 def collect_launchd():
-    """Collect ai.drewgent.* and ai.hermes.* launchd services."""
+    """Collect ai.drewgent.* launchd services."""
     out, _, _ = run("launchctl list 2>/dev/null")
     services = []
     for line in (out.split("\n") if out else []):
         parts = line.strip().split()
-        if len(parts) >= 3 and ("ai.drewgent." in parts[2] or "ai.hermes." in parts[2]):
+        if len(parts) >= 3 and "ai.drewgent." in parts[2]:
             pid_str = parts[0]
             exit_str = parts[1]
             label = parts[2]
@@ -134,147 +130,59 @@ def collect_launchd():
 
 
 def collect_kanban():
-    """Parse hermes kanban list output."""
-    out, _, rc = run("hermes kanban list 2>/dev/null")
-    tasks = []
-    if out:
-        for line in out.split("\n"):
-            line = line.strip()
-            if not line or "───" in line or "┌" in line or "└" in line or "│" in line or "─" in line:
-                continue
-            parts = line.split()
-            if len(parts) < 4:
-                continue
-            # Parse status icon
-            icon = parts[0]
-            status_map = {"\u2298": "blocked", "\u25ef": "todo", "\u25b6": "ready",
-                          "\u25cf": "running", "\u2713": "done", "\u25fc": "done"}
-            status = status_map.get(icon, "?")
-
-            if len(parts) >= 5:
-                task_id = parts[1]
-                assignee = parts[3]
-                title = " ".join(parts[4:])
-            elif len(parts) >= 4:
-                task_id = parts[1]
-                assignee = parts[3]
-                title = ""
-            elif len(parts) >= 2:
-                task_id = parts[1]
-                assignee = ""
-                title = ""
-            else:
-                continue
-            tasks.append({
-                "id": task_id,
-                "title": title,
-                "status": status,
-                "assignee": assignee,
-            })
-
-    blocked = sum(1 for t in tasks if t["status"] == "blocked")
-    ready = sum(1 for t in tasks if t["status"] == "ready")
-    todo_count = sum(1 for t in tasks if t["status"] == "todo")
-    running = sum(1 for t in tasks if t["status"] == "running")
-
-    return {
-        "total": len(tasks),
-        "blocked": blocked,
-        "ready": ready,
-        "todo": todo_count,
-        "running": running,
-        "tasks": tasks,
-    }
+    """Read kanban tasks from SQLite DB."""
+    db_path = os.path.join(DREWGENT, "kanban.db")
+    if not os.path.exists(db_path):
+        return {"total": 0, "blocked": 0, "ready": 0, "todo": 0, "running": 0, "tasks": []}
+    try:
+        import sqlite3
+        conn = sqlite3.connect(db_path)
+        c = conn.cursor()
+        c.execute("SELECT id, title, status, assignee FROM tasks ORDER BY id")
+        rows = c.fetchall()
+        conn.close()
+        tasks = [{"id": r[0], "title": r[1], "status": r[2] or "todo", "assignee": r[3] or ""} for r in rows]
+        blocked = sum(1 for t in tasks if t["status"] == "blocked")
+        ready = sum(1 for t in tasks if t["status"] == "ready")
+        todo_count = sum(1 for t in tasks if t["status"] == "todo")
+        running = sum(1 for t in tasks if t["status"] == "running")
+        return {"total": len(tasks), "blocked": blocked, "ready": ready, "todo": todo_count, "running": running, "tasks": tasks}
+    except Exception:
+        return {"total": 0, "blocked": 0, "ready": 0, "todo": 0, "running": 0, "tasks": []}
 
 
 def collect_cron():
-    """Parse hermes cron list output — handles the box-drawing format."""
-    out, _, _ = run("hermes cron list 2>/dev/null")
-    active = []
-    errors = []
-    paused = []
-
-    if not out:
+    """Read cron jobs from cron/jobs.json."""
+    jobs_path = os.path.join(DREWGENT, "cron", "jobs.json")
+    if not os.path.exists(jobs_path):
         return {"active": [], "errors": [], "paused": []}
-
-    lines = out.split("\n")
-    current = None
-
-    for line in lines:
-        raw = line
-        stripped = line.strip()
-
-        # Skip decorative lines
-        if not stripped or stripped.startswith("\u2500") or stripped.startswith("\u250c") or \
-           stripped.startswith("\u2514") or stripped.startswith("\u2502"):
-            continue
-
-        # Detect job header: "  <job_id> [state]"
-        if stripped.endswith("]") and "[" in stripped:
-            # Save previous job
-            if current:
-                _cron_classify(current, active, errors, paused)
-
-            bracket_idx = stripped.index("[")
-            jid = stripped[:bracket_idx].strip()
-            state = stripped[bracket_idx + 1:-1]
-            current = {
-                "job_id": jid,
-                "state": state,
-                "name": "",
-                "schedule": "",
-                "last_status": "",
-                "last_run_at": "",
-            }
-            continue
-
-        # Parse key-value pairs
-        if current and ":" in stripped:
-            colon_idx = stripped.index(":")
-            key = stripped[:colon_idx].strip().lower().replace(" ", "_")
-            val = stripped[colon_idx + 1:].strip()
-
-            if key == "name":
-                current["name"] = val
-            elif key == "schedule":
-                current["schedule"] = val
-            elif key == "last_run":
-                # "Last run" line: "2026-06-15T12:00:54.446657+09:00  ok"
-                # or "2026-06-15T09:00:17.912653+09:00  error: Script exit 1"
-                parts = val.split()
-                if parts:
-                    current["last_run_at"] = parts[0]
-                if len(parts) >= 2:
-                    full_status = parts[1]
-                    if full_status == "ok":
-                        current["last_status"] = "ok"
-                    elif full_status.startswith("error"):
-                        current["last_status"] = "error"
-                    else:
-                        current["last_status"] = full_status
-
-    # Save last job
-    if current:
-        _cron_classify(current, active, errors, paused)
-
-    return {
-        "active": active,
-        "errors": errors,
-        "paused": paused,
-    }
-
-
-def _cron_classify(job, active, errors, paused):
-    """Sort a parsed cron job into the right list."""
-    last_status = job.get("last_status", "")
-    state = job.get("state", "active")
-
-    if last_status == "error":
-        errors.append(job)
-    elif state == "paused":
-        paused.append(job)
-    else:
-        active.append(job)
+    try:
+        with open(jobs_path) as f:
+            data = json.load(f)
+        jobs = data.get("jobs", data) if isinstance(data, dict) else data
+        active = []
+        errors = []
+        paused = []
+        for j in jobs:
+            if not isinstance(j, dict):
+                continue
+            job_id = j.get("id", "?")
+            name = j.get("name") or j.get("script", "?")
+            enabled = j.get("enabled", True)
+            state = j.get("state", "?")
+            last_status = j.get("last_status", "")
+            job = {"job_id": job_id[:8], "name": name, "state": state,
+                   "schedule": j.get("schedule_display", ""),
+                   "last_status": last_status, "last_run_at": j.get("last_run_at", "")}
+            if not enabled:
+                paused.append(job)
+            elif state == "error" or last_status and last_status != "ok":
+                errors.append(job)
+            else:
+                active.append(job)
+        return {"active": active, "errors": errors, "paused": paused}
+    except Exception:
+        return {"active": [], "errors": [], "paused": []}
 
 
 def collect_network():
@@ -505,19 +413,14 @@ def collect_recent_errors():
     Returns grouped by error type with counts."""
     log_paths = [
         os.path.join(DREWGENT, "logs", "errors.log"),
-        os.path.join(DREWGENT, "logs", "agent.log"),
+        LOG_FILE,
+        OLD_LOG_FILE,
     ]
     import re
     from collections import Counter
 
     error_types = Counter()
     error_samples = {}  # type -> {time, level, message}
-    error_pat = re.compile(
-        r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).*?"
-        r"(ERROR|WARNING|CRITICAL).*?"
-        r"(?:summary=|error=)([^\n]+)",
-        re.DOTALL,
-    )
 
     for log_path in log_paths:
         if not os.path.isfile(log_path):
@@ -531,17 +434,29 @@ def collect_recent_errors():
         except Exception:
             continue
 
-        for match in error_pat.finditer(content):
+        if log_path == LOG_FILE:
+            pat = re.compile(
+                r'timestamp=(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}).*?'
+                r'level=(ERROR|WARN)\s+.*?'
+                r'message=(\S[^\n]+)',
+            )
+        else:
+            pat = re.compile(
+                r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).*?"
+                r"(ERROR|WARNING|CRITICAL).*?"
+                r"(?:summary=|error=)([^\n]+)",
+                re.DOTALL,
+            )
+
+        for match in pat.finditer(content):
             ts = match.group(1)
-            level = match.group(2)
+            lvl = match.group(2)
             msg = match.group(3).strip()[:120]
-            # Normalize for grouping: strip session IDs and timestamps
             group_key = msg[:60]
             error_types[group_key] += 1
             if group_key not in error_samples:
-                error_samples[group_key] = {"time": ts, "level": level, "message": msg}
+                error_samples[group_key] = {"time": ts, "level": lvl, "message": msg}
 
-    # Return top 5 error types with counts
     result = []
     for key, count in error_types.most_common(5):
         sample = error_samples[key]
@@ -640,20 +555,30 @@ def collect_vault():
 
 
 def collect_sessions():
-    """Get recent session info from session_search equivalent."""
-    out, _, _ = run("hermes sessions list --limit 3 2>/dev/null")
-    sessions = []
-    if out:
-        for line in out.split("\n"):
-            parts = line.strip().split()
-            if len(parts) >= 3:
-                sessions.append({
-                    "id": parts[0] if len(parts) > 0 else "",
-                    "source": parts[1] if len(parts) > 1 else "",
-                    "message_count": parts[2] if len(parts) > 2 else "",
-                    "preview": " ".join(parts[3:]) if len(parts) > 3 else "",
-                })
-    return sessions
+    """Get recent session info from opencode log."""
+    import re
+    sessions = {}
+    seen = set()
+    log = LOG_FILE
+    if not os.path.exists(log):
+        return []
+    try:
+        with open(log, "r", errors="ignore") as f:
+            for line in f:
+                m = re.search(r'session\.id=([\w_]+)', line)
+                if m:
+                    sid = m.group(1)
+                    if sid not in seen:
+                        seen.add(sid)
+                        agent_m = re.search(r'agent=(\w+)', line)
+                        model_m = re.search(r'modelID=(\S+)', line)
+                        sessions[sid] = {"id": sid, "agent": agent_m.group(1) if agent_m else "?",
+                                         "model": model_m.group(1) if model_m else "?"}
+                        if len(sessions) >= 5:
+                            break
+    except Exception:
+        pass
+    return list(sessions.values())
 
 
 def collect_timeline(cron_data, sessions, recent_errors):
@@ -699,59 +624,136 @@ def collect_timeline(cron_data, sessions, recent_errors):
     return deduped[:12]  # max 12 events
 
 
+def _kst_date_counts(log):
+    """Parse opencode UTC log, count lines by KST date (+9h).
+    Returns dict: 'YYYY-MM-DD' -> count"""
+    import re, calendar
+    counts = {}
+    try:
+        with open(log, "r", errors="ignore") as f:
+            for line in f:
+                m = re.match(r'timestamp=(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})', line)
+                if not m:
+                    continue
+                utc_d = m.group(1)
+                h = int(m.group(2)[:2]) + 9  # KST = UTC+9
+                if h >= 24:
+                    utc_ts = calendar.timegm(time.strptime(utc_d + " 00:00:00", "%Y-%m-%d %H:%M:%S"))
+                    kst_date = time.strftime("%Y-%m-%d", time.gmtime(utc_ts + 86400))
+                else:
+                    kst_date = utc_d
+                counts[kst_date] = counts.get(kst_date, 0) + 1
+    except Exception:
+        pass
+    return counts
+
+
+def _kst_hourly_counts(log):
+    """Count opencode log lines per KST hour for KST today."""
+    import re, calendar
+    kst_now = time.gmtime(time.time() + 9 * 3600)
+    today_kst = time.strftime("%Y-%m-%d", kst_now)
+    hours = [0] * 24
+    try:
+        with open(log, "r", errors="ignore") as f:
+            for line in f:
+                m = re.match(r'timestamp=(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})', line)
+                if not m:
+                    continue
+                h = (int(m.group(2)[:2]) + 9) % 24
+                utc_d = m.group(1)
+                if h < 9:  # wrapped to next KST day
+                    utc_ts = calendar.timegm(time.strptime(utc_d + " 00:00:00", "%Y-%m-%d %H:%M:%S"))
+                    kst_date = time.strftime("%Y-%m-%d", time.gmtime(utc_ts + 86400))
+                else:
+                    kst_date = utc_d
+                if kst_date == today_kst:
+                    hours[h] += 1
+    except Exception:
+        pass
+    return [{"hour": i, "count": hours[i]} for i in range(24)]
+
+
 def collect_daily_usage():
     """Count activity from agent log for multiple time windows."""
-    today = time.strftime("%Y-%m-%d")
-    yesterday = time.strftime("%Y-%m-%d", time.localtime(time.time() - 86400))
-    week_ago = time.strftime("%Y-%m-%d", time.localtime(time.time() - 7 * 86400))
-    month_ago = time.strftime("%Y-%m-%d", time.localtime(time.time() - 30 * 86400))
+    log = LOG_FILE if os.path.isfile(LOG_FILE) else OLD_LOG_FILE
 
-    # grep is expensive for month; use head/tail approach
-    log = os.path.join(DREWGENT, "logs", "agent.log")
-    total = "?"
-    try:
-        out, _, _ = run("wc -l < " + log + " 2>/dev/null || echo 0", timeout=5)
-        total = int(out.strip()) if out.strip().isdigit() else "?"
-    except:
-        pass
+    if log == LOG_FILE:
+        kst_date_counts = _kst_date_counts(log)
+        kst_now_t = time.gmtime(time.time() + 9 * 3600)
+        today = time.strftime("%Y-%m-%d", kst_now_t)
+        yesterday = time.strftime("%Y-%m-%d", time.gmtime(time.time() + 9 * 3600 - 86400))
+        week_ago = time.strftime("%Y-%m-%d", time.gmtime(time.time() + 9 * 3600 - 7 * 86400))
+        month_ago = time.strftime("%Y-%m-%d", time.gmtime(time.time() + 9 * 3600 - 30 * 86400))
+        today_n = kst_date_counts.get(today, 0)
+        yesterday_n = kst_date_counts.get(yesterday, 0)
+        week_n = sum(v for k, v in kst_date_counts.items() if k >= week_ago)
+        month_n = sum(v for k, v in kst_date_counts.items() if k >= month_ago)
+        total = sum(kst_date_counts.values())
+        hours5 = 0
+        kst_h = kst_now_t.tm_hour
+        for d, c in kst_date_counts.items():
+            days_off = 0
+            if d < today:
+                days_off = (int(time.mktime(time.strptime(today, "%Y-%m-%d"))) - int(time.mktime(time.strptime(d, "%Y-%m-%d")))) // 86400
+                if days_off == 0 and kst_h < 5:
+                    hours5 += c
+                elif days_off == 1 and kst_h >= 5:
+                    hours5 += c if kst_h >= 5 else 0
+                # Simple: count today + yesterday lines as rough hours5
+                # More accurate would need per-hour parsing
+        # Simpler hours5: use _kst_hourly_counts and sum last 5
+        hours5_data = _kst_hourly_counts(log)
+        hours5 = sum(h["count"] for h in hours5_data if h["hour"] >= max(0, kst_h - 5))
 
-    def count_date(date_str):
-        out, _, _ = run("grep -c '" + date_str + "' " + log + " 2>/dev/null || echo 0", timeout=5)
-        return int(out.strip()) if out.strip().isdigit() else 0
+    else:
+        today = time.strftime("%Y-%m-%d")
+        yesterday = time.strftime("%Y-%m-%d", time.localtime(time.time() - 86400))
+        week_ago = time.strftime("%Y-%m-%d", time.localtime(time.time() - 7 * 86400))
+        month_ago = time.strftime("%Y-%m-%d", time.localtime(time.time() - 30 * 86400))
 
-    # Last 5 hours
-    out5, _, _ = run(
-        "awk -v d=\"$(date -v-5H '+%Y-%m-%d %H:')\" '$0 ~ d {c++} END {print c+0}' " + log + " 2>/dev/null || echo 0",
-        timeout=10,
-    )
-    hours5 = int(out5.strip()) if out5.strip().isdigit() else 0
+        total = "?"
+        try:
+            out, _, _ = run("wc -l < " + log + " 2>/dev/null || echo 0", timeout=5)
+            total = int(out.strip()) if out.strip().isdigit() else "?"
+        except:
+            pass
 
-    today_n = count_date(today)
-    yesterday_n = count_date(yesterday)
-    week_n = 0
-    month_n = 0
+        def count_date(date_str):
+            out, _, _ = run("grep -c '" + date_str + "' " + log + " 2>/dev/null || echo 0", timeout=5)
+            return int(out.strip()) if out.strip().isdigit() else 0
 
-    # Week and month via iterating dates (efficient enough)
-    import subprocess
-    try:
-        r = subprocess.run(
-            "awk '{d=substr($0,1,10); if(d>=\"" + week_ago + "\") c++} END {print c+0}' " + log,
-            capture_output=True, text=True, timeout=10, shell=True,
-            env={**_EXTRA_ENV, **os.environ},
+        out5, _, _ = run(
+            "awk -v d=\"$(date -v-5H '+%Y-%m-%d %H:')\" '$0 ~ d {c++} END {print c+0}' " + log + " 2>/dev/null || echo 0",
+            timeout=10,
         )
-        week_n = int(r.stdout.strip()) if r.stdout.strip().isdigit() else 0
-    except:
-        week_n = today_n + yesterday_n  # fallback
+        hours5 = int(out5.strip()) if out5.strip().isdigit() else 0
 
-    try:
-        r = subprocess.run(
-            "awk '{d=substr($0,1,10); if(d>=\"" + month_ago + "\") c++} END {print c+0}' " + log,
-            capture_output=True, text=True, timeout=15, shell=True,
-            env={**_EXTRA_ENV, **os.environ},
-        )
-        month_n = int(r.stdout.strip()) if r.stdout.strip().isdigit() else 0
-    except:
-        month_n = week_n  # fallback
+        today_n = count_date(today)
+        yesterday_n = count_date(yesterday)
+        week_n = 0
+        month_n = 0
+
+        import subprocess
+        try:
+            r = subprocess.run(
+                "awk '{d=substr($0,1,10); if(d>=\"" + week_ago + "\") c++} END {print c+0}' " + log,
+                capture_output=True, text=True, timeout=10, shell=True,
+                env={**_EXTRA_ENV, **os.environ},
+            )
+            week_n = int(r.stdout.strip()) if r.stdout.strip().isdigit() else 0
+        except:
+            week_n = today_n + yesterday_n
+
+        try:
+            r = subprocess.run(
+                "awk '{d=substr($0,1,10); if(d>=\"" + month_ago + "\") c++} END {print c+0}' " + log,
+                capture_output=True, text=True, timeout=15, shell=True,
+                env={**_EXTRA_ENV, **os.environ},
+            )
+            month_n = int(r.stdout.strip()) if r.stdout.strip().isdigit() else 0
+        except:
+            month_n = week_n  # fallback
 
     # Daily average (over last 7 days)
     daily_avg = round(week_n / 7) if week_n else 0
@@ -774,8 +776,8 @@ def collect_daily_usage():
 
 
 def collect_model_usage():
-    """Parse agent log for per-model usage stats."""
-    log = os.path.join(DREWGENT, "logs", "agent.log")
+    """Parse opencode log for per-model usage stats."""
+    log = LOG_FILE if os.path.isfile(LOG_FILE) else OLD_LOG_FILE
     if not os.path.isfile(log):
         return {"models": [], "total_calls": 0}
 
@@ -787,7 +789,6 @@ def collect_model_usage():
     model_providers = defaultdict(set)
     total_calls = 0
 
-    # Read last 1MB for recent data
     try:
         with open(log, "r", errors="ignore") as f:
             f.seek(0, 2)
@@ -797,36 +798,65 @@ def collect_model_usage():
     except Exception:
         return {"models": [], "total_calls": 0}
 
-    # Count model appearances in API calls
-    for m in re.finditer(r'model=(\S+)', content):
-        model_name = m.group(1).strip()
-        if model_name and '/' in model_name:
-            model_name = model_name.split('/')[-1]  # strip provider prefix
-        if model_name:
-            model_counts[model_name] += 1
-            total_calls += 1
+    # If opencode structured log — parse key=value format
+    if log == LOG_FILE:
+        # Count model calls from message=stream lines
+        for m in re.finditer(r'message=stream\s+providerID=(\S+)\s+modelID=(\S+)', content):
+            prov = m.group(1)
+            model_name = m.group(2).strip()
+            if '/' in model_name:
+                model_name = model_name.split('/')[-1]
+            if model_name:
+                model_counts[model_name] += 1
+                total_calls += 1
+                model_providers[model_name].add(prov)
 
-    # Extract token data from API call lines
-    for m in re.finditer(
-        r'model=(\S+).*?in=(\d+)\s+out=(\d+)\s+total=(\d+)',
-        content,
-    ):
-        model_name = m.group(1).strip()
-        if '/' in model_name:
-            model_name = model_name.split('/')[-1]
-        try:
-            model_tokens[model_name]["in"] += int(m.group(2))
-            model_tokens[model_name]["out"] += int(m.group(3))
-            model_tokens[model_name]["total"] += int(m.group(4))
-        except ValueError:
-            pass
+        # Token data from message=created lines (session-level totals)
+        for m in re.finditer(
+            r'message=created\s+.*?'
+            r'tokens\.input=(\d+)\s+tokens\.output=(\d+)\s+',
+            content,
+        ):
+            try:
+                inp = int(m.group(1))
+                out = int(m.group(2))
+                # Credit to the most-used model
+                if model_counts:
+                    top = max(model_counts, key=model_counts.get)
+                    model_tokens[top]["in"] += inp
+                    model_tokens[top]["out"] += out
+                    model_tokens[top]["total"] += inp + out
+            except ValueError:
+                pass
+    else:
+        # Legacy Hermes format
+        for m in re.finditer(r'model=(\S+)', content):
+            model_name = m.group(1).strip()
+            if model_name and '/' in model_name:
+                model_name = model_name.split('/')[-1]
+            if model_name:
+                model_counts[model_name] += 1
+                total_calls += 1
 
-    # Extract provider info
-    for m in re.finditer(r'model=(\S+)\s+provider=(\S+)', content):
-        model_name = m.group(1).strip()
-        if '/' in model_name:
-            model_name = model_name.split('/')[-1]
-        model_providers[model_name].add(m.group(2).strip())
+        for m in re.finditer(
+            r'model=(\S+).*?in=(\d+)\s+out=(\d+)\s+total=(\d+)',
+            content,
+        ):
+            model_name = m.group(1).strip()
+            if '/' in model_name:
+                model_name = model_name.split('/')[-1]
+            try:
+                model_tokens[model_name]["in"] += int(m.group(2))
+                model_tokens[model_name]["out"] += int(m.group(3))
+                model_tokens[model_name]["total"] += int(m.group(4))
+            except ValueError:
+                pass
+
+        for m in re.finditer(r'model=(\S+)\s+provider=(\S+)', content):
+            model_name = m.group(1).strip()
+            if '/' in model_name:
+                model_name = model_name.split('/')[-1]
+            model_providers[model_name].add(m.group(2).strip())
 
     models = []
     for name, count in sorted(model_counts.items(), key=lambda x: -x[1]):
@@ -873,13 +903,14 @@ def collect_skill_categories():
 
 
 def collect_hourly_usage():
-    """Count log lines per hour for today."""
+    """Count log lines per hour for today (KST)."""
+    log = LOG_FILE if os.path.isfile(LOG_FILE) else OLD_LOG_FILE
+    if log == LOG_FILE:
+        return _kst_hourly_counts(log)
     today = time.strftime("%Y-%m-%d")
-    log = os.path.join(DREWGENT, "logs", "agent.log")
     hours = []
     for h in range(24):
-        pattern = today + " " + f"{h:02d}"
-        out, _, _ = run("grep -c '" + pattern + "' " + log + " 2>/dev/null || echo 0", timeout=3)
+        out, _, _ = run("grep -c '" + today + " " + f"{h:02d}" + "' " + log + " 2>/dev/null || echo 0", timeout=3)
         count = int(out.strip()) if out.strip().isdigit() else 0
         hours.append({"hour": h, "count": count})
     return hours
@@ -887,7 +918,7 @@ def collect_hourly_usage():
 
 def collect_session_details():
     """Count log lines per session from recent log."""
-    log = os.path.join(DREWGENT, "logs", "agent.log")
+    log = LOG_FILE if os.path.isfile(LOG_FILE) else OLD_LOG_FILE
     import re
     sessions = {}
     try:
@@ -899,7 +930,12 @@ def collect_session_details():
     except Exception:
         return []
 
-    for m in re.finditer(r'\[(20[0-9]{6}_[0-9]{6}_[a-f0-9]+)\]', content):
+    if log == LOG_FILE:
+        pat = re.compile(r'session\.id=ses_([a-f0-9]+)')
+    else:
+        pat = re.compile(r'\[(20[0-9]{6}_[0-9]{6}_[a-f0-9]+)\]')
+
+    for m in pat.finditer(content):
         sid = m.group(1)
         sessions[sid] = sessions.get(sid, 0) + 1
 
@@ -909,7 +945,7 @@ def collect_session_details():
 
 def collect_provider_usage():
     """Count provider distribution from log."""
-    log = os.path.join(DREWGENT, "logs", "agent.log")
+    log = LOG_FILE if os.path.isfile(LOG_FILE) else OLD_LOG_FILE
     import re
     providers = {}
     try:
@@ -921,7 +957,12 @@ def collect_provider_usage():
     except Exception:
         return []
 
-    for m in re.finditer(r'provider=(\S+)', content):
+    if log == LOG_FILE:
+        pat = re.compile(r'llm\.provider=(\S+)')
+    else:
+        pat = re.compile(r'provider=(\S+)')
+
+    for m in pat.finditer(content):
         p = m.group(1).strip()
         if p == 'openrouter':
             continue
@@ -930,8 +971,16 @@ def collect_provider_usage():
 
 
 def collect_weekly_trend():
-    """Log lines per day for last 7 days."""
-    log = os.path.join(DREWGENT, "logs", "agent.log")
+    """Log lines per day for last 7 days (KST)."""
+    log = LOG_FILE if os.path.isfile(LOG_FILE) else OLD_LOG_FILE
+    if log == LOG_FILE:
+        kst_date_counts = _kst_date_counts(log)
+        today_kst = time.strftime("%Y-%m-%d", time.gmtime(time.time() + 9 * 3600))
+        days = []
+        for i in range(6, -1, -1):
+            d = time.strftime("%Y-%m-%d", time.gmtime(time.time() + 9 * 3600 - i * 86400))
+            days.append({"date": d, "count": kst_date_counts.get(d, 0)})
+        return days
     days = []
     import subprocess
     for i in range(7):
@@ -943,8 +992,8 @@ def collect_weekly_trend():
 
 
 def collect_live_activity():
-    """Tail agent.log for recent activity events, return last 20 structured events."""
-    log = os.path.join(DREWGENT, "logs", "agent.log")
+    """Tail log for recent activity events, return last 15 structured events."""
+    log = LOG_FILE if os.path.isfile(LOG_FILE) else OLD_LOG_FILE
     if not os.path.isfile(log):
         return {"events": [], "active_session": "", "elapsed": 0}
 
@@ -960,112 +1009,171 @@ def collect_live_activity():
     except Exception:
         return {"events": [], "active_session": "", "elapsed": 0}
 
-    lines = content.split("\n")[-80:]  # last 80 lines
+    lines = content.split("\n")[-80:]
     events = []
     active_session = ""
     last_time = 0
+
+    is_opencode = log == LOG_FILE
+
+    def parse_kv(line):
+        """Extract key=value pairs from opencode log line."""
+        out = {}
+        for part in re.findall(r'(\w+(?:\.\w+)*)=(?:"([^"]*)"|(\S+))', line):
+            key = part[0]
+            val = part[1] if part[1] else part[2]
+            out[key] = val
+        return out
 
     for line in reversed(lines):
         if not line.strip():
             continue
 
-        # Parse timestamp
-        ts_match = re.match(r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
-        if not ts_match:
-            continue
-        ts = ts_match.group(1)
-        try:
-            t = int(time.mktime(time.strptime(ts, "%Y-%m-%d %H:%M:%S")))
-        except (ValueError, OSError):
-            continue
-        if not last_time:
-            last_time = t
-
-        # Extract session ID
-        session_match = re.search(r"\[([^\]]+)\]", line)
-        session_id = session_match.group(1) if session_match else ""
-        if session_id and len(session_id) > 10 and "_" in session_id:
-            if not active_session:
+        if is_opencode:
+            kv = parse_kv(line)
+            ts_val = kv.get("timestamp", "")
+            if not ts_val:
+                continue
+            try:
+                t = int(calendar.timegm(time.strptime(ts_val[:19], "%Y-%m-%dT%H:%M:%S")))
+            except (ValueError, OSError):
+                continue
+            if not last_time:
+                last_time = t
+            hhmm = time.strftime("%H:%M:%S", time.gmtime(t + 9 * 3600))
+            session_id = kv.get("session.id", "")
+            if session_id and not active_session:
                 active_session = session_id
+            msg = kv.get("message", "")
 
-        # Categorize
-        ev = {"time": ts[11:19], "ts_unix": t, "session": session_id}
-
-        if "msg='" in line:
-            m = line.split("msg='")[-1].rstrip("'")
-            ev["icon"] = "&#128172;"
-            ev["text"] = m[:80]
-            ev["type"] = "msg"
-        elif "Streaming failed" in line or "HTTP 400" in line:
-            ev["icon"] = "&#10071;"
-            ev["text"] = "API failed, falling back"
-            ev["type"] = "error"
-        elif "Fallback activated" in line:
-            ev["icon"] = "&#128257;"
-            ev["text"] = "Fallback: " + (line.split("Fallback activated:")[-1].strip() if "Fallback activated" in line else "")
-            ev["type"] = "fallback"
-        elif "tool_executor:" in line and "completed" in line:
-            tool_match = re.search(r"tool (\S+) completed", line)
-            tool_name = tool_match.group(1) if tool_match else ""
-            ev["icon"] = "&#9889;"
-            ev["text"] = "Tool: " + tool_name
-            ev["type"] = "tool"
-        elif "tool_executor:" in line and "error" in line:
-            ev["icon"] = "&#10071;"
-            ev["text"] = "Tool error: " + (line.split("error")[-1].strip()[:50] if "error" in line else "")
-            ev["type"] = "tool_error"
-        elif "API call #" in line:
-            model_match = re.search(r"model=(\S+)", line)
-            m_name = model_match.group(1) if model_match else ""
-            dur_match = re.search(r"latency=([\d.]+)s", line)
-            dur = dur_match.group(1) if dur_match else ""
-            ev["icon"] = "&#129302;"
-            ev["text"] = "API: " + m_name + (f" ({dur}s)" if dur else "")
-            ev["type"] = "api"
-        elif "terminal" in line and "environment ready" in line:
-            ev["icon"] = "&#9000;"
-            ev["text"] = "Terminal ready"
-            ev["type"] = "terminal"
-        elif "restore_primary" in line:
-            ev["icon"] = "&#128259;"
-            ev["text"] = "Session resumed"
-            ev["type"] = "session"
-        elif "pruning oldest" in line and "checkpoint" in line:
-            ev["icon"] = "&#128200;"
-            ev["text"] = "Checkpoint cleanup"
-            ev["type"] = "sys"
-        elif "Checkpoint store" in line:
-            ev["icon"] = "&#128200;"
-            m = re.search(r"exceeded\s+([\d.]+\s*MB)", line)
-            ev["text"] = "Checkpoint: " + (m.group(1) if m else "cleanup")
-            ev["type"] = "sys"
-        elif "restore_primary" in line:
-            ev["icon"] = "&#128259;"
-            ev["text"] = "Session resumed"
-            ev["type"] = "session"
-        elif "conversation turn" in line:
-            ev["icon"] = "&#128172;"
-            ev["text"] = "Turn started"
-            ev["type"] = "turn"
-        elif "stream_request_complete" in line:
-            ev["icon"] = "&#9989;"
-            ev["text"] = "Response done"
-            ev["type"] = "done"
-        else:
-            continue
-
-        events.append(ev)
-        if len(events) >= 15:
-            break
-
-    # Collect all unique session IDs
-    sessions_list = []
-    for m in re.finditer(r'\[(20[0-9]{6}_[0-9]{6}_[a-f0-9]+)\]', content):
-        sid = m.group(1)
-        if sid not in sessions_list:
-            sessions_list.append(sid)
-            if len(sessions_list) >= 8:
+            ev = {"time": hhmm, "ts_unix": t, "session": session_id}
+            if "stream" in msg and "modelID" in kv:
+                ev["icon"] = "&#129302;"
+                ev["text"] = "API: " + kv.get("modelID", "?")
+                ev["type"] = "api"
+            elif msg == "cleanup":
+                continue
+            elif "llm runtime selected" in msg:
+                ev["icon"] = "&#129302;"
+                ev["text"] = "LLM: " + kv.get("llm.model", "?")
+                ev["type"] = "api"
+            elif "evaluated permission" in msg:
+                ev["icon"] = "&#9889;"
+                ev["text"] = "Perm: " + kv.get("pattern", "?")
+                ev["type"] = "tool"
+            elif "process" in msg:
+                ev["icon"] = "&#128172;"
+                ev["text"] = "Processing"
+                ev["type"] = "msg"
+            elif "exiting loop" in msg:
+                ev["icon"] = "&#9989;"
+                ev["text"] = "Session done"
+                ev["type"] = "done"
+            elif level_val := kv.get("level", "") in ("ERROR", "WARN"):
+                ev["icon"] = "&#10071;"
+                ev["text"] = (level_val + ": " + msg)[:80]
+                ev["type"] = "error"
+            else:
+                continue
+            events.append(ev)
+            if len(events) >= 15:
                 break
+        else:
+            ts_match = re.match(r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
+            if not ts_match:
+                continue
+            ts = ts_match.group(1)
+            try:
+                t = int(time.mktime(time.strptime(ts, "%Y-%m-%d %H:%M:%S")))
+            except (ValueError, OSError):
+                continue
+            if not last_time:
+                last_time = t
+
+            session_match = re.search(r"\[([^\]]+)\]", line)
+            session_id = session_match.group(1) if session_match else ""
+            if session_id and len(session_id) > 10 and "_" in session_id:
+                if not active_session:
+                    active_session = session_id
+
+            ev = {"time": ts[11:19], "ts_unix": t, "session": session_id}
+            if "msg='" in line:
+                m = line.split("msg='")[-1].rstrip("'")
+                ev["icon"] = "&#128172;"
+                ev["text"] = m[:80]
+                ev["type"] = "msg"
+            elif "Streaming failed" in line or "HTTP 400" in line:
+                ev["icon"] = "&#10071;"
+                ev["text"] = "API failed, falling back"
+                ev["type"] = "error"
+            elif "Fallback activated" in line:
+                ev["icon"] = "&#128257;"
+                ev["text"] = "Fallback: " + (line.split("Fallback activated:")[-1].strip() if "Fallback activated" in line else "")
+                ev["type"] = "fallback"
+            elif "tool_executor:" in line and "completed" in line:
+                tool_match = re.search(r"tool (\S+) completed", line)
+                tool_name = tool_match.group(1) if tool_match else ""
+                ev["icon"] = "&#9889;"
+                ev["text"] = "Tool: " + tool_name
+                ev["type"] = "tool"
+            elif "tool_executor:" in line and "error" in line:
+                ev["icon"] = "&#10071;"
+                ev["text"] = "Tool error: " + (line.split("error")[-1].strip()[:50] if "error" in line else "")
+                ev["type"] = "tool_error"
+            elif "API call #" in line:
+                model_match = re.search(r"model=(\S+)", line)
+                m_name = model_match.group(1) if model_match else ""
+                dur_match = re.search(r"latency=([\d.]+)s", line)
+                dur = dur_match.group(1) if dur_match else ""
+                ev["icon"] = "&#129302;"
+                ev["text"] = "API: " + m_name + (f" ({dur}s)" if dur else "")
+                ev["type"] = "api"
+            elif "terminal" in line and "environment ready" in line:
+                ev["icon"] = "&#9000;"
+                ev["text"] = "Terminal ready"
+                ev["type"] = "terminal"
+            elif "restore_primary" in line:
+                ev["icon"] = "&#128259;"
+                ev["text"] = "Session resumed"
+                ev["type"] = "session"
+            elif "pruning oldest" in line and "checkpoint" in line:
+                ev["icon"] = "&#128200;"
+                ev["text"] = "Checkpoint cleanup"
+                ev["type"] = "sys"
+            elif "Checkpoint store" in line:
+                ev["icon"] = "&#128200;"
+                m = re.search(r"exceeded\s+([\d.]+\s*MB)", line)
+                ev["text"] = "Checkpoint: " + (m.group(1) if m else "cleanup")
+                ev["type"] = "sys"
+            elif "conversation turn" in line:
+                ev["icon"] = "&#128172;"
+                ev["text"] = "Turn started"
+                ev["type"] = "turn"
+            elif "stream_request_complete" in line:
+                ev["icon"] = "&#9989;"
+                ev["text"] = "Response done"
+                ev["type"] = "done"
+            else:
+                continue
+            events.append(ev)
+            if len(events) >= 15:
+                break
+
+    sessions_list = []
+    if is_opencode:
+        for m in re.finditer(r'session\.id=ses_([a-f0-9]+)', content):
+            sid = "ses_" + m.group(1)
+            if sid not in sessions_list:
+                sessions_list.append(sid)
+                if len(sessions_list) >= 8:
+                    break
+    else:
+        for m in re.finditer(r'\[(20[0-9]{6}_[0-9]{6}_[a-f0-9]+)\]', content):
+            sid = m.group(1)
+            if sid not in sessions_list:
+                sessions_list.append(sid)
+                if len(sessions_list) >= 8:
+                    break
 
     elapsed = 0
     if last_time > 0:
@@ -1097,28 +1205,55 @@ def collect_brain_health():
 
 
 def collect_today_summary():
-    """Count today's activity from the agent log."""
+    """Count today's activity from the agent log (KST)."""
+    log = LOG_FILE if os.path.isfile(LOG_FILE) else OLD_LOG_FILE
+    if log == LOG_FILE:
+        kst_date_counts = _kst_date_counts(log)
+        today_kst = time.strftime("%Y-%m-%d", time.gmtime(time.time() + 9 * 3600))
+        today_lines = kst_date_counts.get(today_kst, 0)
+        import re, calendar
+        sessions = set()
+        tool_calls = 0
+        try:
+            with open(log, "r", errors="ignore") as f:
+                for line in f:
+                    m = re.match(r'timestamp=(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})', line)
+                    if not m:
+                        continue
+                    h = (int(m.group(2)[:2]) + 9) % 24
+                    utc_d = m.group(1)
+                    if h < 9:
+                        utc_ts = calendar.timegm(time.strptime(utc_d + " 00:00:00", "%Y-%m-%d %H:%M:%S"))
+                        kst_d = time.strftime("%Y-%m-%d", time.gmtime(utc_ts + 86400))
+                    else:
+                        kst_d = utc_d
+                    if kst_d != today_kst:
+                        continue
+                    sm = re.search(r'session\.id=ses_([a-f0-9]+)', line)
+                    if sm:
+                        sessions.add(sm.group(1))
+                    if 'evaluated permission' in line or 'message=stream' in line:
+                        tool_calls += 1
+        except Exception:
+            pass
+        return {"log_lines": today_lines, "sessions": len(sessions), "tool_calls": tool_calls}
+
     today = time.strftime("%Y-%m-%d")
-    log = os.path.join(DREWGENT, "logs", "agent.log")
     if not os.path.isfile(log):
         return {"messages": 0, "sessions": 0, "tool_calls": 0}
 
-    # Count log lines for today
     out, _, _ = run("grep -c '" + today + "' " + log + " 2>/dev/null || echo 0", timeout=5)
     today_lines = int(out.strip()) if out.strip().isdigit() else 0
 
-    # Count unique sessions
     out2, _, _ = run(
         "grep '" + today + "' " + log + " | grep -oP '\\[\\K[^]]+' | grep -E '^20[0-9]{8}_[0-9]{6}_[a-f0-9]+' | sort -u | wc -l 2>/dev/null || echo 0",
         timeout=10,
     )
-    sessions = int(out2.strip()) if out2.strip().isdigit() else 0
-
-    # Count tool calls
     out3, _, _ = run(
         "grep -c 'tool_call\\|Tool.*executor\\|tool=' " + log + " 2>/dev/null || echo 0",
         timeout=5,
     )
+    sessions = int(out2.strip()) if out2.strip().isdigit() else 0
     tool_calls = int(out3.strip()) if out3.strip().isdigit() else 0
 
     return {

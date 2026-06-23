@@ -76,7 +76,7 @@ Framework: 5 building blocks + 1 memory store
 | Agent definition files | ✅ **NEW**: `~/.drewgent/agents/*.md` — 8 profiles with frontmatter |
 | Static profile format | Markdown + YAML frontmatter (same format as SKILL.md) |
 
-**Key improvement**: The agent profile system (built this session) adds static role definitions with model/provider/toolsets/instructions, integrated directly into `delegate_task(agent_profile="reviewer")`.
+**Key improvement**: The agent profile system (built this session) adds static role definitions with model/provider/toolsets/instructions, integrated directly into `task(subagent_type="reviewer")`.
 
 ### 6. Memory (External State = Spine)
 
@@ -108,7 +108,7 @@ Framework: 5 building blocks + 1 memory store
 ├─────────────────────────────────────────────────┤
 │  Layer 1: Agent Profiles (Subagent Roles)        │
 │  8 profiles, 3 cost tiers, ESCALATE mechanism    │
-│  delegate_task(agent_profile="...")               │
+│  task(subagent_type="...")               │
 └─────────────────────────────────────────────────┘
 ```
 

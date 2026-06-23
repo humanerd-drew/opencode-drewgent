@@ -9,7 +9,7 @@
   "skills": {
     "paths": [
       "~/.drewgent/skills",
-      "~/.drewgent/P3-sensors/skills",
+      "~/.drewgent/@action/skills",
       "~/.config/opencode/skills"
     ]
   },
@@ -25,14 +25,14 @@
     "lazyweb": {
       "type": "remote",
       "url": "https://www.lazyweb.com/mcp",
-      "enabled": true,
+      "enabled": false,
       "headers": { "Authorization": "Bearer {env:LAZYWEB_API_KEY}" },
       "timeout": 60000
     },
     "specification-website": {
       "type": "remote",
       "url": "https://mcp.specification.website/mcp",
-      "enabled": true,
+      "enabled": false,
       "timeout": 60000
     }
   }

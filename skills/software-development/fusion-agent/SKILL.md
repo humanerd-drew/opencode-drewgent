@@ -1,6 +1,6 @@
 ---
 name: fusion-agent
-description: "Agent-level multi-model deliberation on OpenCode Go. Uses delegate_task to simulate OpenRouter Fusion's panel+judge pipeline — parallel subagents with distinct perspectives, then structured synthesis. Zero marginal cost (OpenCode Go subscription). Reach for it when a single model isn't enough — research, expert critique, compare-and-contrast."
+description: "Agent-level multi-model deliberation on OpenCode Go. Uses task() to simulate OpenRouter Fusion's panel+judge pipeline — parallel subagents with distinct perspectives, then structured synthesis. Zero marginal cost (OpenCode Go subscription). Reach for it when a single model isn't enough — research, expert critique, compare-and-contrast."
 trigger: "2026-06-16 OpenRouter Fusion discovery — user said '연구해보자. 오픈코드 고에서 할 수 있을 것 같은데.'"
 provenance:
   session: "2026-06-16 fusion-research"
@@ -21,7 +21,7 @@ links:
 
 ## Concept
 
-Fusion은 **여러 관점에서 동시에 분석한 뒤 구조화된 취합을 거쳐 최종 답변**을 만드는 패턴. OpenRouter는 이걸 인프라 레벨(panel + judge API)로 제공하지만, OpenCode Go에서는 같은 패턴을 `delegate_task`로 구현 가능 — 구독료 안에 포함되어 추가 비용 없음.
+Fusion은 **여러 관점에서 동시에 분석한 뒤 구조화된 취합을 거쳐 최종 답변**을 만드는 패턴. OpenRouter는 이걸 인프라 레벨(panel + judge API)로 제공하지만, OpenCode Go에서는 같은 패턴을 `task()`로 구현 가능 — 구독료 안에 포함되어 추가 비용 없음.
 
 ```mermaid
 flowchart LR
@@ -55,11 +55,9 @@ Since OpenCode Go is subscription ($0/call marginal), **cost is never the reason
 Spawn N subagents (2-5), each with a **distinct perspective**. Use `explorer` profile (or `implementer` for code tasks) — flash-tier is fine since the judge catches blind spots.
 
 ```python
-delegate_task(tasks=[
-    {"goal": "Analyze this question from a security perspective: <question>", "agent_profile": "explorer"},
-    {"goal": "Analyze this question from a performance perspective: <question>", "agent_profile": "explorer"},
-    {"goal": "Analyze this question from a maintainability perspective: <question>", "agent_profile": "explorer"},
-])
+task(subagent_type="explorer", description="Security analysis", prompt="Analyze this question from a security perspective: <question>")
+task(subagent_type="explorer", description="Performance analysis", prompt="Analyze this question from a performance perspective: <question>")
+task(subagent_type="explorer", description="Maintainability analysis", prompt="Analyze this question from a maintainability perspective: <question>")
 ```
 
 **Panel presets:**
@@ -133,7 +131,7 @@ Question: <question>
 
 | Dimension | Agent-Level (this skill) | OpenRouter Fusion |
 |-----------|------------------------|-------------------|
-| Execution | `delegate_task` (tool-level) | `openrouter:fusion` (infra-level) |
+| Execution | `task()` (tool-level) | `openrouter:fusion` (infra-level) |
 | Panel parallelism | Sequential or batch (tool limits) | True parallel (server-side) |
 | Cost | $0 (subscription) | ~4-5x single completion |
 | Web search | Via subagent tools | Built-in (`openrouter:web_search`) |

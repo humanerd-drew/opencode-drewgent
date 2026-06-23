@@ -1,0 +1,43 @@
+# Drewgent Docker Compose - Example Configuration
+# Copy this file to docker-compose.yml and update the paths/env values
+
+services:
+  drewgent-gateway:
+    image: humanerdkr/drewgent:latest
+    container_name: drewgent-gateway
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./data:/opt/data
+      - ~/.drewgent:/root/.drewgent:rw
+    env_file:
+      - .env
+    environment:
+      - HERMES_HOME=/opt/data
+      - PYTHONPATH=/opt/drewgent
+    entrypoint: ["bash", "-c", "cd /opt/drewgent && mkdir -p /opt/data && exec python3 -m drewgent_cli.main gateway run"]
+
+  drewgent-agent:
+    image: humanerdkr/drewgent:latest
+    container_name: drewgent-agent
+    restart: unless-stopped
+    network_mode: host
+    entrypoint: ["bash", "-c", "cd /opt/drewgent && mkdir -p /opt/data && exec python3 cli.py agent run"]
+    volumes:
+      - ./data:/opt/data
+      - ~/.drewgent:/root/.drewgent:rw
+    env_file:
+      - .env
+    depends_on:
+      - drewgent-gateway
+
+  monitor:
+    image: humanerdkr/drewgent-monitor:latest
+    container_name: drewgent-monitor
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./data:/opt/data
+    environment:
+      - GATEWAY_URL=http://localhost:8642
+      - DREW_DISCORD_WEBHOOK=${DREW_DISCORD_WEBHOOK}

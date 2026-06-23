@@ -22,7 +22,7 @@ links:
 
 # Content Manager Agent
 
-CMO-style agent that observes Drew's work (sessions, git, kanban) and autonomously produces multi-format blog content with rich visuals. Runs as a daily cron job or on-demand via `delegate_task`.
+CMO-style agent that observes Drew's work (sessions, git, kanban) and autonomously produces multi-format blog content with rich visuals. Runs as a daily cron job or on-demand via `task()`.
 
 ## Architecture
 
@@ -77,7 +77,7 @@ Mono:      JetBrains Mono
 - `~/.drewgent/agents/content-manager.md` — role definition (deepseek-v4-pro, opencode-go)
 - Toolsets: terminal, file, search, session_search, kanban, web
 - Fires daily at 12:00 KST via cron
-- Also triggerable via `delegate_task(agent_profile="content-manager", goal="...")`
+- Also triggerable via `task(subagent_type="content-manager", description="Content run", prompt="...")`
 
 ### Knowledge Base
 at `P4-cortex/content/`:
@@ -106,12 +106,12 @@ at `P4-cortex/content/`:
 - Initially set to `every 3 days` → user corrected: should be DAILY when material exists
 - Don't use fixed schedules for content creation — produce when material is available, stay silent when nothing new
 
-### delegate_task Model Override
-The agent profile defines `model: deepseek-v4-pro`, but calling via `delegate_task(agent_profile="content-manager")` may use a different model. In testing, the actual run used `deepseek-v4-flash` (the parent session's model), not the pro model defined in the profile.
+### task() Model Override
+The agent profile defines `model: deepseek-v4-pro`, but calling via `task(subagent_type="content-manager")` may use a different model. In testing, the actual run used `deepseek-v4-flash` (the parent session's model), not the pro model defined in the profile.
 
 **Implication:** Delegated content-manager runs get the flash model (faster, cheaper, slightly lower quality). Cron jobs (which use the profile's model directly) use the pro model. If output quality from a delegate_task run seems low, check which model was used — it may be the flash fallback.
 
-**Workaround:** For high-quality runs, use the cron trigger or explicitly set `model` in the delegate_task call parameters.
+**Workaround:** For high-quality runs, use the cron trigger or explicitly set `model` in the task() call parameters.
 
 ### Image Generation
 - DO NOT suggest paid APIs (FAL, DALL-E) first — the user explicitly rejected extra costs

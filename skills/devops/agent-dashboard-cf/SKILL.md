@@ -263,10 +263,10 @@ Located at `~/.drewgent/scripts/agent_dashboard_push.py`. Runs every 5min via no
 
 | Collector | Source | Returns |
 |-----------|--------|---------|
-| collect_system() | uptime/df/vm_stat/sw_vers/uname | uptime, load, disk, memory, os/kernel/python/hermes versions |
+| collect_system() | uptime/df/vm_stat/sw_vers/uname | uptime, load, disk, memory, os/kernel/python/opencode versions |
 | collect_launchd() | launchctl list | ai.drewgent.* services with PID/exit_code |
-| collect_kanban() | hermes kanban list | tasks with status/assignee |
-| collect_cron() | hermes cron list | active/errors/paused jobs |
+| collect_kanban() | kanban.db direct read | tasks with status/assignee |
+| collect_cron() | jobs.json direct read | active/errors/paused jobs |
 | collect_network() | lsof -iTCP | known services with listening/down |
 | collect_vault() | du -sh P* dirs | P-layer sizes |
 | collect_recent_errors() | errors.log + agent.log | top 5 error types grouped by message prefix, with count |
@@ -289,11 +289,10 @@ Located at `~/.drewgent/scripts/agent_dashboard_push.py`. Runs every 5min via no
 
 ### Cron/PATH Issue
 
-When running as no-agent cron script, PATH doesn't include hermes CLI:
+When running as no-agent cron script, PATH may not include required tool locations:
 ```python
 _EXTRA_PATH = os.pathsep.join([
     os.path.join(HOME, ".local", "bin"),
-    os.path.join(HOME, ".hermes", "hermes-agent", ".venv", "bin"),
     "/opt/homebrew/bin", "/usr/local/bin",
 ])
 # Pass to subprocess.run(env={**_EXTRA_ENV, **os.environ})

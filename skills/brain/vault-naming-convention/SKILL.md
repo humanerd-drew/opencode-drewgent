@@ -423,7 +423,7 @@ for f in ~/.drewgent/path/to/cluster/*/SKILL.md; do
 done | sort -rn
 
 # Step 2: Identify natural relationships
-# Check for `related_skills` in metadata.hermes that are NOT yet in `links:`
+# Check for `related_skills` in metadata that are NOT yet in `links:`
 grep -A2 'related_skills:' ~/.drewgent/path/to/cluster/*/SKILL.md
 
 # Step 3: For each skill with related_skills in metadata,

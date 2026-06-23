@@ -265,7 +265,7 @@ exec node --no-warnings script.js
 
 The bridge daemon keeps a persistent WebSocket connection to Huly and registers
 a `pushHandler` that receives ALL transactions in real-time. When a new Issue
-is created (TxCreateDoc), it runs `hermes kanban create` to spawn a Hermes
+is created (TxCreateDoc), it runs `kanban_create()` to spawn a kanban
 worker. See `references/pushhandler-realtime.md` for the full mechanism.
 
 Daemon lifecycle managed by launchd:

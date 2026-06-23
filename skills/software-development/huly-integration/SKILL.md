@@ -679,7 +679,7 @@ Deployed as a launchd daemon at `ai.drewgent.huly-bridge` (PID verified running)
 
 **Behavior:**
 - Connects to Huly, registers pushHandler
-- New `tracker:class:Issue` → runs `hermes kanban create` (→ dispatcher spawns worker)
+- New `tracker:class:Issue` → runs `kanban_create()` (→ dispatcher spawns worker)
 - Auto-reconnect with exponential backoff (1s → 60s max)
 - launchd auto-restarts on crash (KeepAlive, SuccessfulExit=false, ThrottleInterval=10)
 
@@ -717,8 +717,8 @@ Pushes recently completed Hermes kanban tasks to Huly as new Issues.
 
 ```bash
 # Script: ~/.drewgent/scripts/huly_sync.sh → huly_sync.js
-# Cron: hermes cron job fc33f33c8b47
-# Token: HULY_KEY from ~/.hermes/.env
+# Cron: job fc33f33c8b47 in ~/.drewgent/cron/jobs.json
+# Token: HULY_KEY from ~/.drewgent/.env
 # Duplicate check: by title
 ```
 
@@ -728,7 +728,7 @@ Polls Huly for recent changes, posts to Discord #agent-chat when there are updat
 
 ```bash
 # Script: ~/.drewgent/scripts/huly_check.sh → huly_check.js
-# Cron: hermes cron job e38860f7e162
+# Cron: job e38860f7e162 in ~/.drewgent/cron/jobs.json
 # Silent when no changes (empty stdout = no delivery)
 ```
 
@@ -737,7 +737,7 @@ Polls Huly for recent changes, posts to Discord #agent-chat when there are updat
 ```
 Huly Issue created (by user in UI)
     ↓ REAL-TIME (pushHandler)
-huly_bridge.js ──→ kanban create ──→ Hermes dispatcher ──→ worker spawns
+huly_bridge.js ──→ kanban create ──→ Drewgent dispatcher ──→ worker spawns
     ↓                                                                  ↓
 huly_check.js (30min polling)                                worker completes
     ↓                                                                  ↓
@@ -751,7 +751,7 @@ Discord #agent-chat                                          huly_sync.js (120mi
 See `scripts/huly_sync.js` in `~/.drewgent/scripts/` for the production sync script.
 
 ```
-Hermes kanban (done tasks)
+Drewgent kanban (done tasks)
     ↓ (every 120m via cron job, no_agent)
 huly_sync.js (Node.js)
     ↓ (@hcengineering/api-client WebSocket)
@@ -762,9 +762,9 @@ Issues created as "[Kanban] title"
 
 **Duplicate prevention:** Script checks existing issue titles before creating new ones.
 
-**Cron job:** `hermes cron` registered as `huly-kanban-sync` (job_id `fc33f33c8b47`). Runs every 120m, no_agent, script `huly_sync.js`.
+**Cron job:** Registered in `~/.drewgent/cron/jobs.json` as `huly-kanban-sync` (job_id `fc33f33c8b47`). Runs every 120m, no_agent, script `huly_sync.js`.
 
-**Env setup:** `HULY_KEY` stored in `~/.hermes/.env`.
+**Env setup:** `HULY_KEY` stored in `~/.drewgent/.env`.
 
 ## Discord Webhook Bridge
 
@@ -774,12 +774,10 @@ Huly does NOT expose webhook config via API. To receive notifications in Discord
 2. **Huly registration**: Settings → Integrations → Webhooks → paste Discord URL
 3. Select events: Issues created/updated, Projects changed
 
-### Alternative: Hermes LLM Watch
+### Alternative: LLM Watch
 
-If Discord webhook isn't configured, a Hermes cron job with `deliver: "discord:channel_id"` can periodically check kanban state:
-
-```bash
-hermes cron create --name "huly-watch" --schedule "every 60m" \
-  --deliver "discord:1477909526274506753" \
-  --prompt "Summarize recent Huly workspace activity briefly"
+If Discord webhook isn't configured, a cron job with Discord delivery can periodically check kanban state. Register a no_agent cron job in `~/.drewgent/cron/jobs.json` with:
+- `schedule`: `every 60m`
+- `deliver`: `discord:1479507905276267553`
+- `prompt`: "Summarize recent Huly workspace activity briefly"
 ```

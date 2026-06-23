@@ -27,7 +27,7 @@ Before fanning out, you must ground the decomposition in the profiles that actua
 
 Use one of these:
 
-- `hermes profile list` — prints the table of profiles configured on this machine. Run it through your terminal tool if you have one; otherwise ask the user.
+- `ls ~/.config/opencode/agents/*.md` — lists the agent profiles configured on this machine. Run it through your terminal tool if you have one; otherwise ask the user.
 - `kanban_list(assignee="<some-name>")` — sanity-check a single name. Returns an empty list (rather than an error) for an unknown assignee, so this only confirms a name you're already considering.
 - **Just ask the user.** "What profiles do you have set up?" is a fine first turn when the goal needs more than one specialist.
 
@@ -150,7 +150,7 @@ Tell them what you created in plain prose, naming the actual profiles you used:
 > - **T3** (`<profile-B>`): synthesizes T1 + T2 into a recommendation
 > - **T4** (`<profile-C>`): turns T3 into a CTO memo
 >
-> The dispatcher will pick up T1 and T2 now. T3 starts when both finish. You'll get a gateway ping when T4 completes. Use the dashboard or `hermes kanban tail <id>` to follow along.
+> The dispatcher will pick up T1 and T2 now. T3 starts when both finish. You'll get a gateway ping when T4 completes. Use the dashboard or `kanban_show(task_id=...)` to follow along.
 
 ## Common patterns
 
@@ -163,6 +163,50 @@ Tell them what you created in plain prose, naming the actual profiles you used:
 **Same-profile queue:** N tasks, all assigned to the same profile, no dependencies between them. Dispatcher serializes — that profile processes them in priority order, accumulating experience in its own memory.
 
 **Human-in-the-loop:** Any task can `kanban_block()` to wait for input. Dispatcher respawns after `/unblock`. The comment thread carries the full context.
+
+## Office Autopilot — Queue Processing Mode
+
+Drewgent's `office_autopilot.sh` runs every 5 minutes via cron. When it finds pending tasks in the native kanban DB, it dispatches **you** (the orchestrator) to process the queue.
+
+### Intake flow
+
+```
+office_autopilot.sh (cron, 5min)
+  └─ sqlite3 reads kanban.db
+       └─ pending > 0?
+            └─ opencode run --agent orchestrator --attach :8642
+                 └─ YOU: read pending tasks → classify → delegate → track → report
+```
+
+### Classification rules
+
+When spawned by the autopilot, read all tasks with `status='todo'` or `status='ready'` and no `claim_lock`. Route each:
+
+| Task type | Delegate to | Notes |
+|-----------|-------------|-------|
+| Implementation/fix | implementer | Include file paths, conventions |
+| Content/draft | content-manager | Link brand guide, narrative arc |
+| Bug/infra/outage | sre | Read-only first |
+| Research/explore | explorer | Return structured findings |
+| Design/UI | designer | Lazyweb + baseline-ui |
+| Data/analysis | analyst | Kanban DB, git log, gbrain |
+| Review/QA | reviewer | Always after implementer |
+
+### Processing rules
+
+1. **Parallel where possible.** Independent tasks get separate delegate() calls.
+2. **Dependency chain.** If T2 needs T1's output, use `kanban_create` with `parents=[T1]` instead of running sequentially yourself.
+3. **Block ambiguous tasks.** If a task lacks context, `kanban_block` with a clear "needs: X" note. Don't guess.
+4. **Report to Discord.** After processing all tasks, pipe a summary to `discord_send.py`:
+   ```
+   python3 ~/.drewgent/scripts/discord_send.py <webhook_url>
+   ```
+   Summary format: what was completed, what was delegated, what was blocked.
+5. **SILENT is correct.** If nothing could be done (all ambiguous), say so and stop.
+
+### Expensive agent, use wisely
+
+You run on qwen3.7-max. Every 5-minute cron tick is cheap (SQLite check), but when the orchestrator fires, it's for real work — the script guarantees at least 1 pending task before spawning you.
 
 ## Pitfalls
 
@@ -183,12 +227,10 @@ Tell them what you created in plain prose, naming the actual profiles you used:
 **Tenant inheritance.** If `HERMES_TENANT` is set in your env, pass `tenant=os.environ.get("HERMES_TENANT")` on every `kanban_create` call so child tasks stay in the same namespace.
 
 **Dual-kanban-DB mismatch (Drewgent-specific).** On Drewgent's setup there are TWO separate kanban databases:
-- **Hermes native kanban** at `HERMES_HOME/kanban.db` (~/.drewgent/kanban.db) — used by the `kanban_*` tools.
+- **Native kanban** at `~/.drewgent/kanban.db` — used by the `kanban_*` tools.
 - **Drewgent legacy kanban** at `~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db` — used by the old `dispatch_once_*` scripts in `cron_runner.py`.
 
-Tasks created via `kanban_create` go into the Hermes native DB. The legacy `dispatch_once_*` scripts check the legacy DB. This means tasks can sit in "ready" forever — the dispatcher is checking the wrong database.
-
-**Fix:** Replace the `dispatch_once_*` scripts with `hermes kanban dispatch` (the native Hermes CLI command). This reads from the correct DB, handles claim locks, worker spawning, and failure detection. Test with `hermes kanban dispatch --dry-run --json`.
+**Fix:** Replace the `dispatch_once_*` scripts with direct kanban DB reads from `~/.drewgent/kanban.db` (the native kanban database). This reads from the correct DB, handles claim locks, worker spawning, and failure detection.
 
 ## Provenance Convention — record why each task exists
 
@@ -262,20 +304,21 @@ kanban_complete(
 
 ## Agent Profiles — reusable subagent role definitions
 
-Drewgent supports a **static agent profile system** at `~/.drewgent/agents/<name>.md`. These profiles define reusable subagent roles — model, provider, instructions, and tool constraints — in a single file, then referenced by name when spawning work.
+Drewgent supports a **static agent profile system** at `~/.config/opencode/agents/<name>.md`. These profiles define reusable subagent roles — model, provider, instructions, and tool constraints — in a single file, then referenced by name when spawning work.
 
-### delegate_task integration (built-in)
+### task() integration (built-in)
 
-The `delegate_task` tool now has a built-in `agent_profile` parameter. When set, the tool reads `$HERMES_HOME/agents/<name>.md`, overrides the subagent's model/provider/toolsets from the profile, and prepends the profile's instructions to the subagent's context:
+The `task` tool has a built-in `subagent_type` parameter. When set, the tool reads `~/.config/opencode/agents/<name>.md`, applies the subagent's model/provider/toolsets from the profile, and uses the profile's instructions:
 
 ```python
-delegate_task(
-    agent_profile="reviewer",
-    goal="Review PR #42 for security issues",
+task(
+    subagent_type="reviewer",
+    description="Security review",
+    prompt="Review PR #42 for security issues",
 )
 ```
 
-The integration lives in `tools/delegate_tool.py` — function `_resolve_agent_profile()`. No YAML parsing library needed; uses stdlib regex for frontmatter.
+The integration lives in opencode's native subagent dispatch. No YAML parsing library needed; uses stdlib regex for frontmatter.
 
 ### Profile format
 
@@ -381,15 +424,15 @@ Not all tasks need the full pipeline. The planner determines the complexity tier
 
 Implementer↔tester loop: tester fails → report to implementer → retry (max 2-3 attempts). After that, failure propagates up for human intervention.
 
-### Using agent profiles with delegate_task
+### Using agent profiles with task()
 
-Pre-defined subagent profiles live at `~/.drewgent/agents/*.md` and are loaded via:
+Pre-defined subagent profiles live at `~/.config/opencode/agents/*.md` and are loaded via:
 
 ```
-delegate_task(agent_profile="reviewer", goal="review this PR")
+task(subagent_type="reviewer", description="Review PR", prompt="review this PR")
 ```
 
-The `agent_profile` parameter is **baked into the delegate_task tool schema** — every agent sees it as an option in every session. No skills or memory needed to discover it; the tool description documents it.
+The `subagent_type` parameter is **baked into the task tool schema** — every agent sees it as an option in every session. No skills or memory needed to discover it; the tool description documents it.
 
 | Profile | File | Model | Role |
 |---------|------|-------|------|
@@ -407,14 +450,12 @@ Each profile sets model, provider, toolsets, and instructions. The caller's expl
 **Pipeline pattern in kanban workers:**
 
 ```python
-delegate_task(tasks=[
-    {"goal": "analyze current auth code", "agent_profile": "explorer"},
-    {"goal": "implement login validation", "agent_profile": "implementer"},
-    {"goal": "write tests for login", "agent_profile": "tester"},
-])
+task(subagent_type="explorer", description="Analyze auth code", prompt="analyze current auth code")
+task(subagent_type="implementer", description="Implement login", prompt="implement login validation")
+task(subagent_type="tester", description="Test login", prompt="write tests for login")
 ```
 
-The profile system lives at `$HERMES_HOME/agents/`. For drewgent this is `~/.drewgent/agents/`. Add new profiles by dropping a `.md` file there.
+The profile system lives at `~/.config/opencode/agents/`. Add new profiles by dropping a `.md` file there.
 
 ### Pipeline auto-decomposition via `kanban_create`
 
@@ -456,8 +497,8 @@ The `pipeline` parameter is documented in the `kanban_create` tool schema — ev
 - **Archive**: issues completed >7d auto-archived
 - **Limit**: 250 issue free tier, safety margin at 200
 
-The hook script: `~/.hermes/agent-hooks/kanban-linear-sync.py`
-(The Drewgent copy at `~/.drewgent/scripts/kanban_linear_sync.py` has both fixes applied.)
+The hook script: `~/.drewgent/scripts/kanban_linear_sync.py`
+(Contains the fixes for both bugs found on 2026-06-14.)
 
 If Linear is re-enabled, unpause the cron job `02e28cd0a6aa`.
 
@@ -475,7 +516,7 @@ The loop engineering framework (from [addyo's essay](https://addyo.substack.com/
 | 2 | **Worktrees** — parallel file isolation | `workspace_kind: worktree` in kanban_create | ⚠️ Adequate, not default |
 | 3 | **Skills** — written project knowledge | SKILL.md system (100+ skills) | ✅ Excellent |
 | 4 | **Connectors/Plugins** — MCP, real tool integration | MCP client, hooks, plugins | ✅ Strong |
-| 5 | **Sub-agents** — maker/checker split | delegate_task + kanban profiles | ✅ Strong, profile system new |
+| 5 | **Sub-agents** — maker/checker split | task() + kanban profiles | ✅ Strong, profile system new |
 | 6 | **Memory** — durable external state | Kanban board + vault + MEMORY.md | ✅ Excellent |
 
 ### Key principles for kanban orchestration
@@ -539,8 +580,8 @@ Write the body as **explicit acceptance criteria** — the judge is only as good
 
 When a worker profile keeps crashing, hallucinating, or getting blocked by its own mistakes (usually: wrong model, missing skill, broken credential), the kanban dashboard flags the task with a ⚠ badge and opens a **Recovery** section in the drawer. Three primary actions:
 
-1. **Reclaim** (or `hermes kanban reclaim <task_id>`) — abort the running worker immediately and reset the task to `ready`. The existing claim TTL is ~15 min; this is the fast path out.
-2. **Reassign** (or `hermes kanban reassign <task_id> <new-profile> --reclaim`) — switch the task to a different profile (one that exists on this setup) and let the dispatcher pick it up with a fresh worker.
-3. **Change profile model** — the dashboard prints a copy-paste hint for `hermes -p <profile> model` since profile config lives on disk; edit it in a terminal, then Reclaim to retry with the new model.
+1. **Reclaim** — abort the running worker immediately and reset the task to `ready`. The existing claim TTL is ~15 min; this is the fast path out. Use the kanban dashboard or `kanban_*` tools.
+2. **Reassign** — switch the task to a different profile (one that exists on this setup) and let the dispatcher pick it up with a fresh worker. Use the kanban dashboard or `kanban_update(task_id=..., assignee="<new-profile>")`.
+3. **Change profile model** — edit the profile's `.md` file in `~/.config/opencode/agents/` to update the model, then Reclaim to retry with the new model.
 
 Hallucination warnings appear on tasks where a worker's `kanban_complete(created_cards=[...])` claim included card ids that don't exist or weren't created by the worker's profile (the gate blocks the completion), or where the free-form summary references `t_<hex>` ids that don't resolve (advisory prose scan, non-blocking). Both produce audit events that persist even after recovery actions — the trail stays for debugging.

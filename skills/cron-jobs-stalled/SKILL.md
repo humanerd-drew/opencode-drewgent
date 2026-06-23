@@ -176,8 +176,7 @@ else:
 
 **Symptoms:**
 - All enabled jobs have `last_run_at` cluster around the same old date (e.g. 22 days stale)
-- `hermes cron list` prints "Gateway is not running" warning (the only soft signal)
-- `launchctl list | grep drewgent` shows `ai.drewgent.gateway` with `PID=-` and old exit code
+- `launchctl list | grep opencode` shows the serve process with `PID=-` and old exit code
 - `~/.drewgent/P6-prefrontal/logs/cron-runner.log` mtime is hours/days stale
 - **Most importantly**: there is no `infrastructure watchdog` to surface this — Pattern A fix has been applied to jobs.json, but the gateway itself is dead, so the patch is invisible to the in-memory scheduler
 
@@ -189,8 +188,7 @@ else:
 - This is a *meta-pattern* — failure of the recovery mechanism for Pattern A itself.
 
 **Diagnostic — three signals together (any one is suspicious; all three = Pattern E):**
-- `hermes cron list` prints "Gateway is not running"
-- `launchctl list | grep ai.drewgent.gateway` shows `PID=-` with old exit code (likely -15 for SIGTERM, 0 for graceful stop)
+- `launchctl list | grep opencode` shows the serve process with `PID=-` and old exit code (likely -15 for SIGTERM, 0 for graceful stop)
 - `jobs.json` all `last_run_at` values cluster within hours of each other (suggesting one failure event took everything down)
 
 **Fix — restart gateway first, do NOT patch jobs.json first:**
@@ -443,8 +441,7 @@ Translation: "If a deferred follow-up can be replaced by an existing internal to
 The 6/1 incident fix above (Pattern A recovery branch + jobs.json patch) was assumed to be sufficient, but the actual state on 2026-06-10 was that the **gateway itself had been dead for 6+ days**. The Pattern A fix only helps *if the scheduler is running*. A dead gateway → no Pattern A patch path → no recovery.
 
 **Three signals that gateway/scheduler itself is dead (not just Pattern A):**
-- `hermes cron list` prints "Gateway is not running" warning
-- `launchctl list | grep ai.drewgent.cron-runner` shows PID=- with old exit code
+- `launchctl list | grep opencode` shows the serve process is dead (PID=- with old exit code)
 - `~/.drewgent/P6-prefrontal/logs/cron-runner.log` mtime is hours/days stale
 - All jobs.json `last_run_at` cluster around the same old date
 

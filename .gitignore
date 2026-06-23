@@ -1,121 +1,185 @@
-# Python
+/venv/
+/_pycache/
+*.pyc*
 __pycache__/
-*.pyc
-*.pyo
-*.egg-info/
 .venv/
-venv/
-
-# Secrets & config
+.vscode/
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.development
+.env.test
+export*
+__pycache__/model_tools.cpython-310.pyc
+__pycache__/web_tools.cpython-310.pyc
+logs/
+data/
+.pytest_cache/
+tmp/
+temp_vision_images/
+hermes-*/*
+examples/
+tests/quick_test_dataset.jsonl
+tests/sample_dataset.jsonl
+run_datagen_kimik2-thinking.sh
+run_datagen_megascience_glm4-6.sh
+run_datagen_sonnet.sh
+source-data/*
+run_datagen_megascience_glm4-6.sh
+data/*
+node_modules/
+browser-use/
+agent-browser/
+# Private keys
+*.ppk
+*.pem
+privvy*
+images/
+__pycache__/
+hermes_agent.egg-info/
+drewgent_agent.egg-info/
+wandb/
+testlogs
+
+# CLI config (may contain sensitive SSH paths)
+cli-config.yaml
+
+# Drewgent config (contains API keys, tokens, secrets in plaintext)
 config.yaml
 config.local.yaml
-*.pem
-*.ppk
-auth.json
-auth.lock
-vault-ontology.jsonl
-secrets_registry.json
-secrets_vault.json
-/run/
 
-# Runtime databases
+# Skills Hub state (lives in ~/.hermes/skills/.hub/ at runtime, but just in case)
+skills/.hub/
+ignored/
+.worktrees/
+environments/benchmarks/evals/
+
+# Release script temp files
+.release_notes.md
+mini-swe-agent/
+
+# Nix
+.direnv/
+result
+update_status.json
+
+# Runtime SQLite databases
 *.db
 *.db-shm
 *.db-wal
-*.sqlite3
 
-# Logs
+# Log files
 *.log
-logs/
 
-# Runtime state
+# Auth, secrets, vault
+auth.json
+auth.lock
+.master_pass
+.vault_key
+.vault_salt
+.skills_prompt_snapshot.json
+.update_check
+
+# Runtime state / cache / generated
 state/
 cache/
-monitor/
 checkpoints/
+monitor/
 pastes/
+feedback.jsonl
+models_dev_cache.json
 session_checkpoint.json
 processes.json
-feedback.jsonl
 channel_directory.json
+discord_threads.json
+gateway_state.json
+brain_health_state.json
+brain_rule_state.json
+brain_snapshot.json
 
-# Generated dashboards
+# Generated HTML dashboards
 brain_dashboard.html
 cron-jobs.html
 kanban-board.html
 
-# Cron runtime
+# Vault / secrets registry
+secrets_registry.json
+secrets_vault.json
+vault-ontology.jsonl
+
+# Runtime history / state
+.drewgent_history
+
+# User shell config
+.zshrc_aliases
+
+# Non-project reference files
+*.txt
+
+# Runtime history / cache state (Hermes-generated)
+.hermes_history
+.scratch_tip_shown
+*_cache.json
+*.lock
+*.bak.*
+lsp/
+huly_test.js
+
+# Personal / agent-internal directories (not project code)
+/source/
+/P0-brainstem/
+/P1-limbic/
+/P2-hippocampus/
+/P3-sensors/
+/P4-cortex/
+/P5-ego/
+
+# Generated skill manifest
+skills/.bundled_manifest
+
+# WordPress CMS (local Docker setup, not part of vault)
+wordpress/
+
+# Obsidian vault config (personal)
+.obsidian/
+
+# Secrets directory
+/secrets/
+
+# Cron runtime artifacts
 cron/output/
 cron/.tick.lock
 cron/jobs.json.bak
 
-# Runtime data dirs
-/sessions/
-/memories/
-/logs/
-/cache/
-/state/
-/sandboxes/
+# Runtime symlinks (not project structure)
+/cron_link
+/gateway_link
+/skills_link
 
-# Personal vault data
-/.obsidian/
+# Runtime data directories (symlink targets)
+/sessions
+/memories
+/logs
+/sandboxes
+/auto-logs/
+content_pipeline/
+dreams/
+harness_stats/
+humanerd-site/
+portfolio/
+projects/
+run/
+sandbox/
+.trash/
 
-# P2-hippocampus — personal memory (README.md only in repo)
-P2-hippocampus/kanban/
-P2-hippocampus/knowledge/
-P2-hippocampus/memories/
-P2-hippocampus/qa-evidence/
-
-# P4-cortex — exclude runtime state, keep arch docs
-P4-cortex/content/
-P4-cortex/insights/
-P4-cortex/plans/
-P4-cortex/portfolio/
-P4-cortex/scripts/
-P4-cortex/taste-reviews/
-P4-cortex/knowledge/bus.py
-P4-cortex/knowledge/drewgent_hidden_state.json
-P4-cortex/knowledge/drewgent_knowledge.json
-P4-cortex/knowledge/growth_engine_sync.json
-P4-cortex/knowledge/harvester_sync_state.json
-
-# P-layer runtime artifacts (not architecture docs)
-P0-brainstem/brain/active_brain.txt
-P0-brainstem/brain/brain_dashboard.html
-P0-brainstem/brain/brain_rule_state.json
-P0-brainstem/brain/brain_snapshot.json
-P0-brainstem/brain/neuronfs.py
-P0-brainstem/_agent/
-P0-brainstem/agent/
-P0-brainstem/bin/
-P0-brainstem/verification/
-P1-limbic/verification/
-P3-sensors/cron/
-P3-sensors/gateway_state/
-P3-sensors/sandboxes/
-P3-sensors/tools/
-P3-sensors/resolver/
-P3-sensors/channel_directory.json
-P3-sensors/discord_threads.json
-P3-sensors/feishu_seen_message_ids.json
-P5-ego/config/
-P5-ego/state/
-
-# Secrets
-/secrets/
-
-# P6 runtime artifacts
+# P6 runtime-only subdirectories (not architecture docs)
 P6-prefrontal/archive/
 P6-prefrontal/checkpoints/
 P6-prefrontal/recovery-journal/
-P6-prefrontal/logs/
 
-# Deps
-node_modules/
-.target/
-
-# OS
-.DS_Store
-Thumbs.db
+# New compressed P-layer directories
+# /@identity/ and /@action/ are tracked (config + code, not personal data)
+/@memory/
+@action/skills/.hub/

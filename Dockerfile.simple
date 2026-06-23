@@ -1,0 +1,33 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install minimal dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl git ripgrep \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy only essential files first (layer caching optimization)
+COPY requirements.txt pyproject.toml ./
+COPY drewgent_cli ./drewgent_cli
+COPY agent ./agent
+COPY gateway ./gateway
+COPY tools ./tools
+COPY modules ./modules
+COPY acp_adapter ./acp_adapter
+COPY drewgent_*.py ./
+COPY cli.py run_agent.py model_tools.py toolsets.py ./
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -e ".[all]" --break-system-packages
+
+# Copy monitor script
+COPY scripts/drewgent_monitor.py /usr/local/bin/
+
+# Create data directory
+RUN mkdir -p /opt/data
+
+# Expose port
+EXPOSE 8080
+
+CMD ["python", "-m", "drewgent_cli.main", "gateway", "run"]

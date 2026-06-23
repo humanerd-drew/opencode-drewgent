@@ -21,7 +21,7 @@ kanban-worker: this is the detail layer.
 
 ## Agent profiles
 
-When your task requires sub-steps (analysis → implementation → testing), use `delegate_task(agent_profile="<name>", goal="...")` to spawn pre-configured subagents. The 8 available profiles are documented in the `kanban-orchestrator` skill. Flash profiles cost $0 marginal (OpenCode Go subscription); pro/max profiles use stronger models for quality-critical steps. The `agent_profile` parameter is built into the `delegate_task` tool schema — discoverable without loading a skill.
+When your task requires sub-steps (analysis → implementation → testing), use `task(subagent_type="<name>", description="summary", prompt="...")` to spawn pre-configured subagents. The 8 available profiles are documented in the `kanban-orchestrator` skill. Flash profiles cost $0 marginal (OpenCode Go subscription); pro/max profiles use stronger models for quality-critical steps. The `subagent_type` parameter is built into the `task` tool schema — discoverable without loading a skill.
 
 ## Workspace handling
 
@@ -59,7 +59,7 @@ kanban_complete(
 
 **Coding task that needs human review (review-required):**
 
-For most code-changing tasks, the work isn't truly *done* until a human reviewer has eyes on it. Block instead of complete, with `reason` prefixed `review-required: ` so the dashboard surfaces the row as needing review. Drop the structured metadata (changed files, test counts, diff/PR url) into a comment first, since `kanban_block` only carries the human-readable reason — comments are the durable annotation channel. Reviewer either approves and runs `hermes kanban unblock <id>` (which re-spawns you with the comment thread for any follow-ups) or asks for changes via another comment.
+For most code-changing tasks, the work isn't truly *done* until a human reviewer has eyes on it. Block instead of complete, with `reason` prefixed `review-required: ` so the dashboard surfaces the row as needing review. Drop the structured metadata (changed files, test counts, diff/PR url) into a comment first, since `kanban_block` only carries the human-readable reason — comments are the durable annotation channel. Reviewer either approves and runs `kanban_unblock(task_id=...)` (which re-spawns you with the comment thread for any follow-ups) or asks for changes via another comment.
 
 ```python
 import json
@@ -77,7 +77,7 @@ kanban_block(
     reason="review-required: rate limiter shipped, 14/14 tests pass — needs eyes on the user_id/IP fallback choice before merging",
 )
 
-**Side effect:** A `post_tool_call` hook fires after every `kanban_complete`, syncing review-required/blocked/critical tasks to a Linear issue tracker (DEPRECATED 2026-06-14 — Linear integration paused, pending Huly evaluation). The hook stub remains at `~/.hermes/agent-hooks/kanban-linear-sync.py`.
+**Side effect:** A `post_tool_call` hook fires after every `kanban_complete`, syncing review-required/blocked/critical tasks to a Linear issue tracker (DEPRECATED 2026-06-14 — Linear integration paused, pending Huly evaluation). The hook stub remains at `~/.drewgent/scripts/kanban_linear_sync.py`.
 
 Use `kanban_complete` only when the task is genuinely terminal
 Use `kanban_complete` only when the task is genuinely terminal — e.g. a one-line typo fix, a docs change with no functional consequences, or a research task where the artifact IS the writeup itself.
@@ -171,7 +171,7 @@ If you open the task and `kanban_show` returns `runs: [...]` with one or more cl
 
 ## Notification routing
 
-You can configure the gateway to receive cross-profile Kanban task notifications by adding `notification_sources` to `~/.hermes/config.yaml`.
+You can configure the gateway to receive cross-profile Kanban task notifications by adding `notification_sources` to `~/.config/opencode/opencode.jsonc`.
 - `notification_sources: ['*']` accepts subscriptions from all profiles.
 - `notification_sources: ['default', 'zilor-ppt']` or `"default,zilor-ppt"` restricts subscriptions to specified profiles.
 - Omitting the key keeps the default behavior (profile isolation).
@@ -329,7 +329,7 @@ This applies especially to orchestrator/fan-out tasks where the kanban card show
 
 **Workspace may have stale artifacts.** Especially `dir:` and `worktree` workspaces can have files from previous runs. Read the comment thread — it usually explains why you're running again and what state the workspace is in.
 
-**Don't rely on the CLI when the guidance is available.** The `kanban_*` tools work across all terminal backends (Docker, Modal, SSH). `hermes kanban <verb>` from your terminal tool will fail in containerized backends because the CLI isn't installed there. When in doubt, use the tool.
+**Don't rely on the CLI when the tool is available.** The `kanban_*` tools work across all terminal backends (Docker, Modal, SSH). External CLI wrappers may not be available in containerized backends. When in doubt, use the tool.
 
 ## Stay on the original task — don't drift into side investigations
 
@@ -359,16 +359,16 @@ When the user's original request is **Task A**, and during execution you discove
 
 **The same lesson applies in reverse**: when *you* (the agent) are chasing a fragile system (like NAS docker containers) and produce reams of guess-and-check debugging output, **stop after 2-3 attempts of the same pattern**. If the same `expect`/ssh race condition has bitten you three times in a row, the right move is to ask the user to either run the command themselves or give you a different transport. The user may be running the same fragile command in 2 minutes; you might still be debugging the race condition 30 minutes later.
 
-**Dispatcher reads wrong DB → tasks never dispatched.** When a custom cron runner dispatches kanban tasks (e.g. `drewgent-cron-runner-001` calling `dispatch_once_*.py`), verify it reads from the **same DB** that `kanban_create`/`kanban_list` use. The Hermes native kanban is at `$HERMES_HOME/kanban.db` (usually `~/.drewgent/kanban.db`). If the dispatcher reads a separate legacy DB (`~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db`), tasks created via the `kanban_*` toolset will never dispatch — they exist in a different database. Fix: point the dispatcher to the Hermes native DB, or switch to `hermes kanban dispatch` which reads the correct DB automatically.
+**Dispatcher reads wrong DB → tasks never dispatched.** When a custom cron runner dispatches kanban tasks (e.g. `drewgent-cron-runner-001` calling `dispatch_once_*.py`), verify it reads from the **same DB** that `kanban_create`/`kanban_list` use. The native kanban is at `~/.drewgent/kanban.db`. If the dispatcher reads a separate legacy DB (`~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db`), tasks created via the `kanban_*` toolset will never dispatch — they exist in a different database. Fix: point the dispatcher to the native kanban DB.
 
-**Subprocess PYTHONPATH can shadow Hermes modules.** When spawning `hermes kanban dispatch` from a cron runner, explicitly set `PYTHONPATH` in the subprocess env to prevent leaked sys.path entries (e.g. from a trailing colon in `.zshrc`) from shadowing `utils`, `tools.registry`, and other Hermes modules. See `shell-init-side-effect-gating` skill for the fix pattern.
+**Subprocess PYTHONPATH can shadow modules.** When spawning kanban dispatch from a cron runner, explicitly set `PYTHONPATH` in the subprocess env to prevent leaked sys.path entries (e.g. from a trailing colon in `.zshrc`) from shadowing `utils`, `tools.registry`, and other modules. See `shell-init-side-effect-gating` skill for the fix pattern.
 
-**no_agent cron jobs with `.js` scripts fail silently.** `_run_job_script()` in the Hermes cron scheduler interprets file extension to pick the runner: `.sh`/`.bash` → bash, **everything else → `sys.executable` (Python)**. A `.js` script passed to no_agent cron will be run by the Python interpreter and fail with a syntax error about non-ASCII characters (e.g. the JS comment's em-dash `—` triggers it first). Fix: wrap Node.js scripts in a `.sh` wrapper:
+**no_agent cron jobs with `.js` scripts fail silently.** `_run_job_script()` in the Drewgent cron scheduler interprets file extension to pick the runner: `.sh`/`.bash` → bash, **everything else → `sys.executable` (Python)**. A `.js` script passed to no_agent cron will be run by the Python interpreter and fail with a syntax error about non-ASCII characters (e.g. the JS comment's em-dash `—` triggers it first). Fix: wrap Node.js scripts in a `.sh` wrapper:
 
 ```bash
 #!/bin/bash
 cd "$(dirname "$0")" || exit 1
-HULY_KEY=***" "$HOME/.hermes/.env" | head -1 | cut -d= -f2-)"
+HULY_KEY="$(grep '^HULY_KEY=' "$HOME/.drewgent/.env" | head -1 | cut -d= -f2-)"
 export HULY_KEY
 exec 2>/dev/null
 exec node --no-warnings your_script.js
@@ -376,13 +376,14 @@ exec node --no-warnings your_script.js
 
 Then point the cron `script:` field to the `.sh` file, not the `.js` file. The wrapper pattern also solves credential masking issues (the system replaces `process.env.<SECRET_VAR>` patterns with `***` in file content; reading via grep in a `.sh` wrapper avoids this).
 
-## CLI fallback (for scripting)
+## Tool reference (no external CLI needed)
 
-Every tool has a CLI equivalent for human operators and scripts:
-- `kanban_show` ↔ `hermes kanban show <id> --json`
-- `kanban_complete` ↔ `hermes kanban complete <id> --summary "..." --metadata '{...}'`
-- `kanban_block` ↔ `hermes kanban block <id> "reason"`
-- `kanban_create` ↔ `hermes kanban create "title" --assignee <profile> [--parent <id>]`
+All kanban operations use the built-in tools:
+- `kanban_show(task_id=...)` — show task details
+- `kanban_complete(task_id=..., summary=..., metadata={...})` — mark done
+- `kanban_block(task_id=..., reason="...")` — block for human input
+- `kanban_create(title="...", assignee="...", parents=[...])` — create new task
+- `kanban_unblock(task_id=...)` — unblock a blocked task
 - etc.
 
-Use the tools from inside an agent; the CLI exists for the human at the terminal.
+Use the tools from inside an agent; they are the only supported interface.

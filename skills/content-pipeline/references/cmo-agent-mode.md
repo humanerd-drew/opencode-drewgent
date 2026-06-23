@@ -9,7 +9,7 @@ Mode B of the content pipeline: a single autonomous agent profile (`content-mana
 | Aspect | Mode A | Mode B |
 |--------|--------|--------|
 | Source | External trends, SEO, RSS | Drew's own work (git, sessions, kanban) |
-| Trigger | Kanban task dispatch | Cron + `delegate_task` |
+| Trigger | Kanban task dispatch | Cron + `task()` |
 | Cadence | Every 3 hours | Daily at 12:00 KST |
 | Output | Blog draft | Blog + SVG cover + X thread + Excalidraw PNG |
 | Human in loop | Review before publish | Review before publish |
@@ -92,7 +92,7 @@ Each cycle, the agent:
 
 ## First Run Test
 
-Tested via `delegate_task(agent_profile="content-manager", goal="...")` (since cron doesn't trigger immediately). First run produced:
+Tested via `task(subagent_type="content-manager", description="Test content run", prompt="...")` (since cron doesn't trigger immediately). First run produced:
 - Blog post: 9.7KB with 4 Mermaid diagrams
 - SVG cover: 5.8KB illustration
 - Excalidraw JSON + PNG: architecture diagram
