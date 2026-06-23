@@ -6,7 +6,7 @@
 # Uses uv for fast Python provisioning and package management.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO_NAME/main/scripts/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/humanerd-drew/opencode-drewgent/main/scripts/install.sh | bash
 #
 # Or with options:
 #   curl -fsSL ... | bash -s -- --no-venv --skip-setup
@@ -43,8 +43,8 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-REPO_URL_SSH="https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME.git"
-REPO_URL_HTTPS="https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME.git"
+REPO_URL_SSH="https://github.com/humanerd-drew/opencode-drewgent.git"
+REPO_URL_HTTPS="https://github.com/humanerd-drew/opencode-drewgent.git"
 HERMES_HOME="$HOME/.YOURAGENT"
 INSTALL_DIR="${HERMES_INSTALL_DIR:-$HERMES_HOME/drewgent-agent}"
 PYTHON_VERSION="3.11"
@@ -157,7 +157,7 @@ detect_os() {
             OS="windows"
             DISTRO="windows"
             log_error "Windows detected. Please use the PowerShell installer:"
-            log_info "  irm https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO_NAME/main/scripts/install.ps1 | iex"
+            log_info "  irm https://raw.githubusercontent.com/humanerd-drew/opencode-drewgent/main/scripts/install.ps1 | iex"
             exit 1
             ;;
         *)

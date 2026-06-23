@@ -16,8 +16,8 @@ links:
 > **Drewgent** is a **Stateful Agent** — not just a tool, but a persistent, self-evolving presence that remembers, grows, and governs itself over time.
 
 <p align="center">
-  <a href="https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME"><img src="https://img.shields.io/badge/GitHub-humanerd--drew/opencode--drewgent-orange?style=for-the-badge" alt="GitHub"></a>
-  <a href="https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
+  <a href="https://github.com/humanerd-drew/opencode-drewgent"><img src="https://img.shields.io/badge/GitHub-humanerd--drew/opencode--drewgent-orange?style=for-the-badge" alt="GitHub"></a>
+  <a href="https://github.com/humanerd-drew/opencode-drewgent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
 </p>
 
 ---
@@ -448,7 +448,7 @@ drewgent/
 
 ```bash
 # 1. Clone
-git clone https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME.git
+git clone https://github.com/humanerd-drew/opencode-drewgent.git
 cd drewgent
 
 # 2. Install
@@ -590,13 +590,13 @@ This repository is a **template** for building your own opencode-based AI agent.
 ### 1. Fork
 
 ```bash
-# 1. Fork on GitHub → https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME
+# 1. Fork on GitHub → https://github.com/humanerd-drew/opencode-drewgent
 # 2. Clone your fork:
 git clone git@github.com:YOUR_USER/opencode-YOURAGENT.git
 cd opencode-YOURAGENT
 
 # 3. Add upstream to receive future updates:
-git remote add upstream git@github.com:YOUR_GITHUB_USER/YOUR_REPO_NAME.git
+git remote add upstream git@github.com:humanerd-drew/opencode-drewgent.git
 git fetch upstream
 ```
 
