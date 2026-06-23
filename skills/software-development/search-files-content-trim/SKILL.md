@@ -24,7 +24,7 @@ Drewgent의 `search_files` tool은 757자짜리 line을 500자 (ripgrep MAX_CONT
 
 ## Fix (shipped 2026-05-31)
 
-`/Users/drew/.drewgent/source/drewgent-agent/tools/file_tools.py` 의 `search_tool`에 2개 파라미터 추가:
+`~/.drewgent/source/drewgent-agent/tools/file_tools.py` 의 `search_tool`에 2개 파라미터 추가:
 
 | param | type | default | 의미 |
 |---|---|---|---|

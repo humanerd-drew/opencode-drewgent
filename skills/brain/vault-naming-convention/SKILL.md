@@ -213,7 +213,7 @@ When auditing vault wikilinks, **most "broken" links found by naive grep are fal
 ```python
 import re, os
 
-vault_root = "/Users/drew/.drewgent"
+vault_root = "~/.drewgent"
 all_md = []
 for root, dirs, files in os.walk(vault_root):
     dirs[:] = [d for d in dirs if d not in EXCLUDED]

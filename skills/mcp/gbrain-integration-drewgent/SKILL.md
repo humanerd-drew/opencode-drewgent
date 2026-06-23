@@ -47,26 +47,26 @@ is rejected by OpenAI client key validation. Vector search needs real key.
 
 ### 4. Import Vault
 
-gbrain sources add drewgent --path /Users/drew/.drewgent --name "Drewgent Vault"
+gbrain sources add drewgent --path ~/.drewgent --name "Drewgent Vault"
 gbrain sources default drewgent
-gbrain import /Users/drew/.drewgent/P0-brainstem --source drewgent --yes --no-embed
+gbrain import ~/.drewgent/P0-brainstem --source drewgent --yes --no-embed
 gbrain extract links --yes
 
 ### 5. Register MCP Server
 
 Add to config.yaml under mcp_servers:
   gbrain:
-    command: /Users/drew/.bun/bin/gbrain
+    command: gbrain
     args: ["serve"]
     env:
       OPENAI_API_KEY: "ollama-local"
 
 Set env via Python to ensure proper YAML dict format:
 import yaml
-with open('/Users/drew/.drewgent/config.yaml') as f:
+with open('~/.drewgent/config.yaml') as f:
     d = yaml.safe_load(f)
 d['mcp_servers']['gbrain']['env'] = {'OPENAI_API_KEY': 'ollama-local'}
-with open('/Users/drew/.drewgent/config.yaml', 'w') as f:
+with open('~/.drewgent/config.yaml', 'w') as f:
     yaml.dump(d, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
 ### 6. Verify

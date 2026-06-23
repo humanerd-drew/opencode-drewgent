@@ -57,7 +57,7 @@ ls -la ~/.drewgent/scripts/dispatch_once_*.py
 # 2b. jobs.json의 script path와 비교
 python3 -c "
 import json
-with open('/Users/drew/.drewgent/cron/jobs.json') as f:
+with open('~/.drewgent/cron/jobs.json') as f:
     jobs = json.load(f)
 for j in jobs.get('jobs', []):
     if 'dispatcher' in j.get('name','').lower():
@@ -75,7 +75,7 @@ jobs.json의 last_status=ok가 거짓말. last_run_at은 며칠 전.
 python3 -c "
 import json
 from datetime import datetime, timezone
-with open('/Users/drew/.drewgent/cron/jobs.json') as f:
+with open('~/.drewgent/cron/jobs.json') as f:
     jobs = json.load(f)
 now = datetime.now(timezone.utc)
 for j in jobs.get('jobs', []):
@@ -129,7 +129,7 @@ print(f'reclaimed: {n}')
 # 1) jobs.json 직접 read — enabled=true인 모든 job의 last/next state
 python3 -c "
 import json
-with open('/Users/drew/.drewgent/cron/jobs.json') as f:
+with open('~/.drewgent/cron/jobs.json') as f:
     d = json.load(f)
 for j in d.get('jobs', []):
     if not j.get('enabled', True): continue

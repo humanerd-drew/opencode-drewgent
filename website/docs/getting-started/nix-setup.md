@@ -35,11 +35,11 @@ No clone needed. Nix fetches, builds, and runs everything:
 
 ```bash
 # Run directly (builds on first use, cached after)
-nix run github:NousResearch/drewgent-agent -- setup
-nix run github:NousResearch/drewgent-agent -- chat
+nix run github:YOUR_GITHUB_USER/YOUR_REPO_NAME -- setup
+nix run github:YOUR_GITHUB_USER/YOUR_REPO_NAME -- chat
 
 # Or install persistently
-nix profile install github:NousResearch/drewgent-agent
+nix profile install github:YOUR_GITHUB_USER/YOUR_REPO_NAME
 drewgent setup
 hermes chat
 ```
@@ -50,7 +50,7 @@ After `nix profile install`, `drewgent``, `drewgent-agent`, and `drewgent-acp` a
 <summary><strong>Building from a local clone</strong></summary>
 
 ```bash
-git clone https://github.com/NousResearch/drewgent-agent.git
+git clone https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME.git
 cd drewgent-agent
 nix build
 ./result/bin/drewgent setup
@@ -75,7 +75,7 @@ This module requires NixOS. For non-NixOS systems (macOS, other Linux distros), 
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
-    drewgent-agent.url = "github:NousResearch/drewgent-agent";
+    drewgent-agent.url = "github:YOUR_GITHUB_USER/YOUR_REPO_NAME";
   };
 
   outputs = { nixpkgs, drewgent-agent, ... }: {

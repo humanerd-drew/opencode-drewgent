@@ -37,7 +37,7 @@ The config.yaml just points to the wrapper:
 ```yaml
 mcp_servers:
   huly:
-    command: /Users/drew/.drewgent/scripts/huly-mcp-wrapper.sh
+    command: ~/.drewgent/scripts/huly-mcp-wrapper.sh
 ```
 
 This pattern is reusable for any MCP server that needs a credential bridge to `.env`.

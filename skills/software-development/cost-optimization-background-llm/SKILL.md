@@ -173,11 +173,11 @@ python3 -c "import yaml; yaml.safe_load(open('<modified>.yaml'))"
 **4b) Dry-run** (deterministic paths):
 ```python
 import sys, json, os
-sys.path.insert(0, '/Users/drew/.drewgent/source/drewgent-agent')
-os.chdir('/Users/drew/.drewgent/source/drewgent-agent')
+sys.path.insert(0, '~/.drewgent/source/drewgent-agent')
+os.chdir('~/.drewgent/source/drewgent-agent')
 from cron.scheduler import run_job
 
-with open('/Users/drew/.drewgent/cron/jobs.json') as f:
+with open('~/.drewgent/cron/jobs.json') as f:
     jobs = json.load(f)['jobs']
 
 job = next(j for j in jobs if j['id'] == '<target_id>')
@@ -188,7 +188,7 @@ print(f"success={success} final[:200]={final[:200]!r}")
 **4c) Integration test** (kanban worker):
 ```python
 import sqlite3, subprocess, os, time
-DB = '/Users/drew/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
+DB = '~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
 # NOT ~/.drewgent/state/drewgent_tasks.db — see Pitfall #2
 
 # Insert shell task
@@ -197,14 +197,14 @@ task_id = f't_test_{int(time.time())}'
 conn.execute("""
     INSERT INTO tasks (id, title, body, status, board, trigger_source, created_at, workspace_path)
     VALUES (?, ?, ?, 'ready', 'default', 'manual', datetime('now'), ?)
-""", (task_id, 'shell test', 'python3 -c "print(\'ok\')"', '/Users/drew/.drewgent'))
+""", (task_id, 'shell test', 'python3 -c "print(\'ok\')"', '~/.drewgent'))
 conn.commit()
 conn.close()
 
 # Run dispatcher
 subprocess.run(
-    [VENV, '/Users/drew/.drewgent/scripts/dispatch_once_default.py'],
-    env={**os.environ, 'DREW_HOME': '/Users/drew/.drewgent'},
+    [VENV, '~/.drewgent/scripts/dispatch_once_default.py'],
+    env={**os.environ, 'DREW_HOME': '~/.drewgent'},
     timeout=60,
 )
 
@@ -260,7 +260,7 @@ The dispatcher / worker / scheduler all use the P2 path. If you
 `INSERT` into the top-level path, dispatcher won't see it (silent
 failure — claim=0, spawned=0). Always use:
 ```python
-DB = '/Users/drew/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
+DB = '~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
 ```
 
 ### 3. smart_routing.cheap_model = main model = no effect

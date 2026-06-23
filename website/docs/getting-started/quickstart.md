@@ -14,7 +14,7 @@ Run the one-line installer:
 
 ```bash
 # Linux / macOS / WSL2
-curl -fsSL https://raw.githubusercontent.com/NousResearch/drewgent-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO_NAME/main/scripts/install.sh | bash
 ```
 
 :::tip Windows Users

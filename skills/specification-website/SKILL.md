@@ -108,10 +108,10 @@ Code MIT. Content CC BY 4.0. Site source: <https://github.com/jdevalk/specificat
 
 When citing, use the page's canonical URL and the `updated` frontmatter field as the as-of date. The spec changes — re-fetch rather than relying on a cached copy more than a few weeks old.
 
-## humanerd.kr 적용 노트
+## yourdomain.com 적용 노트
 
-humanerd.kr에 직접 와닿는 항목 (Drewgent 추가 메모):
+yourdomain.com에 직접 와닿는 항목 (Drewgent 추가 메모):
 
 - `required` 누락 위험: `<meta name="theme-color">`, `color-scheme`, `/robots.txt` (Quartz 기본 미생성), `/sitemap-index.xml`
 - `recommended` 큰 가치: `/llms.txt`, MCP 서버 노출, `/.well-known/agent-skills/`, `Accept: text/markdown` 미들웨어
-- `agent-readiness` 카테고리 18개 항목은 humanerd.kr처럼 AI 에이전트가 읽을 대상인 사이트에 특히 중요
+- `agent-readiness` 카테고리 18개 항목은 yourdomain.com처럼 AI 에이전트가 읽을 대상인 사이트에 특히 중요

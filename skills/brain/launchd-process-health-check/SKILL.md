@@ -423,7 +423,7 @@ The pattern is verified on 2026-06-10 17:30 (incident doc section 6.6).
 Three activation paths are required simultaneously; missing any one is
 silent break:
 
-1. Gateway plist `<key>PYTHONPATH</key><string>/Users/drew/.drewgent/customize</string>` in `EnvironmentVariables`
+1. Gateway plist `<key>PYTHONPATH</key><string>~/.drewgent/customize</string>` in `EnvironmentVariables`
 2. `~/.zshrc` exports `PYTHONPATH="$HOME/.drewgent/customize:${PYTHONPATH:-}"`
 3. **`~/.local/bin/hermes` wrapper patch**: the upstream wrapper contains `unset PYTHONPATH` which *deliberately* defeats the layer. The fix is to back up as `hermes.bak` and remove just that line, keeping `unset PYTHONHOME` (required for venv detection). Without this patch, all other activation paths are dead.
 

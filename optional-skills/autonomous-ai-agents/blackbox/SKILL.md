@@ -2,7 +2,7 @@
 name: blackbox
 description: Delegate coding tasks to Blackbox AI CLI agent. Multi-model agent with built-in judge that runs tasks through multiple LLMs and picks the best result. Requires the blackbox CLI and a Blackbox AI API key.
 version: 1.0.0
-author: Drewgent Agent (HUMANERD)
+author: Drewgent Agent (YOUR_PROJECT_NAME)
 license: MIT
 metadata:
   drewgent:

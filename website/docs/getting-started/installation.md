@@ -13,7 +13,7 @@ Get Drewgent Agent up and running in under two minutes with the one-line install
 ### Linux / macOS / WSL2
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/NousResearch/drewgent-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO_NAME/main/scripts/install.sh | bash
 ```
 
 :::warning Windows
@@ -74,7 +74,7 @@ If you prefer full control over the installation process, follow these steps.
 Clone with `--recurse-submodules` to pull the required submodules:
 
 ```bash
-git clone --recurse-submodules https://github.com/NousResearch/drewgent-agent.git
+git clone --recurse-submodules https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME.git
 cd drewgent-agent
 ```
 
@@ -230,7 +230,7 @@ For those who just want the commands:
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Clone & enter
-git clone --recurse-submodules https://github.com/NousResearch/drewgent-agent.git
+git clone --recurse-submodules https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME.git
 cd drewgent-agent
 
 # Create venv with Python 3.11

@@ -15,8 +15,8 @@ links:
 # Drewgent on Docker Hub
 
 **Docker Images:**
-- `humanerdkr/drewgent:latest` - Gateway + Agent
-- `humanerdkr/drewgent-monitor:latest` - Discord Monitor
+- `YOUR_DOCKER_USER/YOUR_IMAGE_NAME:latest` - Gateway + Agent
+- `YOUR_DOCKER_USER/YOUR_IMAGE_NAME-monitor:latest` - Discord Monitor
 
 ## Quick Start
 

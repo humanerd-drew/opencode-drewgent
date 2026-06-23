@@ -15,14 +15,14 @@ links:
   - "[[@identity/SELF_MODEL]]"
 ---
 
-# Writing Style Guide — humanerd.site
+# Writing Style Guide — Your Site
 
-Drewgent가 humanerd.kr 블로그 글을 쓸 때 따르는 톤·구조 규칙.
-content board kanban task를 처리할 때 이 가이드를 적용한다.
+This agent follows these tone and structure rules when writing blog posts for yourdomain.com.
+Apply this guide when working on content tasks.
 
 ---
 
-## 1. 톤 — 휴머너드 말투
+## 1. 톤 — conversational agent voice
 
 **"친구에게 말하듯,自己的想法를 끄집어내듯"**
 
@@ -326,7 +326,7 @@ reefwatch/
 - 해시태그 + SEO 키워드
 
 ### 대화 기반 글
-- Drewgent와 작업한 내용을 insight로
+- Your work sessions become insights
 - "이렇게 정리하면 좋겠다" 式 결론 먼저
 - 과정보다 결과 위주
 
@@ -337,8 +337,8 @@ reefwatch/
 
 ---
 
-*이 가이드는 휴머너드 말투.txt + content-pipeline 기획의도 hybrid.*
-*SEO 구조는 기존 방식 유지, 톤은 휴머너드 말투 적용.*
+*This guide is a hybrid of the agent voice document and the content-pipeline design intent.*
+*SEO structure follows the existing convention; tone follows the agent voice defined in SOUL.*
 
 ## Links
 - [[@identity/persona/SOUL]]

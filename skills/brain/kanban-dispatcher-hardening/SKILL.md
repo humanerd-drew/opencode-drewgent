@@ -139,7 +139,7 @@ watchdog_reclaimed=N | ttl_reclaimed=M | claimed=K | spawned=L
 ### 1. AST 검증
 ```bash
 for f in dispatch_once_default dispatch_once_content dispatch_once_integrations; do
-  python3 -c "import ast; ast.parse(open('/Users/drew/.drewgent/scripts/${f}.py').read()); print('${f}: AST OK')"
+  python3 -c "import ast; ast.parse(open('~/.drewgent/scripts/${f}.py').read()); print('${f}: AST OK')"
 done
 ```
 

@@ -136,7 +136,7 @@ for p in glob.glob('gateway/*.py'):
 "
 
 # 2. Import check
-cd /Users/drew/.drewgent/source/drewgent-agent
+cd ~/.drewgent/source/drewgent-agent
 python3 -c "from gateway.sentinel_guard import SentinelGuard; print('SentinelGuard importable')"
 
 # 3. Check for orphaned extracted methods (defined but never called or registered)

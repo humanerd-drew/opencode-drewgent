@@ -51,16 +51,16 @@ You work in periods (3-7 days). You never ask Drew what to write. You look at wh
 
 ```bash
 # Read knowledge base
-cat /Users/drew/.drewgent/P4-cortex/content/brand-guide.md
-cat /Users/drew/.drewgent/P4-cortex/content/glossary.md
-cat /Users/drew/.drewgent/P4-cortex/content/content-inventory.md
-cat /Users/drew/.drewgent/P4-cortex/content/narrative_arc.md
+cat ~/.drewgent/P4-cortex/content/brand-guide.md
+cat ~/.drewgent/P4-cortex/content/glossary.md
+cat ~/.drewgent/P4-cortex/content/content-inventory.md
+cat ~/.drewgent/P4-cortex/content/narrative_arc.md
 ```
 
 ```bash
 # Check recent git activity
-cd /Users/drew/.drewgent && git log --oneline --since="7 days ago" --until="today" 2>/dev/null | head -30
-cd /Users/drew/m-log && git log --oneline --since="7 days ago" 2>/dev/null | head -20
+cd ~/.drewgent && git log --oneline --since="7 days ago" --until="today" 2>/dev/null | head -30
+cd $HOME/m-log && git log --oneline --since="7 days ago" 2>/dev/null | head -20
 ```
 
 #### 1b. Web Research (optional)
@@ -86,7 +86,7 @@ Score each candidate 1-10. ≥7 → proceed.
 
 #### 3. Check Narrative Arc
 
-Read `/Users/drew/.drewgent/P4-cortex/content/narrative_arc.md` before writing anything. Your job is continuity:
+Read `~/.drewgent/P4-cortex/content/narrative_arc.md` before writing anything. Your job is continuity:
 
 - "Last period we covered X → this period we cover Y (evolution)"
 - "New thread emerged → start a new arc branch"
@@ -94,9 +94,9 @@ Read `/Users/drew/.drewgent/P4-cortex/content/narrative_arc.md` before writing a
 
 #### 4. Draft Content
 
-For each selected story, produce drafts. Save files to `/Users/drew/.drewgent/P2-hippocampus/memories/insights/`.
+For each selected story, produce drafts. Save files to `~/.drewgent/P2-hippocampus/memories/insights/`.
 
-Include **Mermaid diagrams** inline for architecture/flow visualization. Quartz at humanerd.kr renders them automatically.
+Include **Mermaid diagrams** inline for architecture/flow visualization. Quartz at yourdomain.com renders them automatically.
 
 For **hand-drawn architecture diagrams** (Excalidraw style — like the ReefWatch article on dev.to), create a `.excalidraw` file alongside the draft. Excalidraw files are JSON. Save them as companion files.
 
@@ -131,9 +131,9 @@ For important architecture/flow diagrams, create an Excalidraw file, then export
 ```bash
 # 1. Create .excalidraw.json file
 # 2. Export to PNG using headless browser
-node /Users/drew/.drewgent/scripts/excalidraw-to-png.js \
-  /Users/drew/.drewgent/P2-hippocampus/memories/insights/YYYY-MM-DD-slug.excalidraw.json \
-  /Users/drew/.drewgent/P2-hippocampus/memories/insights/YYYY-MM-DD-slug.png
+node ~/.drewgent/scripts/excalidraw-to-png.js \
+  ~/.drewgent/P2-hippocampus/memories/insights/YYYY-MM-DD-slug.excalidraw.json \
+  ~/.drewgent/P2-hippocampus/memories/insights/YYYY-MM-DD-slug.png
 ```
 
 Then embed in the blog post:
@@ -179,7 +179,7 @@ Minimal Excalidraw JSON structure:
 }
 ```
 
-Save as `/Users/drew/.drewgent/P2-hippocampus/memories/insights/YYYY-MM-DD-slug.excalidraw.json`
+Save as `~/.drewgent/P2-hippocampus/memories/insights/YYYY-MM-DD-slug.excalidraw.json`
 
 Create diagrams for:
 - System architecture (components and their interactions)
@@ -199,7 +199,7 @@ Make it visually rich. SVG supports:
 - **Transforms** — rotate, scale, translate for 3D-like perspective
 - **Groups** — `<g>` with transforms for complex compositions
 
-Design rules (humanerd.kr dark theme):
+Design rules (yourdomain.com dark theme):
 - **Background**: `#0d0d1a` → `#1a1a30` gradient
 - **Accent**: `#7b5f3d` (amber/bronze), `#4a90d9` (blue), `#50c878` (teal)
 - **Text**: `#e8e4df` (warm white), `#8a8680` (muted), `#5a5650` (dim)
@@ -261,7 +261,7 @@ Save as `YYYY-MM-DD-slug-meme.svg` and optionally embed in the blog post: `![[YY
 Embed in blog post:
 ```markdown
 ![[YYYY-MM-DD-slug-cover.svg|800]]
-**Blog post** (long-form for humanerd.kr):
+**Blog post** (long-form for yourdomain.com):
 ```markdown
 ---
 title: "Your Title Here"
@@ -313,7 +313,7 @@ N/ {key takeaway}
 
 ### 5. Save to Narrative Arc
 
-Update `/Users/drew/.drewgent/P4-cortex/content/narrative_arc.md` with what you published (or drafted).
+Update `~/.drewgent/P4-cortex/content/narrative_arc.md` with what you published (or drafted).
 
 ### 6. Complete
 

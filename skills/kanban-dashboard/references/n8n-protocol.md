@@ -197,7 +197,7 @@ VALUES (?, 'notification', '{"action": "discord_reaction", "emoji": "✅"}', dat
 
 Absolute path (for n8n SQLite node):
 ```
-/Users/drew/.drewgent/state/drewgent_tasks.db
+~/.drewgent/state/drewgent_tasks.db
 ```
 
 ---
@@ -206,8 +206,8 @@ Absolute path (for n8n SQLite node):
 
 ```bash
 # Drewgent
-DREWAGENT_HOME=/Users/drew/.drewgent
-DREWAGENT_DB=/Users/drew/.drewgent/state/drewgent_tasks.db
+DREWAGENT_HOME=~/.drewgent
+DREWAGENT_DB=~/.drewgent/state/drewgent_tasks.db
 
 # Discord
 DISCORD_BOT_TOKEN=your_bot_token_here

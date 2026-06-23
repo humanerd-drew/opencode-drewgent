@@ -55,7 +55,7 @@ grep -rn "applied\|patched\|configured" ~/.drewgent/P4-cortex/growth 2>/dev/null
 
 ```bash
 # 2a. 단일 path 직접 확인
-test -f /Users/drew/.drewgent/source/drewgent-agent/tools/drewgent_kanban_db.py && echo EXISTS || echo MISSING
+test -f ~/.drewgent/source/drewgent-agent/tools/drewgent_kanban_db.py && echo EXISTS || echo MISSING
 
 # 2b. 이름으로 전체 검색
 find ~/.drewgent -name "drewgent_kanban_db.py" -type f 2>/dev/null
@@ -72,7 +72,7 @@ Drewgent는 root가 바뀔 수 있음:
 - quarantine: `~/.drewgent/P6-prefrontal/archive/quarantine-.../`
 
 ```bash
-readlink -f /Users/drew/.drewgent/source/drewgent-agent 2>/dev/null
+readlink -f ~/.drewgent/source/drewgent-agent 2>/dev/null
 ls -la ~/.drewgent/source/ 2>/dev/null
 ls -la ~/.drewgent/P6-prefrontal/archive/ 2>/dev/null
 ```

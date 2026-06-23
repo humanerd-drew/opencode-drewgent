@@ -64,7 +64,7 @@ sleep 60
 grep -E '=== 2026-' ~/.drewgent/logs/cron-runner/$(date +%Y-%m-%d).log | tail -3
 
 # 4. Check Running job order (script first)
-grep "Running job" /Users/drew/.drewgent/P6-prefrontal/logs/gateway.log | tail -3
+grep "Running job" ~/.drewgent/P6-prefrontal/logs/gateway.log | tail -3
 
 # 5. Harmony check
 bash ~/.hermes/scripts/drewgent_harmony_check.sh | grep -A 1 "Layer 3.5"

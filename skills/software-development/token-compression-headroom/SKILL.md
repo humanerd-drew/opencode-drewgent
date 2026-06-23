@@ -65,7 +65,7 @@ PyO3 0.22.6 (headroom's Rust binding) does NOT officially support Python 3.14. A
 
 ```bash
 PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1 \
-  /Users/drew/.drewgent/source/drewgent-agent/.venv/bin/python3 -m pip install headroom-ai
+  ~/.drewgent/source/drewgent-agent/.venv/bin/python3 -m pip install headroom-ai
 ```
 
 **Do NOT use `--no-build-isolation`** (maturin missing in build env → `Cannot import 'maturin'`). With build-isolation + ABI3 env, builds a `cp314` wheel cleanly.
@@ -167,7 +167,7 @@ Use headroom_ai instead when:
 ```python
 # Test the patch end-to-end
 import importlib, sys
-sys.path.insert(0, "/Users/drew/.drewgent/source/drewgent-agent")
+sys.path.insert(0, "~/.drewgent/source/drewgent-agent")
 for m in list(sys.modules):
     if m.startswith("tools.YOUR_TOOL"):
         del sys.modules[m]
@@ -240,7 +240,7 @@ ids_kept = sum(1 for tid in original_task_ids if tid in compressed_str)
 1. `python3 -c "import ast; ast.parse(open('tools/your_tool.py').read())"` — syntax check
 2. Fresh module reload + call with and without new param — compare response sizes
 3. `ps -p $GATEWAY_PID` — confirm gateway still running 30s after restart
-4. `tail -50 /Users/drew/.drewgent/logs/gateway.log` — confirm "80 tools loaded" and no import errors
+4. `tail -50 ~/.drewgent/logs/gateway.log` — confirm "80 tools loaded" and no import errors
 5. `launchctl list | grep gateway` — confirm new PID after kickstart
 
 ## Lessons (POC + 4-layer patch, 2026-06-02)

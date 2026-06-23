@@ -456,7 +456,7 @@ def _detect_current_project() -> Optional[str]:
                     wt_path = wt.get("path", "")
                     if wt_path and cwd.startswith(wt_path):
                         # Extract project name from worktree path
-                        # e.g., /Users/drew/projects/clientX → clientX
+                        # e.g., ~/projects/clientX → clientX
                         project_name = Path(wt_path).name
                         save_current_project(project_name)
                         return project_name

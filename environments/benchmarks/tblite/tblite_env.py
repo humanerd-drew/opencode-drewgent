@@ -3,7 +3,7 @@ OpenThoughts-TBLite Evaluation Environment
 
 A lighter, faster alternative to Terminal-Bench 2.0 for iterating on terminal
 agents. Uses the same evaluation logic as TerminalBench2EvalEnv but defaults
-to the NousResearch/openthoughts-tblite dataset (100 difficulty-calibrated
+to the YOUR_ORG/openthoughts-tblite dataset (100 difficulty-calibrated
 tasks vs TB2's 89 harder tasks).
 
 TBLite tasks are a curated subset of TB2 with a difficulty distribution
@@ -49,7 +49,7 @@ class TBLiteEvalConfig(TerminalBench2EvalConfig):
     """
 
     dataset_name: str = Field(
-        default="NousResearch/openthoughts-tblite",
+        default="YOUR_ORG/openthoughts-tblite",
         description="HuggingFace dataset containing TBLite tasks.",
     )
 
@@ -96,7 +96,7 @@ class TBLiteEvalEnv(TerminalBench2EvalEnv):
             steps_per_eval=1,
             total_steps=1,
 
-            tokenizer_name="NousResearch/Drewgent-3-Llama-3.1-8B",
+            tokenizer_name="YOUR_ORG/Drewgent-3-Llama-3.1-8B",
             use_wandb=True,
             wandb_name="openthoughts-tblite",
             ensure_scores_are_not_same=False,
