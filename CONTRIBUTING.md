@@ -77,7 +77,7 @@ If your skill is specialized, community-contributed, or niche, it's better suite
 ### Clone and install
 
 ```bash
-git clone --recurse-submodules https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME.git
+git clone --recurse-submodules https://github.com/humanerd-drew/opencode-drewgent.git
 cd drewgent-agent
 
 # Create venv with Python 3.11
@@ -834,7 +834,7 @@ test(tools): add unit tests for file_operations
 
 ## Reporting Issues
 
-- Use [GitHub Issues](https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME/issues)
+- Use [GitHub Issues](https://github.com/humanerd-drew/opencode-drewgent/issues)
 - Include: OS, Python version, Drewgent version (`drewgent` version`), full error traceback
 - Include steps to reproduce
 - Check existing issues before creating duplicates

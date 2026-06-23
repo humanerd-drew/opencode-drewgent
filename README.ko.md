@@ -14,7 +14,7 @@ git clone git@github.com:YOUR_USER/opencode-YOURAGENT.git
 cd opencode-YOURAGENT
 
 # 2. 업스트림 등록 (향후 업데이트 수신)
-git remote add upstream git@github.com:YOUR_GITHUB_USER/YOUR_REPO_NAME.git
+git remote add upstream git@github.com:humanerd-drew/opencode-drewgent.git
 
 # 3. 이름 변경 (drewgent → youragent)
 bash scripts/rename-drewgent.sh "youragent"
@@ -160,13 +160,13 @@ launchd 데몬이 60초마다 `cron/jobs.json`을 읽어 작업 실행:
 ### 1단계: 포크
 
 ```bash
-# GitHub에서 포크: https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME → Fork
+# GitHub에서 포크: https://github.com/humanerd-drew/opencode-drewgent → Fork
 # 그 다음 클론:
 git clone git@github.com:YOUR_USER/opencode-YOURAGENT.git
 cd opencode-YOURAGENT
 
 # 업스트림 등록 (향후 업데이트 받기):
-git remote add upstream git@github.com:YOUR_GITHUB_USER/YOUR_REPO_NAME.git
+git remote add upstream git@github.com:humanerd-drew/opencode-drewgent.git
 git fetch upstream
 ```
 
