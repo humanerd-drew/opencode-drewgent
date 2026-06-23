@@ -17,9 +17,8 @@ links:
 > **Drewgent** is a **Stateful Agent** — not just a tool, but a persistent, self-evolving presence that remembers, grows, and governs itself over time.
 
 <p align="center">
-  <a href="https://github.com/adm-humanerd/drewgent"><img src="https://img.shields.io/badge/GitHub-adm--humanerd/drewgent-orange?style=for-the-badge" alt="GitHub"></a>
-  <a href="https://discord.gg/NousResearch"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
-  <a href="https://github.com/adm-humanerd/drewgent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
+  <a href="https://github.com/humanerd-drew/opencode-drewgent"><img src="https://img.shields.io/badge/GitHub-humanerd--drew/opencode--drewgent-orange?style=for-the-badge" alt="GitHub"></a>
+  <a href="https://github.com/humanerd-drew/opencode-drewgent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
 </p>
 
 ---
@@ -450,7 +449,7 @@ drewgent/
 
 ```bash
 # 1. Clone
-git clone https://github.com/adm-humanerd/drewgent.git
+git clone https://github.com/humanerd-drew/opencode-drewgent.git
 cd drewgent
 
 # 2. Install
@@ -575,6 +574,57 @@ The `trigger:` and `provenance:` frontmatter fields originally added to track de
 127 files changed, 9,574 insertions, 16,890 deletions across the repository.
 
 Full details in [`CHANGELOG.md`](CHANGELOG.md).
+
+---
+
+## Getting Started (Fork + Customize)
+
+This repository is designed as a **template** — fork it, customize it, and run your own agent.
+
+### 1. Fork
+
+```bash
+# Clone your fork
+git clone git@github.com:YOUR_USER/opencode-YOURAGENT.git
+cd opencode-YOURAGENT
+
+# Add upstream for updates
+git remote add upstream git@github.com:humanerd-drew/opencode-drewgent.git
+```
+
+### 2. Rename
+
+```bash
+# Replace all "drewgent" references with your agent name
+bash scripts/rename-drewgent.sh "youragent"
+
+# Or manually configure:
+# - opencode.jsonc → update skill paths, MCP commands
+# - cron/jobs.json → set your Discord channel IDs
+# - AGENTS.md → update references
+```
+
+### 3. Configure
+
+| File | What to Change |
+|------|---------------|
+| `opencode.jsonc` | MCP server commands, skill paths, model preferences |
+| `cron/jobs.json` | Replace `YOUR_CHANNEL_ID` with your Discord webhook/channel IDs |
+| `AGENTS.md` | Your agent's identity, rules, persona |
+
+### 4. Run
+
+```bash
+# Point opencode to your config
+opencode --config opencode.jsonc
+```
+
+### Staying Updated
+
+```bash
+git pull upstream main
+# Resolve any conflicts in config files
+```
 
 ---
 
