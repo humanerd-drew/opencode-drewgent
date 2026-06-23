@@ -44,7 +44,7 @@ r = subprocess.run(
     ["hermes", "kanban", "dispatch"],
     env={
         **os.environ,
-        "PYTHONPATH": "/Users/drew/.drewgent/customize",  # explicit, no trailing colon
+        "PYTHONPATH": "~/.drewgent/customize",  # explicit, no trailing colon
         "HERMES_HOME": str(Path.home() / ".drewgent"),
     },
 )

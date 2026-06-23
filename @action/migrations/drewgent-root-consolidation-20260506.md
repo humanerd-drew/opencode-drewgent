@@ -16,40 +16,40 @@ links:
 
 ## Canonical Runtime
 
-- Runtime home: `/Users/drew/.drewgent`
-- Canonical source: `/Users/drew/.drewgent/source/drewgent-agent`
-- Active launchd plist: `/Users/drew/Library/LaunchAgents/ai.drewgent.gateway.plist`
-- Gateway command: `/Users/drew/.drewgent/source/drewgent-agent/.venv/bin/python -m drewgent_cli.main gateway run --replace`
-- Gateway lock directory: `/Users/drew/.drewgent/run/gateway-locks`
+- Runtime home: `~/.drewgent`
+- Canonical source: `~/.drewgent/source/drewgent-agent`
+- Active launchd plist: `~/Library/LaunchAgents/ai.drewgent.gateway.plist`
+- Gateway command: `~/.drewgent/source/drewgent-agent/.venv/bin/python -m drewgent_cli.main gateway run --replace`
+- Gateway lock directory: `~/.drewgent/run/gateway-locks`
 
 ## Quarantined Local Roots
 
 The following local Drewgent roots were moved under:
 
-`/Users/drew/.drewgent/P6-prefrontal/archive/quarantine-20260506-0224`
+`~/.drewgent/P6-prefrontal/archive/quarantine-20260506-0224`
 
-- `/Users/drew/drewgent_workspace`
-- `/Users/drew/.drewgent.backup.20260501_000957`
-- `/Users/drew/.drewgent-lora`
-- `/Users/drew/.local/state/drewgent`
-- `/Users/drew/loragent`
-- disabled historical Drewgent launchd plists under `/Users/drew/Library/LaunchAgents`
-- `/Users/drew/.codex/skills/drewgent-orchestrator`
-- `/Users/drew/.config/opencode/agents/drewgent.md`
-- `/Users/drew/bin/drewgent-nas-mount.sh`
-- `/Users/drew/SynologyDrive/drewgent`
-- `/Users/drew/Library/LaunchAgents/ai.drewgent.gateway.plist`
-- `/Users/drew/Library/LaunchAgents/com.drewgent.colima.plist`
-- `/Users/drew/Library/LaunchAgents/com.drewgent.docker.plist`
+- `~/drewgent_workspace`
+- `~/.drewgent.backup.20260501_000957`
+- `~/.drewgent-lora`
+- `~/.local/state/drewgent`
+- `~/loragent`
+- disabled historical Drewgent launchd plists under `~/Library/LaunchAgents`
+- `~/.codex/skills/drewgent-orchestrator`
+- `~/.config/opencode/agents/drewgent.md`
+- `~/bin/drewgent-nas-mount.sh`
+- `~/SynologyDrive/drewgent`
+- `~/Library/LaunchAgents/ai.drewgent.gateway.plist`
+- `~/Library/LaunchAgents/com.drewgent.colima.plist`
+- `~/Library/LaunchAgents/com.drewgent.docker.plist`
 
 ## Deliberately Not Moved
 
 These are outside the runtime root but were left in place because moving them can affect sync services, host services, or Codex/OpenCode integration:
 
-- `/Users/drew/Library/CloudStorage/SynologyDrive-drewgent`
+- `~/Library/CloudStorage/SynologyDrive-drewgent`
 - `/Library/LaunchAgents/com.drewgent.nas-mount.plist`
 
-`/Users/drew/Library/CloudStorage/SynologyDrive-drewgent` is a Synology File Provider root with delete protection. It was marked hidden, but moving it requires disconnecting/removing the Synology Drive provider or elevated macOS permission.
+`~/Library/CloudStorage/SynologyDrive-drewgent` is a Synology File Provider root with delete protection. It was marked hidden, but moving it requires disconnecting/removing the Synology Drive provider or elevated macOS permission.
 
 `/Library/LaunchAgents/com.drewgent.nas-mount.plist` is root-owned and was not loaded after consolidation. Moving it requires administrator permission.
 
@@ -57,7 +57,7 @@ These are outside the runtime root but were left in place because moving them ca
 
 The active gateway launch agent was renamed to remove the Drewgent name outside the runtime root:
 
-- `/Users/drew/Library/LaunchAgents/ai.custom-agent.gateway.plist`
+- `~/Library/LaunchAgents/ai.custom-agent.gateway.plist`
 - label: `ai.custom-agent.gateway`
 
 ## Verification

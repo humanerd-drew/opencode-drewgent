@@ -15,19 +15,19 @@ Drewgent isn't just a CLI tool. You can import `AIAgent` directly and use it pro
 Install Drewgent directly from the repository:
 
 ```bash
-pip install git+https://github.com/NousResearch/drewgent-agent.git
+pip install git+https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME.git
 ```
 
 Or with [uv](https://docs.astral.sh/uv/):
 
 ```bash
-uv pip install git+https://github.com/NousResearch/drewgent-agent.git
+uv pip install git+https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME.git
 ```
 
 You can also pin it in your `requirements.txt`:
 
 ```text
-drewgent-agent @ git+https://github.com/NousResearch/drewgent-agent.git
+drewgent-agent @ git+https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME.git
 ```
 
 :::tip

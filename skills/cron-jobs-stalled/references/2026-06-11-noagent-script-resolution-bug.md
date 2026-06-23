@@ -80,7 +80,7 @@ grep "Cron ticker started" ~/.drewgent/logs/gateway.log | tail -1
 ```bash
 python3 -c "
 import json
-j = json.load(open('/Users/drew/.drewgent/cron/jobs.json'))
+j = json.load(open('~/.drewgent/cron/jobs.json'))
 for job in j['jobs']:
     if job['id'] == '2d9a31f2b661':
         print(f'status={job[\"last_status\"]} error={job.get(\"last_error\",\"\")}')
@@ -91,12 +91,12 @@ for job in j['jobs']:
 **Stale error clearing:** After restart, old `last_error` from before the patch persists in `jobs.json`. It auto-clears on next successful tick. For cycles over 1h, manually patch:
 ```python
 import json
-j = json.load(open('/Users/drew/.drewgent/cron/jobs.json'))
+j = json.load(open('~/.drewgent/cron/jobs.json'))
 for job in j['jobs']:
     if job['id'] in ('96ad18409db7',):  # target job ids that need clearing
         job['last_status'] = 'ok'
         job['last_error'] = None
-json.dump(j, open('/Users/drew/.drewgent/cron/jobs.json', 'w'), indent=2)
+json.dump(j, open('~/.drewgent/cron/jobs.json', 'w'), indent=2)
 ```
 
 ## Script Location Double-Check

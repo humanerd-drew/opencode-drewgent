@@ -239,12 +239,12 @@ After patching, verify with a direct call to `run_job()` from
 
 ```python
 import sys, os, json
-sys.path.insert(0, '/Users/drew/.drewgent/source/drewgent-agent')
-os.chdir('/Users/drew/.drewgent/source/drewgent-agent')
+sys.path.insert(0, '~/.drewgent/source/drewgent-agent')
+os.chdir('~/.drewgent/source/drewgent-agent')
 
 from cron.scheduler import run_job
 
-with open('/Users/drew/.drewgent/cron/jobs.json') as f:
+with open('~/.drewgent/cron/jobs.json') as f:
     jobs = json.load(f)['jobs']
 
 # Pick one of the patched jobs

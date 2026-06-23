@@ -17,7 +17,7 @@ Quick answers and fixes for the most common questions and issues.
 Drewgent Agent works with any OpenAI-compatible API. Supported providers include:
 
 - **[OpenRouter](https://openrouter.ai/)** — access hundreds of models through one API key (recommended for flexibility)
-- **Nous Portal** — HUMANERD's own inference endpoint
+- **Nous Portal** — YOUR_PROJECT_NAME's own inference endpoint
 - **OpenAI** — GPT-4o, o1, o3, etc.
 - **Anthropic** — Claude models (via OpenRouter or compatible proxy)
 - **Google** — Gemini models (via OpenRouter or compatible proxy)
@@ -33,7 +33,7 @@ Set your provider with `drewgent` model` or by editing `~/.drewgent/.env`. See t
 **Not natively.** Drewgent Agent requires a Unix-like environment. On Windows, install [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and run Drewgent from inside it. The standard install command works perfectly in WSL2:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/NousResearch/drewgent-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO_NAME/main/scripts/install.sh | bash
 ```
 
 ### Is my data sent anywhere?
@@ -162,7 +162,7 @@ source ~/.bashrc
 # If you previously installed with sudo, clean up:
 sudo rm /usr/local/bin/hermes
 # Then re-run the standard installer
-curl -fsSL https://raw.githubusercontent.com/NousResearch/drewgent-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO_NAME/main/scripts/install.sh | bash
 ```
 
 ---
@@ -639,7 +639,7 @@ Skills with very long descriptions are truncated to 40 characters in the Telegra
 
 1. Install Drewgent Agent on the new machine:
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/NousResearch/drewgent-agent/main/scripts/install.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO_NAME/main/scripts/install.sh | bash
    ```
 
 2. Copy your entire `~/.drewgent/` directory **except** the `drewgent-agent` subdirectory (that's the code repo — the new install has its own):
@@ -712,6 +712,6 @@ If using OpenRouter, make sure your API key has credits. A 400 from OpenRouter o
 
 If your issue isn't covered here:
 
-1. **Search existing issues:** [GitHub Issues](https://github.com/NousResearch/drewgent-agent/issues)
-2. **Ask the community:** [HUMANERD Discord](https://discord.gg/nousresearch)
+1. **Search existing issues:** [GitHub Issues](https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME/issues)
+2. **Ask the community:** [YOUR_PROJECT_NAME Discord](https://discord.gg/nousresearch)
 3. **File a bug report:** Include your OS, Python version (`python3 --version`), Drewgent version (`drewgent` --version`), and the full error message

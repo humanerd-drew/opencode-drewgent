@@ -235,7 +235,7 @@ Then in `config.yaml`, just point to the wrapper:
 ```yaml
 mcp_servers:
   my_server:
-    command: /Users/drew/.drewgent/scripts/my-server-wrapper.sh
+    command: ~/.drewgent/scripts/my-server-wrapper.sh
 ```
 
 Benefits: (1) No credentials in `config.yaml` (safe for version control, screenshots, backups), (2) Runtime reads from `.env` so token rotation only needs a .env edit, (3) Keeps `env` section in config.yaml empty, avoiding accidental exposure through MCP server listing or error output.

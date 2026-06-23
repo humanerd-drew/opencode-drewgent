@@ -102,8 +102,8 @@ copy is fine.
 🔍 **Drewgent customize smoke test** @ 2026-06-10 19:36:04 KST
 
 ## T5: hermes wrapper
-  ✓ /Users/drew/.local/bin/hermes does not unset PYTHONPATH (customize layer safe)
-  ✓ /Users/drew/.local/bin/hermes.bak exists (original, for rollback)
+  ✓ hermes does not unset PYTHONPATH (customize layer safe)
+  ✓ hermes.bak exists (original, for rollback)
 
 ## T6: customize layer
   ✓ get_launchd_label() = ai.drewgent.gateway

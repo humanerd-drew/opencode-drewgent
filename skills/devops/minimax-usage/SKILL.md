@@ -85,8 +85,8 @@ fetched 2026-06-02 16:15:24
 `~/.zshrc` is write-protected from `mcp_patch`. User adds these 2 lines themselves:
 
 ```bash
-alias mm-usage='python3 /Users/drew/.drewgent/scripts/minimax_usage.py'
-alias mm-usage-watch='python3 /Users/drew/.drewgent/scripts/minimax_usage.py --watch 30'
+alias mm-usage='python3 ~/.drewgent/scripts/minimax_usage.py'
+alias mm-usage-watch='python3 ~/.drewgent/scripts/minimax_usage.py --watch 30'
 ```
 
 ## 5. Pitfalls
@@ -98,7 +98,7 @@ The fields `current_interval_usage_count` / `current_weekly_usage_count` are alw
 First instinct for `/coding_plan/remains` is to POST (since it's an action-like endpoint name). The endpoint is actually GET-only. Trial found this in 1 attempt.
 
 ### P3: `~/.zshrc` is write-protected
-`mcp_patch` on `/Users/drew/.zshrc` returns `Write denied: ... is a protected system/credential file`. Don't try to add aliases via patch — instruct the user to add them in their next shell session. The `.env` API key is fine to read from the script, but adding shell config requires user action.
+`mcp_patch` on `~/.zshrc` returns `Write denied: ... is a protected system/credential file`. Don't try to add aliases via patch — instruct the user to add them in their next shell session. The `.env` API key is fine to read from the script, but adding shell config requires user action.
 
 ### P4: `tcsetattr: Inappropriate ioctl for device` warning
 Bash warning when piping `minimax_usage.py --watch` through `timeout`/non-TTY. Comes from Python's TTY detection in the watch loop. Harmless in real terminal use. The `--watch` mode also clears the screen on each refresh, which can be janky in non-TTY contexts.

@@ -1,4 +1,4 @@
-# SVG Cover Design — humanerd.kr
+# SVG Cover Design — yourdomain.com
 
 ## Dimensions
 1200 × 630 pixels (standard blog cover, 2:1 ratio)

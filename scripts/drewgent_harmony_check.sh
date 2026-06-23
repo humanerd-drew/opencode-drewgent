@@ -230,7 +230,7 @@ if [ -f "$JOBS_JSON" ]; then
         MTIME=$(date -u -j -f "%Y-%m-%d %H:%M:%S" "$LAST_TS_NAIVE" +%s 2>/dev/null || echo 0)
       elif [[ "$LAST_TS" == *"+"* ]] || [[ "$LAST_TS" == *"-"* ]]; then
         # Has timezone offset, but not UTC. Use python for parse.
-        MTIME=$(/Users/drew/.hermes/hermes-agent/venv/bin/python3 -c "
+        MTIME=$(python3 -c "
 from datetime import datetime
 import sys
 ts = '$LAST_TS'

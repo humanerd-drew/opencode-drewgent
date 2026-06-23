@@ -26,7 +26,7 @@ grep "Running job" ~/.drewgent/P6-prefrontal/logs/gateway.log | tail -5
 # 4. What jobs are due?
 python3 -c "
 import json
-d = json.load(open('/Users/drew/.drewgent/cron/jobs.json'))
+d = json.load(open('~/.drewgent/cron/jobs.json'))
 for j in d.get('jobs', []):
     if j.get('enabled'):
         print(f'{j[\"id\"]:40} script={bool(j.get(\"script\"))} next={j.get(\"next_run_at\",\"?\"):25}')

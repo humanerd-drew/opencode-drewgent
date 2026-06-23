@@ -98,8 +98,8 @@ For complex architecture/flow diagrams. Two-step process:
 2. Convert to PNG via headless Chrome: `scripts/excalidraw-to-png.js`
 
 ```
-NODE_PATH=/Users/drew/.drewgent/scripts/node_modules \
-  node /Users/drew/.drewgent/scripts/excalidraw-to-png.js \
+NODE_PATH=~/.drewgent/scripts/node_modules \
+  node ~/.drewgent/scripts/excalidraw-to-png.js \
     input.excalidraw.json \
     output.png
 ```
@@ -131,7 +131,7 @@ NODE_PATH=/Users/drew/.drewgent/scripts/node_modules \
 
 ## WordPress Publishing Pipeline
 
-Content-manager can publish to the humanerd.kr WordPress site via a custom STDIO MCP server.
+Content-manager can publish to the yourdomain.com WordPress site via a custom STDIO MCP server.
 
 **MCP server**: `~/scripts/wordpress-mcp-server.js` — wraps wp-cli commands as JSON-RPC 2.0 tools:
 - `create_post` — title, content, category, tags, status, featured_image

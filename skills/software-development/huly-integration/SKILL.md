@@ -36,7 +36,7 @@ A native Hermes MCP server is configured at `~/.hermes/config.yaml` → `mcp_ser
 # ~/.hermes/config.yaml — already configured
 mcp_servers:
   huly:
-    command: /Users/drew/.drewgent/scripts/huly-mcp-wrapper.sh
+    command: ~/.drewgent/scripts/huly-mcp-wrapper.sh
 ```
 
 The wrapper script (`~/.drewgent/scripts/huly-mcp-wrapper.sh`) reads `HULY_KEY` from `~/.hermes/.env` at runtime and bridges it as `HULY_TOKEN`. This keeps the JWT out of config.yaml — no credential exposure in version control.
@@ -454,7 +454,7 @@ graph LR
     C --> D[User reviews in Huly UI]
     D --> E[Huly issue: Done]
     E --> F[Watcher -> WordPress push]
-    F --> G[humanerd.kr]
+    F --> G[yourdomain.com]
 ```
 
 ## Direct SDK (Node.js / @hcengineering/api-client)

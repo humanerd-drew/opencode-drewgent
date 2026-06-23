@@ -1,4 +1,4 @@
-# WordPress Docker Deploy — humanerd.kr
+# WordPress Docker Deploy — yourdomain.com
 
 ## Architecture
 
@@ -14,7 +14,7 @@ Mac Mini (colima Docker)
 
 ## Docker Compose
 
-File: `/Users/drew/.drewgent/wordpress/docker-compose.yml`
+File: `~/.drewgent/wordpress/docker-compose.yml`
 
 ```yaml
 services:
@@ -47,15 +47,15 @@ services:
       WORDPRESS_TABLE_PREFIX: hnr_
     volumes:
       - /Volumes/humanerd/docker/wordpress/wp-content:/var/www/html/wp-content
-      - /Users/drew/.drewgent/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
-      - /Users/drew/.drewgent/wordpress/wp-content/themes:/var/www/html/wp-content/themes
+      - ~/.drewgent/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
+      - ~/.drewgent/wordpress/wp-content/themes:/var/www/html/wp-content/themes
     ports:
       - "8080:80"
 ```
 
 ## Credentials
 
-Stored in: `/Users/drew/.drewgent/wordpress/.wp-env` (chmod 600)
+Stored in: `~/.drewgent/wordpress/.wp-env` (chmod 600)
 
 | Field | Value |
 |-------|-------|
@@ -126,7 +126,7 @@ docker exec -it humanerd-db mysql -u humanerd -p
 
 ## Content-Manager → WordPress Integration (Future)
 
-The content-manager produces drafts in `/Users/drew/.drewgent/P2-hippocampus/memories/insights/`. To publish to WordPress:
+The content-manager produces drafts in `~/.drewgent/P2-hippocampus/memories/insights/`. To publish to WordPress:
 
 1. Create Application Password in WP Admin → Users → humanerd → Application Passwords
 2. Use WordPress REST API (`/wp-json/wp/v2/posts`) with Basic Auth (username + app password)

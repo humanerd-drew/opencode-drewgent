@@ -77,7 +77,7 @@ def test_cron_ticker_survives_wiki_exception():
 **Step 2**: Run the test to verify it FAILS today.
 
 ```bash
-cd /Users/drew/.drewgent/source/drewgent-agent
+cd ~/.drewgent/source/drewgent-agent
 .venv/bin/python -m pytest tests/gateway/test_cron_ticker_survives_exception.py -v
 ```
 
@@ -279,7 +279,7 @@ Expected: `0`
 {
   "id": "drewgent-cron-runner-001",
   "name": "kanban-dispatcher (all boards, consolidated)",
-  "script": "/Users/drewgent/scripts/cron_runner.py",
+  "script": "~/.drewgent/scripts/cron_runner.py",
   "script_only": true,
   "schedule": {
     "kind": "cron",

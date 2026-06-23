@@ -1,7 +1,7 @@
 
 import json, os, time
 
-HOME = os.environ.get('HOME','/Users/drew')
+HOME = os.environ.get('HOME', os.path.expanduser('~'))
 TRIGGER = os.environ.get('N8N_TRIGGER_TYPE','')
 TODAY = time.strftime('%Y-%m-%d')
 

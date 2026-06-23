@@ -1,7 +1,7 @@
 ---
 name: site-spec-audit
-title: site-spec-audit — humanerd.kr을 The Website Spec으로 감사
-description: Audit any URL (default: humanerd.kr) against The Website Specification (specification.website). Uses the `specification-website` MCP server (search, list_topics, get_topic, get_checklist, get_categories). Reports `required` items first, then `recommended`, with primary sources cited. Use when the user asks to audit/check/validate humanerd.kr, when a new site is deployed, or when planning a new feature that touches foundations/seo/accessibility/security/agent-readiness.
+title: site-spec-audit — yourdomain.com을 The Website Spec으로 감사
+description: Audit any URL (default: yourdomain.com) against The Website Specification (specification.website). Uses the `specification-website` MCP server (search, list_topics, get_topic, get_checklist, get_categories). Reports `required` items first, then `recommended`, with primary sources cited. Use when the user asks to audit/check/validate yourdomain.com, when a new site is deployed, or when planning a new feature that touches foundations/seo/accessibility/security/agent-readiness.
 type: skill
 space: growth
 tags: [skill, audit, web-standards, humanerd-site, agent-readiness]
@@ -18,12 +18,12 @@ links:
 
 # site-spec-audit
 
-humanerd.kr (or any URL) 을 The Website Specification으로 감사하는 스킬. 기본 대상은 `https://humanerd.kr`. 다른 URL은 인자로 전달.
+yourdomain.com (or any URL) 을 The Website Specification으로 감사하는 스킬. 기본 대상은 `https://yourdomain.com`. 다른 URL은 인자로 전달.
 
 ## 사용법
 
 ```
-/site-spec-audit                              # humanerd.kr 감사
+/site-spec-audit                              # yourdomain.com 감사
 /site-spec-audit https://example.com          # 다른 URL 감사
 /site-spec-audit --category=agent-readiness   # 카테고리 한정 감사
 /site-spec-audit --status=required            # status=required만
@@ -56,7 +56,7 @@ Prompt: `audit_url(url, focus?)` — 대상 URL에 대한 감사 플랜 생성.
 ### 1. 스코프 결정
 
 ```
-url = 인자 또는 기본값 "https://humanerd.kr"
+url = 인자 또는 기본값 "https://yourdomain.com"
 focus = 인자의 --category 또는 None (전체 10 카테고리)
 status_filter = 인자의 --status 또는 "required" 먼저
 ```
@@ -79,7 +79,7 @@ for category in categories:
 
 ### 4. URL 실제 검증
 
-각 spec 항목에 대해 humanerd.kr에서 검증:
+각 spec 항목에 대해 yourdomain.com에서 검증:
 
 - **HTTP fetch** (web_search / browser_navigate) — `og:title`, `<meta charset>`, `<title>` 등 HTML head 검증
 - **well-known fetch** — `/.well-known/security.txt`, `/.well-known/agent-skills/`, `/robots.txt`, `/sitemap-index.xml`
@@ -88,7 +88,7 @@ for category in categories:
 ### 5. 보고서 작성
 
 ```
-# humanerd.kr 감사 보고서 — YYYY-MM-DD
+# yourdomain.com 감사 보고서 — YYYY-MM-DD
 ## 통과: N개
 - ✅ <title> element present
 - ✅ <meta charset="UTF-8"> set
@@ -110,7 +110,7 @@ for category in categories:
 (W3C, WHATWG, IETF RFC, WCAG, MDN)
 ```
 
-## humanerd.kr 우선 점검 (Quartz 베이스)
+## yourdomain.com 우선 점검 (Quartz 베이스)
 
 Quartz 빌드 결과를 기준으로 자주 빠지는 항목:
 
@@ -152,7 +152,7 @@ Quartz 빌드 결과를 기준으로 자주 빠지는 항목:
 `jobs.json`의 `site-spec-audit-weekly` cron job이 매주 일요일 04:00 KST에 실행:
 
 1. Quartz 빌드
-2. humanerd.kr 라이브 URL에 spec check 적용
+2. yourdomain.com 라이브 URL에 spec check 적용
 3. 보고서를 `P6-prefrontal/incidents/site-audit-{date}.md`로 저장
 4. 회귀 감지 (이전 보고서와 diff)
 

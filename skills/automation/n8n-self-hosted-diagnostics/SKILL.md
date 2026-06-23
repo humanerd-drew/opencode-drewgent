@@ -110,7 +110,7 @@ print('완료 — http://localhost:5678 에서 로그인 시도')
 ```
 
 **躬行 결과 (2026-06-01)**:
-- 계정: `drew@humanerd.kr` (disabled=true 상태)
+- 계정: `drew@yourdomain.com` (disabled=true 상태)
 - `$2b$` 해시로 교체 후 바로 로그인 성공
 - disabled 계정도 비밀번호 교체로 복구 확인
 

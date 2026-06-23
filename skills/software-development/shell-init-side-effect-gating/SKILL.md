@@ -45,7 +45,7 @@ Trigger when:
 
 6. **Verify**:
    ```bash
-   zsh -c 'source /Users/drew/.drewgent/.zshrc_aliases; sleep 0.3; jobs -l' 2>&1
+   zsh -c 'source ~/.drewgent/.zshrc_aliases; sleep 0.3; jobs -l' 2>&1
    ```
    Should report no jobs (or only the ones you intended).
 
@@ -99,7 +99,7 @@ When spawning Hermes CLI from cron/background runners, explicitly set `PYTHONPAT
 import subprocess
 subprocess.run(
     ["hermes", "kanban", "dispatch"],
-    env={**os.environ, "PYTHONPATH": "/Users/drew/.drewgent/customize"},
+    env={**os.environ, "PYTHONPATH": "~/.drewgent/customize"},
 )
 ```
 

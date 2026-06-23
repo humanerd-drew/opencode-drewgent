@@ -148,8 +148,8 @@ import json
 from datetime import datetime, timedelta
 from pathlib import Path
 
-JOBS = "/Users/drew/.drewgent/cron/jobs.json"
-OUT = Path("/Users/drew/.drewgent/cron/output")
+JOBS = "~/.drewgent/cron/jobs.json"
+OUT = Path("~/.drewgent/cron/output")
 
 data = json.load(open(JOBS))
 target = next(j for j in data['jobs'] if j['name'] == 'X Article Harvester')
@@ -206,7 +206,7 @@ tail -5 ~/.drewgent/logs/gateway.log
 # Expect: "Cron ticker started (interval=60s)" + "Job 'X' missed its scheduled time ... Fast-forwarding to next run: ..."
 
 # 4. Verify jobs.json is now future-dated
-python3 -c "import json; d=json.load(open('/Users/drew/.drewgent/cron/jobs.json')); [print(f\"{j.get('name','?'):30} next={str(j.get('next_run_at',''))[:19]}\") for j in d.get('jobs',[]) if j.get('enabled')]"
+python3 -c "import json; d=json.load(open('~/.drewgent/cron/jobs.json')); [print(f\"{j.get('name','?'):30} next={str(j.get('next_run_at',''))[:19]}\") for j in d.get('jobs',[]) if j.get('enabled')]"
 # Expect: all next_run_at are future-dated
 
 # 5. Install the watchdog NOW so this doesn't recur. Script + registration in launchd-process-health-check skill.

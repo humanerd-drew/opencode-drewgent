@@ -63,7 +63,7 @@ if (!payload) {
 - `src/db/queries.ts` (변경 없음 — 기존 `checkPurchase` 사용)
 
 ### NAS sync
-- `/Users/drew/Library/CloudStorage/SynologyDrive-Log-Project/m-log/src/controllers/comprehensive-report.ts`
+- `~/Library/CloudStorage/SynologyDrive-Log-Project/m-log/src/controllers/comprehensive-report.ts`
 
 **⚠️ NAS/local divergence found during this fix:** NAS `frontend/app/js/views/DashboardView.js` is OLDER than local — missing "숨겨진 욕망" tab (DesireReport section). NAS version has `<h2 class="mlog-card-title">12신살 분석</h2>` without the sinsal-tabs/desire-tab. Local version has the full tab implementation. This caused the user to report "탭이 사라졌다" even though DashboardView.js was not edited.
 

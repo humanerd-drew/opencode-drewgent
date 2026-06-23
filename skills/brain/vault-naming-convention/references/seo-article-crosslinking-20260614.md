@@ -22,7 +22,7 @@ hub_map = {
 }
 
 for year_dir in ['2024', '2025']:
-    path = f"/Users/drew/.drewgent/P2-hippocampus/knowledge/seo-articles/{year_dir}"
+    path = f"~/.drewgent/P2-hippocampus/knowledge/seo-articles/{year_dir}"
     for fpath in glob.glob(os.path.join(path, '*.md')):
         with open(fpath) as f:
             content = f.read()

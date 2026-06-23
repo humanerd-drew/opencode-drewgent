@@ -59,7 +59,7 @@ Content-manager → draft files (SVG + MD + PNG)
   → Drew reviews in Huly kanban (web UI at http://192.168.1.53:8087)
   → Status changes to "Done"
   → Watcher detects change via MCP polling
-  → WordPress MCP pushes to humanerd.kr
+  → WordPress MCP pushes to yourdomain.com
 ```
 
 ## Huly MCP Server

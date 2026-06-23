@@ -7,6 +7,13 @@ OLD="drewgent"
 NEW="${1:?Usage: $0 <newname> (e.g., alexgent)}"
 ROOT="${2:-$HOME/.drewgent}"
 
+# macOS BSD sed requires an extension argument for -i; GNU sed does not.
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  SED_INPLACE=("sed" "-i" "")
+else
+  SED_INPLACE=("sed" "-i")
+fi
+
 if [ ! -d "$ROOT" ]; then
   echo "Directory $ROOT not found"
   exit 1
@@ -21,7 +28,7 @@ echo "  Replacing in source files ..."
 find . -type f \( -name "*.md" -o -name "*.py" -o -name "*.json" -o -name "*.jsonc" \
   -o -name "*.yaml" -o -name "*.yml" -o -name "*.sh" -o -name "*.js" -o -name "*.html" \) \
   -not -path "./.git/*" -not -path "*/node_modules/*" -not -path "*/__pycache__/*" \
-  -print0 | xargs -0 sed -i '' "s/$OLD/$NEW/g" 2>/dev/null || true
+  -print0 | xargs -0 "${SED_INPLACE[@]}" "s/$OLD/$NEW/g" 2>/dev/null || true
 
 # 2. Capitalized version (Drewgent → Alexgent)
 CAP_OLD="Drewgent"
@@ -30,7 +37,7 @@ echo "  Replacing capitalized ($CAP_OLD → $CAP_NEW) ..."
 find . -type f \( -name "*.md" -o -name "*.py" -o -name "*.json" -o -name "*.jsonc" \
   -o -name "*.yaml" -o -name "*.yml" -o -name "*.sh" -o -name "*.js" -o -name "*.html" \) \
   -not -path "./.git/*" -not -path "*/node_modules/*" -not -path "*/__pycache__/*" \
-  -print0 | xargs -0 sed -i '' "s/$CAP_OLD/$CAP_NEW/g" 2>/dev/null || true
+  -print0 | xargs -0 "${SED_INPLACE[@]}" "s/$CAP_OLD/$CAP_NEW/g" 2>/dev/null || true
 
 # 3. Rename the directory if $ROOT is ~/.drewgent
 if [ "$ROOT" = "$HOME/.drewgent" ] && [ "$OLD" = "drewgent" ]; then

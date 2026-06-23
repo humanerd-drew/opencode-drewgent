@@ -67,7 +67,7 @@ def run_conversation(self):
 
 ```bash
 # nested import json 패턴 찾기
-grep -n "import json\|import os, json" /Users/drew/.drewgent/source/drewgent-agent/run_agent.py
+grep -n "import json\|import os, json" ~/.drewgent/source/drewgent-agent/run_agent.py
 
 # 함수 내부 import json AST로 정확히 찾기
 python3 -c "
@@ -79,10 +79,10 @@ for node in ast.walk(tree):
         local = [n for n in ast.walk(node) if isinstance(n, (ast.Import, ast.ImportFrom)) and any(a.name == 'json' for a in n.names)]
         if local:
             print(f'{node.name}: line {local[0].lineno} — {ast.unparse(local[0])}')
-" /Users/drew/.drewgent/source/drewgent-agent/run_agent.py
+" ~/.drewgent/source/drewgent-agent/run_agent.py
 
 # _json_mod 잔여 확인
-grep -n "_json_mod" /Users/drew/.drewgent/source/drewgent-agent/run_agent.py
+grep -n "_json_mod" ~/.drewgent/source/drewgent-agent/run_agent.py
 ```
 
 ## Discovery Timeline

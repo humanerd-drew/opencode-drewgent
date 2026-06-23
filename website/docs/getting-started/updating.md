@@ -65,7 +65,7 @@ If `git status --short` shows unexpected changes after `drewgent` update`, stop 
 hermes version
 ```
 
-Compare against the latest release at the [GitHub releases page](https://github.com/NousResearch/drewgent-agent/releases) or check for available updates:
+Compare against the latest release at the [GitHub releases page](https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME/releases) or check for available updates:
 
 ```bash
 hermes update --check

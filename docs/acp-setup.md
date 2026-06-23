@@ -224,5 +224,5 @@ HERMES_LOG_LEVEL=DEBUG drewgent acp
 ## Further Reading
 
 - [ACP Specification](https://github.com/anysphere/acp)
-- [Drewgent Agent Documentation](https://github.com/NousResearch/drewgent-agent)
+- [Drewgent Agent Documentation](https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME)
 - Run `drewgent --help` for all CLI options

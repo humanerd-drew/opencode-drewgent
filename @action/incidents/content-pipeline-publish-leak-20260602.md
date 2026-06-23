@@ -21,11 +21,11 @@ links:
 **Date**: 2026-06-02 04:00 KST (detected) → 04:30 KST (resolved)
 **Severity**: P1 (콘텐트 publish safety — 5개 article이 human 검토 없이 라이브 노출)
 **Status**: ✅ Resolved
-**Affected scope**: humanerd.kr public site
+**Affected scope**: yourdomain.com public site
 
 ## Symptom
 
-5/23~5/26 + 6/1 자동 생성된 5개 trend article이 human 검토 없이 humanerd.kr에 publish됨:
+5/23~5/26 + 6/1 자동 생성된 5개 trend article이 human 검토 없이 yourdomain.com에 publish됨:
 
 | Article | vault file | publish 일자 | 노출 일자 |
 |---|---|---|---|
@@ -36,7 +36,7 @@ links:
 | Microsoft AI Cost | `memories/insights/2026-05-26-microsoft-ai-cost-comparison.md` | 5/26 | 5/30~6/2 |
 | AI 에이전트 권위 피로 | `memories/insights/2026-05-ai-agent-authority-fatigue.md` | 6/1 | 6/1~6/2 |
 
-총 6개 article. 모두 humanerd.kr에 200 OK로 노출.
+총 6개 article. 모두 yourdomain.com에 200 OK로 노출.
 
 ## Root Cause
 
@@ -60,13 +60,13 @@ shouldPublish(_ctx, [_tree, vfile]) {
 
 ## Detection
 
-`site-spec-audit` skill으로 humanerd.kr 점검 중. Live URL 검증:
+`site-spec-audit` skill으로 yourdomain.com 점검 중. Live URL 검증:
 
 ```bash
-$ curl -sI https://humanerd.kr/blog/2026-05-23-gemini-cli-shutdown/ | head -1
+$ curl -sI https://yourdomain.com/blog/2026-05-23-gemini-cli-shutdown/ | head -1
 HTTP/2 200    ← ❌ draft가 200으로 노출
 
-$ curl -sI https://humanerd.kr/blog/2026-05-26-claude-code-essence/ | head -1
+$ curl -sI https://yourdomain.com/blog/2026-05-26-claude-code-essence/ | head -1
 HTTP/2 200    ← ❌ draft가 200으로 노출
 ```
 
@@ -126,8 +126,8 @@ monthly log 2개 (2026-05, 2026-06) + Blog Index 만 유지. 주석 추가: "개
 ### Contract
 - [x] 12개 article이 build에서 EXCLUDE 확인
 - [x] 19개 정상 article이 build에서 INCLUDE 확인
-- [x] humanerd.kr live URL 18개 article 200 OK
-- [x] humanerd.kr live URL 12개 article 404 OK
+- [x] yourdomain.com live URL 18개 article 200 OK
+- [x] yourdomain.com live URL 12개 article 404 OK
 - [x] Homepage Blog 섹션에서 4 broken wikilink 제거 확인
 - [x] wrangler deploy 성공 (preview `2e88ba70.humanerd-site.pages.dev`)
 
@@ -138,8 +138,8 @@ monthly log 2개 (2026-05, 2026-06) + Blog Index 만 유지. 주석 추가: "개
 - [x] `Emitted 1302 files to public`
 - [x] `npx wrangler pages deploy public/ --project-name=humanerd-site` exit 0
 - [x] `✨ Success! Uploaded 44 files` + `Deployment complete!`
-- [x] humanerd.kr curl 18 article 200 / 12 article 404
-- [x] humanerd.kr homepage에서 3개 title 0 occurrence
+- [x] yourdomain.com curl 18 article 200 / 12 article 404
+- [x] yourdomain.com homepage에서 3개 title 0 occurrence
 
 ### Full
 - [x] 6/2 04:30 KST — manual test 통과

@@ -7,10 +7,6 @@ created: 2026-05-12
 updated: 2026-05-20
 links:
   - "[[@identity/_agent/COLLAB/ENGINE_USAGE]]"
-  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁brain_obsidian_graph.neuron]]"
-  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁kanban_hallucination.neuron]]"
-  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁kanban_worker_accountability.neuron]]"
-  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁task_qa_gate.neuron]]"
   - "[[@identity/brain/rules]]"
   - "[[@identity/persona/SOUL]]"
   - "[[@identity/persona/writing-style-guide]]"
@@ -248,8 +244,8 @@ worker는 LLM 호출 없이 직접 sqlite3 read/write (결정론적). stdout/std
 - `禁console_log` — production에서 console.log 사용 금지
 - `禁subagent_verify` — subagent 출력 검증 없이 수락 금지
 - `禁filesystem_truth` — 외부 도구 대신 직접 파일 읽기 우선
-- `禁kanban_hallucination` — 가짜 task ID로 kanban_complete 차단 (P0-brainstem/禁/禁kanban_hallucination.neuron)
-- `禁kanban_worker_accountability` — worker TTL/heartbeat enforcement (P0-brainstem/禁/禁kanban_worker_accountability.neuron)
+- `禁kanban_hallucination` — 가짜 task ID로 kanban_complete 차단
+- `禁kanban_worker_accountability` — worker TTL/heartbeat enforcement
 
 ## Related Documentation
 
@@ -299,9 +295,5 @@ worker는 LLM 호출 없이 직접 sqlite3 read/write (결정론적). stdout/std
 - [[@memory/knowledge/garry-tan-unified-architecture-drewgent-review]]
 
 ## Links
-- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁brain_obsidian_graph.neuron]]
-- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁kanban_hallucination.neuron]]
-- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁kanban_worker_accountability.neuron]]
-- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁task_qa_gate.neuron]]
 - [[@memory/growth/harness-autonomous-behaviors]]
 - [[@memory/growth/brain-signal-post-processing-20260531]]

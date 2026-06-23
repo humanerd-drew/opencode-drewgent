@@ -242,7 +242,7 @@ zsh -c 'source ~/.drewgent/.zshrc_aliases
 ### P10: "drewgent이 안 켜져요" — Incomplete class rename from upstream fork
 **증상**: `drewgent` 또는 `drewgent acp --stdio` 실행 시:
 ```
-2026-06-02 17:17:09 [INFO] acp_adapter.entry: Loaded env from /Users/drew/.drewgent/.env
+2026-06-02 17:17:09 [INFO] acp_adapter.entry: Loaded env from ~/.drewgent/.env
 2026-06-02 17:17:09 [INFO] acp_adapter.entry: Starting drewgent-agent ACP adapter
 ACP dependencies not installed.
 Install them with:  pip install -e '.[acp]'
@@ -250,7 +250,7 @@ Install them with:  pip install -e '.[acp]'
 **진짜 에러**: `drewgent_cli/main.py`의 `cmd_acp()` 가 `try/except ImportError` 로 `acp_main()` 호출. 실제 ImportError 메시지가 catch되어 "ACP dependencies not installed" 로 출력. **사용자에게는 가짜 메시지**가 보임.
 
 **진단 단계**:
-1. `pip install -e '.[acp]'` 시도 → 그래도 실패 (venv의 pip shebang 깨졌을 수 있음 — `/Users/drew/drewgent_workspace/...` 옛 path 가리킴)
+1. `pip install -e '.[acp]'` 시도 → 그래도 실패 (venv의 pip shebang 깨졌을 수 있음 — `~/drewgent_workspace/...` 옛 path 가리킴)
 2. `python -m pip install -e .` 로 editable install → 일단 됨
 3. `drewgent acp --stdio` 재시도 → 여전히 같은 에러
 4. 직접 `python -c "from acp_adapter.entry import main"` → **잘 import 됨**
@@ -298,7 +298,7 @@ Install them with:  pip install -e '.[acp]'
 ### P11: ACP vs chat subcommand (plain terminal에서 hang 함정)
 **증상**: `drewgent` 또는 `drewgent acp --stdio` 실행 시:
 ```
-[INFO] acp_adapter.entry: Loaded env from /Users/drew/.drewgent/.env
+[INFO] acp_adapter.entry: Loaded env from ~/.drewgent/.env
 [INFO] acp_adapter.entry: Starting drewgent-agent ACP adapter
 [INFO] acp_adapter.server: ACP client connected
 ... (hang) ...
@@ -328,10 +328,10 @@ Install them with:  pip install -e '.[acp]'
 **검증**:
 ```bash
 # ACP (hang) vs chat (실행) 비교
-timeout 1 /Users/drew/.local/bin/drewgent acp --stdio </dev/null
+timeout 1 drewgent acp --stdio </dev/null
 # → "ACP client connected" 후 hang (timeout kill)
 
-timeout 1 /Users/drew/.local/bin/drewgent chat </dev/null
+timeout 1 drewgent chat </dev/null
 # → bash tcsetattr warning (TTY mode 설정 시도) 후 timeout kill
 # → hang 아님, TUI 초기화 후 user input 대기
 ```

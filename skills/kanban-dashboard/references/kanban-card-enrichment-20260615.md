@@ -61,11 +61,11 @@ User complained that kanban dashboard shows items but "내용을 볼 수 없어 
 - Description tab bottom: purple "📄 Open in Obsidian" button
 - JS regex: `Draft\s*파일\s*위치\s*\n\s*(\/[^\n]+)`
 - URI: `obsidian://open?vault=Drewgent&file=...`
-- Fallback: if path doesn't match `/Users/drew/.drewgent/` prefix, show as text only
+- Fallback: if path doesn't match `~/.drewgent/` prefix, show as text only
 
 **Server-side helpers**:
 - `_extract_draft_path(body)` — regex `## Draft 파일 위치\s*\n\s*(/[^\n]+)`
-- `_obsidian_url(vault_path)` — strips `/Users/drew/.drewgent/` prefix, URL-encodes with `urllib.parse.quote`
+- `_obsidian_url(vault_path)` — strips `~/.drewgent/` prefix, URL-encodes with `urllib.parse.quote`
 
 **Verification**:
 ```bash

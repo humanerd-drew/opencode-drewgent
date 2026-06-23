@@ -13,10 +13,10 @@ create_post, upload_media, list_posts, get_post, create_category, set_site_optio
 ## Usage
 ```bash
 # List tools
-echo '{"jsonrpc":"2.0","id":1,"method":"list_tools"}' | timeout 5 node /Users/drew/.drewgent/scripts/wordpress-mcp-server.js
+echo '{"jsonrpc":"2.0","id":1,"method":"list_tools"}' | timeout 5 node ~/.drewgent/scripts/wordpress-mcp-server.js
 
 # Create a post
-echo '{"jsonrpc":"2.0","id":2,"method":"call_tool","params":{"name":"create_post","arguments":{"title":"Test","content":"Hello","category":"systems","status":"draft"}}}' | timeout 10 node /Users/drew/.drewgent/scripts/wordpress-mcp-server.js
+echo '{"jsonrpc":"2.0","id":2,"method":"call_tool","params":{"name":"create_post","arguments":{"title":"Test","content":"Hello","category":"systems","status":"draft"}}}' | timeout 10 node ~/.drewgent/scripts/wordpress-mcp-server.js
 ```
 
 ## Architecture
@@ -36,6 +36,6 @@ URL: http://localhost:8080
 docker exec humanerd-wp wp --allow-root <command>
 
 # Container management
-export DOCKER_HOST=unix:///Users/drew/.colima/default/docker.sock
+export DOCKER_HOST=unix://~/.colima/default/docker.sock
 docker-compose -f ~/.drewgent/wordpress/docker-compose.yml up -d
 ```
