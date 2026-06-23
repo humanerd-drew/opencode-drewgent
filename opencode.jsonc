@@ -10,16 +10,16 @@
     "paths": [
       "~/.drewgent/skills",
       "~/.drewgent/@action/skills",
-      "~/.config/opencode/skills"
+      "~/.config/opencode/skills",
+      "{env:HOME}/.config/opencode/skills"
     ]
   },
 
   "mcp": {
     "gbrain": {
       "type": "local",
-      "command": ["/Users/drew/.bun/bin/gbrain", "serve"],
+      "command": ["gbrain", "serve"],
       "enabled": true,
-      "environment": { "OPENAI_API_KEY": "ollama-local" },
       "timeout": 120000
     },
     "lazyweb": {
