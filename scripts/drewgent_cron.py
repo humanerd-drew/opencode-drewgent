@@ -6,6 +6,19 @@ launchd 60초 틱마다 실행. jobs.json을 단일 소스로 사용.
 import os, time, subprocess, json, sys
 from pathlib import Path
 
+# Load .env file so Discord webhooks and other env vars are available
+dotenv_path = os.path.join(os.path.expanduser("~"), ".drewgent", ".env")
+if os.path.exists(dotenv_path):
+    with open(dotenv_path) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, val = line.partition("=")
+            key = key.strip()
+            val = val.strip().strip("'\"")
+            os.environ.setdefault(key, val)
+
 HOME = os.path.expanduser("~")
 DREWGENT = os.path.join(HOME, ".drewgent")
 JOBS_FILE = Path(f"{DREWGENT}/cron/jobs.json")
@@ -85,7 +98,32 @@ def resolve_script(script):
     return path if path.is_file() else None
 
 
-def run(name, path, extra_env):
+def _send_discord(name, deliver, content, env):
+    """Best-effort Discord delivery via scripts/discord_send.py."""
+    if not deliver or not deliver.startswith("discord:"):
+        return
+    channel = deliver.split(":", 1)[1].strip()
+    if not channel:
+        return
+    discord_send = SCRIPTS_DIR / "discord_send.py"
+    try:
+        r = subprocess.run(
+            [sys.executable, str(discord_send), "--channel", channel, "--title", name, "--body", content],
+            capture_output=True,
+            text=True,
+            timeout=30,
+            env=env,
+        )
+        if r.returncode != 0:
+            err = (r.stderr or "").strip()[:200]
+            print(f"[{name}] discord_send error: {err}")
+        else:
+            print(f"[{name}] delivered to discord:{channel}")
+    except Exception as e:
+        print(f"[{name}] discord delivery failed: {e}")
+
+
+def run(name, path, extra_env, deliver=None):
     """스크립트 실행 후 출력 표시."""
     env = {**os.environ, **extra_env}
     interpreter = "/bin/bash" if path.suffix == ".sh" else sys.executable
@@ -96,6 +134,8 @@ def run(name, path, extra_env):
         if r.returncode == 0:
             if out and out != "silent":
                 print(f"[{name}] {out[:200]}")
+                if deliver:
+                    _send_discord(name, deliver, out, env)
         else:
             msg = err or out or f"exit {r.returncode}"
             print(f"[{name}] {msg[:200]}")
@@ -146,7 +186,7 @@ def main():
         if path is None:
             print(f"[{name}] 스크립트 없음: {job['script']}")
             continue
-        run(name, path, build_env(job))
+        run(name, path, build_env(job), job.get("deliver"))
         if spec[0] == "interval":
             state[job_id] = now
         else:

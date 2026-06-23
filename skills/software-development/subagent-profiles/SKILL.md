@@ -4,7 +4,7 @@ title: Subagent Profiles
 description: >-
   Define and manage role-based agent profiles for delegated tasks. Each profile
   specifies model, provider, toolsets, and instructions — loaded automatically
-  by delegate_task(agent_profile='reviewer').
+  by task(subagent_type='reviewer').
 trigger: >-
   Loop engineering (addyo.substack.com/p/loop-engineering) — split maker from
   checker, assign different models per role. Drewgent config from 2026-06-13

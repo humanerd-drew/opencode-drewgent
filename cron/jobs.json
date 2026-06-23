@@ -678,7 +678,7 @@
     {
       "id": "c7d8e9f0a1b2",
       "name": "wiki-compile",
-      "prompt": "Wiki Compile — compile knowledge from entire .drewgent vault into P5-ego/wiki/compiled/\n\nScan these knowledge sources:\n1. P2-hippocampus/ — memories, knowledge, sessions (raw data)\n2. P3-sensors/ — gateway integration docs, sensor architecture\n3. P4-cortex/ — taste reviews, growth records, skill index\n4. P6-prefrontal/incidents/ — postmortems, outage analysis\n5. skills/*/SKILL.md — design decisions behind each skill\n6. AGENTS.md — system documentation\n\nFor each topic cluster, create/update compiled/<topic>.md with:\n- Core decisions (what)\n- Rationale (why)\n- Alternatives considered\n- Current status as of today\n\nThen update P5-ego/wiki/index.md with links to all compiled pages.\n\nDO NOT scan: scripts/, cron/, logs/, customize/, kanban.db (infrastructure, not knowledge)",
+      "prompt": "Compile raw P2-hippocampus data into structured wiki pages under P5-ego/wiki/compiled/.\n\nSteps:\n1. Scan P2-hippocampus/memories/ for new/changed raw data since last compile\n2. Scan P2-hippocampus/knowledge/ for new raw knowledge\n3. For each new topic cluster:\n   - Create a compiled page at P5-ego/wiki/compiled/<topic>.md\n   - Structure: frontmatter (title, type: wiki-page, source, last_compiled) + summary + key facts + links back to P2 sources\n4. Update P5-ego/wiki/index.md with new page entries under 'Compiled Pages'\n5. Report: number of pages created/updated\n\nCompile only what has changed. Do not regenerate existing pages.",
       "skills": [],
       "skill": null,
       "model": null,
@@ -752,5 +752,5 @@
       "profile": "explorer"
     }
   ],
-  "updated_at": "2026-06-21T14:59:42.172739"
+  "updated_at": "2026-06-21T14:24:48.537329"
 }

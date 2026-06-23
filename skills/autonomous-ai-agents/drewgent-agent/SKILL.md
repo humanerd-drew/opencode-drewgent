@@ -6,7 +6,7 @@ author: Drewgent Agent + Teknium
 license: MIT
 metadata:
   drewgent:
-    tags: [hermes, setup, configuration, multi-agent, spawning, cli, gateway, development]
+    tags: [opencode, setup, configuration, multi-agent, spawning, cli, gateway, development]
     homepage: https://github.com/NousResearch/drewgent-agent
     related_skills: [claude-code, codex, opencode]
 links:
@@ -41,17 +41,18 @@ People use Drewgent for software development, research, system administration, d
 # Install
 curl -fsSL https://raw.githubusercontent.com/NousResearch/drewgent-agent/main/scripts/install.sh | bash
 
+# Drewgent now runs via opencode (the hermes CLI has been removed).
 # Interactive chat (default)
-hermes
+opencode
 
 # Single query
-hermes chat -q "What is the capital of France?"
+opencode run -q "What is the capital of France?"
 
 # Setup wizard
 drewgent setup
 
 # Change model/provider
-hermes model
+# Use opencode's model selection or edit ~/.config/opencode/opencode.jsonc
 
 # Check health
 drewgent doctor
@@ -59,53 +60,43 @@ drewgent doctor
 
 ---
 
-## CLI Reference
+## CLI Reference (DEPRECATED — hermes CLI removed)
 
-### Global Flags
+The `hermes` CLI has been removed from the system. All interaction now goes through `opencode` (the OpenCode CLI). The commands below are historical reference only.
+
+### Global Flags (opencode equivalents)
 
 ```
-hermes [flags] [command]
+opencode [flags] [command]
 
   --version, -V             Show version
   --resume, -r SESSION      Resume session by ID or title
   --continue, -c [NAME]     Resume by name, or most recent session
-  --worktree, -w            Isolated git worktree mode (parallel agents)
   --skills, -s SKILL        Preload skills (comma-separate or repeat)
-  --profile, -p NAME        Use a named profile
   --yolo                    Skip dangerous command approval
-  --pass-session-id         Include session ID in system prompt
 ```
 
-No subcommand defaults to `chat`.
+No subcommand defaults to interactive chat.
 
 ### Chat
 
 ```
-hermes chat [flags]
+opencode [flags]
   -q, --query TEXT          Single query, non-interactive
-  -m, --model MODEL         Model (e.g. anthropic/claude-sonnet-4)
-  -t, --toolsets LIST       Comma-separated toolsets
-  --provider PROVIDER       Force provider (openrouter, anthropic, nous, etc.)
+  -m, --model MODEL         Model (e.g. deepseek-v4-flash)
   -v, --verbose             Verbose output
   -Q, --quiet               Suppress banner, spinner, tool previews
-  --checkpoints             Enable filesystem checkpoints (/rollback)
-  --source TAG              Session source tag (default: cli)
 ```
 
 ### Configuration
 
 ```
 drewgent setup [section]      Interactive wizard (model|terminal|gateway|tools|agent)
-hermes model                Interactive model/provider picker
 drewgent config               View current config
-drewgent config edit          Open config.yaml in $EDITOR
+drewgent config edit          Open config in $EDITOR
 drewgent config set KEY VAL   Set a config value
-drewgent config path          Print config.yaml path
-drewgent config env-path      Print .env path
+drewgent config path          Print config path
 drewgent config check         Check for missing/outdated config
-drewgent config migrate       Update config with new options
-hermes login [--provider P] OAuth login (nous, openai-codex)
-hermes logout               Clear stored auth
 drewgent doctor [--fix]       Check dependencies and config
 drewgent status [--all]       Show component status
 ```
@@ -122,25 +113,13 @@ drewgent skills list          List installed skills
 drewgent skills search QUERY  Search the skills hub
 drewgent skills install ID    Install a skill
 drewgent skills inspect ID    Preview without installing
-drewgent skills config        Enable/disable skills per platform
-drewgent skills check         Check for updates
 drewgent skills update        Update outdated skills
 drewgent skills uninstall N   Remove a hub skill
-drewgent skills publish PATH  Publish to registry
-drewgent skills browse        Browse all available skills
-drewgent skills tap add REPO  Add a GitHub repo as skill source
 ```
 
 ### MCP Servers
 
-```
-hermes mcp serve            Run Drewgent as an MCP server
-hermes mcp add NAME         Add an MCP server (--url or --command)
-hermes mcp remove NAME      Remove an MCP server
-hermes mcp list             List configured servers
-hermes mcp test NAME        Test connection
-hermes mcp configure NAME   Toggle tool selection
-```
+MCP servers are configured in `~/.config/opencode/opencode.jsonc`. Use the opencode native MCP integration.
 
 ### Gateway (Messaging Platforms)
 
@@ -153,44 +132,17 @@ drewgent gateway status       Check status
 drewgent gateway setup        Configure platforms
 ```
 
-Supported platforms: Telegram, Discord, Slack, WhatsApp, Signal, Email, SMS, Matrix, Mattermost, Home Assistant, DingTalk, Feishu, WeCom, API Server, Webhooks, Open WebUI.
-
-Platform docs: https://drewgent-agent.humanerd.ai/docs/user-guide/messaging/
-
 ### Sessions
 
-```
-hermes sessions list        List recent sessions
-hermes sessions browse      Interactive picker
-hermes sessions export OUT  Export to JSONL
-hermes sessions rename ID T Rename a session
-hermes sessions delete ID   Delete a session
-hermes sessions prune       Clean up old sessions (--older-than N days)
-hermes sessions stats       Session store statistics
-```
+Sessions are managed through opencode's native session system. Use `opencode --resume` or `opencode --continue`.
 
 ### Cron Jobs
 
-```
-hermes cron list            List jobs (--all for disabled)
-hermes cron create SCHED    Create: '30m', 'every 2h', '0 9 * * *'
-hermes cron edit ID         Edit schedule, prompt, delivery
-hermes cron pause/resume ID Control job state
-hermes cron run ID          Trigger on next tick
-hermes cron remove ID       Delete a job
-hermes cron status          Scheduler status
-```
-
-### Webhooks
-
-```
-drewgent webhook subscribe N  Create route at /webhooks/<name>
-drewgent webhook list         List subscriptions
-drewgent webhook remove NAME  Remove a subscription
-drewgent webhook test NAME    Send a test POST
-```
+Cron jobs are managed through `~/.drewgent/cron/jobs.json` and the launchd cron dispatcher. Edit `jobs.json` directly or use the Python cron API.
 
 ### Profiles
+
+Agent profiles live at `~/.config/opencode/agents/*.md`. List with `ls ~/.config/opencode/agents/`.
 
 ```
 drewgent profile list         List all profiles
@@ -198,34 +150,16 @@ drewgent profile create NAME  Create (--clone, --clone-all, --clone-from)
 drewgent profile use NAME     Set sticky default
 drewgent profile delete NAME  Delete a profile
 drewgent profile show NAME    Show details
-drewgent profile alias NAME   Manage wrapper scripts
-drewgent profile rename A B   Rename a profile
-drewgent profile export NAME  Export to tar.gz
-drewgent profile import FILE  Import from archive
-```
-
-### Credential Pools
-
-```
-hermes auth add             Interactive credential wizard
-hermes auth list [PROVIDER] List pooled credentials
-hermes auth remove P INDEX  Remove by provider + index
-hermes auth reset PROVIDER  Clear exhaustion status
 ```
 
 ### Other
 
 ```
-hermes insights [--days N]  Usage analytics
-hermes update               Update to latest version
-hermes pairing list/approve/revoke  DM authorization
-hermes plugins list/install/remove  Plugin management
+drewgent insights [--days N]  Usage analytics
+drewgent update               Update to latest version
 drewgent honcho setup/status  Honcho memory integration
 drewgent memory setup/status/off  Memory provider config
-hermes completion bash|zsh  Shell completions
 drewgent acp                  ACP server (IDE integration)
-drewgent claw migrate         Migrate from OpenClaw
-hermes uninstall            Uninstall Drewgent
 ```
 
 ---
@@ -429,10 +363,10 @@ Run additional Drewgent processes as fully independent subprocesses — separate
 ### One-Shot Mode
 
 ```
-terminal(command="hermes chat -q 'Research GRPO papers and write summary to ~/research/grpo.md'", timeout=300)
+terminal(command="opencode run -q 'Research GRPO papers and write summary to ~/research/grpo.md'", timeout=300)
 
 # Background for long tasks:
-terminal(command="hermes chat -q 'Set up CI/CD for ~/myapp'", background=true)
+terminal(command="opencode run -q 'Set up CI/CD for ~/myapp'", background=true)
 ```
 
 ### Interactive PTY Mode (via tmux)
@@ -441,7 +375,7 @@ Drewgent uses prompt_toolkit, which requires a real terminal. Use tmux for inter
 
 ```
 # Start
-terminal(command="tmux new-session -d -s agent1 -x 120 -y 40 'hermes'", timeout=10)
+terminal(command="tmux new-session -d -s agent1 -x 120 -y 40 'opencode'", timeout=10)
 
 # Wait for startup, then send a message
 terminal(command="sleep 8 && tmux send-keys -t agent1 'Build a FastAPI auth service' Enter", timeout=15)
@@ -476,7 +410,7 @@ terminal(command="tmux send-keys -t frontend 'Here is the API schema from the ba
 
 ```
 # Resume most recent session
-terminal(command="tmux new-session -d -s resumed 'hermes --continue'", timeout=10)
+terminal(command="tmux new-session -d -s resumed 'opencode --continue'", timeout=10)
 
 # Resume specific session
 terminal(command="tmux new-session -d -s resumed 'drewgent --resume 20260225_143052_a1b2c3'", timeout=10)
@@ -487,7 +421,7 @@ terminal(command="tmux new-session -d -s resumed 'drewgent --resume 20260225_143
 - **Prefer `delegate_task` for quick subtasks** — less overhead than spawning a full process
 - **Use `-w` (worktree mode)** when spawning agents that edit code — prevents git conflicts
 - **Set timeouts** for one-shot mode — complex tasks can take 5-10 minutes
-- **Use `drewgent` chat -q` for fire-and-forget** — no PTY needed
+- **Use `opencode run -q` for fire-and-forget** — no PTY needed
 - **Use tmux for interactive sessions** — raw PTY mode has `\r` vs `\n` issues with prompt_toolkit
 - **For scheduled tasks**, use the `cronjob` tool instead of spawning — handles delivery and retry
 

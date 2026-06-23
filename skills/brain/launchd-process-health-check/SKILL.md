@@ -56,7 +56,7 @@ The opposite case is more dangerous and is the one that actually broke Drewgent 
 - `cron-runner.log` / `n8n.log` / `quartz-fswatch.log` → last entry is hours/days old, often a graceful shutdown ("Received SIGTERM. Shutting down...")
 
 **Why this is the dangerous case (2026-06-10 incident):**
-- `hermes cron list` showed "Gateway is not running" as a soft warning — easy to skip
+- Checking `~/.drewgent/cron/jobs.json` showed stale state — easy to skip
 - `last_status=ok` in `jobs.json` was a stale marker from before the gateway died
 - No `infrastructure watchdog` was polling for "is launchd keeping services alive" — there was no alert path
 - User/agent didn't notice for 6+ days until they ran a checkup
@@ -405,7 +405,7 @@ This is a footgun for any harmony check script that uses `date -j` for log times
 
 3. **Verify Label key matches filename** (Sub-pattern 5) before issuing any launchctl command. Cross-check with `PlistBuddy -c "Print :Label"`. Convention: Label = filename minus `.plist`.
 
-4. **Make `hermes status` (or `drewgent doctor`) include a launchd health row** — table of (label, PID, last-log-mtime, ok/stale) — so a checkup surfaces dead services in one screen.
+4. **Make `drewgent doctor` include a launchd health row** — table of (label, PID, last-log-mtime, ok/stale) — so a checkup surfaces dead services in one screen.
 
 5. **Log rotation cron** (`no_agent: true`) — daily 04:00. Without it, a long-running service accumulates multi-GB error logs that make `grep` slow and disk pressure real. Verified on 6/10: 1.7GB error log rotated to 9.6MB .gz + 0B live + service restart. Script and recipe in **`references/2026-06-10-log-rotation-recipe.md`**.
 
@@ -524,7 +524,7 @@ When writing shell scripts that run on macOS (Drewgent's host), the default `bas
 - `references/2026-06-10-launchd-mass-failure.md` — raw data from the 6/10 incident that motivated the new "Reverse Pattern" section
 - **`references/gateway-watchdog-2026-06-11.md`** — launchd-based gateway watchdog (5-min interval, PID check + auto-restart). Independent of the gateway process so it works when gateway is crashed.
 - **`references/2026-06-10-incident-fix-recipe.md`** — **the playbook actually executed on 6/10** (watchdog script verbatim, canonical KeepAlive block, restart sequence, jobs.json fast-forward behavior, verification checklist, common pitfalls). Read this when you need to do the fix, not just diagnose.
-- **`references/2026-06-10-customize-layer-recipe.md`** — **Drewgent ↔ hermes customize layer pattern**. How to make hermes-cli work for Drewgent's environment without editing `~/.hermes/hermes-agent/` (which gets overwritten on upgrade). Directory layout, three activation paths (gateway plist / .zshrc / `~/.local/bin/hermes` wrapper), the importlib.util proxy pattern for hermes cli overrides, the macOS Sonoma+ plist-format launchctl output, smoke test cron, 8 pitfalls. Verified 2026-06-10 17:30.
+- **`references/2026-06-10-customize-layer-recipe.md`** — **Drewgent customize layer pattern (archived)**. How the customize layer used to work for Drewgent's environment. Directory layout, three activation paths (gateway plist / .zshrc / `~/.local/bin/hermes` wrapper), the importlib.util proxy pattern, the macOS Sonoma+ plist-format launchctl output, smoke test cron, 8 pitfalls. Verified 2026-06-10 17:30. **Note:** hermes CLI has been removed; this is historical reference only.
 - **`references/2026-06-10-log-rotation-recipe.md`** — **log rotation for launchd services**. macOS newsyslog doesn't handle launchd stdout/stderr, so launchd services need manual rotation. The working strategy: `gzip -c` archive + `: >` truncate + `launchctl kickstart -k` to reopen the FD. Verified on 6/10: 1.7GB error log → 0B live + 9.6MB .gz archive. Includes the script, cron registration, tunables, and 8 pitfalls (forgetting the kickstart, symlinked paths, multi-service files, etc.).
 - **`references/2026-06-10-harmony-check-recipe.md`** — 4-layer cross-diff script + Layer 3.5 mtime drift detection (catches Sub-pattern 9 stalls within 60s of occurrence). Verified 6/10 19:38 to detect a 1.7h+ gateway cron stall.
 - **`references/2026-06-10-gateway-cron-stall-fix-recipe.md`** — Sub-pattern 10 root cause + fix. The actual code patch (gateway/run.py:3260-3290) verified 2026-06-10 20:55. Includes the broken code, the fixed code, the 5-minute observation that confirmed the fix, and the pattern for any "housekeeping in cron tick thread" architecture.

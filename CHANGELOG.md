@@ -5,16 +5,36 @@ type: document
 space: concept
 tags: [concept]
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-23
 links: []
 links:
-  - "[[P4-cortex/knowledge/NEURONFS_RULES]]"
+  - "[[@memory/knowledge/NEURONFS_RULES]]"
 ---
 
 
 # Drewgent Changelog
 
 All notable changes to Drewgent Agent are documented here.
+
+---
+
+## [0.8.0] — 2026-06-22
+
+### Architecture Compression
+
+#### What changed
+- **P-layer 7→3**: P0/P1/P5 → `@identity/`, P2/P4 → `@memory/`, P3/P6 → `@action/`. Symlinks preserve backward compatibility.
+- **Agent profiles 14→6**: tester, security-reviewer, orchestrator, sre, editor, analyst, content-manager merged into 6 core profiles. designer migrated to skill.
+- **Pipeline 5→3**: tester and archiver stages removed. Archiver runs as post-hook on completion.
+- **MCP conditional**: lazyweb and specification-website set to `enabled: false`; activated on demand via skill().
+- **Scripts cleanup**: 18 unreferenced scripts archived (25 active remain).
+- **Tools cleanup**: 22 unreferenced tools archived (36 active remain).
+- **Provenance cleanup**: `trigger:` and `provenance:` frontmatter lines removed from 27 SKILL.md files.
+- **Wikilinks**: 28,347 stale `[[P[0-6]-` references updated to `@identity/`, `@memory/`, `@action/` paths.
+- **.gitignore**: `@identity/` and `@action/` removed from gitignore (must be tracked); `@memory/` remains gitignored (runtime data).
+
+#### Files affected
+- 127 files changed, 9,574 insertions, 16,890 deletions
 
 ---
 
@@ -296,6 +316,17 @@ P0-brainstem neurons: 10 total
 ---
 
 ## [0.7.0] — 2026-04-03
+
+## [0.7.x] — 2026-06-20
+
+### SEO Service QA Gate Guide
+
+#### What changed
+- Created `P4-cortex/growth/seo/seo-service/qa-gate.md` — project-specific QA gate guide
+- Documents 禁task_qa_gate + 禁subagent_verify 적용법 for SEO Service
+- 3-tier pipeline templates (Tier 1-3) matching AGENTS.md Tiered Autonomy
+- Hard gate rules (6 rules), common failure modes (6 modes), phase-specific notes
+- Written by documentation agent, triggered by user request
 
 ### Initial release with NeuronFS brain governance
 

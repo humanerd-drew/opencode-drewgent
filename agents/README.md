@@ -2,7 +2,7 @@
 title: Agent Profiles
 description: "Profile definitions for subagent roles — model, provider, instructions, and toolset constraints per role."
 created: 2026-06-13
-updated: 2026-06-18
+updated: 2026-06-20
 ---
 
 # Agent Profiles
@@ -11,69 +11,90 @@ updated: 2026-06-18
 
 ## 사용 방식
 
+**2계층 호출:**
+
 ```
-delegate_task(agent_profile="reviewer", goal="...")
-# → ~/.drewgent/agents/reviewer.md 로드
-# → model/provider/instructions/toolsets 적용
+# 같은 세션 (빠름) — 부모 모델 상속, profile의 프롬프트/권한만 적용
+task(
+    subagent_type="reviewer",
+    description="Review PR changes",
+    prompt="Review this PR for logic errors, edge cases, and style issues."
+)
+
+# 다른 모델 (정확) — profile의 모델로 새 세션 실행
+delegate(
+    name="implementer",
+    prompt="Implement login validation. Files: src/auth/login.ts..."
+)
+# → ~/.config/opencode/tools/delegate.ts 커스텀 툴
+# → opencode run --agent <name> --model <model> --attach :8642 실행
+# → 프로필 고유 모델 적용됨 (kimi-k2.7-code, qwen3.7-plus 등)
 ```
 
 ## Cost Tier
 
 | Tier | 모델 | 프로필 | 비용 |
 |------|------|--------|------|
-| **Flash** | deepseek-v4-flash | explorer, implementer, tester, archiver, designer, sre, analyst | OpenCode Go 구독에 포함, 추가 비용 $0 |
-| **Pro** | deepseek-v4-pro | reviewer, editor | 구독 포함, 약간 더 느림 |
-| **Max** | qwen3.7-max | planner, reviewer-critical, security-reviewer, orchestrator | 구독 포함, 가장 느리지만 추론 품질 최상 |
+| **Flash** | deepseek-v4-flash, kimi-k2.7-code | explorer, implementer(kimi), archiver | OpenCode Go 구독에 포함 |
+| **Pro** | deepseek-v4-pro, glm-5.2, minimax-m3 | reviewer, editor(glm), security-reviewer(minimax) | 구독 포함 |
+| **Max** | qwen3.7-max, qwen3.7-plus | planner, orchestrator, reviewer-critical(plus) | 구독 포함 |
 
-## Pipeline
+## Pipeline (Calling Convention)
+
+- `task(subagent_type="...")` — 같은 모델일 때 (부모 모델 상속, 가볍고 빠름)
+- `delegate(name="...", prompt="...")` — 다른 모델이 필요할 때 (프로필 모델 적용)
 
 ```
-Tier 1 (단순):
-  Implementer(flash) → [optional: Tester(flash)] → Archiver(flash)
+Tier 1 (단순, 전부 flash):
+  task(implementer) → [optional: task(tester)] → task(archiver)
 
-Tier 2 (보통):
-  Explorer(flash) → Implementer(flash) ↔ Tester(flash) [≤2회 loop]
-  → Reviewer(pro) → Archiver(flash)
+Tier 2 (보통, implementer는 kimi):
+  task(explorer, flash)
+  → delegate(implementer, kimi-k2.7-code) ↔ task(tester, flash) [≤2회 loop]
+  → task(reviewer, pro) → task(archiver, flash)
 
-Tier 3 (복잡):
-  Planner(max) → Explorer(flash) → Implementer(flash) ↔ Tester(flash) [≤3회 loop]
-  → Reviewer(pro)
-  → [보안 관련?] → Security-reviewer(max)
-  → [매우 중요?] → Reviewer-critical(max)
-  → Archiver(flash)
+Tier 3 (복잡, 3개 계열 모델):
+  delegate(planner, qwen3.7-max)       # 계획 수립
+  → task(explorer, flash)              # 분석
+  → delegate(implementer, kimi-k2.7)   # 코드 생성 (kimi 특화)
+  ↔ task(tester, flash) [≤3회 loop]
+  → task(reviewer, pro)                # 일반 리뷰
+  → delegate(security-reviewer, minimax-m3)     # 보안 감사 (다른 계열)
+  → delegate(reviewer-critical, qwen3.7-plus)   # 최종 심층 리뷰 (최상급)
+  → task(archiver, flash)              # 문서화
 
 Content Pipeline:
-  Content Manager(pro) → Editor(pro) → Archiver(flash)
+  delegate(content-manager, pro) → delegate(editor, glm-5.2) → task(archiver)
 
 Design Pipeline:
-  Explorer(flash) [Lazyweb refs] → Designer(flash) → [Implementer(flash)]
-  → Reviewer(pro) → Archiver(flash)
+  task(explorer) [Lazyweb refs] → task(designer) → [delegate(implementer)]
+  → task(reviewer) → task(archiver)
 
 Incident Pipeline:
-  SRE(flash) → [ESCALATE? → Orchestrator(max)] → Archiver(flash)
+  task(sre) → [ESCALATE? → delegate(orchestrator, max)] → task(archiver)
 
 Data Request:
-  Analyst(flash) → [ESCALATE? → Orchestrator(max)] → Report
+  task(analyst) → [ESCALATE? → delegate(orchestrator, max)] → Report
 ```
 
 ## 프로필 목록
 
 | 파일 | 역할 | 모델 | Pipeline 위치 |
 |------|------|------|-------------|
-| `explorer.md` | 탐색/분석 (읽기 전용) | flash | 첫 단계 |
-| `planner.md` | 태스크 분해/계획 | max | 복잡한 작업 첫 단계 |
-| `orchestrator.md` | 작업 배정/파이프라인 관리 | max | 전체 pipeline 조정 |
-| `designer.md` | UI/UX 디자인, 시각 자료 | flash | 설계 단계 |
-| `implementer.md` | 구현 | flash | 구현 |
-| `tester.md` | 테스트 작성/실행 | flash | 구현 ↔ 테스트 loop |
-| `reviewer.md` | 일반 코드 리뷰 | pro | 리뷰 단계 |
-| `reviewer-critical.md` | 중요 변경 심층 리뷰 | max | 중요 변경 한정 |
-| `security-reviewer.md` | 보안 감사 | max | 보안 관련 변경 한정 |
-| `sre.md` | 인프라/배포/인시던트 대응 | flash | 운영 |
-| `analyst.md` | 데이터 분석/인사이트 | flash | 분석 |
-| `content-manager.md` | 콘텐츠 생성 (CMO) | pro | 콘텐츠 파이프라인 |
-| `editor.md` | 콘텐츠 검수/한국어 인퓨전 | pro | 퍼블리시 전 최종 게이트 |
-| `archiver.md` | 문서화/기록 | flash | 마무리 |
+| `explorer.md` | 탐색/분석 (읽기 전용) | flash (deepseek-v4) | 첫 단계 |
+| `planner.md` | 태스크 분해/계획 | max (qwen3.7-max) | 복잡한 작업 첫 단계 |
+| `orchestrator.md` | 작업 배정/파이프라인 관리 | max (qwen3.7-max) | 전체 pipeline 조정 |
+| `designer.md` | UI/UX 디자인, 시각 자료 | flash (deepseek-v4) | 설계 단계 |
+| `implementer.md` | 구현 — 코드 생성 특화 | flash (kimi-k2.7-code) | 구현 |
+| `tester.md` | 테스트 작성/실행 | flash (deepseek-v4) | 구현 ↔ 테스트 loop |
+| `reviewer.md` | 일반 코드 리뷰 | pro (deepseek-v4-pro) | 리뷰 단계 |
+| `reviewer-critical.md` | 중요 변경 심층 리뷰 — 최상급 추론 | max (qwen3.7-plus) | 중요 변경 한정 |
+| `security-reviewer.md` | 보안 감사 — 다른 계열 시각 | pro (minimax-m3) | 보안 관련 변경 한정 |
+| `sre.md` | 인프라/배포/인시던트 대응 | flash (deepseek-v4) | 운영 |
+| `analyst.md` | 데이터 분석/인사이트 | flash (deepseek-v4) | 분석 |
+| `content-manager.md` | 콘텐츠 생성 (CMO) | pro (deepseek-v4-pro) | 콘텐츠 파이프라인 |
+| `editor.md` | 콘텐츠 검수/한국어 인퓨전 | pro (glm-5.2) | 퍼블리시 전 최종 게이트 |
+| `archiver.md` | 문서화/기록 | flash (deepseek-v4) | 마무리 |
 
 ## Escalation
 

@@ -366,15 +366,14 @@ provider mapping, don't increase timeouts.
    doesn't share the 600s idle pool.
 
 11. **PATH is NOT inherited from user shell in no-agent cron jobs.** 
-    When a `no_agent: true` script runs `hermes cron list` or `hermes kanban list` 
-    internally, the subprocess does NOT inherit the user's interactive shell PATH. 
+    When a `no_agent: true` script runs CLI commands internally, the subprocess does NOT inherit the user's interactive shell PATH. 
     Common installation paths are missing:
     
-    - `~/.local/bin/hermes` — the hermes CLI wrapper
-    - `~/.hermes/hermes-agent/.venv/bin/hermes` — the venv hermes
-    - `/opt/homebrew/bin/hermes` — brew-installed hermes
+    - `~/.local/bin/` — local user binaries
+    - `/opt/homebrew/bin/` — Homebrew packages
+    - `/usr/local/bin/` — system local binaries
     
-    **Symptom:** The script runs but `hermes` CLI commands return empty output. 
+    **Symptom:** The script runs but CLI commands return empty output. 
     KV data shows `cron.active: []` even though the script's `--dry-run` showed 
     16+ active jobs.
     
@@ -404,8 +403,8 @@ provider mapping, don't increase timeouts.
     **Detection:**
     ```bash
     env -i PATH="/usr/bin:/bin" python3 -c "
-    import subprocess
-    r = subprocess.run('hermes cron list', shell=True, capture_output=True, text=True)
+    import subprocess, json
+    r = subprocess.run(['python3', '-c', 'import json; d=json.load(open(\"$HOME/.drewgent/cron/jobs.json\")); print(len([j for j in d.get(\"jobs\",[]) if j.get(\"enabled\")]))'], capture_output=True, text=True)
     print('stdout:', repr(r.stdout[:100]))
     print('stderr:', repr(r.stderr[:200]))
     "
@@ -426,7 +425,7 @@ provider mapping, don't increase timeouts.
       ```bash
       #!/bin/bash
       # wrapper.sh — cron scheduler runs .sh with bash
-      HULY_KEY="$(grep '^HULY_KEY=' "$HOME/.hermes/.env" | head -1 | cut -d= -f2-)"
+      HULY_KEY="$(grep '^HULY_KEY=' "$HOME/.drewgent/.env" | head -1 | cut -d= -f2-)"
       export HULY_KEY
       exec 2>/dev/null
       exec node --no-warnings actual_script.js

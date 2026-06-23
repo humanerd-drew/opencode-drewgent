@@ -51,7 +51,7 @@ auxiliary:
 
 ### Agent Profiles (`~/.drewgent/agents/*.md`)
 
-8 pre-defined roles, each with model/provider/toolsets/instructions. Loaded via `delegate_task(agent_profile="reviewer", goal="...")`. The `agent_profile` parameter is built into the `delegate_task` tool schema — every agent sees it.
+8 pre-defined roles, each with model/provider/toolsets/instructions. Loaded via `task(subagent_type="reviewer", description="...", prompt="...")`. The `subagent_type` parameter is built into the `task` tool schema — every agent sees it.
 
 ### Pipeline (Tier-Adaptive)
 

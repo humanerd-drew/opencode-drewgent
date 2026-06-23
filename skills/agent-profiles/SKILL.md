@@ -1,6 +1,6 @@
 ---
 name: agent-profiles
-description: Authoring and using agent profiles — pre-defined subagent roles that set model, provider, toolsets, and instructions in one delegate_task call. Covers profile format, the 8 standard roles, pipeline patterns, cost-tiered model assignment, and the ESCALATE mechanism for capability routing.
+description: Authoring and using agent profiles — pre-defined subagent roles that set model, provider, toolsets, and instructions in one task() call. Covers profile format, the 14 standard roles, pipeline patterns, cost-tiered model assignment, and the ESCALATE mechanism for capability routing.
 category: autonomous-ai-agents
 created: 2026-06-13
 trigger: "2026-06-13 loop-engineering session — built 8 profiles after cost-aware routing analysis"
@@ -16,7 +16,7 @@ links:
 
 # Agent Profiles
 
-Agent profiles are pre-defined subagent roles loaded by `delegate_task(agent_profile="<name>", goal="...")`. Each profile sets model, provider, toolsets, and system instructions in one call.
+Agent profiles are pre-defined subagent roles loaded by `task(subagent_type="<name>", description="summary", prompt="...")`. Each profile sets model, provider, toolsets, and system instructions in one call.
 
 ## Location
 
@@ -71,15 +71,29 @@ When creating new autonomous capabilities, **prefer assigning a single agent pro
 
 ## Pipeline Pattern
 
-Sequential multi-stage workflows use `delegate_task` batch mode:
+Sequential multi-stage workflows use individual `task()` calls:
 
 ```python
-delegate_task(tasks=[
-    {"goal": "analyze the existing auth code", "agent_profile": "explorer"},
-    {"goal": "implement login validation", "agent_profile": "implementer"},
-    {"goal": "write tests for login", "agent_profile": "tester"},
-    {"goal": "review the auth changes", "agent_profile": "reviewer"},
-])
+task(
+    subagent_type="explorer",
+    description="Analyze auth code",
+    prompt="analyze the existing auth code"
+)
+task(
+    subagent_type="implementer",
+    description="Implement login validation",
+    prompt="implement login validation"
+)
+task(
+    subagent_type="tester",
+    description="Write tests",
+    prompt="write tests for login"
+)
+task(
+    subagent_type="reviewer",
+    description="Review auth changes",
+    prompt="review the auth changes"
+)
 ```
 
 Or via kanban pipeline automation:
@@ -125,13 +139,13 @@ kanban_create(
 1. Create `$HERMES_HOME/agents/<name>.md`
 2. Add YAML frontmatter with model, provider, toolsets
 3. Write instructions in the body
-4. The profile is immediately available via `delegate_task(agent_profile="<name>")`
+4. The profile is immediately available via `task(subagent_type="<name>", description="...", prompt="...")`
 5. Update the table in the kanban-orchestrator skill if it's a reusable role
 
 ## Technical Integration
 
-The `agent_profile` parameter is **baked into the `delegate_task` tool schema** (modified in `tools/delegate_tool.py`). Every agent in every session sees it as an option. Resolution logic:
-1. Profile file is read from `$HERMES_HOME/agents/<name>.md`
+The `subagent_type` parameter is **baked into the `task` tool schema**. Every agent in every session sees it as an option. Resolution logic:
+1. Profile file is read from `~/.config/opencode/agents/<name>.md`
 2. Frontmatter model/provider override delegation config
 3. Profile toolsets used as default (caller's explicit toolsets win)
 4. Profile instructions prepended to caller's context

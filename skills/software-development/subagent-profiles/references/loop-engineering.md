@@ -112,6 +112,6 @@ The article's core loop shape is already achievable with Drewgent:
 This exact pipeline can be built with:
 - `cronjob` + `kanban_create` for the morning automation
 - `kanban_create(workspace_kind="worktree")` for isolated work
-- `delegate_task(agent_profile="implementer")` + `delegate_task(agent_profile="reviewer")`
+- `task(subagent_type="implementer", description="...", prompt="...")` + `task(subagent_type="reviewer", description="...", prompt="...")`
 - kanban board as the "state file" spine
 - (Future) Linear MCP bridge for human visibility

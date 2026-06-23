@@ -71,7 +71,8 @@ with open('/Users/drew/.drewgent/config.yaml', 'w') as f:
 
 ### 6. Verify
 
-hermes mcp test gbrain
+Verify gbrain is connected via the MCP tools (check `gbrain get_stats` or `gbrain search "test query"`). The MCP server is configured in `~/.config/opencode/opencode.jsonc`.
+
 gbrain search "test query"
 
 ### 7. New Session
@@ -88,7 +89,7 @@ traverse_graph (depth 1-10), get_page, find_orphans, get_stats
 ### Symptom: MCP timeout / "Connection failed"
 
 ```
-$ hermes mcp test gbrain
+$ gbrain get_stats
 ✗ Connection failed (42142ms): MCP call timed out after 40.1s
 ```
 
@@ -120,8 +121,7 @@ kill <orphan-pid-1> <orphan-pid-2>
 # Or if you want a clean restart: kill ALL, then gateway restarts its own
 killall -m "gbrain serve"
 
-# Verify
-hermes mcp test gbrain
+# Verify by calling a gbrain tool directly (e.g. gbrain get_stats)
 ```
 
 Expected: `✓ Connected (<1s)`, `✓ Tools discovered: 89`
@@ -130,11 +130,11 @@ Expected: `✓ Connected (<1s)`, `✓ Tools discovered: 89`
 
 Same root cause as above — multiple gbrain processes competing. Run the diagnostic in step 1-2.
 
-### Symptom: gbrain works then stops after CLI command
+### Symptom: gbrain works then stops after MCP test
 
-A CLI `hermes mcp test gbrain` spawns a temporary gbrain subprocess. If the CLI exits and the child is orphaned, it stays alive holding the PGLite lock, blocking the gateway's gbrain.
+Running an MCP test or CLI session can spawn a temporary gbrain subprocess. If the session exits and the child is orphaned, it stays alive holding the PGLite lock, blocking the gateway's gbrain.
 
-**Root cause:** Hermes MCP stdio transport does not always clean up child processes when the parent (CLI session) exits. This is a known pattern with subprocess-based MCP servers — the `bun` runtime doesn't detect stdin closure and auto-exit.
+**Root cause:** MCP stdio transport does not always clean up child processes when the parent session exits. This is a known pattern with subprocess-based MCP servers — the runtime doesn't detect stdin closure and auto-exit.
 
 ## Maintenance
 
@@ -143,7 +143,7 @@ A CLI `hermes mcp test gbrain` spawns a temporary gbrain subprocess. If the CLI 
 A no-agent cron job runs every 15 minutes to detect and kill orphaned gbrain processes:
 
 ```bash
-# Script: ~/.hermes/scripts/drewgent_gbrain_watchdog.sh
+# Script: ~/.drewgent/scripts/drewgent_gbrain_watchdog.sh
 # Cron:   gbrain-watchdog (ID: 0fb33852686c)
 ```
 
@@ -181,9 +181,9 @@ killall -m "gbrain serve"
 
 ## Pitfalls
 
-- **Orphan accumulation**: each `hermes mcp test gbrain` or CLI session can leave a gbrain orphan. Monitor if you run these frequently.
+- **Orphan accumulation**: each MCP test or CLI session can leave a gbrain orphan. Monitor if you run these frequently.
 - **PGLite lock**: single-writer database. Never run concurrent `gbrain serve` instances.
 - **OpenAI key validation**: blocks Ollama even with provider_base_urls set. Use `embedding_disabled: true` for local-only.
 - **args and env fields**: must be proper YAML dicts in config.yaml, not JSON strings. Use Python YAML writer to fix.
-- **MCP tools availability**: only available in sessions started AFTER the MCP server config is saved. `hermes mcp test <name>` verifies before starting the session.
+- **MCP tools availability**: only available in sessions started AFTER the MCP server config is saved. Verify by checking the MCP server config in `~/.config/opencode/opencode.jsonc` before starting the session.
 - **Parent PID 1**: after gateway restart, old gbrain instances whose parent PID became 1 are also orphans — kill them.
