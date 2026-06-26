@@ -1,324 +1,364 @@
 # opencode-drewgent
 
-**AI 에이전트를 위한 템플릿 — 포크해서 나만의 에이전트를 만드세요**
+**AI 에이전트를 위한 오픈소스 개인 비서 프레임워크**
 
-opencode-drewgent는 `opencode` 위에서 동작하는 개인 AI 에이전트 시스템의 **템플릿 저장소**입니다. 단순한 설정 모음이 아니라, 진화하는 지식베이스, 멀티 에이전트 오케스트레이션, 자동화된 크론 작업, 체계적인 회고 파이프라인을 포함한 **운영 가능한 에이전트 시스템**을 바로 시작할 수 있습니다.
+opencode-drewgent는 `opencode` 위에서 동작하는 개인 AI 에이전트 시스템의 **아키텍처 레퍼런스**입니다. subagent 오케스트레이션, kanban 기반 파이프라인, 크론 자동화, 지식 그래프를 포함한 **운영 가능한 에이전트 시스템**입니다.
 
 ---
 
-## 빠른 시작
+## 철학
+
+### 왜 "Drewgent"?
+
+**Drew** + A**gent**. 당신의 이름, 당신의 규칙, 당신의 워크플로우.
+
+대부분의 에이전트 시스템은 범용적입니다. Drewgent는 반대 전제에서 시작합니다: **에이전트는 그것을 만드는 사람만큼이나 고유해야 한다.**
+
+### 왜 7-레이어 브레인?
+
+플랫한 아키텍처로는 해결할 수 없는 문제가 있습니다: **어떻게 에이전트가 기억하고, 스스로 통제하며, 성장하게 할 것인가?**
+
+```
+P0-brainstem    → 생존. 절대 규칙, 재정의 불가
+P1-limbic       → 가치관. 어조, 페르소나, 스타일
+P2-hippocampus  → 기억. 세션 지속성, 지식베이스
+P3-sensors      → 입력. 툴 라우팅, 게이트웨이 통합
+P4-cortex       → 성장. 패턴 인식, 학습, taste
+P5-ego          → 정체성. 셀프모델, 캘리브레이션
+P6-prefrontal   → 전략. 계획, 제안, 사후 분석
+```
+
+**P0는 항상 우선:** `.neuron` 파일로 작성된 뇌간 규칙은 런타임에 강제되며, 어떤 상위 레이어도 우회할 수 없습니다.
+
+### 왜 Obsidian을 지식 그래프로?
+
+에이전트가 필요한 지속적인 기억:
+1. **재시작에도 유지** — 매 세션 처음부터 시작하지 않음
+2. **인간과 에이전트 모두 질의 가능** — Obsidian에서 동일 파일 열기
+3. **구조를 가짐** — 평범한 텍스트 더미가 아닌 연결된 그래프
+4. **버전 관리 가능** — git이 모든 결정과 변경 추적
+
+P-레이어 디렉토리 자체가 Obsidian 볼트입니다. gbrain을 통한 하이브리드 검색으로 에이전트가 질의하고, 인간은 Obsidian에서 그래프 뷰로 탐색합니다.
+
+### Filesystem = Truth
+
+대부분의 에이전트 시스템은 상태를 휘발성 컨텍스트나 불투명한 DB에 저장합니다. Drewgent의 원칙: **파일시스템이 표준 소스다.**
+
+- kanban 보드? SQLite 파일
+- 세션 기록? FTS5 풀텍스트 검색
+- 에이전트 프로필? `agents/*.md`
+- 스킬? `skills/*/SKILL.md`
+- 아키텍처 결정? `@action/proposals/`
+- 거버넌스 규칙? `P0-brainstem/`의 `.neuron` 파일
+
+중요한 것은 모두 디스크에, 디스크에 있는 것은 git에 추적됩니다.
+
+### Governance as Code
+
+규칙은 권고사항이 아닌 **강제 제약**입니다. `.neuron` 파일로 작성되어 런타임에 확인됩니다:
+
+```
+禁blind_write         → 읽지 않고 파일 쓰기 차단
+禁task_qa_gate        → 검증 없이 완료 선언 차단
+禁secrets_in_code     → 코드 내 API 키 탐지 → 차단
+禁ponytail_violation  → 과도한 엔지니어링 플래그
+```
+
+### Taste Over Volume
+
+Drewgent는 출력 양보다 **의사결정 품질**을 우선시합니다. 모든 kanban task에는 leverage score가 포함됩니다: "이 작업이 잘 해결되면, 얼마나 많은 다른 문제가 사라지는가?"
+
+| Score | 의미 | 예시 |
+|-------|------|------|
+| 5 | 근본 원인 해결, 전체 클래스 제거 | 아키텍처 변경으로 모듈 전체 제거 |
+| 4 | 여러 하위 문제 동시 해결 | 공통 유틸로 N개 중복 제거 |
+| 3 | 명확한 개선 + 1-2개 부수 효과 | 설정 정리로 수동 단계 제거 |
+| 2 | 국소적 개선, 확산 없음 | 버그 수정 |
+| 1 | 표면적 변경, 최소 영향 | 오타, 문서 업데이트 |
+
+### Provenance Convention
+
+모든 결정은 **왜** 만들어졌는지를 기록합니다:
+
+- 스킬 프론트매터: `trigger`, `provenance` 필드
+- 제안서: `tier`, `leverage_score`, 세션 컨텍스트
+- Kanban task: origin, session, decision rationale
+
+---
+
+## 퀵 스타트
 
 ```bash
-# 1. 포크 후 클론
-git clone git@github.com:YOUR_USER/opencode-YOURAGENT.git
-cd opencode-YOURAGENT
+# 1. opencode 설치
+curl -fsSL https://opencode.ai/install | sh
 
-# 2. 업스트림 등록 (향후 업데이트 수신)
-git remote add upstream git@github.com:humanerd-drew/opencode-drewgent.git
+# 2. 이 레포를 Drewgent 디렉토리로 클론
+git clone git@github.com:humanerd-drew/opencode-drewgent.git ~/.drewgent
 
-# 3. 이름 변경 (drewgent → youragent)
-bash scripts/rename-drewgent.sh "youragent"
-
-# 4. 실행
-opencode --config opencode.jsonc
+# 3. opencode 실행
+cd ~/.drewgent
+opencode
 ```
 
-자세한 내용은 아래 **[포크 & 커스터마이징 가이드](#포크--커스터마이징-가이드)** 참고.
+### 요구사항
+
+- **macOS** 또는 **Linux**
+- **opencode** CLI (v1.x+)
+- **Python** 3.11+
+- **모델 구독** (opencode-go 또는 bring-your-own)
 
 ---
 
-## 한 줄 요약
-
-> **opencode + agent profiles + LLM Wiki + kanban + cron = 당신만의 AI 에이전트 운영체제**
-
----
-
-## 아키텍처 (v0.8)
+## 아키텍처
 
 ```
-opencode CLI
-    │
-    ├── AGENTS.md  (시스템 문서 — 정체성, 규칙, 워크플로우)
-    ├── opencode.jsonc  (MCP 서버, 모델, 스킬 경로)
-    ├── agents/  (6개 통합 subagent 프로필)
-    ├── skills/  (100+ 스킬 — 온디맨드 로딩)
-    ├── @identity/  (셀프 모델, persona, 금지 규칙)
-    ├── @action/  (크론 작업, 인시던트, 계획)
-    └── cron/jobs.json  (20개 자동화 작업)
+┌─────────────────────────────────────────────────────────┐
+│                      사용자 입력                          │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│  오케스트레이션                                          │
+│  task() / gjc_delegate_execute() / gjc_delegate_team()  │
+│  opencode 내장 subagent + GJC Coordinator MCP           │
+├────────────────────────────────────────────────────────┤
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │
+│  │explorer  │ │implement │ │reviewer  │ │planner   │  │
+│  │(리서치)   │ │(구현)    │ │(리뷰)    │ │(계획)    │  │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘  │
+└────────────────────────────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│  지식 계층 (LLM Wiki + gbrain)                           │
+│                                                        │
+│  P5-ego/wiki/compiled/  ← 컴파일된 지식 (최우선 조회)    │
+│  gbrain MCP             ← 벡터 + 키워드 하이브리드 검색  │
+│  codebase-memory-mcp    ← 코드베이스 지식 그래프         │
+│  @memory/               ← 원시 데이터 (최후의 수단)       │
+└────────────────────────────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│  인프라 계층                                            │
+│                                                        │
+│  ┌─────────────┐  ┌─────────────┐  ┌────────────────┐  │
+│  │ cron        │  │ kanban.db   │  │ launchd        │  │
+│  │ (jobs.json) │  │ (태스크 관리)│  │ (서비스 관리)   │  │
+│  └─────────────┘  └─────────────┘  └────────────────┘  │
+└────────────────────────────────────────────────────────┘
 ```
 
-### 레이어 구조 (7-layer → 3-layer)
+### 에이전트 프로필
 
-| 레이어 | 역할 | 디렉토리 |
-|--------|------|----------|
-| **정체성** | 셀프 모델, 규칙, persona, voice | `@identity/` |
-| **지식** | 메모리, 세션, 학습 (런타임 데이터) | `@memory/` (git 제외) |
-| **액션** | 스킬, 크론, 계획, 인시던트 | `@action/` |
+| 티어 | 프로필 | 모델 | 역할 |
+|------|--------|------|------|
+| **Flash** | explorer | deepseek-v4-flash | 읽기 전용 코드 분석 |
+| | implementer | deepseek-v4-flash | 코드 구현 |
+| | archiver | deepseek-v4-flash | 문서화 |
+| | designer | deepseek-v4-flash | UI/UX 디자인 |
+| | analyst | deepseek-v4-flash | 데이터 분석 |
+| **Pro** | reviewer | deepseek-v4-pro | 코드 리뷰 |
+| | editor | deepseek-v4-pro | 콘텐츠 QA |
+| | content-manager | deepseek-v4-pro | CMO 에이전트 |
+| | orchestrator | deepseek-v4-pro | 워크 오케스트레이션 |
+| | sre | deepseek-v4-pro | 인프라 관리 |
+| **Max** | planner | qwen3.7-max | 태스크 분해 |
+| | reviewer-critical | qwen3.7-max | 아키텍처 리뷰 |
+| | security-reviewer | qwen3.7-max | 보안 감사 |
 
-### 디렉토리 구조
+### 서브에이전트 위임 (2계층)
 
-```
-opencode-drewgent/
-├── opencode.jsonc           # 메인 설정 (모델, MCP, 스킬)
-├── AGENTS.md                # 시스템 문서 (에이전트 가이드)
-├── agents/                  # 6개 통합 subagent 프로필
-│   ├── explorer             # 읽기 전용 분석 + 데이터 분석
-│   ├── implementer          # 구현 + 테스트 (kimi-k2.7-code)
-│   ├── reviewer             # 코드 리뷰 + 콘텐츠 검수
-│   ├── reviewer-critical    # 중요 변경 심층 리뷰 + 보안
-│   ├── planner              # 계획 + 오케스트레이션 + SRE
-│   └── archiver             # 문서화 + 콘텐츠 관리
-├── @identity/               # 에이전트 정체성
-│   ├── SELF_MODEL.md        # 아키텍처 인식
-│   ├── SOUL.md              # 핵심 persona
-│   ├── brain/rules.md       # P0-brainstem 금지 규칙
-│   └── persona/             # voice, writing style
-├── @action/                 # 액션 레이어
-│   ├── skills/              # 확장 스킬
-│   ├── plans/               # 실행 계획
-│   └── incidents/           # 장애 보고서
-├── cron/
-│   ├── jobs.json            # 크론 작업 정의
-│   └── scheduler.py         # 스케줄러 엔진
-├── scripts/                 # 유틸리티 스크립트
-└── skills/                  # 100+ 온디맨드 스킬
-```
-
-### subagent 프로필 (6개 통합)
-
-| 프로필 | 모델 | 역할 | 통합됨 |
-|--------|------|------|--------|
-| explorer | deepseek-v4-flash | 읽기 전용 분석, 데이터 분석 | analyst |
-| implementer | kimi-k2.7-code | 구현, 테스트 | tester |
-| reviewer | deepseek-v4-pro | 코드 리뷰, 콘텐츠 검수 | editor |
-| reviewer-critical | qwen3.7-plus | 중요 리뷰, 보안 감사 | security-reviewer |
-| planner | qwen3.7-max | 계획, 오케스트레이션, SRE | orchestrator, sre |
-| archiver | deepseek-v4-flash | 문서화, 콘텐츠 관리 | content-manager |
+| 방식 | 명령 | 모델 | 언제? |
+|------|------|------|-------|
+| **같은 세션** (빠름) | `task(subagent_type="reviewer", ...)` | 부모 모델 상속 | 간단한 작업, 프로필 모델이 부모와 같을 때 |
+| **다른 모델** (격리) | `gjc_delegate_execute(worktree="...")` | 프로필 모델 적용 | 격리/병렬 실행 필요 시 |
 
 ---
 
 ## 주요 기능
 
-### 1. 멀티 에이전트 파이프라인
+### 1. 서브에이전트 오케스트레이션
 
-kanban 기반 3단계 파이프라인 (explore → implement → review). archiver는 완료 후 자동 실행.
+opencode 내장 `task()` + GJC Coordinator MCP 조합으로 작동:
+
+```python
+# 같은 모델 (가볍고 빠름)
+task(
+    subagent_type="explorer",
+    description="인증 코드 분석",
+    prompt="src/auth/*.ts의 기존 구현 분석...",
+)
+
+# 격리 실행 (워크트리 + tmux)
+gjc_delegate_execute(
+    goal="인증 모듈 리팩토링",
+    worktree="refactor-auth",
+    acceptance=["모든 테스트 통과", "API 호환성 유지"],
+)
+```
+
+### 2. Kanban 파이프라인
+
+크래시에도 살아남는 멀티스테이지 워크플로우:
+
+```python
+kanban_create(
+    title="로그인 검증 추가",
+    pipeline=["explorer", "implementer", "reviewer"],
+    body="이메일+비밀번호 로그인, JWT 토큰, 리프레시 토큰 구현",
+)
+```
+
+완료 시 archiver가 자동 실행 (post-hook).
+
+### 3. LLM Wiki (Karpathy 컴파일 패턴)
+
+RAG와 달리, 지식을 미리 컴파일해서 축적:
 
 ```
-kanban_create(title="Add login", pipeline=["explorer","implementer","reviewer"])
-    → explorer 가 분석
-    → implementer 가 구현
-    → reviewer 가 리뷰
-    → archiver 가 자동 문서화 (post-hook)
-```
-
-### 2. LLM Wiki (Karpathy 컴파일 패턴)
-
-RAG와 달리, 지식을 **미리 컴파일**해서 계속 축적:
-
-```
-@memory/ (원시 데이터) → wiki-compile cron → P5-ego/wiki/compiled/ (컴파일드 지식)
+@memory/ (원본) → wiki-compile cron → P5-ego/wiki/compiled/ (지식)
 ```
 
 조회 우선순위:
-1. 컴파일드 지식 (최우선)
-2. gbrain 벡터 검색
-3. 원시 데이터 (최후의 수단)
+1. `P5-ego/wiki/compiled/` — 컴파일드 지식 (최우선)
+2. `gbrain query` — 벡터 검색
+3. `codebase-memory-mcp` — 코드베이스 지식 그래프
+4. `@memory/` — 원시 데이터
 
-### 3. 크론 작업 자동화
+### 4. 크론 작업 자동화
 
-launchd 데몬이 60초마다 `cron/jobs.json`을 읽어 작업 실행:
+launchd 기반 60초 틱, `cron/jobs.json`에서 작업 정의:
 
-| 작업 | 주기 | 설명 |
+| 작업 | 주기 | 방식 |
 |------|------|------|
 | Office Autopilot | 5분 | kanban 태스크 자동 처리 |
-| Trend Harvester | 6시간 | AI 트렌드 수집/평가 |
-| SEO Article Harvester | 6시간 | SEO 기사 수집/분석 |
-| Wiki Compile | 주간 | 지식 컴파일 |
-| Daily Retro | 매일 20:00 | 작업 회고 |
+| 대시보드 푸시 | 5분 | Cloudflare 대시보드 업데이트 |
+| Housekeeper | 60분 | 브레인 펄스 체크 |
+| Content Manager | 3시간 | 자동 콘텐츠 생성 |
+| Trend 수집 | 6시간 | GitHub 트렌드 수집 (8병렬) |
+| Trend 평가 | 매일 10:00 | kanban 태스크 생성 |
+| Daily Retro | 매일 20:00 | 일일 회고 |
+| Wiki Compile | 주간 일 03:00 | 지식 컴파일 |
+| Taste Review | 화/금 10:00 | 고품질 툴 심층 분석 |
 
-### 4. MCP 서버 통합
+### 5. Discord 통합
 
-| 서버 | 용도 | 기본 활성화 |
-|------|------|------------|
-| gbrain | 지식 그래프 (벡터 검색) | ✅ |
-| lazyweb | UI 디자인 참고 | ❌ (온디맨드) |
-| specification-website | 웹 스펙 체크리스트 | ❌ (온디맨드) |
+**Discord Bot** — `scripts/discord_bot.py`가 opencode `--attach` 모드로 연결:
+- 대화별 스레드 생성
+- 파일 첨부 지원 (이미지, 문서, 코드)
+- 2000자 초과 메시지 분할 전송
+- launchd 서비스로 자동 복구
 
----
-
-## 포크 & 커스터마이징 가이드
-
-이 저장소는 **템플릿**입니다. 포크해서 나만의 에이전트로 커스터마이징하세요.
-
-### 사전 준비
-
-- **[opencode](https://opencode.ai)** CLI 설치: `brew install anomalyco/tap/opencode` 또는 [GitHub Releases](https://github.com/anomalyco/opencode/releases)
-- **Git** (SSH 키 등록)
-- **Python 3.11+** (스크립트 실행용)
-- **(선택) [gbrain](https://github.com/garrytan/gbrain)** — 지속적 지식 그래프 (MCP 서버)
-
-### 1단계: 포크
-
-```bash
-# GitHub에서 포크: https://github.com/humanerd-drew/opencode-drewgent → Fork
-# 그 다음 클론:
-git clone git@github.com:YOUR_USER/opencode-YOURAGENT.git
-cd opencode-YOURAGENT
-
-# 업스트림 등록 (향후 업데이트 받기):
-git remote add upstream git@github.com:humanerd-drew/opencode-drewgent.git
-git fetch upstream
-```
-
-### 2단계: 이름 변경
-
-두 가지 방법이 있습니다.
-
-#### 방법 A: 자동 스크립트 (권장)
-
-```bash
-bash scripts/rename-drewgent.sh "youragent"
-```
-
-이 스크립트는 2000개 이상의 파일에서 모든 `drewgent` 참조를 교체합니다:
-
-| 항목 | 변경 예시 |
-|------|----------|
-| 디렉토리명 | `~/.drewgent/` → `~/.youragent/` |
-| 설정 경로 | `~/.drewgent/skills` → `~/.youragent/skills` |
-| 환경변수 | `DREW_HOME` → `YOURAGENT_HOME` |
-| 프로젝트명 | `Drewgent` → `Youragent` (대문자 유지) |
-| 코드 참조 | 모든 inline 경로의 `drewgent` → `youragent` |
-| 스크립트 헤더 | `Drewgent agent system` → `Youragent agent system` |
-| `opencode.jsonc` | 스킬 경로, MCP 명령어 업데이트 |
-| `AGENTS.md` | 모든 참조 다시 쓰기 |
-
-실행 후 검증:
-```bash
-grep -r "drewgent" . --include="*.md" --include="*.py" --include="*.json" --include="*.jsonc" 2>/dev/null | head -5
-# 아무것도 나오지 않아야 정상 (모두 교체됨)
-```
-
-**macOS 사용자 참고:** 내장 `sed`가 BSD 문법을 사용합니다. GNU sed가 필요하면:
-```bash
-brew install gnu-sed
-```
-
-#### 방법 B: 수동 설정
-
-스크립트가 맞지 않는 경우, 다음 파일들을 직접 수정하세요:
-
-- **`opencode.jsonc`** — `model`, skill `paths`, MCP server `command` 변경
-- **`AGENTS.md`** — 프로젝트명, 링크, 정체성 참조 업데이트
-- **`cron/jobs.json`** — `deliver` 필드의 Discord 채널 ID 설정
-- **`@identity/`** — `SELF_MODEL.md`, `SOUL.md`, `brain/rules.md`를 당신의 에이전트 persona에 맞게 재작성
-- **`scripts/`** — 쉘 스크립트의 하드코딩된 경로 업데이트
-
-### 3단계: 핵심 파일 설정
-
-#### `opencode.jsonc`
-
-| 필드 | 설정값 |
-|-------|--------|
-| `model` | 기본 모델, 예: `opencode-go/deepseek-v4-flash` |
-| `small_model` | 간단한 작업용 fallback 모델 |
-| `skills.paths` | opencode가 스킬을 찾는 디렉토리 목록 |
-| `mcp.gbrain` | gbrain MCP 서버 명령어 (사용 안 하면 `enabled: false`) |
-| `mcp.lazyweb` | UI 디자인 MCP — 사용 안 하면 `enabled: false` |
-| `mcp.specification-website` | 웹 스펙 MCP — 사용 안 하면 `enabled: false` |
-
-#### `cron/jobs.json`
-
-파일을 열고 모든 `discord:YOUR_*_CHANNEL_ID`를 실제 Discord 채널 ID로 교체하세요. `"deliver": "local"`인 작업은 Discord 없이 로컬에서만 실행됩니다.
-
-주요 작업:
-- `kanban-dispatcher` — 1분마다 kanban 태스크 확인 (자동 활성화)
-- `trend-collect` — GitHub 트렌딩 수집 (Discord 채널 필요)
-- `seo-article-harvester` — RSS 피드 모니터링 (Discord 채널 필요)
-- `wiki-compile` / `wiki-lint` — 주간 위키 컴파일
-- `daily retro` — 매일 작업 요약 (Discord 채널 필요)
-
-#### `AGENTS.md`
-
-이 파일이 당신 에이전트의 **헌법**입니다. 당신의 persona에 맞게 재작성:
-- 말투: 간결? 상세? 캐주얼?
-- 규칙: P0-brainstem 금지 사항 (절대 하면 안 되는 것)
-- 정체성: 에이전트가 자신에 대해 아는 것
-- 스킬: 기본 로딩할 스킬
-- kanban 파이프라인: 작업 흐름 정의
-
-#### `@identity/` (에이전트 정체성)
-
-| 파일 | 목적 |
-|------|------|
-| `SELF_MODEL.md` | 에이전트가 자신에 대해 아는 것 (아키텍처, 능력) |
-| `SOUL.md` | 핵심 성격, 말투, voice |
-| `brain/rules.md` | P0-brainstem 절대 금지 규칙 |
-| `persona/writing-style-guide.md` | 글쓰기 컨벤션 |
-
-### 4단계: 실행
-
-```bash
-# 설정 파일로 opencode 실행:
-opencode --config opencode.jsonc
-```
-
-당신의 에이전트는 다음을 로드합니다:
-1. `AGENTS.md`를 시스템 명령어로
-2. 설정된 경로의 모든 스킬
-3. MCP 서버 (gbrain, 선택적 서버)
-4. `cron/jobs.json`의 크론 작업 (cron 활성화 시)
-
-### 업데이트 유지
-
-```bash
-git pull upstream main
-```
-
-이 명령으로 템플릿의 최신 v0.8+ 업데이트를 받습니다. 충돌이 발생하면:
-
-```bash
-# 업스트림 변경 수용 (당신의 커스터마이징 포기):
-git checkout --theirs opencode.jsonc
-# 또는 내 버전 유지:
-git checkout --ours opencode.jsonc
-# 그 다음 머지 커밋:
-git commit
-```
-
-**중요:** `rename-drewgent.sh`, `README.md`는 업스트림이 덮어쓰도록 설계되었습니다. 당신의 개인 설정은 `opencode.jsonc`, `cron/jobs.json`, `AGENTS.md`, `@identity/`에 보관하세요.
-
-### 문제 해결
-
-| 문제 | 해결책 |
-|------|--------|
-| `opencode` 명령어 없음 | opencode 설치: `brew install anomalyco/tap/opencode` 또는 [releases](https://github.com/anomalyco/opencode/releases) |
-| `gbrain` 명령어 없음 | [garrytan/gbrain](https://github.com/garrytan/gbrain) 설치 또는 `opencode.jsonc`에서 `"enabled": false` |
-| macOS `sed` 오류 | GNU sed 설치: `brew install gnu-sed` |
-| 크론 작업 실행 안 됨 | `cron/jobs.json`의 `"enabled": true` 확인. `drewgent_cron.py` 스케줄러가 실행 중이어야 함 |
-| 업스트림 풀 충돌 | `git checkout --ours <file>`로 내 버전 유지, `--theirs`로 업스트림 수용 |
+**Discord MCP** — `discord-mcp` stdio 서버로 직접 툴 접근:
+- 메시지 전송/수정/삭제, 리액션, 파일 업로드
+- 채널 히스토리, 검색, 첨부파일 다운로드
 
 ---
 
-## 문제 해결
+## 설정
 
-### cron 데몬이 동작하지 않음
+### opencode.jsonc
 
-```bash
-launchctl list | grep ai.drewgent.cron
-# PID가 없으면:
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.drewgent.cron.plist
+```jsonc
+{
+  "model": "opencode-go/deepseek-v4-flash",
+  "small_model": "opencode-go/deepseek-v4-pro",
+  "instructions": ["AGENTS.md"],
+  "skills": {
+    "paths": [
+      "~/.drewgent/skills",
+      "~/.drewgent/@action/skills",
+      "~/.config/opencode/skills"
+    ]
+  },
+  "mcp": {
+    "discord": {
+      "type": "local",
+      "command": ["discord-mcp"],
+      "env": { "DISCORD_TOKEN": "{env:DISCORD_BOT_TOKEN}" }
+    },
+    "wordpress": {
+      "type": "local",
+      "command": ["node", "scripts/wordpress-mcp-server.js"]
+    },
+    "gajae-code": {
+      "type": "local",
+      "command": ["gjc", "mcp-serve", "coordinator"],
+      "env": { "OPENCODE_API_KEY": "{env:OPENCODE_API_KEY}" }
+    },
+    "gbrain": {
+      "type": "local",
+      "command": ["gbrain", "serve"],
+      "env": { "OPENAI_API_KEY": "ollama-local" },
+      "timeout": 120000
+    }
+  }
+}
 ```
 
-### kanban 태스크가 처리되지 않음
+### MCP 서버
 
-```bash
-cd ~/.drewgent && bash scripts/office_autopilot.sh
-cat logs/office-autopilot.log
+| 서버 | 타입 | 용도 |
+|------|------|------|
+| codebase-memory-mcp | stdio | 코드베이스 지식 그래프 |
+| discord | stdio | Discord 메시지/채널 관리 |
+| wordpress | stdio | WordPress 포스트 관리 |
+| gajae-code | stdio | GJC Coordinator (워크트리 격리, tmux 병렬) |
+| portone | stdio | 포트원 결제 게이트웨이 |
+| gbrain | stdio | 개인 볼트 하이브리드 검색 |
+
+---
+
+## 디렉토리 구조
+
 ```
+~/.drewgent/
+├── opencode.jsonc              opencode 설정
+├── AGENTS.md                   시스템 문서 (에이전트 가이드)
+├── agents/                     16개 subagent 프로필
+├── skills/                     60+ 카테고리, 100+ 스킬
+├── @action/                    액션 레이어 (스킬, 제안, 계획, 인시던트)
+├── @memory/                    메모리/성장 데이터 (git 제외)
+├── scripts/                    27개 자동화 스크립트
+├── cron/                       jobs.json + scheduler.py
+├── P0-brainstem/               거버넌스 규칙 (.neuron)
+├── P1-limbic/                  정체성/페르소나
+├── P2-hippocampus/             기억 레이어 (stub)
+├── P3-sensors/                 게이트웨이/샌드박스
+├── P4-cortex/                  성장/콘텐츠/지식
+├── P5-ego/                     셀프모델 + wiki
+└── P6-prefrontal/              전략 (→ @action/로 이전)
+```
+
+---
+
+## 모델 라우팅
+
+| 티어 | 모델 | 용도 |
+|------|------|------|
+| **Flash** | deepseek-v4-flash | 분석, 간단 구현, 문서 |
+| **Pro** | deepseek-v4-pro, glm-5.2 | 일반 작업, 코드 리뷰 |
+| **Code** | kimi-k2.7-code | 코드 생성 특화 |
+| **Max** | qwen3.7-max, qwen3.7-plus | 복잡 추론, 계획, 심층 리뷰 |
+
+---
+
+## 크레딧
+
+| 프로젝트 | 저자 | 용도 |
+|---------|------|------|
+| [opencode](https://opencode.ai) | [Anomaly](https://github.com/anomalyco) | AI 코딩 에이전트 플랫폼 |
+| [gbrain](https://github.com/garrytan/gbrain) | Garry Tan | 지식 그래프 & 하이브리드 검색 |
+| [codebase-memory-mcp](https://github.com/anomalyco/opencode) | Anomaly | 코드베이스 지식 그래프 |
+| [Gajae-Code](https://gajae-code.com) | — | GJC Coordinator MCP |
+| [discord-mcp](https://github.com/anomalyco/discord-mcp) | Anomaly | Discord MCP 서버 |
+| [PortOne](https://developers.portone.io) | PortOne | 한국 결제 게이트웨이 SDK |
+| [Cloudflare Agents SDK](https://developers.cloudflare.com/agents) | Cloudflare | Workers 기반 상태유지 에이전트 |
+| [Karpathy LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) | Andrej Karpathy | 컴파일 패턴 지식베이스 개념 |
+| [Ponytail](https://github.com/DietrichGebert/ponytail) | Dietrich Gebert | 코드 최소화 체크리스트 |
+| [NeuronFS](https://github.com/rhino-acoustic/NeuronFS) | [rhino-acoustic](https://github.com/rhino-acoustic) | 뇌 기반 거버넌스 시스템 |
+| [ARD Spec](https://agenticresourcediscovery.org) | Google/MS | Agentic Resource Discovery |
 
 ---
 
 ## 라이선스
 
-MIT — [YOUR_PROJECT_NAME](https://your-domain.example)
+MIT

@@ -1,731 +1,819 @@
----
+# opencode-drewgent
 
-title: Drewgent Root README
-type: guide
-space: concept
-tags: [concept]
-created: 2026-05-20
-updated: 2026-06-23
-links:
-  - "[[@identity/SELF_MODEL]]"
----
+[🇰🇷 한국어](README.ko.md)
 
+Drewgent is an **autonomous software engineering agent system** built on [opencode](https://opencode.ai). It orchestrates specialized subagents through opencode's built-in `task()` and GJC Coordinator MCP for isolated/parallel execution, with a kanban-backed pipeline for structured context handoff, failure tracking, and background automation.
 
-# Drewgent Agent ☤
+This is **not** a standalone agent framework. It's the configuration and extension layer — skills, scripts, tools, MCP servers, automation, and a persistent knowledge graph — that sits on top of opencode.
 
-> **Drewgent** is a **Stateful Agent** — not just a tool, but a persistent, self-evolving presence that remembers, grows, and governs itself over time.
+## Philosophy
 
-<p align="center">
-  <a href="https://github.com/humanerd-drew/opencode-drewgent"><img src="https://img.shields.io/badge/GitHub-humanerd--drew/opencode--drewgent-orange?style=for-the-badge" alt="GitHub"></a>
-  <a href="https://github.com/humanerd-drew/opencode-drewgent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
-</p>
+### Why "Drewgent"?
 
----
+**Drew** + A**gent**. Your name, your rules, your workflows.
 
-## The Problem
+Most agent systems are generic — one-size-fits-none. Drewgent starts from the opposite premise: **an agent should be as unique as the person building it.** The name is the first assertion of that identity. Fork it, rename it, make it yours. The `rename-drewgent` skill exists so you don't have to edit 2000+ files by hand.
 
-Most agents today are **stateless by design**. Every conversation starts fresh. Every session loses context. The agent has no memory, no identity continuity, no growth.
+### Why a 7-Layer Brain?
+
+Most agent architectures are flat: one model, one context window, one prompt. Drewgent models itself on the **hierarchical structure of the human brain** — not because it's trendy, but because it solves a real problem: **how do you make an agent that remembers, governs itself, and grows over time?**
 
 ```
-Stateless Agent:  User → [Session 1] → [Session 2] → [Session 3] → ...
-                  Each session: isolated, no memory, no growth
-
-Stateful Agent:   User → [Session 1] → [accumulated memory] → [Session N]
-                  Drewgent persists context, refines behavior, remembers everything
+P0-brainstem    → Survival. Absolute rules that cannot be overridden.
+P1-limbic       → Values. Tone, persona, communication style.
+P2-hippocampus  → Memory. Session persistence, knowledge base.
+P3-sensors      → Input. Tool routing, skill dispatch, gateway integration.
+P4-cortex       → Growth. Pattern recognition, learning, taste.
+P5-ego          → Identity. Self-model, calibration, awareness.
+P6-prefrontal   → Strategy. Planning, proposals, incident reflection.
 ```
 
-This isn't just about remembering chat history. It's about a system that:
+The hierarchy emerges from what overrides what:
 
-- **Persists identity** — knows who it is and how it differs from other agents
-- **Maintains memory** — learns from every session, not just the current one
-- **Governs itself** — follows rules that persist across all interactions
-- **Grows continuously** — improves its own behavior through structured feedback
+- **Bottom-up** (sensation → action): P3 detects input → P2 loads context → P4 recognizes patterns → P5 and P6 decide
+- **Top-down** (identity governs behavior): P5 says "I am thorough" → P1 shapes tone → P3 selects careful tools → P0 blocks dangerous operations
+- **P0 always wins**: A brainstem rule like `禁rm_rf_root` cannot be bypassed by any upper layer, no matter how clever the argument
 
-Drewgent implements this through a **7-layer subsumption architecture** modeled on biological brain structure, where each layer has a distinct role in maintaining statefulness.
+This is not documentation. These are **enforced constraints** — the `.neuron` files in `P0-brainstem/` are loaded at runtime and actively gate behavior.
 
----
+### Why Obsidian as the Knowledge Graph?
 
-## 7-Layer Architecture
+The agent needs a persistent memory that:
+1. **Survives restarts** — no "blank slate" on every session
+2. **Is queryable by both humans and agents** — you can open the same files in Obsidian
+3. **Has structure** — not a flat pile of text, but a connected graph
+4. **Can be version-controlled** — git tracks every change, every decision, every incident
 
-Drewgent's architecture is modeled on the hierarchical structure of the human brain — from brainstem (survival) through limbic system (emotion/values) to prefrontal cortex (strategy).
+A database can do 1 and 2. Only **files with wikilinks** can do all four.
 
-```
-╔══════════════════════════════════════════════════════════════╗
-║  P6-prefrontal  │  Strategy  │  Long-term planning, goals     ║
-╠══════════════════════════════════════════════════════════════╣
-║  P5-ego         │  Identity  │  Self-model, integration rules  ║
-╠══════════════════════════════════════════════════════════════╣
-║  P4-cortex      │  Growth    │  Learning, pattern recognition  ║
-╠══════════════════════════════════════════════════════════════╣
-║  P3-sensors     │  Input     │  Tool/skill routing, triggers  ║
-╠══════════════════════════════════════════════════════════════╣
-║  P2-hippocampus │  Memory    │  Context persistence, wiki      ║
-╠══════════════════════════════════════════════════════════════╣
-║  P1-limbic      │  Values    │  Tone, persona, communication  ║
-╠══════════════════════════════════════════════════════════════╣
-║  P0-brainstem   │  Survival  │  CRITICAL: absolute prohibitions ║
-╚══════════════════════════════════════════════════════════════╝
-```
+The P-layer directories *are* an Obsidian vault. Every file has YAML frontmatter, typed tags, and `[[wikilinks]]` to other files. This means:
+- An agent can `gbrain_query("what's the refresh token policy?")` and get a ranked answer from the knowledge graph
+- A human can open the same directory in Obsidian and see the exact same graph, with backlinks, graph views, and local graphs
+- Git tracks who changed what, when, and why — the full audit trail of every architectural decision
 
-### Information Flow
+### Filesystem = Truth
 
-**Bottom-Up (sensation → memory → growth → identity → strategy)**
+Most agent systems store state in ephemeral context windows or opaque databases. Drewgent's principle: **the filesystem is the canonical source.**
 
-```
-P3-sensors:  Detects input, routes to appropriate tools
-P2-hippocampus: Stores context, loads relevant memories
-P4-cortex:   Recognizes patterns, triggers learning
-P5-ego:      Integrates new information into self-model
-P6-prefrontal: Forms strategic decisions based on all above
-```
+- Kanban board? SQLite file at `P2-hippocampus/kanban/state/drewgent_tasks.db`
+- Session history? SQLite with FTS5 full-text search
+- Agent profiles? `.md` files in `agents/`
+- Skills? `.md` files in `skills/`
+- Architecture decisions? `.md` files in `P6-prefrontal/proposals/`
+- Governance rules? `.neuron` files in `P0-brainstem/`
 
-**Top-Down (identity governs behavior)**
+If it matters, it's on disk. If it's on disk, it's in git (or gitignored by design). No opaque state, no "trust me, the agent remembers."
+
+### Governance as Code
+
+Rules in Drewgent are not advisory prompts — they are **enforced constraints** written as `.neuron` files in `P0-brainstem/`. Each rule is a self-contained constraint that the signal processor checks at runtime:
 
 ```
-P5-ego: "I am a careful, thorough agent"
-         → shapes P3 tool selection
-         → influences P1 tone
-         → guides P4 learning direction
+禁blind_write         → Cannot write a file without reading it first
+禁task_qa_gate        → Cannot declare done without verification
+禁secrets_in_code     → API keys detected in code → blocked
+禁karpathy_coding     → Over-engineering, speculative abstraction → flagged
 ```
 
-### P0 Overrides Everything
+These are not "best practices." They are **gates** — the signal processor fires violations at `turn.end`, the awareness reporter surfaces them, and the agent cannot bypass them by saying "I'll be careful this time."
 
-The most critical design principle: **P0 (brainstem) rules cannot be bypassed by any upper layer.**
+### Taste Over Volume
 
-```
-Example: User asks to "rm -rf /"
-  → P0-brainstem detects dangerous operation
-  → Blocks before any tool execution
-  → No upper layer (P1-P6) can override
-```
+Drewgent prioritizes **decision quality over output quantity**. Every kanban task includes a leverage score: "If this is solved well, how many other problems disappear?"
 
-This is **Governance as Code** — not advisory principles, but enforced constraints.
+| Score | Meaning | Example |
+|-------|---------|---------|
+| 5 | Root cause, eliminates entire class | Architecture change removes whole module |
+| 4 | Solves multiple sub-problems | Shared utility removes N duplicates |
+| 3 | Clear improvement + 1-2 side effects | Config cleanup eliminates manual step |
+| 2 | Local improvement, no ripple | Bug fix |
+| 1 | Surface change, minimal impact | Typo, docs update |
 
----
+Low-leverage work (score 1-2) is not rejected — but it's deprioritized behind high-leverage work. The system is designed to **find the highest-leverage thing to do next**, not to generate busywork.
 
-## Deep Dive: Critical Layers
+### Provenance Convention
 
-### P0-brainstem: Governance as Code
+Every architectural decision in this repo records **why it was made**:
 
-The brainstem contains **forbidden rules (禁)** that are never bypassed, no matter what the user or upper layers request.
+- Skill frontmatter includes `trigger` and `provenance` fields
+- Proposals include `tier`, `leverage_score`, and session context
+- Kanban tasks include origin, session, and decision rationale
 
-Each rule is a `.neuron` file — a self-contained constraint with:
-
-```
-# Rule: 禁RULE_NAME
-# Token: 禁RULE_NAME
-# Priority: P0 (HIGHEST)
-# FORBIDDEN: what is not allowed
-# REASON: why this rule exists
-```
-
-**Core P0 rules:**
-
-| Rule | Forbidden Behavior | Why |
-|------|-------------------|-----|
-| `禁rm_rf_root` | `rm -rf` on root/system paths | Catastrophic data loss risk |
-| `禁blind_write` | Writing code without reading first | Corruption, misalignment |
-| `禁secrets_in_code` | Hardcoded API keys, tokens in code | Security breach risk |
-| `禁console_log` | `console.log` / `print()` in production | Log pollution, debugging leaks |
-| `禁task_qa_gate` | Declaring done without QA verification | Completion bias defense |
-| `禁tool_integration_3file` | Tool integration without all 3 files | Incomplete integration breaks workflows |
-| `禁karpathy_coding_principles` | Violating any of 4 coding principles | Common LLM coding mistakes |
-| `禁auto_validate` | Dangerous ops without validation | Pre-validation hook required |
-| `禁subagent_verify` | Subagent output unverified | Verification checklist required |
-| `禁filesystem_truth` | Trust tool output over file read | Must read file directly |
-| `禁rebac_integration` | RBAC integration without full chain | Incomplete access control |
-| `禁rebac_kanban` | Kanban state without manifest sync | Kanban-orphan task drift |
-
-**How it works:** At runtime, `brain_processor.py` classifies every task by type (coding, dangerous operation, tool integration, etc.) and fires relevant P0 rules as **actionable constraints** — not passive injection, but active gating.
-
-**Where rules live:** `~/.drewgent/brain/Drewgent-brain/P0-brainstem/`
-
----
-
-### P2-hippocampus: Memory Persistence
-
-The hippocampus handles all forms of persistence — session state, long-term knowledge, and learned patterns.
-
-#### Session Continuity (SQLite + FTS5)
-
-`drewgent_state.py` provides persistent session storage:
-
-```python
-# WAL mode for concurrent access
-# FTS5 virtual table for full-text search across all sessions
-# Session chains: parent_session_id links compressed sessions
-# Source tagging: 'cli', 'telegram', 'discord' — filterable
-```
-
-Every message, tool call, and token count is persisted. Sessions are searchable by content. When Drewgent starts a new session, it can retrieve relevant context from previous sessions.
-
-#### Knowledge Base (Obsidian Wiki)
-
-`auto_learn.py` maintains an Obsidian-compatible wiki at `~/.drewgent/memories/`:
-
-```
-entities/          # User profile, preferences, corrections
-concepts/          # Learned concepts, patterns
-insights/          # Extracted insights (daily logs)
-retired/           # Retired/merged entries
-```
-
-**What gets stored:**
-- User communication style (concise/detailed preferences)
-- Environment facts (OS, installed tools, project conventions)
-- Corrections (what the user rejected and why)
-- Learned patterns (successful workflows)
-
-**How it works:** After every session, `AutoLearner.run_maintenance()` runs:
-- `retire_stale_entries()` — decision-matrix retirement (180d hard, 90d cold)
-- `deduplicate_wiki()` — removes duplicate daily logs
-- `detect_knowledge_gaps()` — identifies topics without wiki coverage
-
-**Access pattern:**
-```python
-query_wiki() → loads relevant entries → injects into prompt context
-             → records access frequency for retirement decisions
-```
-
----
-
-### P4-cortex: Self-Growth Loop
-
-The cortex recognizes patterns and drives autonomous improvement.
-
-#### AutoLearner: Knowledge Pipeline
-
-```
-Session End → Extract patterns → Classify insight type
-           → Write to wiki (entities/concepts/insights)
-           → Detect knowledge gaps → Suggest exploration
-```
-
-**Insight classification:**
-
-| Type | Wiki Category | Tags |
-|------|--------------|------|
-| `preference` | entities/preferences | user, preference |
-| `correction` | entities/corrections | user, correction |
-| `os` / `tool` / `project` | entities/environment | environment |
-| `style_concise` / `style_detailed` | entities/communication-style | user, communication |
-
-#### Knowledge Gap Detection
-
-`detect_knowledge_gaps()` identifies topics the user works on but the wiki doesn't cover. `fill_gap()` can autonomously explore and record new knowledge.
-
-#### Brain Signal System
-
-`signal_processor.py` tracks integration workflows and emits awareness signals. This is Drewgent's **event-driven P0-brainstem enforcement** — not scattered if-checks, but centralized signal handlers.
-
-**Event Chain:**
-
-```
-turn.start
-  └→ _on_turn_start()
-        └→ pattern detect: rm -rf / chmod 777 / sudo
-        └→ emit("dangerous.op") → _on_dangerous_op()
-                                      └→ _dangerous_ops_history += [op]
-                                      └→ awareness.integrity (if severity=high)
-
-turn.end
-  └→ _on_turn_end()
-        └→ check 禁blind_write: write_file without prior read
-        └→ check 禁secrets_in_code: sk-/ghp-/password= in tool args
-        └→ check 禁console_log: console.log/print() in code
-        └→ emit("rule.violation") → _on_rule_violation()
-                                      └→ _violation_history += [{rule, tool, severity}]
-                                      └→ awareness.integrity
-
-agent.complete
-  └→ _on_agent_complete()
-        ├→ for wf in _active_workflows:
-        │    if not wf.completed:
-        │        emit("workflow.incomplete") → _on_workflow_incomplete()
-        │                                            └→ _workflow_history += archived
-        └→ emit("session.violations") (by-rule summary)
-
-integration.complete → _on_integration_complete() → awareness.integrity
-```
-
-**Tracking State:**
-
-| Field | Type | Purpose |
-|-------|------|---------|
-| `_violation_history` | `List[dict]` | All rule.violation events across session |
-| `_dangerous_ops_history` | `List[dict]` | All dangerous.op events across session |
-| `_workflow_history` | `List[dict]` | Archived incomplete workflows |
-| `_active_workflows` | `Dict[corr_id, IntegrationWorkflow]` | Active tool/skill integrations |
-
-**IntegrationWorkflow States:**
-
-```
-detected → started → step_1 → step_2 → completed
-                      ↓
-                   (P4 provides next hint)
-```
-
-**12 P0-Brainstem Rules (Enforced by signal_processor):**
-
-| Rule | Token | Enforcement |
-|------|-------|-------------|
-| `禁rm_rf_root` | `rm -rf` on root paths | Pre-validation before execution |
-| `禁blind_write` | write_file without prior read | `turn.end` → `rule.violation` |
-| `禁task_qa_gate` | Complete without QA | Contract-first QA gate required |
-| `禁secrets_in_code` | API keys hardcoded in code | `turn.end` → `rule.violation` |
-| `禁auto_validate` | Dangerous ops without validation | Pre-validation hook required |
-| `禁console_log` | console.log/print() in production | `turn.end` → `rule.violation` |
-| `禁subagent_verify` | Subagent output unverified | Verification checklist required |
-| `禁filesystem_truth` | Trust tool output over file read | Must read file directly |
-| `禁tool_integration_3file` | Partial tool integration | `turn.end` → `workflow.incomplete` |
-| `禁karpathy_coding_principles` | Violating 4 coding principles | `turn.end` → `rule.violation` |
-| `禁rebac_integration` | RBAC integration without full chain | `turn.end` → `rule.violation` |
-| `禁rebac_kanban` | Kanban state without manifest sync | `turn.end` → `rule.violation` |
-
-**ArchitectureModel:**
-
-```python
-class ArchitectureModel:
-    TOOL_INTEGRATION_FILES = ["tools/", "model_tools.py", "toolsets.py"]
-    SKILL_INTEGRATION_FILES = ["skills/", "agent/skill_commands.py"]
-
-    detect_tool_integration_progress(source_file)
-        → is_complete + missing_files + next_hint
-
-    detect_skill_integration_progress(source_file)
-        → is_complete + missing_files + next_hint
-```
-
-**Components:**
-
-| Component | File | Role |
-|-----------|------|------|
-| `SignalEmitter` | `agent/brain_signals.py` | API for emitting events |
-| `BrainEvent + EventBus` | `agent/event_bus.py` | Singleton pub/sub event bus |
-| `SignalProcessor` | `agent/signal_processor.py` | All P0 handlers + IntegrationWorkflow tracking |
-| `AwarenessReporter` | `agent/awareness_reporter.py` | Hint generation + delivery |
-
----
-
-### P5-ego: Identity Integration
-
-The ego maintains Drewgent's self-model — what it knows about its own architecture and how it differs from other agents.
-
-#### ArchitectureModel
-
-`signal_processor.py` contains the `ArchitectureModel` singleton:
-
-```python
-class ArchitectureModel:
-    # Tracks tool/skill integration status
-    # Loads rules from P0-brainstem neurons
-    # Emits hints for active workflows
-
-    TOOL_INTEGRATION_FILES = ["tools/", "model_tools.py", "toolsets.py"]
-    SKILL_INTEGRATION_FILES = ["skills/", "agent/skill_commands.py"]
-```
-
-**What it does:**
-- Detects incomplete integrations (3-file rule enforcement)
-- Maintains meta-awareness of current workflows
-- Injects contextual hints into user messages at turn boundaries
-
-#### Self-Branching
-
-`agent/self_brancher.py` enables the agent to create and manage parallel working contexts — exploring alternatives without losing the primary task.
-
----
-
-## Stateful Implementation: How It Actually Works
-
-### Signal Flow Per Turn
-
-```
-1. User message arrives
-2. BrainProcessor.classify(task_type)
-   → P3-sensors detects task category
-   → P0-brainstem fires relevant forbidden rules
-   → P2-hippocampus loads relevant memories
-3. Hint injection: active workflows append guidance to prompt
-4. LLM call — guided by P0 constraints + P2 context
-5. Tool execution → signal emission (tool_start, agent_modifying, tool_complete)
-6. Session end → AutoLearner extracts + writes to wiki
-7. Workflow persistence → saved to SQLite for next session
-```
-
-### Session Persistence
-
-```python
-# Every session logged to SQLite
-SessionDB.insert_message(role, content, tool_calls, tokens)
-SessionDB.search(query)  # FTS5 full-text search across all history
-SessionDB.get_context(session_id, limit=10)  # recent conversation
-SessionDB.get_insights(user_id)  # accumulated learnings
-```
-
-### Memory Continuity
-
-```
-[Session N]
-    ↑
-    │  ← draws from P2-hippocampus (last session's context, wiki)
-    │
-[Session N-1] → AutoLearner extracts patterns → wiki
-[Session N-2] → ...
-[Session 1]   → ...
-```
-
-Drewgent doesn't just remember the current conversation — it remembers the relationship across all sessions.
-
----
-
-## Governance as Code: P0 Rules in Practice
-
-### Example: `禁tool_integration_3file`
-
-When the user asks to add a new tool:
-
-```
-1. BrainProcessor classifies → TOOL_INTEGRATION task
-2. P0 fires 禁tool_integration_3file rule
-3. ArchitectureModel.detect_tool_integration_progress() tracks
-4. Agent MUST complete all 3 files:
-   - tools/<name>_tool.py (handler + registry.register())
-   - model_tools.py (_discover_tools() import)
-   - toolsets.py (toolset assignment)
-5. QA gate: cannot declare done until all 3 verified
-```
-
-If the agent tries to skip any step, P0 blocks completion.
-
-### Example: `禁karpathy_coding_principles`
-
-When working on code:
-
-```
-1. Task classified as CODING → P0 fires karpathy rules
-2. Before writing: state assumptions (Rule 1)
-3. Minimum code: no overengineering (Rule 2)
-4. Surgical: only touch what must be touched (Rule 3)
-5. Goal-driven: success criteria defined, tests written (Rule 4)
-6. Completion: Harsh Critic check before declaring done
-```
-
-These aren't suggestions — they're enforced by P0 at runtime.
-
----
-
-## Project Structure
-
-```
-drewgent/
-├── run_agent.py           # Core agent loop, tool dispatch, brain loop
-├── drewgent_state.py         # SQLite session store (FTS5 search)
-├── model_tools.py          # Tool registry, _discover_tools(), dispatch
-├── toolsets.py             # Tool groupings (HERMES_CORE_TOOLS, etc.)
-├── agent/
-│   ├── brain_processor.py     # Organic runtime — task classification, P0-P6 weights
-│   ├── signal_processor.py     # ArchitectureModel, workflow tracking, hints
-│   ├── brain_signals.py        # Signal emission (tool_start, agent_modifying, ...)
-│   ├── auto_learn.py           # Obsidian wiki maintenance, insight extraction
-│   ├── brain_monitor.py        # Real-time brain state monitoring
-│   ├── context_compressor.py   # Auto context compression
-│   └── display.py              # KawaiiSpinner, tool preview formatting
-├── drewgent_cli/
-│   ├── brain_manager.py        # Brain loading, P0 neuron scanning
-│   ├── skin_engine.py          # YAML-based skin/theme customization
-│   └── commands.py              # Slash command registry
-├── tools/                  # Tool implementations (one file per tool)
-├── gateway/               # Messaging platform gateway (Discord, Telegram, etc.)
-└── brain/
-    └── Drewgent-brain/
-        └── P0-brainstem/   # 禁rules — enforced constraints (.neuron files)
-```
+The principle: **the prompt is more informative than the output.** When you read a completed proposal six months later, the provenance tells you *why*, not just *what*.
 
 ---
 
 ## Quick Start
 
 ```bash
-# 1. Clone
-git clone https://github.com/humanerd-drew/opencode-drewgent.git
-cd drewgent
+# 1. Install opencode
+curl -fsSL https://opencode.ai/install | sh
 
-# 2. Install
-uv venv .venv --python 3.11
-source .venv/bin/activate
-uv pip install -e ".[all]"
+# 2. Clone this repo as your Drewgent directory
+git clone git@github.com:humanerd-drew/opencode-drewgent.git ~/.drewgent
 
-# 3. Configure
-cp .env.example .env
-# Edit .env — add your MiniMax (M3) API key
-
-# 4. Run
-drewgent
+# 3. Start opencode
+cd ~/.drewgent
+opencode
 ```
 
-### Configuration
+### Requirements
 
-Provider selection and skin customization are in `~/.drewgent/config.yaml` (created on first run via `drewgent setup`).
-
-**Important:** If your `.drewgent` directory is on an external volume or different path, set `DREW_HOME`:
-```bash
-export DREW_HOME=/Volumes/drew/.drewgent
-```
-The runtime resolves `DREW_HOME` first; without it, defaults to `~/.drewgent`.
-
-**Provider setup** (`$DREW_HOME/.env`):
-```bash
-MINIMAX_API_KEY=***      # default
-OPENROUTER_API_KEY=***
-GOOGLE_API_KEY=***
-```
-
-**Skin selection**:
-```yaml
-display:
-  skin: ares      # alternatives: default, mono, slate, ares
-```
-
-Or change at runtime: `/skin ares`
+- **macOS** or **Linux**
+- **opencode** CLI (v1.x+)
+- **Python** 3.11+
+- **Model subscription** (opencode-go or bring-your-own provider)
 
 ---
 
-## What Makes Drewgent Different
+## Obsidian Vault
 
-| Aspect | Traditional Agent | Drewgent |
-|--------|------------------|----------|
-| Session start | Blank slate | Loads accumulated memory from P2 |
-| Identity | Generic | ArchitectureModel tracks self-knowledge |
-| Rules | Advisory | P0-brainstem enforces — cannot bypass |
-| Learning | Session-only | Continuous: wiki + gap detection |
-| Growth | None | AutoLearner + self-brancher |
-| Tool integration | Partial | 3-file rule enforced by P0 |
-| Context | Current chat only | FTS5 search across all sessions |
+The entire `~/.drewgent/` directory is an **Obsidian vault**. P0 through P6 form a connected wiki with wikilinks (`[[Page Name]]`), YAML frontmatter, and typed tags. This is not documentation-as-decoration — it's a living knowledge graph that agents query and write to.
+
+```
+~/.drewgent/               ← Obsidian vault root
+├── P0-brainstem/          ← Governance rules
+├── P1-limbic/             ← Identity and persona
+├── P2-hippocampus/        ← Memory and knowledge (runtime)
+├── P3-sensors/            ← Skills and gateway docs
+├── P4-cortex/             ← Growth, references, plans
+├── P5-ego/                ← Self-model
+├── P6-prefrontal/         ← Strategy, proposals, incidents
+└── AGENTS.md              ← Agent system guide (also vault doc)
+```
+
+### Wikilinks Across Layers
+
+Files reference each other across layers via `[[wikilinks]]`. For example:
+
+- `AGENTS.md` links to `[[P5-ego/SELF_MODEL]]`, `[[P0-brainstem/brain/rules]]`, `[[P1-limbic/persona/SOUL]]`
+- `P0-brainstem/brain/rules.md` links to specific `.neuron` constraint files
+- Skill files link to architecture docs and other skills
+- Proposal documents link to incident reports and plans
+
+This cross-linking creates a **knowledge graph** that agents can traverse — not a flat file tree.
+
+### Graph Connectivity
+
+The vault is designed for high backlink density. Key principles:
+
+- Every architectural decision in `P6-prefrontal/proposals/` links to related incidents and skills
+- Every skill documents its trigger context and provenance in frontmatter
+- Every agent profile links to its governing rules and related profiles
+- Skills from `P3-sensors/skills/` are loaded by opencode alongside `skills/`
+
+### Obsidian-Specific Conventions
+
+- **Frontmatter**: Every `.md` file has YAML frontmatter with `title`, `type`, `space`, `tags`, and `links`
+- **Naming**: Slugs are kebab-case, unique across the vault to prevent wikilink ambiguity
+- **Tags**: Used for cross-cutting categorization (`concept`, `guide`, `incident`, `proposal`)
+- **Wiki-attachment images**: Referenced via `![[file.png]]` syntax
+- **Excluded from Obsidian**: Runtime data directories (`P2-hippocampus/kanban/`, `logs/`, `cache/`, etc.) — configured in `.obsidian/` at runtime (not in repo)
+
+### Querying the Vault
+
+Agents query the vault via gbrain (MCP server for hybrid search):
+
+```
+gbrain_query("auth patterns")             → semantic + keyword search
+gbrain_get_backlinks("P5-ego/SELF_MODEL") → find all pages that reference self-model
+gbrain_find_orphans()                      → find pages with no inbound links
+```
+
+For local Obsidian CLI operations, the `skills/obsidian-cli/` skill provides workflows.
 
 ---
 
-## Recent Changes
+## Table of Contents
 
-### v0.8 — 2026-06-22: Architecture Compression
-
-#### P-Layer 7→3 Restructuring
-
-The most significant change: the original 7-layer P0–P6 vault structure has been logically consolidated into 3 top-level directories. The P-layer directories (`P0-brainstem/` … `P6-prefrontal/`) still exist on disk for local runtime compatibility but are now **gitignored** — all tracked content lives under the new `@-` prefix structure.
-
-| New Path | Contains | Former P-Layers |
-|----------|----------|-----------------|
-| `@identity/` | Self-model, rules, persona, voice, writing style | P0-brainstem, P1-limbic, P5-ego |
-| `@memory/` | Raw archive, memories, sessions, knowledge (gitignored — runtime data) | P2-hippocampus, P4-cortex (archive) |
-| `@action/` | Skills, plans, incidents, migrations, proposals | P3-sensors, P4-cortex (active), P6-prefrontal |
-
-**28,347 wikilinks** updated across the codebase from `[[P[0-6]-*` references to `@identity/`, `@memory/`, `@action/` paths. All internal cross-references, AGENTS.md links, and vault graph connections migrated.
-
-#### Agent Profiles 14→6
-
-| Merged Profile | Absorbed Roles | Model |
-|---------------|----------------|-------|
-| explorer | analyst | deepseek-v4-flash |
-| implementer | tester | kimi-k2.7-code |
-| reviewer | editor | deepseek-v4-pro |
-| reviewer-critical | security-reviewer | qwen3.7-plus |
-| planner | orchestrator, sre | qwen3.7-max |
-| archiver | content-manager | deepseek-v4-flash |
-
-Profile count halved. The `designer` role migrated from an agent profile to the `skills/ui/designer/SKILL.md` skill — loadable on demand rather than consuming a slot.
-
-#### Pipeline 5→3
-
-Pipeline stages reduced from 5 (explore → implement → test → review → archive) to 3 (explore → implement → review). The tester and archiver stages are removed from the pipeline definition; **archiver now runs automatically as a post-hook** when a task completes, without requiring an explicit pipeline slot.
-
-#### MCP Conditional Activation
-
-Previously all 3 MCP servers ran continuously:
-- **gbrain** — always-on (the brain)
-- **lazyweb** — now `enabled: false` in `opencode.jsonc`; activated via `skill("lazyweb")`
-- **specification-website** — now `enabled: false`; activated on demand
-
-This reduces baseline resource usage. Both remain available when their skills are loaded.
-
-#### Scripts & Tools Cleanup
-
-| Category | Before | After | Archived |
-|----------|--------|-------|----------|
-| Scripts | 43 | 25 active | 18 archived |
-| Tools | 58 | 36 active | 22 archived |
-
-Archived files are removed from the repository but remain in git history. The `scripts/INDEX.md` documents which scripts are active vs archived.
-
-#### Provenance Frontmatter Removed
-
-The `trigger:` and `provenance:` frontmatter fields originally added to track decision provenance were removed from 27 SKILL.md files. These fields were not being consumed by any runtime process and added visual noise to every skill file. The provenance convention is preserved as an operational guideline in AGENTS.md — files are no longer required to carry it in frontmatter.
-
-#### .gitignore Changes
-
-- `/P0-brainstem/` … `/P5-ego/` — **added** (runtime-only symlinks, not tracked)
-- `/P6-prefrontal/archive/`, `checkpoints/`, `recovery-journal/` — **added** (runtime output)
-- `@identity/` — **removed** from gitignore (must be tracked — core identity files)
-- `@action/skills/.hub/` — **added** (runtime cache)
-- scripts that were archived are no longer tracked
-
-#### Files Affected
-
-127 files changed, 9,574 insertions, 16,890 deletions across the repository.
-
-Full details in [`CHANGELOG.md`](CHANGELOG.md).
+- [Architecture Overview](#architecture-overview)
+  - [7-Layer Brain Architecture](#7-layer-brain-architecture)
+  - [Multi-Agent Pipeline](#multi-agent-pipeline)
+  - [Complexity Tiers](#complexity-tiers)
+- [Agent Profiles](#agent-profiles)
+  - [Flash Tier](#flash-tier)
+  - [Pro Tier](#pro-tier)
+  - [Max Tier](#max-tier)
+  - [Handoff Contract](#handoff-contract)
+- [Pipeline Stages](#pipeline-stages)
+- [Subagent System](#subagent-system)
+  - [task() — Same-Model Delegation](#task--same-model-delegation)
+  - [gjc_delegate_execute() — Isolated/Parallel Execution](#gjc_delegate_execute--isolatedparallel-execution)
+  - [gjc_delegate_team() — Parallel Team Runs](#gjc_delegate_team--parallel-team-runs)
+  - [Kanban Pipeline Auto-Decomposition](#kanban-pipeline-auto-decomposition)
+  - [Context Handoff Protocol](#context-handoff-protocol)
+  - [Ponytail Principle](#ponytail-principle)
+- [Configuration](#configuration)
+  - [opencode.jsonc](#opencodejsonc)
+  - [MCP Servers](#mcp-servers)
+- [Cron & Automation](#cron--automation)
+- [Skills](#skills)
+- [Discord Integration](#discord-integration)
+- [Repository Structure](#repository-structure)
+  - [What's in the Repo](#whats-in-the-repo)
+  - [What's NOT in the Repo (Personal Data)](#whats-not-in-the-repo-personal-data)
+- [Related](#related)
+- [License](#license)
 
 ---
 
-## Getting Started (Fork + Customize)
+## Architecture Overview
 
-This repository is a **template** for building your own opencode-based AI agent. Fork it, rename it, configure it, and run.
+### 7-Layer Brain Architecture
 
-### Prerequisites
+Drewgent models its architecture on the hierarchical structure of the human brain. Each layer has a distinct role:
 
-- **[opencode](https://opencode.ai)** CLI installed (`brew install opencode` or via GitHub Releases)
-- **Git** with SSH access to GitHub
-- **Python 3.11+** (for agent scripts and cron tools)
-- **(Optional) [gbrain](https://github.com/garrytan/gbrain)** for persistent knowledge graph (MCP server)
-
-### 1. Fork
-
-```bash
-# 1. Fork on GitHub → https://github.com/humanerd-drew/opencode-drewgent
-# 2. Clone your fork:
-git clone git@github.com:YOUR_USER/opencode-YOURAGENT.git
-cd opencode-YOURAGENT
-
-# 3. Add upstream to receive future updates:
-git remote add upstream git@github.com:humanerd-drew/opencode-drewgent.git
-git fetch upstream
+```
+P6-prefrontal  Strategy    Long-term planning, proposals, incident reports
+P5-ego         Identity    Self-model, self-awareness, calibration
+P4-cortex      Growth      Learning, pattern recognition, taste development
+P3-sensors     Input       Tool routing, gateway integration, skill dispatch
+P2-hippocampus Memory      Session persistence, knowledge base, kanban state
+P1-limbic      Values      Persona, tone, writing style, SOUL
+P0-brainstem   Survival    Absolute rules (禁), governance as code
 ```
 
-### 2. Rename
+**Bottom-up flow:** P3 detects input → P2 loads context → P4 recognizes patterns → P5 integrates → P6 decides
 
-Two options — use the automated script or do it manually.
+**Top-down flow:** P5 shapes behavior → P1 influences tone → P3 selects tools → P0 blocks violations
 
-#### Option A: Automated (recommended)
+**P0 overrides everything:** Brainstem rules (`.neuron` files) are enforced at runtime and cannot be bypassed by any upper layer. These are not advisory — they are active constraints embedded in the signal processing system.
 
-```bash
-bash scripts/rename-drewgent.sh "youragent"
+### Multi-Agent Pipeline
+
+Drewgent's core workflow uses opencode's built-in `task()` for same-model delegation and GJC Coordinator MCP (`gjc_delegate_*`) for model-specific or isolated work. A kanban-backed pipeline handles crash-surviving multi-stage work:
+
+```
+kanban_create(
+    title="Add login validation",
+    pipeline=["explorer", "implementer", "reviewer"],
+)
 ```
 
-This script replaces all `drewgent` references across 2000+ files:
+This creates 3 sequential tasks with automatic dependency management:
 
-| What | Example Change |
-|------|---------------|
-| Directory name | `~/.drewgent/` → `~/.youragent/` |
-| Config paths | `~/.drewgent/skills` → `~/.youragent/skills` |
-| Env vars | `DREW_HOME` → `YOURAGENT_HOME` |
-| Project name | `Drewgent` → `Youragent` (capitalized) |
-| Code references | `drewgent` → `youragent` in inline paths |
-| Script headers | `Drewgent agent system` → `Youragent agent system` |
-| `opencode.jsonc` | Updated skill paths, MCP commands |
-| `AGENTS.md` | All references rewritten |
-
-After running, verify with:
-```bash
-grep -r "drewgent" . --include="*.md" --include="*.py" --include="*.json" --include="*.jsonc" 2>/dev/null | head -5
-# Should return nothing (all replaced)
+```
+explorer ──→ implementer ──→ reviewer
+    │              │            │
+    │  findings    │  changes   │  review
+    └──────┬───────┴─────┬──────┘
+           │             │
+           ↓             ↓
+     Context from previous step automatically injected into prompt:
+     **Findings:** auth code in src/auth/*.ts
+     **Risks:** no refresh token rotation
+     **Next:** implement token refresh
 ```
 
-#### Option B: Manual
+Archiver auto-runs on completion as a post-hook.
 
-If the script doesn't fit your needs, update these files by hand:
+**Key properties:**
+- **Automatic context handoff**: Each stage receives `findings`, `risks`, `next` as structured JSON
+- **Failure tracking**: Unparseable handoffs fire `handoff_failed` events and visually mark the prompt
+- **Fan-in support**: Tasks with multiple parents merge context from all sources
+- **Worker-side resolution**: Worker reads parent results at runtime — no DB migration, no promotion-time injection
+- **Two delegation modes**: `task()` inherits parent model (fast), `gjc_delegate_execute()` uses profile model with worktree isolation
 
-- **`opencode.jsonc`** — change `model`, skill `paths`, MCP server `command`
-- **`AGENTS.md`** — update project name, links, identity references
-- **`cron/jobs.json`** — set your Discord channel IDs in `deliver` fields
-- **`@identity/`** — rewrite `SELF_MODEL.md`, `SOUL.md`, `brain/rules.md` for your agent's persona
-- **`scripts/`** — update hardcoded paths in shell scripts
-- **`~/.config/opencode/opencode.jsonc`** — point to your fork's config
+### Complexity Tiers
 
-### 3. Configure Core Files
-
-#### `opencode.jsonc`
-
-| Field | What to Set |
-|-------|-------------|
-| `model` | Your default model, e.g. `opencode-go/deepseek-v4-flash` |
-| `small_model` | Fallback model for simple tasks |
-| `skills.paths` | Directories where opencode looks for skills |
-| `mcp.gbrain` | gbrain MCP server command (set to `gbrain serve` or disable) |
-| `mcp.lazyweb` | Optional UI design MCP — set `enabled: false` if unused |
-| `mcp.specification-website` | Optional web spec MCP — set `enabled: false` if unused |
-
-#### `cron/jobs.json`
-
-Open `cron/jobs.json` and replace every `discord:YOUR_*_CHANNEL_ID` with your actual Discord channel IDs. Jobs with `"deliver": "local"` run without Discord delivery — they're safe as-is.
-
-Jobs include:
-- `kanban-dispatcher` — checks kanban tasks every minute (auto-enabled if you use kanban)
-- `trend-collect` — collects GitHub trending repos (requires Discord channel)
-- `seo-article-harvester` — RSS feed monitoring (requires Discord channel)
-- `wiki-compile` / `wiki-lint` — weekly wiki compilation
-- `daily retro` — daily work summary (requires Discord channel)
-
-#### `AGENTS.md`
-
-This is your agent's **constitution** — rewrite it for your persona:
-- Tone: how your agent communicates (concise? detailed? casual?)
-- Rules: P0-brainstem prohibitions (what must never be done)
-- Identity: what your agent knows about itself
-- Skills: which skills are loaded by default
-- Kanban pipeline: how work flows through your agent
-
-#### `@identity/` (Agent Identity)
-
-| File | Purpose |
-|------|---------|
-| `SELF_MODEL.md` | What your agent knows about itself — architecture, capabilities |
-| `SOUL.md` | Core personality, tone, and voice |
-| `brain/rules.md` | P0-brainstem absolute prohibitions |
-| `persona/writing-style-guide.md` | Writing conventions |
-
-### 4. Run
-
-```bash
-# Start opencode with your config:
-opencode --config opencode.jsonc
-```
-
-Your agent will load:
-1. `AGENTS.md` as system instructions
-2. All skills from configured paths
-3. MCP servers (gbrain for knowledge, optional servers)
-4. Cron jobs from `cron/jobs.json` (if cron is enabled)
-
-### Staying Updated
-
-```bash
-git pull upstream main
-```
-
-This pulls the latest v0.8+ updates from the template. If there are conflicts:
-
-```bash
-# Accept upstream changes for template files (losing your customizations):
-git checkout --theirs opencode.jsonc
-# Or keep your version:
-git checkout --ours opencode.jsonc
-# Then commit the merge:
-git commit
-```
-
-**Important:** The `rename-drewgent.sh` script and `README.md` are designed to be overwritten by upstream — your personal config lives in `opencode.jsonc`, `cron/jobs.json`, `AGENTS.md`, and `@identity/`.
-
-### Troubleshooting
-
-| Problem | Solution |
-|---------|----------|
-| `opencode` not found | Install opencode: `brew install anomalyco/tap/opencode` or download from [releases](https://github.com/anomalyco/opencode/releases) |
-| `gbrain` not found | Install from [garrytan/gbrain](https://github.com/garrytan/gbrain) or set `"enabled": false` in `opencode.jsonc` |
-| Rename script fails on macOS `sed` | macOS `sed` handles BSD syntax. If you see errors, install GNU sed: `brew install gnu-sed` |
-| Cron jobs don't trigger | Check `cron/` directory exists and `jobs.json` has `"enabled": true`. Cron requires `drewgent_cron.py` scheduler running |
-| Merge conflicts on `git pull upstream` | `git checkout --ours <file>` to keep your version, or `--theirs` to accept upstream. Then commit |
+| Tier | Pipeline | Use Case |
+|------|----------|----------|
+| **1** (simple) | Implementer → (auto-archive) | Typo fix, config change, trivial rename |
+| **2** (moderate) | Explorer → Implementer → Reviewer | New function, moderate feature |
+| **3** (complex) | Planner → Explorer → Implementer ↔ Reviewer-critical → Reviewer | Architecture change, cross-cutting, auth-sensitive |
 
 ---
+
+## Agent Profiles
+
+Specialized subagent roles invoked via opencode's built-in `task(subagent_type="<name>")` for same-model work, or `gjc_delegate_execute()` for profile-model work with worktree isolation. Profiles define: model, provider, toolsets, and system instructions.
+
+### Flash Tier
+
+OpenCode Go subscription ($0 marginal cost per call). Fast, for most day-to-day work.
+
+| Profile | Model | Role |
+|---------|-------|------|
+| **explorer** | deepseek-v4-flash | Read-only codebase analysis |
+| **implementer** | deepseek-v4-flash | Code implementation |
+| **archiver** | deepseek-v4-flash | Documentation, changelog |
+| **designer** | deepseek-v4-flash | UI/UX mockups, SVG assets |
+| **analyst** | deepseek-v4-flash | Data analysis, kanban/git queries |
+
+### Pro Tier
+
+Stronger reasoning, for quality-critical steps.
+
+| Profile | Model | Role |
+|---------|-------|------|
+| **reviewer** | deepseek-v4-pro | Code review (logic, edge cases, style) |
+| **editor** | deepseek-v4-pro | Content QA, Korean language quality |
+| **content-manager** | deepseek-v4-pro | CMO agent — observes work, produces drafts |
+| **orchestrator** | deepseek-v4-pro | Work decomposition and pipeline orchestration |
+| **sre** | deepseek-v4-pro | Infrastructure, incident response |
+
+### Max Tier
+
+Deep reasoning for architecture, planning, and security.
+
+| Profile | Model | Role |
+|---------|-------|------|
+| **planner** | qwen3.7-max | Task decomposition, pipeline design |
+| **reviewer-critical** | qwen3.7-max | Architecture-level review |
+| **security-reviewer** | qwen3.7-max | Security audit (auth, crypto, injection) |
+
+### Task Profiles (opencode built-in, no profile file needed)
+
+| Name | Model | Role |
+|------|-------|------|
+| **tester** | (inherits parent) | Test writing and verification |
+| **reviewer** | (inherits parent) | Standard code review |
+
+### Handoff Contract
+
+Every pipeline-capable profile includes a structured handoff section. When completing a pipeline task, agents structure their `kanban_complete` `result` as JSON:
+
+```python
+kanban_complete(
+    task_id="t_xxx",
+    summary="Human-readable completion report",
+    result=json.dumps({
+        "findings": ["What was discovered or produced"],
+        "risks": ["Concerns for the next stage"],
+        "next": ["Recommended next actions"],
+    }),
+)
+```
+
+- `findings` — discoveries, files changed, decisions made
+- `risks` — edge cases, incomplete parts, blocking issues
+- `next` — what the next profile should focus on
+
+All fields are optional. If `result` is not valid JSON, the system logs a `handoff_failed` event, prints a warning to stdout, and visually marks the fallback in the prompt. This ensures failures are visible and traceable.
+
+---
+
+## Pipeline Stages
+
+| Stage | What it does | Files it touches | Handoff output |
+|-------|-------------|------------------|----------------|
+| **Explorer** | Analyzes codebase, finds patterns | Read-only | `findings`: file paths, patterns. `risks`: concerns. `next`: implementation recommendations |
+| **Implementer** | Writes code, creates patches | Source files | `findings`: files changed, approach. `risks`: edge cases. `next`: reviewer focus areas |
+| **Reviewer** | Reviews code quality | Read-only | `findings`: issues with severity. `risks`: blocking issues. `next`: APPROVE/CHANGES_REQUESTED |
+| **Archiver** (auto post-hook) | Documents changes | Docs | `findings`: docs produced. `risks`: coverage gaps. `next`: future doc needs |
+| **Planner** | Designs the task graph | Plan docs | `findings`: plan structure. `risks`: complexity. `next`: execution order |
+| **Designer** | Creates mockups, SVGs | HTML, SVG | `findings`: design decisions. `risks`: accessibility. `next`: dev handoff |
+| **Editor** | Polishes content | Drafts | `findings`: edits made. `risks`: remaining concerns. `next`: ACCEPT/REJECT |
+| **Content Manager** | Produces multi-format drafts | Drafts | `findings`: content produced. `risks`: timing. `next`: editor focus |
+| **Security Reviewer** | Security audit | Read-only | `findings`: vulnerabilities with CWE. `risks`: CRITICAL/HIGH. `next`: required fixes |
+
+---
+
+## Subagent System
+
+### task() — Same-Model Delegation
+
+The primary mechanism for invoking subagents when the agent model is sufficient:
+
+```python
+task(
+    subagent_type="reviewer",
+    description="Review auth changes",
+    prompt="Analyze the existing auth implementation in src/auth/*.ts...",
+)
+```
+
+- Inherits parent model (fast, no context switching)
+- No profile file needed for built-in subagent types
+- For custom profiles, passes through `agents/<name>.md` profile settings
+
+### gjc_delegate_execute() — Isolated/Parallel Execution
+
+When you need a specific model or isolated execution environment:
+
+```python
+gjc_delegate_execute(
+    goal="Refactor auth module",
+    worktree="refactor-auth",
+    acceptance=["all tests pass", "API compatible"],
+    model="kimi-k2.7-code",
+)
+```
+
+- Uses GJC Coordinator MCP for worktree isolation + tmux parallel execution
+- Applies profile-specific model (unlike `task()` which inherits parent)
+- Returns durable turn status and artifact references
+
+### gjc_delegate_team() — Parallel Team Runs
+
+```python
+gjc_delegate_team(
+    goals=[
+        { "id": "A", "desc": "..." },
+        { "id": "B", "desc": "..." },
+        { "id": "C", "desc": "..." },
+    ]
+)
+```
+
+Spawns N parallel tmux sessions, each with worktree isolation.
+
+### Kanban Pipeline Auto-Decomposition
+
+For multi-stage work that should survive crashes and allow human review:
+
+```python
+kanban_create(
+    title="Add login validation",
+    pipeline=["explorer", "implementer", "reviewer"],
+    body="Implement login with email + password, JWT tokens, refresh token rotation",
+)
+```
+
+This creates N sequential tasks linked via `task_links`:
+- First task starts as `ready`
+- Each subsequent task starts as `todo` (waits for parent)
+- When a parent completes, dependency engine checks all parents — if all done, child promotes to `ready`
+- Archiver auto-runs as a post-hook on kanban_complete
+- Each task is dispatched as a separate worker process via Office Autopilot
+
+### Context Handoff Protocol
+
+When a child task starts, the worker (`scripts/run_kanban_worker.py`) automatically:
+
+1. Queries `task_links` for parent task IDs
+2. Reads each parent's `tasks.result`
+3. Tries JSON parsing — if valid dict with `findings`/`risks`/`next`, formats as structured markdown
+4. If not valid JSON, logs a `handoff_failed` event + warning + visual marker in the prompt
+5. Prepends the context block to the current task's body
+
+This happens at runtime in the worker — zero DB migration, zero schema changes, 100% backward compatible.
+
+### Ponytail Principle
+
+Before writing code, every agent applies the minimization checklist:
+1. Is this code really needed? (YAGNI) → no: don't write it
+2. Does the standard library have it? → use it
+3. Does the native platform support it? → use it (`<input type="date">` etc.)
+4. Does an installed dependency solve it? → use it (no new deps)
+5. Can it be one line? → one line
+6. Still needed? → minimum viable implementation
+
+---
+
+## Configuration
+
+### opencode.jsonc
+
+```jsonc
+{
+  "model": "opencode-go/deepseek-v4-flash",
+  "small_model": "opencode-go/deepseek-v4-pro",
+
+  "instructions": ["AGENTS.md"],
+
+  "skills": {
+    "paths": [
+      "~/.drewgent/skills",
+      "~/.drewgent/@action/skills",
+      "~/.config/opencode/skills"
+    ]
+  },
+
+  "mcp": {
+    "discord": {
+      "type": "local",
+      "command": ["discord-mcp"],
+      "env": { "DISCORD_TOKEN": "{env:DISCORD_BOT_TOKEN}" }
+    },
+    "wordpress": {
+      "type": "local",
+      "command": ["node", "scripts/wordpress-mcp-server.js"]
+    },
+    "gajae-code": {
+      "type": "local",
+      "command": ["gjc", "mcp-serve", "coordinator"],
+      "env": { "OPENCODE_API_KEY": "{env:OPENCODE_API_KEY}" }
+    },
+    "gbrain": {
+      "type": "local",
+      "command": ["gbrain", "serve"],
+      "env": { "OPENAI_API_KEY": "ollama-local" },
+      "timeout": 120000
+    }
+  }
+}
+```
+
+### MCP Servers
+
+| Server | Type | Purpose | Auth |
+|--------|------|---------|------|
+| **codebase-memory-mcp** | local (stdio) | Codebase knowledge graph — search functions, trace callers/callees, read source | None (local) |
+| **discord** | local (stdio) | Discord message read/write, channel history, attachment handling | `DISCORD_BOT_TOKEN` env |
+| **wordpress** | local (stdio) | WordPress post/category/media management via wp-cli on Docker | None (local) |
+| **gajae-code** | local (stdio) | GJC Coordinator — worktree isolation, tmux parallel execution, structured delegation | `OPENCODE_API_KEY` env |
+| **portone** | local (stdio) | PortOne (포트원) V2 payment gateway — docs, test channels, payment queries | None (local) |
+| **gbrain** | local (stdio) | PGLite hybrid search over personal vault — vector + keyword, entity tracking, takes/calibration | `OPENAI_API_KEY` env |
+
+---
+
+## Cron & Automation
+
+Drewgent uses a launchd-driven 60-second tick that dispatches `scripts/drewgent_cron.py`. The scheduler (`cron/scheduler.py`) reads `cron/jobs.json` and fires jobs at their scheduled intervals.
+
+| Interval | Job | Description | Method |
+|----------|-----|-------------|--------|
+| 5 min | launchd watchdog | Check all launchd services running | shell |
+| 5 min | dashboard push | Push agent state to Cloudflare dashboard | agent_dashboard_push.py |
+| 5 min | office autopilot | Auto-process kanban pending tasks | office_autopilot.sh |
+| 60 min | housekeeper | Brain pulse check, cleanup | drewgent_housekeeper.py |
+| 3 hours | content-manager-periodic | Content draft production | opencode run (deepseek-v4-pro) |
+| 6 hours | SEO article harvester | Collect SEO articles from RSS feeds | cron_seo_harvester.sh |
+| 6 hours | trend-collect | Scrape GitHub trending repos (8 workers) | trend_harvester.py |
+| 6 hours | trend-scorer | Heuristic trend scoring (30 min after collect) | trend_scorer.py |
+| Daily 03:00 | seo-analyze | Analyze collected SEO articles | seo_analyzer.sh |
+| Daily 04:00 | housekeeper (deep clean) | Log rotation, wiki lint, QA digest, gbrain sync | drewgent_housekeeper.py |
+| Daily 05:00 | content taste diff | Content taste diff analysis | content_diff_analyzer.py |
+| Daily 05:00 | cron health check | Full cron system health verification | cron_health_check.py |
+| Daily 06:00 | usage watch | Track token usage and adoption | trend_usage_watch.py |
+| Daily 06:00 | content graph engine | TF-IDF + taxonomy link recommendations | content_graph_builder.py |
+| Daily 09:00 | harmony check | Verify vault graph integrity | drewgent_harmony_check.sh |
+| Daily 10:00 | trend-evaluate-trigger | Check for new trends to evaluate | opencode run (flash) |
+| Daily 20:00 | daily retro | Generate daily work summary | opencode run |
+| Weekly Sun 03:00 | wiki-compile | Compile P2 raw data → P5-ego/wiki pages | opencode run (archiver) |
+| Weekly Mon 10:00 | trend-retire-trigger | Retire stale evaluated trends | opencode run (flash) |
+| Weekly Mon 14:00 | seo-trend-trigger | Generate SEO trend report | opencode run (flash) |
+| Tue/Fri 10:00 | taste-review-trigger | Deep analysis of high-quality tools | opencode run (flash) |
+
+---
+
+## Skills
+
+Skills are Markdown files with YAML frontmatter that provide specialized instructions for specific tasks. The opencode `skill()` tool loads them on demand.
+
+Included categories (36 categories, 100+ skills total):
+
+| Category | Description | Example Skills |
+|----------|-------------|----------------|
+| `ui/` | UI quality bar, design system | baseline-ui (12 priority tiers) |
+| `devops/` | Infrastructure and deployment | kanban-orchestrator, cron-script-fastpath, llm-cost-audit |
+| `software-development/` | Engineering practices | ponytail, codebase-refactoring, cf-worker-modular-architecture, model-routing |
+| `creative/` | Visual and audio content | baoyu-infographic (21×21 styles), sketch, claude-design, architecture-diagram, comfyui, pretext |
+| `mlops/` | ML training and inference | axolotl, unsloth, trl-fine-tuning, grpo-rl-training, vllm, guidance, outlines, gguf |
+| `brain/` | Agent system maintenance | memory-md-cleanup, vault-naming-convention, drewgent-runtime-checkup |
+| `content/` | Content production pipeline | content-pipeline, content-management, seo-article-harvester |
+| `mcp/` | MCP server integration | native-mcp, mcporter |
+| `autonomous-ai-agents/` | Agent architecture patterns | acp-thinking-spinner, content-management, drewgent-update-checker |
+| `gaming/` | Game automation | pokemon-player, minecraft-modpack-server |
+| `taste-review/` | Trend analysis framework | 5-question analysis, leverage scoring |
+| `apple/` | macOS automation | macos-computer-use |
+| `social-media/` | X/Twitter integration | xitter, xurl |
+| `payment/` | Korean payment gateways | payment-gateway-integration, portone-payment-integration |
+| `cloudflare-workers-local-dev/` | CF Workers local dev | wrangler, workers-best-practices, cloudflare-workers-local-dev |
+
+Skills are loaded via:
+```
+skill("baseline-ui")
+skill("ponytail")
+```
+
+---
+
+## Discord Integration
+
+Two Discord integration paths:
+
+**Discord Bot** — `scripts/discord_bot.py` connects Discord channels to opencode via `--attach` mode (port 8642):
+- Creates a thread for each conversation
+- Routes messages to the agent for processing
+- Supports file attachments (images, documents, code)
+- Chunks long messages (>2000 chars) across multiple messages
+- Configured as launchd service (`ai.drewgent.discord-bot`) with auto-recovery
+
+**Discord MCP** — `discord-mcp` stdio server for direct tool access:
+- Send/edit/delete messages, reactions, file uploads
+- Channel history, search, attachment download
+- Presence and DM management
+- Used by opencode directly for Discord operations
+
+---
+
+## Repository Structure
+
+### What's in the Repo
+
+```
+~/.drewgent/
+│
+├── opencode.jsonc              opencode configuration (model, MCP, skills)
+├── AGENTS.md                   System instructions loaded by opencode
+├── .env.example                API key configuration template
+├── CHANGELOG.md                Release history
+├── CONTRIBUTING.md             Contribution guidelines
+├── .gitignore                  Excludes personal runtime data
+│
+├── agents/                     16 subagent profile definitions
+│   ├── explorer.md             Read-only analysis (flash)
+│   ├── implementer.md          Code implementation (flash)
+│   ├── reviewer.md             Code review (pro)
+│   ├── reviewer-critical.md    Architecture review (max)
+│   ├── planner.md              Task decomposition (max)
+│   ├── orchestrator.md         Pipeline orchestration (pro)
+│   ├── archiver.md             Documentation (flash)
+│   ├── designer.md             UI/UX design (flash)
+│   ├── editor.md               Content editing (pro)
+│   ├── content-manager.md      Content production (pro)
+│   ├── sre.md                  Infrastructure (pro)
+│   ├── analyst.md              Data analysis (flash)
+│   ├── security-reviewer.md    Security audit (max)
+│   ├── tester.md               Test writing (inherits model)
+│   └── README.md
+│
+├── skills/                     60+ skill categories with 100+ skills
+│   ├── ui/                     UI quality standards
+│   ├── devops/                 Infrastructure and automation
+│   ├── software-development/   Engineering practices
+│   ├── creative/               Visual and audio content
+│   ├── mlops/                  ML training and inference
+│   ├── brain/                  Agent maintenance
+│   ├── content/                Content pipeline
+│   ├── apple/                  macOS automation
+│   ├── payment/                Payment gateway integration
+│   └── ...
+│
+├── @action/                    Action-layer skills and records
+│   ├── skills/                 Architecture-specific skills
+│   │   ├── brain-signal-system/
+│   │   ├── trend-harvester/
+│   │   ├── vault-health/
+│   │   └── self-replicating-agent-tdd/
+│   ├── proposals/              Design proposals (tier + leverage score)
+│   ├── incidents/              Incident reports and recovery patterns
+│   ├── plans/                  Long-term growth plans
+│   └── migrations/             Architecture migration records
+│
+├── @memory/                    Memory, growth, and raw data (runtime)
+│   ├── growth/                 Trend harvester output, taste reviews
+│   ├── knowledge/              Collected knowledge
+│   ├── memories/               Session insights
+│   └── sessions/               Raw session logs
+│
+├── scripts/                    27 automation scripts
+│   ├── drewgent_cron.py        Cron dispatcher (60s interval)
+│   ├── office_autopilot.sh     Kanban pending → orchestrator dispatcher
+│   ├── discord_bot.py          Discord ↔ opencode gateway
+│   ├── discord_send.py         Discord message chunk sender
+│   ├── run_kanban_worker.py    Kanban task executor
+│   ├── content_graph_builder.py Content graph engine (TF-IDF + taxonomy)
+│   ├── content_diff_analyzer.py Content taste diff analysis
+│   ├── trend_harvester.py      AI trend collection (GitHub)
+│   ├── trend_scorer.py         Heuristic trend scoring
+│   ├── trend_usage_watch.py    Trend adoption tracking
+│   ├── cron_health_check.py    Health monitoring
+│   ├── agent_dashboard_push.py Cloudflare dashboard pusher
+│   ├── ard_query.py            ARD Registry query client
+│   ├── drewgent_housekeeper.py Brain pulse + cleanup
+│   ├── seo_analyzer.sh         SEO article analysis
+│   ├── cron_seo_harvester.sh   SEO article collection
+│   └── ...
+│
+├── P0-brainstem/               Survival layer — governance rules
+│   ├── brain/rules.md          P0 rule documentation
+│   └── brain/Drewgent-brain/   .neuron constraint files
+│
+├── P1-limbic/                  Identity layer
+│   ├── persona/SOUL.md         Agent identity and personality
+│   └── persona/writing-style-guide.md  Communication conventions
+│
+├── P2-hippocampus/             Memory layer (stub — data gitignored)
+│   └── README.md
+│
+├── P3-sensors/                 Input layer (runtime gateway state)
+│   ├── cron/                   Cron output, lock files
+│   ├── gateway/                Gateway state and resolver
+│   ├── sandboxes/              Container sandboxes
+│   └── skills/                 Additional skills (deprecated — use @action/)
+│
+├── P4-cortex/                  Growth layer
+│   ├── content/                Brand guides, narrative arc, content assets
+│   ├── growth/                 Skill index, implementation plans
+│   ├── knowledge/              Architecture references, templates
+│   ├── insights/               Extracted patterns and learnings
+│   └── README.md
+│
+├── P5-ego/                     Identity layer
+│   ├── SELF_MODEL.md           Self-model and integration rules
+│   ├── wiki/                    Compiled knowledge (LLM Wiki)
+│   │   ├── index.md            Wiki master index
+│   │   ├── compiled/           Compiled knowledge pages
+│   │   └── lint-report.md      Wiki health report
+│   └── README.md
+│
+├── P6-prefrontal/              Strategy layer (deprecated — use @action/)
+│   └── README.md
+│
+└── cron/                       Scheduled job definitions
+    ├── jobs.json               Job schedule (intervals, scripts)
+    └── scheduler.py            Schedule resolver and dispatcher
+```
+
+### What's NOT in the Repo (Personal Data)
+
+These directories exist in `~/.drewgent` at runtime but are excluded from git:
+
+| Directory | Contents | Why Excluded |
+|-----------|----------|--------------|
+| `@memory/` | Growth data, knowledge, session logs | Personal/generated |
+| `P2-hippocampus/kanban/` | Kanban task board SQLite | Personal task data |
+| `P2-hippocampus/knowledge/` | SEO article collection | Personal research |
+| `P2-hippocampus/memories/` | Session insights | Personal learnings |
+| `P4-cortex/content/` | Brand guide, narrative arc | Personal branding |
+| `P4-cortex/growth/` | Runtime growth state | Generated state |
+| `P4-cortex/insights/` | Extracted patterns | Personal |
+| `P5-ego/config/` | API keys, secrets | Security |
+| `P5-ego/state/` | Runtime metrics | Generated state |
+| `P3-sensors/cron/output/` | Cron job output | Generated |
+| `P3-sensors/gateway_state/` | Gateway runtime state | Generated |
+| `config.yaml` | Personal configuration | API keys, paths |
+| `kanban.db` | Kanban database | Personal tasks |
+| Any `.db`, `.log`, `cache/` | Runtime data | Generated |
+
+The `.gitignore` is configured to exclude all of these. If you clone this repo, you'll get the architecture and tooling without any personal data.
+
+---
+
+## Naming Convention
+
+**Drewgent** = **Drew** + A**gent**.
+
+The name reflects that this is a personalized agent system — your name, your rules, your workflows. The convention is designed for easy forking:
+
+```
+<yourname>gent
+```
+
+Examples:
+- `drewgent` (Drew + agent) — this repo
+- `alexgent` (Alex + agent)
+- `saragent` (Sara + agent)
+- `devgent` (Dev + agent)
+
+### Renaming
+
+If you fork this repo for your own use, run the rename skill:
+
+```
+skill("rename-drewgent")
+```
+
+This will:
+1. Replace all "drewgent" → "<yourname>gent" across 2000+ references
+2. Rename `~/.drewgent` → `~/.<yourname>gent`
+3. Update config paths in opencode.jsonc, scripts, and skills
+4. Update AGENTS.md and all documentation references
+
+The rename skill is at `skills/software-development/rename-drewgent/SKILL.md`.
+
+---
+
+## Related
+
+- [opencode](https://opencode.ai) — The CLI agent platform Drewgent runs on
+- [gbrain](https://github.com/anomalyco/gbrain) — Local PGLite brain server for hybrid search
+- [lazyweb](https://lazyweb.com) — 281k+ real app screenshots for UI design reference
+- [specification.website](https://specification.website) — Web spec checklists and best practices
+
+---
+
+## Credits
+
+opencode-drewgent is built on the shoulders of these open-source projects:
+
+| Project | Author | Purpose | License |
+|---------|--------|---------|---------|
+| [opencode](https://opencode.ai) | [Anomaly](https://github.com/anomalyco) | AI coding agent platform | MIT |
+| [gbrain](https://github.com/garrytan/gbrain) | Garry Tan | MCP-based knowledge graph & hybrid search | — |
+| [codebase-memory-mcp](https://github.com/anomalyco/opencode) | Anomaly | Codebase knowledge graph | MIT |
+| [Gajae-Code](https://gajae-code.com) | — | GJC Coordinator MCP — worktree isolation, tmux parallel execution | — |
+| [discord-mcp](https://github.com/anomalyco/discord-mcp) | Anomaly | Discord MCP server | MIT |
+| [PortOne](https://developers.portone.io) | PortOne | Korean payment gateway SDK | — |
+| [Cloudflare Agents SDK](https://developers.cloudflare.com/agents) | Cloudflare | Stateful agent framework for Workers | MIT |
+| [Karpathy LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) | Andrej Karpathy | Compile-pattern knowledge base concept | — |
+| [Ponytail](https://github.com/DietrichGebert/ponytail) | Dietrich Gebert | Code minimalization checklist | — |
+| [NeuronFS](https://github.com/rhino-acoustic/NeuronFS) | [rhino-acoustic](https://github.com/rhino-acoustic) | Brain-based governance system | — |
+| [Baseline UI](https://github.com/anomalyco/opencode) | Anomaly | UI quality standards (ibelick, claude-design, sketch) | — |
+| [specification.website](https://specification.website) | [Joost de Valk](https://github.com/jdevalk) | Web spec checklists MCP | — |
+| [ARD Spec](https://agenticresourcediscovery.org) | Google/MS | Agentic Resource Discovery standard | — |
+
+No third-party source code is directly included — all dependencies are referenced or installed via package managers. Each project respects its own license.
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) — one change per PR, no new deps, include provenance.
 
 ## License
 
-MIT — [YOUR_PROJECT_NAME](https://your-domain.example)
+MIT — see [LICENSE](LICENSE)
