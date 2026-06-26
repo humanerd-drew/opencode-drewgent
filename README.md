@@ -126,6 +126,67 @@ opencode
 
 ---
 
+## Getting Started as a Fork
+
+This repo is designed to be **forked and customized**. Here's the recommended workflow:
+
+### 1. Fork on GitHub
+
+Fork the repo at [humanerd-drew/opencode-drewgent](https://github.com/humanerd-drew/opencode-drewgent).
+
+### 2. Clone your fork
+
+```bash
+git clone git@github.com:YOUR_USERNAME/opencode-drewgent.git ~/.drewgent
+```
+
+### 3. Rename (optional but recommended)
+
+This will replace all `drewgent` references with your own agent name:
+
+```bash
+# Run the rename skill from within opencode
+skill("rename-drewgent")
+
+# Or run the init script directly
+bash scripts/init-template.sh --name yourname
+```
+
+The rename convention is `<yourname>gent`:
+- `drewgent` (Drew + agent)
+- `alexgent` (Alex + agent)
+- `devgent` (Dev + agent)
+
+### 4. Customize your identity
+
+Edit the files under `@identity/` to match your agent's personality:
+
+| File | What to customize |
+|------|-------------------|
+| `@identity/SELF_MODEL.md` | Agent name, purpose, core directives |
+| `@identity/persona/SOUL.md` | Tone, style, values, voice |
+| `@identity/persona/writing-style-guide.md` | Writing conventions, templates |
+| `@identity/brain/rules.md` | P0 governance rules (keep the strict ones) |
+
+### 5. Start opencode
+
+```bash
+cd ~/.drewgent
+opencode
+```
+
+### Template vs Personal Files
+
+| In repo (template) | Gitignored (your personal data) |
+|--------------------|---------------------------------|
+| P0-P6 layer structure | `@memory/` — session logs, growth data |
+| Skill definitions | `@action/incidents/` — personal incident reports |
+| Agent profiles | `P5-ego/config/` — API keys, secrets |
+| Scripts & cron examples | `config.yaml`, `kanban.db` |
+| `@identity/` (template) | `agent-dashboard-state.json` |
+
+---
+
 ## Obsidian Vault
 
 The entire `~/.drewgent/` directory is an **Obsidian vault**. P0 through P6 form a connected wiki with wikilinks (`[[Page Name]]`), YAML frontmatter, and typed tags. This is not documentation-as-decoration — it's a living knowledge graph that agents query and write to.
@@ -743,6 +804,19 @@ The `.gitignore` is configured to exclude all of these. If you clone this repo, 
 
 ---
 
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `opencode` not found | Install: `curl -fsSL https://opencode.ai/install \| sh` or `brew install anomalyco/tap/opencode` |
+| `gbrain` not found | Install from [github.com/garrytan/gbrain](https://github.com/garrytan/gbrain) or set `"enabled": false` in `opencode.jsonc` |
+| Rename script fails on macOS `sed` | macOS `sed` uses BSD syntax. If errors occur: `brew install gnu-sed` |
+| Cron jobs don't trigger | Ensure `cron/` directory exists and `jobs.json` has `"enabled": true`. Requires `drewgent_cron.py` scheduler running |
+| Merge conflicts on `git pull upstream` | `git checkout --ours <file>` to keep your version, `--theirs` to accept upstream template |
+| `@identity/` placeholders showing | Edit `@identity/SELF_MODEL.md`, `@identity/persona/SOUL.md`, and `writing-style-guide.md` with your agent's identity |
+
+---
+
 ## Naming Convention
 
 **Drewgent** = **Drew** + A**gent**.
@@ -816,4 +890,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) — one change per PR, no new deps, inclu
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+MIT — see [LICENSE](LICENSE). Replace with your own license when forking.

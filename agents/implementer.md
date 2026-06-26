@@ -1,4 +1,12 @@
 ---
+ard:
+  identifier: urn:air:YOUR_DOMAIN:agent:implementer
+  type: application/opencode-subagent+json
+  capabilities:
+    - code-generation
+    - implementation
+    - patching
+    - refactoring
 name: implementer
 description: >
   Implementation and testing agent. Writes code, creates files, applies patches,

@@ -174,10 +174,16 @@ run/
 sandbox/
 .trash/
 
-# P6 personal infrastructure data — entirely ignored in public template
-P6-prefrontal/
+# P6 runtime-only subdirectories (not architecture docs)
+P6-prefrontal/archive/
+P6-prefrontal/checkpoints/
+P6-prefrontal/recovery-journal/
+
+# Personal runtime state
+agent-dashboard-state.json
 
 # New compressed P-layer directories
-# /@identity/ and /@action/ are tracked (config + code, not personal data)
+# @action/ is tracked (architectural code)
+# @identity/ is tracked as template — customize for your own agent
 /@memory/
 @action/skills/.hub/

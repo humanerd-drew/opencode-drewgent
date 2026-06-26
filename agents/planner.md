@@ -1,4 +1,12 @@
 ---
+ard:
+  identifier: urn:air:YOUR_DOMAIN:agent:planner
+  type: application/opencode-subagent+json
+  capabilities:
+    - task-decomposition
+    - planning
+    - dependency-ordering
+    - roadmapping
 name: planner
 description: >
   Task decomposition, orchestration, and SRE planning agent. Breaks down

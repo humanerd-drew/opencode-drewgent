@@ -109,6 +109,55 @@ opencode
 
 ---
 
+## 포크 가이드
+
+이 레포는 **fork해서 커스터마이징**하도록 설계되었습니다.
+
+### 1. GitHub에서 Fork
+
+[humanerd-drew/opencode-drewgent](https://github.com/humanerd-drew/opencode-drewgent)를 fork하세요.
+
+### 2. 포크 클론
+
+```bash
+git clone git@github.com:YOUR_USERNAME/opencode-drewgent.git ~/.drewgent
+```
+
+### 3. 이름 변경 (권장)
+
+모든 `drewgent` 참조를 당신의 에이전트 이름으로 변경:
+
+```bash
+# opencode 내에서 rename 스킬 실행
+skill("rename-drewgent")
+
+# 또는 init 스크립트 직접 실행
+bash scripts/init-template.sh --name yourname
+```
+
+### 4. @identity/ 커스터마이징
+
+`@identity/` 디렉토리의 파일을 수정하여 에이전트 성격 정의:
+
+| 파일 | 내용 |
+|------|------|
+| `@identity/SELF_MODEL.md` | 에이전트 이름, 목적, 핵심 지시사항 |
+| `@identity/persona/SOUL.md` | 어조, 스타일, 가치관 |
+| `@identity/persona/writing-style-guide.md` | 글쓰기 규칙 |
+| `@identity/brain/rules.md` | P0 거버넌스 규칙 |
+
+### 템플릿 vs 개인 파일
+
+| 레포에 포함 (템플릿) | gitignore됨 (개인 데이터) |
+|----------------------|--------------------------|
+| P0-P6 레이어 구조 | `@memory/` — 세션 로그, 성장 데이터 |
+| 스킬 정의 | `@action/incidents/` — 개인 사고 기록 |
+| 에이전트 프로필 | `P5-ego/config/` — API 키, 시크릿 |
+| 스크립트 & cron 예제 | `config.yaml`, `kanban.db` |
+| `@identity/` (템플릿) | `agent-dashboard-state.json` |
+
+---
+
 ## 아키텍처
 
 ```
@@ -340,6 +389,16 @@ launchd 기반 60초 틱, `cron/jobs.json`에서 작업 정의:
 | **Max** | qwen3.7-max, qwen3.7-plus | 복잡 추론, 계획, 심층 리뷰 |
 
 ---
+
+## 트러블슈팅
+
+| 문제 | 해결 |
+|------|------|
+| `opencode`를 찾을 수 없음 | 설치: `curl -fsSL https://opencode.ai/install \| sh` 또는 `brew install anomalyco/tap/opencode` |
+| `gbrain`을 찾을 수 없음 | [github.com/garrytan/gbrain](https://github.com/garrytan/gbrain)에서 설치하거나 `opencode.jsonc`에서 `"enabled": false` 설정 |
+| rename 스크립트가 macOS `sed`에서 실패 | macOS `sed`는 BSD 문법 사용. `brew install gnu-sed`로 GNU sed 설치 |
+| Cron 작업이 실행되지 않음 | `cron/` 디렉토리 존재 확인, `jobs.json`에 `"enabled": true` 설정, `drewgent_cron.py` 스케줄러 실행 필요 |
+| `@identity/` 플레이스홀더가 그대로 보임 | `@identity/SELF_MODEL.md`, `@identity/persona/SOUL.md`, `writing-style-guide.md`를 에이전트에 맞게 수정 |
 
 ## 크레딧
 

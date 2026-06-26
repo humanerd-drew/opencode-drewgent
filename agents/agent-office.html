@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Drewgent Agent Office</title>
+<style>
+:root {
+  --bg: #0d0d1a;
+  --surface: #141428;
+  --surface2: #1a1a30;
+  --border: #2a2a45;
+  --ink: #e8e4df;
+  --muted: #8a8680;
+  --dim: #5a5650;
+  --flash: #50c878;
+  --flash-bg: rgba(80,200,120,0.12);
+  --pro: #4a90d9;
+  --pro-bg: rgba(74,144,217,0.12);
+  --max: #c084fc;
+  --max-bg: rgba(192,132,252,0.12);
+  --amber: #d4a84b;
+  --red: #e74c3c;
+  --arrow: #5a5650;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  min-height:100vh; display:flex; flex-direction:column; align-items:center;
+  padding:20px; overflow-x:hidden;
+}
+h1 { font-size:28px; font-weight:600; letter-spacing:-0.5px; margin-bottom:2px; color:var(--ink); }
+.subtitle { color:var(--muted); font-size:13px; margin-bottom:30px; }
+.legend { display:flex; gap:20px; margin-bottom:24px; flex-wrap:wrap; justify-content:center; }
+.legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); }
+.legend-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+.legend-dot.flash { background:var(--flash); }
+.legend-dot.pro { background:var(--pro); }
+.legend-dot.max { background:var(--max); }
+.legend-dot.any { background:var(--dim); border:1px dashed var(--muted); }
+.org { position:relative; width:100%; max-width:1300px; }
+svg { width:100%; height:auto; display:block; }
+.node-group { cursor:pointer; }
+.node-bg { transition:opacity 0.15s; }
+.node-group:hover .node-bg { opacity:0.7; }
+.node-label { fill:var(--ink); font-size:11px; font-weight:600; text-anchor:middle; pointer-events:none; }
+.node-tier { font-size:7px; text-anchor:middle; pointer-events:none; }
+.tooltip {
+  position:fixed; background:var(--surface2); border:1px solid var(--border);
+  border-radius:8px; padding:12px 14px; max-width:280px;
+  font-size:12px; line-height:1.5; color:var(--ink);
+  pointer-events:none; opacity:0; transition:opacity 0.15s;
+  z-index:100; box-shadow:0 8px 32px rgba(0,0,0,0.5);
+}
+.tooltip.show { opacity:1; }
+.tooltip-name { font-weight:600; font-size:14px; margin-bottom:2px; }
+.tooltip-tier { font-size:11px; margin-bottom:6px; }
+.tooltip-desc { color:var(--muted); font-size:11px; }
+.tooltip-pipeline { margin-top:6px; padding-top:6px; border-top:1px solid var(--border); font-size:10px; color:var(--dim); }
+.flow-arrow { stroke:var(--arrow); stroke-width:1.5; fill:none; stroke-dasharray:4,3; }
+.flow-arrow.solid { stroke-dasharray:none; }
+.flow-arrow.collab { stroke:var(--amber); stroke-width:1.5; stroke-dasharray:4,3; opacity:0.6; }
+.flow-arrow.escalate { stroke:var(--red); stroke-width:1.2; stroke-dasharray:2,4; opacity:0.5; }
+.flow-arrow-head { fill:var(--arrow); }
+.flow-arrow-head.collab { fill:var(--amber); }
+.flow-arrow-head.escalate { fill:var(--red); }
+.section-label { fill:var(--dim); font-size:9px; text-anchor:middle; letter-spacing:1px; text-transform:uppercase; }
+@media (max-width:700px) {
+  body { padding:10px; }
+  h1 { font-size:20px; }
+  .subtitle { font-size:11px; margin-bottom:16px; }
+  .legend { gap:10px; }
+  .legend-item { font-size:10px; }
+}
+</style>
+</head>
+<body>
+
+<h1>Drewgent Agent Office</h1>
+<p class="subtitle">14 profiles · 3 cost tiers · autonomous pipeline</p>
+
+<div class="legend">
+  <span class="legend-item"><span class="legend-dot flash"></span> Flash (deepseek-v4-flash) — $0 marginal</span>
+  <span class="legend-item"><span class="legend-dot pro"></span> Pro (deepseek-v4-pro)</span>
+  <span class="legend-item"><span class="legend-dot max"></span> Max (qwen3.7-max)</span>
+  <span class="legend-item"><span class="legend-dot any"></span> Can ESCALATE</span>
+</div>
+
+<div class="org">
+<svg viewBox="0 0 1300 850" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0d0d1a"/><stop offset="100%" stop-color="#0d0d1a"/>
+    </linearGradient>
+    <filter id="glow-flash"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-pro"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-max"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+
+  <rect width="1300" height="850" fill="url(#bg-grad)"/>
+
+  <!-- ═══════════ ARROWS ═══════════ -->
+
+  <!-- Orchestrator → Planner -->
+  <path class="flow-arrow solid" d="M650,75 L650,100"/>
+  <polygon class="flow-arrow-head" points="646,98 650,105 654,98"/>
+
+  <!-- Orchestrator → Content Manager -->
+  <path class="flow-arrow solid" d="M590,75 C480,85 480,90 480,100"/>
+  <polygon class="flow-arrow-head" points="476,98 480,105 484,98"/>
+
+  <!-- Orchestrator → SRE -->
+  <path class="flow-arrow solid" d="M710,75 C820,85 820,90 820,100"/>
+  <polygon class="flow-arrow-head" points="816,98 820,105 824,98"/>
+
+  <!-- Orchestrator → Analyst -->
+  <path class="flow-arrow solid" d="M710,75 C920,85 920,90 920,100"/>
+  <polygon class="flow-arrow-head" points="916,98 920,105 924,98"/>
+
+  <!-- Planner → Explorer -->
+  <path class="flow-arrow solid" d="M480,145 L480,175"/>
+  <polygon class="flow-arrow-head" points="476,173 480,180 484,173"/>
+
+  <!-- Explorer → Designer -->
+  <path class="flow-arrow solid" d="M480,240 L480,270"/>
+  <polygon class="flow-arrow-head" points="476,268 480,275 484,268"/>
+
+  <!-- Designer → Implementer -->
+  <path class="flow-arrow solid" d="M480,335 L480,365"/>
+  <polygon class="flow-arrow-head" points="476,363 480,370 484,363"/>
+
+  <!-- Orchestrator → Implementer (direct for Tier 1) -->
+  <path class="flow-arrow" d="M660,75 C700,180 540,310 535,370"/>
+  <polygon class="flow-arrow-head" points="531,368 535,375 539,368"/>
+
+  <!-- Implementer ←→ Tester -->
+  <path class="flow-arrow collab" d="M550,405 L550,430 L410,430 L410,405"/>
+  <polygon class="flow-arrow-head collab" points="414,407 410,400 406,407"/>
+
+  <!-- Implementer → Reviewer -->
+  <path class="flow-arrow solid" d="M480,470 L480,500"/>
+  <polygon class="flow-arrow-head" points="476,498 480,505 484,498"/>
+
+  <!-- Reviewer → Security-Reviewer -->
+  <path class="flow-arrow" d="M480,565 L480,580 C480,590 570,590 570,580 L570,565"/>
+  <polygon class="flow-arrow-head" points="566,567 570,560 574,567"/>
+
+  <!-- Reviewer → Reviewer-Critical -->
+  <path class="flow-arrow" d="M480,565 L480,580 C480,590 720,590 720,580 L720,565"/>
+  <polygon class="flow-arrow-head" points="716,567 720,560 724,567"/>
+
+  <!-- Security-Reviewer → Archiver -->
+  <path class="flow-arrow solid" d="M570,630 L570,660 L600,700"/>
+  <polygon class="flow-arrow-head" points="596,698 600,705 604,698"/>
+
+  <!-- Reviewer-Critical → Archiver -->
+  <path class="flow-arrow solid" d="M720,630 L720,660 L690,700"/>
+  <polygon class="flow-arrow-head" points="686,698 690,705 694,698"/>
+
+  <!-- Reviewer → Archiver (direct) -->
+  <path class="flow-arrow solid" d="M480,630 L480,660 L600,700"/>
+  <polygon class="flow-arrow-head" points="596,698 600,705 604,698"/>
+
+  <!-- Content Manager → Editor -->
+  <path class="flow-arrow solid" d="M390,145 L390,175"/>
+  <polygon class="flow-arrow-head" points="386,173 390,180 394,173"/>
+
+  <!-- Editor → Archiver -->
+  <path class="flow-arrow solid" d="M390,240 L390,270 C390,400 540,680 580,700"/>
+  <polygon class="flow-arrow-head" points="576,698 580,705 584,698"/>
+
+  <!-- SRE → Orchestrator (ESCALATE) -->
+  <path class="flow-arrow escalate" d="M820,145 C800,120 780,80 680,75"/>
+  <polygon class="flow-arrow-head escalate" points="682,72 675,73 683,80"/>
+
+  <!-- Analyst → Orchestrator (ESCALATE) -->
+  <path class="flow-arrow escalate" d="M920,145 C900,120 850,80 680,75"/>
+  <polygon class="flow-arrow-head escalate" points="682,72 675,73 683,80"/>
+
+  <!-- Explorer → Orchestrator (ESCALATE) -->
+  <path class="flow-arrow escalate" d="M480,240 C430,240 300,180 625,75"/>
+  <polygon class="flow-arrow-head escalate" points="622,72 628,72 626,80"/>
+
+  <!-- Designer → Orchestrator (ESCALATE) -->
+  <path class="flow-arrow escalate" d="M480,335 C430,335 250,200 625,75"/>
+  <polygon class="flow-arrow-head escalate" points="622,72 628,72 626,80"/>
+
+  <!-- Implementer → Orchestrator (ESCALATE) -->
+  <path class="flow-arrow escalate" d="M480,470 C430,470 200,250 630,75"/>
+  <polygon class="flow-arrow-head escalate" points="627,72 633,72 631,80"/>
+
+  <!-- Tester → Orchestrator (ESCALATE) -->
+  <path class="flow-arrow escalate" d="M370,405 C300,405 150,280 630,75"/>
+  <polygon class="flow-arrow-head escalate" points="627,72 633,72 631,80"/>
+
+  <!-- ═══════════ SECTION LABELS ═══════════ -->
+  <text x="480" y="118" class="section-label">DEV PIPELINE</text>
+  <text x="390" y="118" class="section-label">CONTENT</text>
+  <text x="820" y="118" class="section-label">OPERATIONS</text>
+  <text x="920" y="118" class="section-label">ANALYTICS</text>
+
+  <!-- ═══════════ ORCHESTRATOR ═══════════ -->
+  <g class="node-group" data-name="Orchestrator" data-tier="Max" data-role="Work orchestration &amp; pipeline management" data-pipeline="Assigns tasks by profile, tracks progress, resolves blockers." data-escalate="false">
+    <rect class="node-bg" x="598" y="30" width="104" height="45" rx="22" fill="var(--max-bg)" stroke="var(--max)" stroke-width="1.5"/>
+    <text class="node-label" x="650" y="52" font-size="13">Orchestrator</text>
+    <text class="node-tier" x="650" y="66" fill="var(--max)">qwen3.7-max</text>
+  </g>
+
+  <!-- ═══════════ DEV PIPELINE ═══════════ -->
+
+  <!-- Planner -->
+  <g class="node-group" data-name="Planner" data-tier="Max" data-role="Task decomposition &amp; planning" data-pipeline="Breaks complex goals into atomic steps with dependency ordering." data-escalate="false">
+    <rect class="node-bg" x="428" y="100" width="104" height="45" rx="22" fill="var(--max-bg)" stroke="var(--max)" stroke-width="1.5"/>
+    <text class="node-label" x="480" y="122" font-size="12">Planner</text>
+    <text class="node-tier" x="480" y="136" fill="var(--max)">qwen3.7-max</text>
+  </g>
+
+  <!-- Explorer -->
+  <g class="node-group" data-name="Explorer" data-tier="Flash" data-role="Read-only research &amp; analysis" data-pipeline="Gathers context, traces call chains, reports findings before implementation." data-escalate="true">
+    <rect class="node-bg" x="428" y="195" width="104" height="45" rx="22" fill="var(--flash-bg)" stroke="var(--flash)" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text class="node-label" x="480" y="217" font-size="12">Explorer</text>
+    <text class="node-tier" x="480" y="231" fill="var(--flash)">deepseek-v4-flash</text>
+  </g>
+
+  <!-- Designer -->
+  <g class="node-group" data-name="Designer" data-tier="Flash" data-role="UI/UX design &amp; visual assets" data-pipeline="Creates mockups, SVG assets, components. Uses Lazyweb + baseline-ui." data-escalate="true">
+    <rect class="node-bg" x="428" y="290" width="104" height="45" rx="22" fill="var(--flash-bg)" stroke="var(--flash)" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text class="node-label" x="480" y="312" font-size="12">Designer</text>
+    <text class="node-tier" x="480" y="326" fill="var(--flash)">deepseek-v4-flash</text>
+  </g>
+
+  <!-- Implementer -->
+  <g class="node-group" data-name="Implementer" data-tier="Flash" data-role="Code implementation" data-pipeline="Reads context, writes code, follows conventions, verifies with lint/test." data-escalate="true">
+    <rect class="node-bg" x="428" y="385" width="104" height="45" rx="22" fill="var(--flash-bg)" stroke="var(--flash)" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text class="node-label" x="480" y="407" font-size="12">Implementer</text>
+    <text class="node-tier" x="480" y="421" fill="var(--flash)">deepseek-v4-flash</text>
+  </g>
+
+  <!-- Tester -->
+  <g class="node-group" data-name="Tester" data-tier="Flash" data-role="Test writing &amp; execution" data-pipeline="Writes tests, runs existing baseline, reports failures. Max 2 fix cycles." data-escalate="true">
+    <rect class="node-bg" x="318" y="385" width="104" height="45" rx="22" fill="var(--flash-bg)" stroke="var(--flash)" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text class="node-label" x="370" y="407" font-size="12">Tester</text>
+    <text class="node-tier" x="370" y="421" fill="var(--flash)">deepseek-v4-flash</text>
+  </g>
+
+  <!-- Reviewer -->
+  <g class="node-group" data-name="Reviewer" data-tier="Pro" data-role="Code review" data-pipeline="7-point checklist: logic, edge cases, style, security, testing, YAGNI, consistency." data-escalate="false">
+    <rect class="node-bg" x="428" y="520" width="104" height="45" rx="22" fill="var(--pro-bg)" stroke="var(--pro)" stroke-width="1.5"/>
+    <text class="node-label" x="480" y="542" font-size="12">Reviewer</text>
+    <text class="node-tier" x="480" y="556" fill="var(--pro)">deepseek-v4-pro</text>
+  </g>
+
+  <!-- Security-Reviewer -->
+  <g class="node-group" data-name="Security-Reviewer" data-tier="Max" data-role="Security audit" data-pipeline="Audits: auth, input validation, crypto, secrets, data protection, infra." data-escalate="false">
+    <rect class="node-bg" x="518" y="565" width="104" height="45" rx="22" fill="var(--max-bg)" stroke="var(--max)" stroke-width="1.5"/>
+    <text class="node-label" x="570" y="587" font-size="11">Security-Reviewer</text>
+    <text class="node-tier" x="570" y="601" fill="var(--max)">qwen3.7-max</text>
+  </g>
+
+  <!-- Reviewer-Critical -->
+  <g class="node-group" data-name="Reviewer-Critical" data-tier="Max" data-role="Critical change review" data-pipeline="Architecture integrity, abstraction boundaries, performance, migration strategy." data-escalate="false">
+    <rect class="node-bg" x="668" y="565" width="104" height="45" rx="22" fill="var(--max-bg)" stroke="var(--max)" stroke-width="1.5"/>
+    <text class="node-label" x="720" y="587" font-size="11">Reviewer-Critical</text>
+    <text class="node-tier" x="720" y="601" fill="var(--max)">qwen3.7-max</text>
+  </g>
+
+  <!-- Archiver -->
+  <g class="node-group" data-name="Archiver" data-tier="Flash" data-role="Documentation &amp; record-keeping" data-pipeline="Changelog, README updates, kanban completion summaries, pattern documentation." data-escalate="false">
+    <rect class="node-bg" x="548" y="705" width="104" height="45" rx="22" fill="var(--flash-bg)" stroke="var(--flash)" stroke-width="1.5"/>
+    <text class="node-label" x="600" y="727" font-size="12">Archiver</text>
+    <text class="node-tier" x="600" y="741" fill="var(--flash)">deepseek-v4-flash</text>
+  </g>
+
+  <!-- ═══════════ CONTENT ═══════════ -->
+
+  <!-- Content Manager -->
+  <g class="node-group" data-name="Content Manager" data-tier="Pro" data-role="CMO-style content creation" data-pipeline="Observes work activity, curates narrative, produces blog + X + LinkedIn drafts." data-escalate="false">
+    <rect class="node-bg" x="338" y="100" width="104" height="45" rx="22" fill="var(--pro-bg)" stroke="var(--pro)" stroke-width="1.5"/>
+    <text class="node-label" x="390" y="122" font-size="12">Content Manager</text>
+    <text class="node-tier" x="390" y="136" fill="var(--pro)">deepseek-v4-pro</text>
+  </g>
+
+  <!-- Editor -->
+  <g class="node-group" data-name="Editor" data-tier="Pro" data-role="Content editing &amp; QA" data-pipeline="Voice/tone check, Korean naturalness, structure, technical accuracy, narrative arc." data-escalate="false">
+    <rect class="node-bg" x="338" y="195" width="104" height="45" rx="22" fill="var(--pro-bg)" stroke="var(--pro)" stroke-width="1.5"/>
+    <text class="node-label" x="390" y="217" font-size="12">Editor</text>
+    <text class="node-tier" x="390" y="231" fill="var(--pro)">deepseek-v4-pro</text>
+  </g>
+
+  <!-- ═══════════ OPERATIONS ═══════════ -->
+
+  <!-- SRE -->
+  <g class="node-group" data-name="SRE" data-tier="Flash" data-role="Site Reliability Engineering" data-pipeline="launchd/n8n/Discord-bot health, incident response, deployment, cron recovery." data-escalate="true">
+    <rect class="node-bg" x="768" y="100" width="104" height="45" rx="22" fill="var(--flash-bg)" stroke="var(--flash)" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text class="node-label" x="820" y="122" font-size="12">SRE</text>
+    <text class="node-tier" x="820" y="136" fill="var(--flash)">deepseek-v4-flash</text>
+  </g>
+
+  <!-- ═══════════ ANALYTICS ═══════════ -->
+
+  <!-- Analyst -->
+  <g class="node-group" data-name="Analyst" data-tier="Flash" data-role="Data analysis &amp; insights" data-pipeline="Kanban/git/gbrain queries, velocity/quality/cost reports, recommendations." data-escalate="true">
+    <rect class="node-bg" x="868" y="100" width="104" height="45" rx="22" fill="var(--flash-bg)" stroke="var(--flash)" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text class="node-label" x="920" y="122" font-size="12">Analyst</text>
+    <text class="node-tier" x="920" y="136" fill="var(--flash)">deepseek-v4-flash</text>
+  </g>
+
+  <!-- ═══════════ BOTTOM INFO ═══════════ -->
+  <text x="650" y="810" fill="var(--dim)" font-size="9" text-anchor="middle">
+    Solid arrow = pipeline flow · Dashed arrow = ESCALATE path · Double-headed amber = collaboration loop
+  </text>
+</svg>
+</div>
+
+<div class="tooltip" id="tooltip">
+  <div class="tooltip-name" id="tt-name"></div>
+  <div class="tooltip-tier" id="tt-tier"></div>
+  <div class="tooltip-desc" id="tt-desc"></div>
+  <div class="tooltip-pipeline" id="tt-pipeline"></div>
+</div>
+
+<script>
+(function(){
+  var tip = document.getElementById('tooltip');
+  var tName = document.getElementById('tt-name');
+  var tTier = document.getElementById('tt-tier');
+  var tDesc = document.getElementById('tt-desc');
+  var tPipe = document.getElementById('tt-pipeline');
+
+  var colorMap = { 'Flash':'#50c878', 'Pro':'#4a90d9', 'Max':'#c084fc' };
+
+  document.querySelectorAll('.node-group').forEach(function(el){
+    var name = el.getAttribute('data-name') || '';
+    var tier = el.getAttribute('data-tier') || '';
+    var role = el.getAttribute('data-role') || '';
+    var pipeline = el.getAttribute('data-pipeline') || '';
+    var escalate = el.getAttribute('data-escalate') === 'true';
+
+    el.addEventListener('mouseenter', function(e){
+      var color = colorMap[tier] || '#8a8680';
+      tName.textContent = name;
+      tTier.textContent = tier + (escalate ? ' (can ESCALATE)' : '');
+      tTier.style.color = color;
+      tDesc.textContent = role;
+      tPipe.textContent = pipeline;
+      tip.classList.add('show');
+    });
+
+    el.addEventListener('mousemove', function(e){
+      var x = e.clientX + 16;
+      var y = e.clientY + 8;
+      var tw = tip.offsetWidth;
+      var th = tip.offsetHeight;
+      if (x + tw > window.innerWidth - 10) x = e.clientX - tw - 16;
+      if (y + th > window.innerHeight - 10) y = e.clientY - th - 8;
+      tip.style.left = Math.max(4, x) + 'px';
+      tip.style.top = Math.max(4, y) + 'px';
+    });
+
+    el.addEventListener('mouseleave', function(){
+      tip.classList.remove('show');
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
