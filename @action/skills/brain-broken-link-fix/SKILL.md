@@ -101,7 +101,7 @@ Drewgent Agent ──MCP client──→ GBrain MCP server (gbrain serve)
 ```yaml
 mcp_servers:
   gbrain:
-    command: gbrain
+    command: /Users/drew/.bun/bin/gbrain
     args: ["serve"]
     timeout: 120
 ```

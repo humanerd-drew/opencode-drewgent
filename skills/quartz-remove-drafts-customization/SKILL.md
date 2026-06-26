@@ -1,7 +1,7 @@
 ---
 name: quartz-remove-drafts-customization
 title: "quartz-remove-drafts-customization — Quartz RemoveDrafts plugin의 status: draft 미인식 fix + default-draft strict hardening (2026-06-02)"
-description: "Quartz 빌드 시스템의 `Plugin.RemoveDrafts()`는 frontmatter의 `draft: true`만 체크함. `status: draft`나 다른 키로 draft를 표시하는 경우 (Obsidian vault + Quartz 셋업의 흔한 패턴), draft가 public/에 그대로 빌드되어 site에 게시됨. `quartz.config.ts`의 `filters: [Plugin.RemoveDrafts()]`를 customized filter로 교체해 `status === draft`도 인식하게 만드는 절차. Drewgent yourdomain.com 포함 Quartz 4.x 사용자 모두 영향. 2026-06-02 patch: default-draft strict mode (status field가 없거나 unknown이면 자동 EXCLUDE) + 5-state machine (draft/in_review/polished/published/archived) + wikilink post-EXCLUDE caveat + 'publish' 단수 trap."
+description: "Quartz 빌드 시스템의 `Plugin.RemoveDrafts()`는 frontmatter의 `draft: true`만 체크함. `status: draft`나 다른 키로 draft를 표시하는 경우 (Obsidian vault + Quartz 셋업의 흔한 패턴), draft가 public/에 그대로 빌드되어 site에 게시됨. `quartz.config.ts`의 `filters: [Plugin.RemoveDrafts()]`를 customized filter로 교체해 `status === draft`도 인식하게 만드는 절차. Drewgent YOUR_DOMAIN 포함 Quartz 4.x 사용자 모두 영향. 2026-06-02 patch: default-draft strict mode (status field가 없거나 unknown이면 자동 EXCLUDE) + 5-state machine (draft/in_review/polished/published/archived) + wikilink post-EXCLUDE caveat + 'publish' 단수 trap."
 type: skill
 space: growth
 tags: [skill, quartz, draft, content-pipeline, obsidian, humanerd-site, state-machine, default-draft-strict]
@@ -14,8 +14,8 @@ links:
   - "[[skills/site-spec-audit]]"
   - "[[skills/filesystem-truth-audit]]"
   - "[[skills/patch-secret-safety]]"
-  - "[[P3-sensors/gateway/drewgent-architecture-dataflow]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@action/gateway/drewgent-architecture-dataflow]]"
+  - "[[@identity/brain/rules]]"---
 
 
 # quartz-remove-drafts-customization
@@ -25,7 +25,7 @@ Quartz `Plugin.RemoveDrafts()` 필터가 custom frontmatter 키 (e.g. `status: d
 ## 문제 — 2026-06-01 ~ 2026-06-02 incident (2 rounds)
 
 ### Round 1 (6/1): 명시적 status: draft 누수
-content-pipeline이 만든 `status: draft` 초안 파일들이 검토 없이 yourdomain.com에 자동 게시됨.
+content-pipeline이 만든 `status: draft` 초안 파일들이 검토 없이 YOUR_DOMAIN에 자동 게시됨.
 
 ### Round 2 (6/2): **default-include의 함정** — status field가 없는 파일이 통과됨
 6/1 fix 후에도 5/23~5/26 자동 생성 article 4개가 계속 노출됨. `status: draft`도 아니고 `status: publish`도 아닌, **status field 자체가 없는** 파일들이었음. v1 filter의 "default-include (status field 없으면 통과)" 정책이 이 케이스를 못 잡음. Hardening: **default-draft strict** (status field 없으면 자동 EXCLUDE) — 모든 콘텐트는 pipeline을 거쳐서 publish 명시되어야 라이브.
@@ -118,7 +118,7 @@ done
 
 ```bash
 # 각 draft 파일의 canonical URL로 접근
-curl -s -o /dev/null -w "%{http_code}\n" https://yourdomain.com/insights/<slug>
+curl -s -o /dev/null -w "%{http_code}\n" https://YOUR_DOMAIN/insights/<slug>
 # 200 = 새고 있음
 # 404 = 안전 (또는 build가 deploy 안 됨)
 ```
@@ -387,7 +387,7 @@ wrangler pages deploy public/ --project-name=humanerd-site
 # live site
 for url in $(grep -l "^status: draft$" ~/.drewgent/memories/insights/*.md | \
              xargs -I{} basename {} .md); do
-  code=$(curl -s -o /dev/null -w "%{http_code}" "https://yourdomain.com/insights/$url")
+  code=$(curl -s -o /dev/null -w "%{http_code}" "https://YOUR_DOMAIN/insights/$url")
   echo "$url: $code"  # 404 = 안전
 done
 ```
@@ -467,7 +467,7 @@ Quartz는 `tags`를 별개 메타로 처리. `tags: [draft]`인 published 글은
 1. fswatch 5초 debounce
 2. quartz build (filter 통과 → public/에 HTML 생성)
 3. wrangler deploy (~3-5초)
-4. yourdomain.com에 라이브 (~1-2분)
+4. YOUR_DOMAIN에 라이브 (~1-2분)
 
 즉, status: publish로 바꾸는 순간 draft가 나감. 검토는 **변경 직전**에 완료해야.
 
@@ -477,7 +477,7 @@ Quartz는 `tags`를 별개 메타로 처리. `tags: [draft]`인 published 글은
 
 EXCLUDE된 file은 `public/`에 HTML이 안 생성됨. 하지만 **다른 file에 박힌 wikilink는 그대로 inline으로 렌더링됨**. 예: homepage에 `[[blog/2026-05-23-gemini-cli-shutdown|2026-05-23 — Gemini CLI shutdown]]`이 있으면, 그 article이 EXCLUDE되어도 homepage는 그 wikilink를 broken link로 표시함.
 
-**증상 (2026-06-02 발견)**: yourdomain.com homepage의 Blog 섹션에 4개 broken wikilink가 그대로 보였음. 각각 direct URL은 404지만 homepage에서는 link text로 살아있음. 사용자 입장에서 "콘텐트 파이프라인 거치지 않은 article이 안 보이게" 요구 위배.
+**증상 (2026-06-02 발견)**: YOUR_DOMAIN homepage의 Blog 섹션에 4개 broken wikilink가 그대로 보였음. 각각 direct URL은 404지만 homepage에서는 link text로 살아있음. 사용자 입장에서 "콘텐트 파이프라인 거치지 않은 article이 안 보이게" 요구 위배.
 
 **해결**: EXCLUDE된 file을 가리키는 wikilink는 **호스트 file에서 수동으로 제거**해야 함. 자동 정리 도구 없음. 권장:
 
@@ -506,7 +506,7 @@ rg "^status: publish$" vault/ -l   # 0건이어야 정상
 ```
 draft (작성)            →  EXCLUDE (404)
     ↓  human 검토 + frontmatter status: published
-published (발행)        →  INCLUDE (200, yourdomain.com 라이브)
+published (발행)        →  INCLUDE (200, YOUR_DOMAIN 라이브)
     ↓
 polished (윤문 완료)    →  INCLUDE (200)
     ↓  재검토
@@ -591,6 +591,6 @@ def add_status_published(path: Path) -> str:
 - [[skills/content-pipeline/SKILL]] — content-pipeline skill (Phase 3에서 status: draft 작성)
 - [[skills/humanerd-site]] — humanerd-site 운영 skill
 - [[skills/humanerd-content-status-enforcement]] — agent self-apply 규칙 (status field 자동 enforce)
-- [[skills/site-spec-audit]] — yourdomain.com 감사 (agent-readiness / well-known 등 점검)
+- [[skills/site-spec-audit]] — YOUR_DOMAIN 감사 (agent-readiness / well-known 등 점검)
 - [[skills/filesystem-truth-audit]] — "docs Done ≠ reality" 검증 패턴
-- [[P3-sensors/gateway/drewgent-architecture-dataflow]] — Quartz build → wrangler deploy 흐름
+- [[@action/gateway/drewgent-architecture-dataflow]] — Quartz build → wrangler deploy 흐름

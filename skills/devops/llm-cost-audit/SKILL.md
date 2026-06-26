@@ -9,9 +9,9 @@ tags: [devops, cost, llm, audit, optimization]
 created: 2026-06-02
 updated: 2026-06-02
 links:
-  - "[[P4-cortex/knowledge/NEURONFS_RULES]]"
-  - "[[P5-ego/SELF_MODEL]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@memory/knowledge/NEURONFS_RULES]]"
+  - "[[@identity/SELF_MODEL]]"
+  - "[[@identity/brain/rules]]"
   - "[[skills/devops/minimax-usage]]"
   - "[[skills/software-development/token-compression-headroom]]"
   - "[[skills/software-development/llm-model-migration]]"

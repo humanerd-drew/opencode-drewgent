@@ -9,12 +9,12 @@ tags: [llm, model-migration, provider-update, token-plan, drewgent]
 created: 2026-06-01
 updated: 2026-06-01
 links:
-  - "[[P4-cortex/growth/INTEGRATION_PROTOCOL]]"
-  - "[[P5-ego/SELF_MODEL]]"
-  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁task_qa_gate.neuron]]"
-  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁blind_write.neuron]]"
-  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁karpathy_coding_principles.neuron]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@memory/growth/INTEGRATION_PROTOCOL]]"
+  - "[[@identity/SELF_MODEL]]"
+  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁task_qa_gate.neuron]]"
+  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁blind_write.neuron]]"
+  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁karpathy_coding_principles.neuron]]"
+  - "[[@identity/brain/rules]]"---
 
 # LLM Model Migration — Provider Default Update
 
@@ -502,13 +502,13 @@ M2.7에 그대로 박혀있는 곳:
 
 ## Related
 
-- [[P4-cortex/growth/INTEGRATION_PROTOCOL]] — 3-file integration 원칙
-- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁task_qa_gate.neuron]] — verification 단계
-- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁karpathy_coding_principles.neuron]] — surgical changes, scope 준수
-- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]] — audit mode의 governance 근거 (CHANGELOG 신뢰 X, filesystem = truth)
+- [[@memory/growth/INTEGRATION_PROTOCOL]] — 3-file integration 원칙
+- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁task_qa_gate.neuron]] — verification 단계
+- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁karpathy_coding_principles.neuron]] — surgical changes, scope 준수
+- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]] — audit mode의 governance 근거 (CHANGELOG 신뢰 X, filesystem = truth)
 
 ## Related
 
-- [[P4-cortex/growth/INTEGRATION_PROTOCOL]] — 3-file integration 원칙
-- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁task_qa_gate.neuron]] — verification 단계
-- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁karpathy_coding_principles.neuron]] — surgical changes, scope 준수
+- [[@memory/growth/INTEGRATION_PROTOCOL]] — 3-file integration 원칙
+- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁task_qa_gate.neuron]] — verification 단계
+- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁karpathy_coding_principles.neuron]] — surgical changes, scope 준수

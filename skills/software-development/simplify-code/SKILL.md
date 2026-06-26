@@ -10,13 +10,13 @@ metadata:
     tags: [code-review, cleanup, refactor, delegation, subagent, parallel, simplify]
     related_skills: [requesting-code-review, test-driven-development, plan]
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[software-development/codebase-refactoring]]"
   - "[[software-development/incremental-refactoring]]"
   - "[[software-development/requesting-code-review]]"
   - "[[software-development/test-driven-development]]"
   - "[[software-development/plan]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Simplify Code — Parallel Review & Cleanup

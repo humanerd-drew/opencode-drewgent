@@ -8,8 +8,8 @@ tags: [skill, software-development, patching, python]
 created: 2026-06-01
 updated: 2026-06-11
 links:
-  - "[[P0-brainstem/brain/rules]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[software-development/gateway-module-extraction]]"
   - "[[software-development/codebase-refactoring]]"
   - "[[software-development/incremental-refactoring]]"

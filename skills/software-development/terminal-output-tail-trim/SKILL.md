@@ -9,9 +9,9 @@ tags: [token-efficiency, terminal, file-tools, audit, evaluated-and-shipped]
 created: 2026-05-31
 updated: 2026-05-31
 links:
-  - "[[P4-cortex/knowledge/NEURONFS_RULES]]"
-  - "[[P5-ego/SELF_MODEL]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@memory/knowledge/NEURONFS_RULES]]"
+  - "[[@identity/SELF_MODEL]]"
+  - "[[@identity/brain/rules]]"
   - "[[skills/software-development/search-files-content-trim]]"
 ---
 
@@ -25,7 +25,7 @@ Drewgent의 `terminal` tool은 50,000자 cap + 40/60 head/tail split safety net�
 
 ## Fix (shipped 2026-05-31)
 
-`~/.drewgent/source/drewgent-agent/tools/terminal_tool.py` 의 `terminal_tool`에 3개 파라미터 추가, default cap 변경:
+`/Users/drew/.drewgent/source/drewgent-agent/tools/terminal_tool.py` 의 `terminal_tool`에 3개 파라미터 추가, default cap 변경:
 
 | param | type | default | 의미 |
 |---|---|---|---|
@@ -105,5 +105,5 @@ Phase 2 (`terminal-output-tail-trim`)은 **default change pattern**:
 - `tools/terminal_tool.py:1664` — `_handle_terminal` (pass-through)
 - `tools/terminal_tool.py:1649` — `TERMINAL_SCHEMA` (3 new properties)
 - [[skills/software-development/search-files-content-trim]] — Phase 1 (opt-in pattern)
-- [[P4-cortex/knowledge/NEURONFS_RULES]] — file system architecture
-- [[P0-brainstem/brain/rules]] — P0 brainstem (禁filesystem_truth: 직접 import해서 진짜 함수 call 검증)
+- [[@memory/knowledge/NEURONFS_RULES]] — file system architecture
+- [[@identity/brain/rules]] — P0 brainstem (禁filesystem_truth: 직접 import해서 진짜 함수 call 검증)

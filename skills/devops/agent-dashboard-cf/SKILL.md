@@ -2,8 +2,6 @@
 name: agent-dashboard-cf
 title: Agent Dashboard (Cloudflare Workers)
 description: "Drewgent 에이전트 상태를 Cloudflare Workers + KV로 호스팅. 4-tab insight-driven dashboard (Overview/System/Brain/Usage) + live agent activity + 23 collectors"
-trigger: "Drewgent 에이전트 상태를 Cloudflare Workers에 호스팅된 대시보드로 실시간 확인. 에이전트 활동을 시각적으로 모니터링"
-provenance:
   session: "2026-06-15 agent-dashboard (v6-final)"
   decision: "CF Worker + static assets + KV + pusher. v6: 4-tab layout (Overview/System/Brain/Usage), insight-driven design, live activity 15s refresh. KEY LESSON: tab-based depth > single-page cramming; live activity (>static metrics); error grouping > flat list; JS scoping bugs from render() accessing load() variables"
 created: 2026-06-15

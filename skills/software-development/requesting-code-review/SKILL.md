@@ -8,13 +8,13 @@ tags: [outcome, code-review, audit]
 created: 2026-05-20
 updated: 2026-06-10
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[software-development/test-driven-development]]"
   - "[[software-development/writing-plans]]"
   - "[[software-development/systematic-debugging]]"
   - "[[software-development/simplify-code]]"
   - "[[software-development/spike]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Full Codebase Audit (Existing Project)
@@ -629,7 +629,7 @@ graph LR
   Check ALL `.bin/*` entries and fix any that start with `XSym`. Then `npm run dev` works.
 
 ## Related
-- [[P3-sensors/skills/SKILL-INDEX]]
+- [[@action/skills/SKILL-INDEX]]
 
 ## Reference Files
 - `references/codebase-audit-patterns.md` — grep patterns for dead code

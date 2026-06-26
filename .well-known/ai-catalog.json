@@ -1,0 +1,302 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Drewgent — AI Agent System",
+    "identifier": "did:web:drewgent.ai",
+    "documentationUrl": "https://github.com/drewgent/drewgent",
+    "description": "A multi-agent AI orchestration system with opencode task() subagents + Gajae-Code Coordinator MCP, MCP server integrations, kanban pipeline, and autonomous cron-based operations."
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:drewgent.ai:agent:analyst",
+      "displayName": "Analyst",
+      "type": "application/opencode-subagent+json",
+      "description": "Data analysis agent. Queries kanban DB, git log, gbrain stats for patterns, trends, and insights. Produces structured reports. Read-only on production data.",
+      "capabilities": ["data-analysis", "report-generation", "pattern-discovery", "statistical-analysis"],
+      "representativeQueries": [
+        "analyze kanban completion trends this week",
+        "what patterns do you see in git commit history",
+        "show me gbrain stats and anomalies"
+      ],
+      "tags": ["data", "analytics", "reporting", "read-only"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/deepseek-v4-flash",
+        "temperature": "0.2",
+        "readOnly": "true"
+      }
+    },
+    {
+      "identifier": "urn:air:drewgent.ai:agent:archiver",
+      "displayName": "Archiver",
+      "type": "application/opencode-subagent+json",
+      "description": "Documentation and record-keeping agent. Writes changelogs, updates docs, saves kanban completion summaries. Does NOT implement features.",
+      "capabilities": ["documentation", "changelog", "record-keeping", "kanban-summary"],
+      "representativeQueries": [
+        "write a changelog for today's changes",
+        "save kanban completion summary",
+        "update project documentation"
+      ],
+      "tags": ["documentation", "archival", "record-keeping"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/deepseek-v4-flash",
+        "temperature": "0.1"
+      }
+    },
+    {
+      "identifier": "urn:air:drewgent.ai:agent:content-manager",
+      "displayName": "Content Manager",
+      "type": "application/opencode-subagent+json",
+      "description": "CMO-style content agent. Observes recent work activity (sessions, kanban, git), identifies narrative-worthy material, produces blog + X thread + LinkedIn drafts. Maintains narrative arc continuity.",
+      "capabilities": ["content-creation", "blog-drafting", "social-media", "narrative-curation", "brand-voice"],
+      "representativeQueries": [
+        "draft a blog post about what I worked on this week",
+        "create an X thread about the kanban pipeline refactor",
+        "write a LinkedIn post about our agent architecture"
+      ],
+      "tags": ["content", "writing", "social-media", "blog", "marketing"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/deepseek-v4-pro",
+        "temperature": "0.4"
+      }
+    },
+    {
+      "identifier": "urn:air:drewgent.ai:agent:designer",
+      "displayName": "Designer",
+      "type": "application/opencode-subagent+json",
+      "description": "UI/UX design agent. Creates mockups, SVG assets, components. Uses Lazyweb for references, baseline-ui for conventions. Does NOT implement backend logic.",
+      "capabilities": ["ui-design", "svg-generation", "mockup-creation", "prototyping", "design-research"],
+      "representativeQueries": [
+        "design a mockup for the settings page",
+        "create an SVG diagram of the agent pipeline",
+        "find UI references for a paywall screen"
+      ],
+      "tags": ["design", "ui", "ux", "svg", "mockup", "creative"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/deepseek-v4-flash",
+        "temperature": "0.3"
+      }
+    },
+    {
+      "identifier": "urn:air:drewgent.ai:agent:editor",
+      "displayName": "Editor",
+      "type": "application/opencode-subagent+json",
+      "description": "Content editing and QA agent. Reviews drafts for tone, voice, clarity, and Korean language quality. Final quality gate before publishing.",
+      "capabilities": ["content-review", "tone-check", "korean-proofreading", "quality-gate", "style-enforcement"],
+      "representativeQueries": [
+        "review this blog post for tone and clarity",
+        "check this Korean translation for natural phrasing",
+        "final QA pass before publishing"
+      ],
+      "tags": ["editorial", "qa", "proofreading", "korean", "content"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/glm-5.2",
+        "temperature": "0.2"
+      }
+    },
+    {
+      "identifier": "urn:air:drewgent.ai:agent:explorer",
+      "displayName": "Explorer",
+      "type": "application/opencode-subagent+json",
+      "description": "Read-only research and exploration agent. Gathers context, traces call chains, reports patterns. Cannot modify files. ESCALATE capability for hard problems.",
+      "capabilities": ["code-exploration", "research", "pattern-discovery", "impact-analysis", "read-only"],
+      "representativeQueries": [
+        "explore how the authentication module works",
+        "trace the call chain for user login",
+        "research the database schema and relationships"
+      ],
+      "tags": ["research", "exploration", "read-only", "analysis"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/deepseek-v4-flash",
+        "temperature": "0.1",
+        "readOnly": "true"
+      }
+    },
+    {
+      "identifier": "urn:air:drewgent.ai:agent:implementer",
+      "displayName": "Implementer",
+      "type": "application/opencode-subagent+json",
+      "description": "Implementation agent. Writes code, creates files, applies patches. Follows project conventions. Verifies with lint/test after changes.",
+      "capabilities": ["code-generation", "implementation", "patching", "refactoring", "lint-verification"],
+      "representativeQueries": [
+        "implement the login API endpoint",
+        "refactor the database layer to use D1",
+        "write unit tests for the payment module"
+      ],
+      "tags": ["development", "implementation", "code-generation", "testing"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/kimi-k2.7-code",
+        "temperature": "0.2"
+      }
+    },
+    {
+      "identifier": "urn:air:drewgent.ai:agent:orchestrator",
+      "displayName": "Orchestrator",
+      "type": "application/opencode-subagent+json",
+      "description": "Work orchestration and pipeline management. Assigns tasks across agent profiles, tracks progress, resolves blockers. Delegates — does NOT implement.",
+      "capabilities": ["task-orchestration", "pipeline-management", "agent-delegation", "progress-tracking", "blocker-resolution"],
+      "representativeQueries": [
+        "orchestrate the deployment pipeline across all agents",
+        "assign tasks for the new feature implementation",
+        "check progress and resolve blockers"
+      ],
+      "tags": ["orchestration", "management", "pipeline", "delegation"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/qwen3.7-max",
+        "temperature": "0.2"
+      }
+    },
+    {
+      "identifier": "urn:air:drewgent.ai:agent:planner",
+      "displayName": "Planner",
+      "type": "application/opencode-subagent+json",
+      "description": "Task decomposition and planning agent. Breaks complex goals into atomic, actionable tasks with dependency ordering. Produces structured plans only.",
+      "capabilities": ["task-decomposition", "planning", "dependency-ordering", "estimation", "roadmapping"],
+      "representativeQueries": [
+        "break down the migration into actionable tasks",
+        "create a plan for implementing the new dashboard",
+        "what are the dependencies for the Q3 roadmap"
+      ],
+      "tags": ["planning", "task-decomposition", "roadmap", "architecture"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/qwen3.7-max",
+        "temperature": "0.1"
+      }
+    },
+    {
+      "identifier": "urn:air:drewgent.ai:agent:reviewer",
+      "displayName": "Reviewer",
+      "type": "application/opencode-subagent+json",
+      "description": "Code review agent. Reviews changes for logic errors, edge cases, style, security, testing, and over-engineering. Does NOT modify files.",
+      "capabilities": ["code-review", "logic-analysis", "style-checking", "security-review", "read-only"],
+      "representativeQueries": [
+        "review the latest pull request for logic errors",
+        "check this implementation for edge cases",
+        "review code style and potential over-engineering"
+      ],
+      "tags": ["review", "code-quality", "read-only", "qa"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/deepseek-v4-pro",
+        "temperature": "0.1",
+        "readOnly": "true"
+      }
+    },
+    {
+      "identifier": "urn:air:drewgent.ai:agent:reviewer-critical",
+      "displayName": "Reviewer Critical",
+      "type": "application/opencode-subagent+json",
+      "description": "Critical code review for architecturally significant changes. Architecture integrity, abstraction boundaries, performance, migration strategy. Second set of eyes after standard reviewer.",
+      "capabilities": ["architecture-review", "abstraction-analysis", "performance-audit", "migration-strategy", "deep-review"],
+      "representativeQueries": [
+        "critically review the architecture of this refactoring",
+        "audit abstraction boundaries in the new module",
+        "review the migration strategy for potential regressions"
+      ],
+      "tags": ["review", "architecture", "critical", "deep-analysis"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/qwen3.7-plus",
+        "temperature": "0.1",
+        "readOnly": "true"
+      }
+    },
+    {
+      "identifier": "urn:air:drewgent.ai:agent:security-reviewer",
+      "displayName": "Security Reviewer",
+      "type": "application/opencode-subagent+json",
+      "description": "Security-focused code review. Audits for injection, crypto misuse, auth bypass, privilege escalation, secret leakage. Blocks release on CRITICAL findings.",
+      "capabilities": ["security-audit", "vulnerability-detection", "auth-analysis", "crypto-review", "secret-detection"],
+      "representativeQueries": [
+        "audit this code for security vulnerabilities",
+        "check for crypto misuse in the encryption module",
+        "review auth flow for privilege escalation risks"
+      ],
+      "tags": ["security", "audit", "vulnerability", "compliance", "read-only"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/minimax-m3",
+        "temperature": "0.1",
+        "readOnly": "true"
+      }
+    },
+    {
+      "identifier": "urn:air:drewgent.ai:agent:seo-engineer",
+      "displayName": "SEO Engineer",
+      "type": "application/opencode-subagent+json",
+      "description": "SEO service dedicated development agent. Builds the ~/seo-service/ project exclusively.",
+      "capabilities": ["seo-development", "service-building", "cf-worker", "payment-integration"],
+      "representativeQueries": [
+        "build the SEO analysis endpoint",
+        "deploy the SEO service worker",
+        "integrate payment for the SEO product"
+      ],
+      "tags": ["seo", "development", "cloudflare", "payment"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/deepseek-v4-flash",
+        "temperature": "0.1",
+        "skills": ["cloudflare", "workers-best-practices", "baseline-ui", "portone-payment-integration", "cf-worker-modular-architecture"]
+      }
+    },
+    {
+      "identifier": "urn:air:drewgent.ai:agent:sre",
+      "displayName": "SRE",
+      "type": "application/opencode-subagent+json",
+      "description": "Site Reliability Engineering agent. Manages launchd services, cron jobs, deployment pipelines, and incident response. Read-only first.",
+      "capabilities": ["infrastructure-management", "incident-response", "deployment", "cron-management", "monitoring"],
+      "representativeQueries": [
+        "check the status of all launchd services",
+        "investigate why the cron job failed",
+        "restart the discord bot service"
+      ],
+      "tags": ["sre", "infrastructure", "incident", "deployment", "monitoring"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/deepseek-v4-flash",
+        "temperature": "0.1"
+      }
+    },
+    {
+      "identifier": "urn:air:drewgent.ai:agent:tester",
+      "displayName": "Tester",
+      "type": "application/opencode-subagent+json",
+      "description": "Test agent. Writes and runs tests for implemented code. Verifies correctness before review. Max 2 fix cycles before reporting unrecoverable failure.",
+      "capabilities": ["test-writing", "test-execution", "verification", "quality-assurance"],
+      "representativeQueries": [
+        "write tests for the new payment endpoint",
+        "run the test suite and report failures",
+        "verify the refactoring doesn't break existing tests"
+      ],
+      "tags": ["testing", "qa", "verification", "quality"],
+      "version": "1.0.0",
+      "updatedAt": "2026-06-22T00:00:00Z",
+      "metadata": {
+        "model": "opencode-go/deepseek-v4-flash",
+        "temperature": "0.1"
+      }
+    }
+  ]
+}

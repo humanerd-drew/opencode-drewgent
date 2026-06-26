@@ -9,9 +9,9 @@ tags: [minimax, token-plan, api, usage, drewgent]
 created: 2026-06-02
 updated: 2026-06-02
 links:
-  - "[[P4-cortex/growth/INTEGRATION_PROTOCOL]]"
-  - "[[P5-ego/SELF_MODEL]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@memory/growth/INTEGRATION_PROTOCOL]]"
+  - "[[@identity/SELF_MODEL]]"
+  - "[[@identity/brain/rules]]"---
 
 # MiniMax Token Plan — Terminal Usage Check
 
@@ -85,8 +85,8 @@ fetched 2026-06-02 16:15:24
 `~/.zshrc` is write-protected from `mcp_patch`. User adds these 2 lines themselves:
 
 ```bash
-alias mm-usage='python3 ~/.drewgent/scripts/minimax_usage.py'
-alias mm-usage-watch='python3 ~/.drewgent/scripts/minimax_usage.py --watch 30'
+alias mm-usage='python3 /Users/drew/.drewgent/scripts/minimax_usage.py'
+alias mm-usage-watch='python3 /Users/drew/.drewgent/scripts/minimax_usage.py --watch 30'
 ```
 
 ## 5. Pitfalls
@@ -98,7 +98,7 @@ The fields `current_interval_usage_count` / `current_weekly_usage_count` are alw
 First instinct for `/coding_plan/remains` is to POST (since it's an action-like endpoint name). The endpoint is actually GET-only. Trial found this in 1 attempt.
 
 ### P3: `~/.zshrc` is write-protected
-`mcp_patch` on `~/.zshrc` returns `Write denied: ... is a protected system/credential file`. Don't try to add aliases via patch — instruct the user to add them in their next shell session. The `.env` API key is fine to read from the script, but adding shell config requires user action.
+`mcp_patch` on `/Users/drew/.zshrc` returns `Write denied: ... is a protected system/credential file`. Don't try to add aliases via patch — instruct the user to add them in their next shell session. The `.env` API key is fine to read from the script, but adding shell config requires user action.
 
 ### P4: `tcsetattr: Inappropriate ioctl for device` warning
 Bash warning when piping `minimax_usage.py --watch` through `timeout`/non-TTY. Comes from Python's TTY detection in the watch loop. Harmless in real terminal use. The `--watch` mode also clears the screen on each refresh, which can be janky in non-TTY contexts.
@@ -117,8 +117,8 @@ The `model_name: "video"` entry typically shows `current_interval_status: 3` (un
 
 ## 7. Related
 
-- [[P4-cortex/growth/INTEGRATION_PROTOCOL]] — Drewgent 3-file integration protocol
-- [[P5-ego/SELF_MODEL]] — Drewgent identity (for statusline extension)
+- [[@memory/growth/INTEGRATION_PROTOCOL]] — Drewgent 3-file integration protocol
+- [[@identity/SELF_MODEL]] — Drewgent identity (for statusline extension)
 - `~/.drewgent/scripts/minimax_usage.py` — the implementation
 - `~/.drewgent/.env` — API key source
 - MiniMax console: https://platform.minimax.io/console (for absolute counts, fallback only)

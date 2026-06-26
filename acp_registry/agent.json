@@ -2,7 +2,7 @@
   "schema_version": 1,
   "name": "drewgent-agent",
   "display_name": "Drewgent Agent",
-  "description": "AI agent by YOUR_PROJECT_NAME with 90+ tools, persistent memory, and multi-platform support",
+  "description": "AI agent by HUMANERD with 90+ tools, persistent memory, and multi-platform support",
   "icon": "icon.svg",
   "distribution": {
     "type": "command",

@@ -4,13 +4,9 @@ name: baseline-ui
 domain: software-development
 type: skill
 description: "Drewgent consolidated UI baseline: coherence (one-choice-per-axis), spacing, hierarchy, typography, color, icon discipline, layout, interaction, accessibility, motion performance, HTML semantics, and SEO metadata. Load for ANY frontend work."
-trigger: "Consolidation of rules from claude-design, design-md, sketch, ponytail, project-restructure, site-spec-audit, seo-audit + dev.to article on AI-generated UI incoherence (kiwibreaksme, 2026-06-16)"
 tags: [ui, design, css, html, accessibility, seo, motion, frontend]
 created: 2026-06-17
 updated: 2026-06-17
-provenance:
-  session: "2026-06-17 ui-skills-evaluation"
-  decision: "Consolidated Drewgent's own UI rules (claude-design, ponytail, sketch, project-restructure, seo-audit) into this skill. Added Coherence section (one-choice-per-axis meta-law) from kiwibreaksme's dev.to article — radius system, layered shadows, accent discipline, spacing grid, icon consistency, nested radius formula, and coherence grading."
 links:
   - "[[creative/claude-design]]"
   - "[[creative/sketch]]"

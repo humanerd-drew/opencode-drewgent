@@ -17,8 +17,8 @@ metadata:
   drewgent:
     tags: [Linear, Project Management, Issues, GraphQL, API, Productivity]
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Linear — Issue & Project Management (DEPRECATED)

@@ -2,8 +2,8 @@
 name: yaml-config-patch-drewgent
 description: Patch Drewgent config.yaml safely — handles the dual-config pattern (~/.drewgent/config.yaml + P5-ego/config/config.yaml) and avoids mcp_patch YAML gotchas
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # YAML Config Patch — Drewgent Dual-Config Pattern

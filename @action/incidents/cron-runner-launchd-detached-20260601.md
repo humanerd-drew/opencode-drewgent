@@ -40,25 +40,25 @@ links:
     <string>ai.drewgent.cron-runner</string>
     <key>ProgramArguments</key>
     <array>
-        <string>~/.drewgent/source/drewgent-agent/.venv/bin/python</string>
-        <string>~/.drewgent/scripts/cron_runner.py</string>
+        <string>/Users/drew/.drewgent/source/drewgent-agent/.venv/bin/python</string>
+        <string>/Users/drew/.drewgent/scripts/cron_runner.py</string>
     </array>
     <key>WorkingDirectory</key>
-    <string>~/.drewgent/source/drewgent-agent</string>
+    <string>/Users/drew/.drewgent/source/drewgent-agent</string>
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key><string>.../drewgent-agent/.venv/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
-        <key>VIRTUAL_ENV</key><string>~/.drewgent/source/drewgent-agent/.venv</string>
-        <key>DREW_HOME</key><string>~/.drewgent</string>
+        <key>VIRTUAL_ENV</key><string>/Users/drew/.drewgent/source/drewgent-agent/.venv</string>
+        <key>DREW_HOME</key><string>/Users/drew/.drewgent</string>
     </dict>
     <key>StartInterval</key>
     <integer>60</integer>      — 60s spawn cycle
     <key>RunAtLoad</key>
     <true/>
     <key>StandardOutPath</key>
-    <string>~/.drewgent/logs/cron-runner.log</string>
+    <string>/Users/drew/.drewgent/logs/cron-runner.log</string>
     <key>StandardErrorPath</key>
-    <string>~/.drewgent/logs/cron-runner.error.log</string>
+    <string>/Users/drew/.drewgent/logs/cron-runner.error.log</string>
 </dict>
 </plist>
 ```
@@ -92,8 +92,8 @@ $ ps aux | grep cron-runner     → (none)
 $ ps -ef | grep cron-runner     → (none)
 $ pgrep -fl cron-runner         → (none)
 $ pgrep -P 1 -fl cron-runner    → (none — not a child of launchd)
-$ lsof ~/.drewgent/P6-prefrontal/logs/cron-runner.log  → (no process)
-$ lsof ~/.drewgent/cron/output/d1ef68ced116/  → (no process)
+$ lsof /Users/drew/.drewgent/P6-prefrontal/logs/cron-runner.log  → (no process)
+$ lsof /Users/drew/.drewgent/cron/output/d1ef68ced116/  → (no process)
 ```
 
 **What 0 processes means:** launchd spawns via StartInterval=60 every 60s → cron_runner.py runs → 3 dispatchers run → files written → process exits → 60s wait. **ps captured the empty gap in the spawn cycle.**

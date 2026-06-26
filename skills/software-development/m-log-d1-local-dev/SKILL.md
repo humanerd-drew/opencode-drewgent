@@ -2,8 +2,6 @@
 name: m-log-d1-local-dev
 title: M-LOG v2 D1 Local Dev Database
 description: "Setting up local D1 dev database for m-log-v2 — production data import via better-sqlite3 (workerd-compatible SQLite 3.53.1), clean-state procedure, root-cause analysis of segfault/busy errors"
-trigger: "m-log-v2 로컬 개발 환경에서 프로덕션 D1 데이터를 복제해야 할 때, 또는 wrangler dev가 SQLITE_BUSY / segfault / TOOBIG로 실패할 때"
-provenance:
   session: "2026-06-15 m-log-v2 D1 import — full debug path from SQLITE_BUSY → segfault #11 → root cause: SQLite version mismatch (macOS 3.51.0 vs workerd)"
   decision: "system sqlite3 (3.51.0) creates DB files workerd cannot read — must use better-sqlite3 (bundles SQLite 3.53.1, matches workerd). One working script: scripts/import-db.cjs."
 created: 2026-06-15

@@ -35,7 +35,7 @@ done
 
 ### Skills → P-Layer Rules Mapping
 
-After cluster cross-linking, all 121 SKILL.md files received `[[P0-brainstem/brain/rules]]` in their frontmatter `links:` section (71 newly added, 50 already present). This creates a universal governance link from every skill to the P0 rules that constrain it.
+After cluster cross-linking, all 121 SKILL.md files received `[[@identity/brain/rules]]` in their frontmatter `links:` section (71 newly added, 50 already present). This creates a universal governance link from every skill to the P0 rules that constrain it.
 
 ### Fix: related_skills Metadata → Actual Links
 
@@ -43,7 +43,7 @@ Many Hermes-bundled skills had `metadata.hermes.related_skills` arrays that neve
 
 ### Broken Link Discovered
 
-When verifying `[[P2-hippocampus/memories/insights/index]]`, the file didn't exist (referenced by SCHEMA.md but never created). Created `insights/index.md` to resolve.
+When verifying `[[@memory/memories/insights/index]]`, the file didn't exist (referenced by SCHEMA.md but never created). Created `insights/index.md` to resolve.
 
 ### YAML Frontmatter Note
 

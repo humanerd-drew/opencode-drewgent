@@ -10,12 +10,12 @@ metadata:
     tags: [spike, prototype, experiment, feasibility, throwaway, exploration, research, planning, mvp, proof-of-concept]
     related_skills: [sketch, subagent-driven-development, plan]
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[software-development/plan]]"
   - "[[software-development/test-driven-development]]"
   - "[[software-development/writing-plans]]"
   - "[[software-development/requesting-code-review]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Spike

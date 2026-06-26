@@ -8,10 +8,10 @@ tags: [skill, automation, n8n]
 created: 2026-06-01
 updated: 2026-06-01
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[skills/n8n-self-hosted-diagnostics]]"
   - "[[skills/automation/DESCRIPTION]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@identity/brain/rules]]"---
 
 # n8n Password Reset — SQLite Direct Update
 

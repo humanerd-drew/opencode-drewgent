@@ -2,8 +2,6 @@
 title: content-manager
 name: content-manager
 description: "CMO-style content agent — observes work activity, produces multi-format drafts with SVG/Mermaid/Excalidraw visuals, pushes to WordPress via MCP. User-facing: 'CMO 에이전트가 내 작업을 보고 콘텐트로 만든다'."
-trigger: "User wants autonomous content creation from observed work activity — git, sessions, kanban completions. NOT for manual 'write a post about X' tasks (those use delegate_task or direct generation)."
-provenance:
   session: "2026-06-14 cmo-content-agent"
   decision: "Kanban + Huly review → WordPress publish pipeline. SVG/Mermaid/Excalidraw for visuals ($0, no paid APIs). WordPress on Mac Mini Docker, data on Synology NAS."
 design_principles:

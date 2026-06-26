@@ -8,7 +8,7 @@ tags: [refactoring, integration, architecture, cloudflare-workers]
 created: 2026-06-11
 updated: 2026-06-11
 links:
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 related_skills:
   - "codebase-consolidation"
   - "codebase-refactoring"

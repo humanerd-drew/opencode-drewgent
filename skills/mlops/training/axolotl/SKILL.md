@@ -10,13 +10,13 @@ metadata:
     tags: [Fine-Tuning, Axolotl, LLM, LoRA, QLoRA, DPO, KTO, ORPO, GRPO, YAML, HuggingFace, DeepSpeed, Multimodal]
 tags: [Fine-Tuning, Axolotl, LLM, LoRA, QLoRA, DPO, KTO, ORPO, GRPO, YAML, HuggingFace, DeepSpeed, Multimodal]
 links:
-- "[[P3-sensors/skills/SKILL-INDEX]]"
+- "[[@action/skills/SKILL-INDEX]]"
 - "[[mlops/training/unsloth]]"
 - "[[mlops/training/peft]]"
 - "[[mlops/training/trl-fine-tuning]]"
 - "[[mlops/training/pytorch-fsdp]]"
 - "[[mlops/training/grpo-rl-training]]"
-- "[[P0-brainstem/brain/rules]]"
+- "[[@identity/brain/rules]]"
 ---
 
 # Axolotl Skill

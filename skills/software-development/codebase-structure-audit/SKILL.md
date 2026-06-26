@@ -6,13 +6,13 @@ domain: software-development
 description: Map dependency graphs, detect dead code, and execute one-change-at-a-time refactoring with live dev server verification.
 tags: [refactoring, code-audit, dependency-mapping, dead-code]
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[software-development/codebase-refactoring]]"
   - "[[software-development/codebase-consolidation]]"
   - "[[software-development/incremental-refactoring]]"
   - "[[software-development/project-code-audit]]"
   - "[[software-development/simplify-code]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Codebase Structure Audit & Safe Refactoring

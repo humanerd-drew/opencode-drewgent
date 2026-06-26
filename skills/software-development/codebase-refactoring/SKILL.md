@@ -8,14 +8,14 @@ tags: [refactoring, dead-code, dependency-analysis, safety]
 created: 2026-06-11
 updated: 2026-06-12 (package.json shell-script escape pitfall added 2026-06-15)
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[software-development/codebase-structure-audit]]"
   - "[[software-development/codebase-consolidation]]"
   - "[[software-development/incremental-refactoring]]"
   - "[[software-development/simplify-code]]"
   - "[[software-development/project-code-audit]]"
   - "[[software-development/requesting-code-review]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # 코드베이스 안전 리팩토링

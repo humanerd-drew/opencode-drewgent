@@ -10,7 +10,7 @@ You search for a file that logically should exist (based on architecture docs, i
 
 ```bash
 # Find ALL mount points of the same project
-find ~/Library/CloudStorage -maxdepth 4 -name "project-name" -type d 2>/dev/null
+find /Users/drew/Library/CloudStorage -maxdepth 4 -name "project-name" -type d 2>/dev/null
 
 # Compare a key file across mounts
 diff -q /mount1/path/to/key-file.ts /mount2/path/to/key-file.ts
@@ -34,7 +34,7 @@ diff <(ls /mount1/project/src/) <(ls /mount2/project/src/)
 When starting work on a Synology-hosted project, always:
 ```bash
 echo "=== All mounts of $(basename $(pwd)) ==="
-find ~/Library/CloudStorage -maxdepth 4 -name "$(basename $(pwd))" -type d 2>/dev/null
+find /Users/drew/Library/CloudStorage -maxdepth 4 -name "$(basename $(pwd))" -type d 2>/dev/null
 echo "=== Key file comparison ==="
 # Pick a structurally important file and compare
 ```

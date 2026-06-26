@@ -61,7 +61,7 @@ incident-response + memory-compression sweep.
 
 **After** (compiled procedure):
 > ## Launchd Hardening (procedures)
-> → vault: [[P6-prefrontal/incidents/launchd-mass-failure-20260610]]
+> → vault: [[@action/incidents/launchd-mass-failure-20260610]]
 >
 > **All launchd plists MUST use**:
 > ```xml

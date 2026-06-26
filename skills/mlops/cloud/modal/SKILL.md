@@ -10,8 +10,8 @@ metadata:
     tags: [Infrastructure, Serverless, GPU, Cloud, Deployment, Modal]
 
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Modal Serverless GPU

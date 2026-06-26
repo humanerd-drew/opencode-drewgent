@@ -41,7 +41,7 @@ Full content: see `~/.drewgent/agents/content-manager.md`.
 | Schedule | `0 12 * * *` (daily at 12:00 KST) |
 | Model | `deepseek-v4-pro` (opencode-go) |
 | Delivery | Discord channel `1492883985473208522` (#content) |
-| Workdir | `~/.drewgent` |
+| Workdir | `/Users/drew/.drewgent` |
 | Toolsets | `terminal, file, search, session_search, kanban, web` |
 
 The cron prompt is self-contained with the full workflow. It references the agent profile file for full detail.
@@ -101,7 +101,7 @@ Tested via `task(subagent_type="content-manager", description="Test content run"
 
 ## Pitfalls
 
-- **Paths must be absolute.** Use `~/.drewgent/P2-hippocampus/memories/insights/`, not relative paths.
+- **Paths must be absolute.** Use `/Users/drew/.drewgent/P2-hippocampus/memories/insights/`, not relative paths.
 - **Do NOT reference existing drafts** from before the current session. Explicitly exclude them.
 - **SILENT is correct** — if nothing worth publishing, report "no new material" and stop.
 - **SVG validation**: ensure XML is well-formed. Run `python3 -c "import xml.etree.ElementTree as ET; ET.parse('file.svg')"` if unsure.

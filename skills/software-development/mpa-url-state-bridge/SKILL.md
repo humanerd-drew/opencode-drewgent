@@ -2,8 +2,6 @@
 name: mpa-url-state-bridge
 title: MPA-URL State Bridge for Svelte 5
 description: "When a multi-page app (MPA) loses UX continuity (modals/sidebars/tabs reset on navigation), bridge local state to URL query params so each state is shareable, bookmarkable, and back-button-restorable — without changing visual design or feature behavior."
-trigger: "Svelte/Vue/React MPA 프로젝트에서 모달·사이드바·탭 상태가 페이지 이동 시 사라져서 SPA 같은 UX가 필요할 때, 또는 새로고침/공유 시 상태가 복원되길 원할 때"
-provenance:
   session: "2026-06-15 m-log-v2 AppShell — bridge menuOpen/historyOpen/loginModalOpen to URL query params with no design/feature change"
   decision: "디자인·기능 100% 동일 유지. state는 여전히 $derived로 expose, action은 setUrlState 헬퍼 한 줄. URL은 SPA의 state store를 대체."
 created: 2026-06-15

@@ -5,7 +5,7 @@ description: Class-level skill for integrating separate codebases (analysis engi
 domain: software-development
 tags: [cf-workers, architecture, refactoring, LLM]
 links:
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Cloudflare Workers Project Integration

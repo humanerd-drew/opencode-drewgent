@@ -10,12 +10,12 @@ metadata:
     tags: [Fine-Tuning, Unsloth, Fast Training, LoRA, QLoRA, Memory-Efficient, Optimization, Llama, Mistral, Gemma, Qwen]
 tags: [Fine-Tuning, Unsloth, Fast Training, LoRA, QLoRA, Memory-Efficient, Optimization, Llama, Mistral, Gemma, Qwen]
 links:
-- "[[P3-sensors/skills/SKILL-INDEX]]"
+- "[[@action/skills/SKILL-INDEX]]"
 - "[[mlops/training/axolotl]]"
 - "[[mlops/training/peft]]"
 - "[[mlops/training/trl-fine-tuning]]"
 - "[[mlops/training/grpo-rl-training]]"
-- "[[P0-brainstem/brain/rules]]"
+- "[[@identity/brain/rules]]"
 ---
 
 # Unsloth Skill

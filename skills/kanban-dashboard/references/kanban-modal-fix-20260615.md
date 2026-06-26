@@ -60,7 +60,7 @@ Added ~120 lines of JavaScript to the inline `<script>` block, implementing:
 
 ## File Changed
 
-- `~/.drewgent/P4-cortex/scripts/kanban_dashboard_server.py`
+- `/Users/drew/.drewgent/P4-cortex/scripts/kanban_dashboard_server.py`
   - Modal HTML: added Description tab button + `content-body` div
   - JavaScript: ~120 lines of new functions between SSE and drag-drop code
 

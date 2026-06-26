@@ -1,13 +1,13 @@
 # SVG Cover Design Guide
 
-yourdomain.com blog posts use inline SVG for cover images. SVG is XML text that the LLM generates directly — no external tools, no API costs.
+YOUR_DOMAIN blog posts use inline SVG for cover images. SVG is XML text that the LLM generates directly — no external tools, no API costs.
 
 ## Canvas
 
 - **Size**: 1200 × 630 px (standard blog cover ratio, ~2:1)
 - **ViewBox**: `<svg viewBox="0 0 1200 630">`
 
-## Color Palette (yourdomain.com Dark Theme)
+## Color Palette (YOUR_DOMAIN Dark Theme)
 
 | Role | Hex | Usage |
 |------|-----|-------|
@@ -66,11 +66,11 @@ Top face lighter, side faces darker for depth.
 
 ## Design Principles
 
-1. **Dark background + glowing accents** = the yourdomain.com signature look
+1. **Dark background + glowing accents** = the YOUR_DOMAIN signature look
 2. **One main visual element** (architecture diagram, isometric scene, data flow) — don't clutter
 3. **Title at top-center or top-left** — readable at a glance
 4. **Subtle grid/dots** — adds texture without distraction
-5. **Bottom label** with "yourdomain.com" + date/pillar tag
+5. **Bottom label** with "YOUR_DOMAIN" + date/pillar tag
 
 ## Anti-Patterns
 

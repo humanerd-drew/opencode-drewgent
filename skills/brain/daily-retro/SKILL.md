@@ -5,8 +5,6 @@ type: document
 space: concept
 description: "매일 Discord로 작업 요약 + 회고 질문 발신, 사용자 답변을 vault에 구조화하여 저장. 30/70 rule 적용."
 tags: [retro, human-zone, taste, reflection, vault]
-trigger: "Taste-driven 30% Human Zone — Daily retro via Discord"
-provenance:
   session: "2026-06-14 taste-discussion"
   decision: "Pratik '30x Engineer' 30/70 rule 적용 — 인간이 직접 회고, agent가 정리/저장"
 created: 2026-06-14
@@ -101,7 +99,7 @@ created: YYYY-MM-DD
 links:
   - "[[retro/YYYY-MM-DD-before]]"
   - "[[retro/YYYY-MM-DD-after]]"
-  - "[[P0-brainstem/brain/rules]]"provenance:
+  - "[[@identity/brain/rules]]"provenance:
   session: "YYYY-MM-DD daily retro"
   trigger: "scheduled daily retro"
 ---
@@ -163,7 +161,7 @@ tags: [retro, index]
 
 ## Related
 
-- [[P6-prefrontal/]] — incidents and long-term reflection
-- [[P2-hippocampus/]] — memory storage layer
+- [[@action/]] — incidents and long-term reflection
+- [[@memory/]] — memory storage layer
 - [[kanban-orchestrator]] — provenance + leverage score conventions for task creation
 - AGENTS.md — tiered autonomy framework

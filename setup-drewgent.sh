@@ -254,14 +254,14 @@ if [ -n "$SHELL_CONFIG" ]; then
 fi
 
 # ============================================================================
-# Seed bundled skills into ~/.YOURAGENT/skills/
+# Seed bundled skills into ~/.drewgent/skills/
 # ============================================================================
 
-HERMES_SKILLS_DIR="${HERMES_HOME:-$HOME/.YOURAGENT}/skills"
+HERMES_SKILLS_DIR="${HERMES_HOME:-$HOME/.drewgent}/skills"
 mkdir -p "$HERMES_SKILLS_DIR"
 
 echo ""
-echo "Syncing bundled skills to ~/.YOURAGENT/skills/ ..."
+echo "Syncing bundled skills to ~/.drewgent/skills/ ..."
 if "$SCRIPT_DIR/venv/bin/python" "$SCRIPT_DIR/tools/skills_sync.py" 2>/dev/null; then
     echo -e "${GREEN}✓${NC} Skills synced"
 else

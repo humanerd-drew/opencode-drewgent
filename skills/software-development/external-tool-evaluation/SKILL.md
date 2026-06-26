@@ -9,12 +9,12 @@ tags: [external-tool, evaluation, github, integration, drewgent]
 created: 2026-06-02
 updated: 2026-06-14
 links:
-  - "[[P4-cortex/growth/INTEGRATION_PROTOCOL]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P4-cortex/knowledge/garry-tan-unified-architecture-drewgent-review]]"
+  - "[[@memory/growth/INTEGRATION_PROTOCOL]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@memory/knowledge/garry-tan-unified-architecture-drewgent-review]]"
   - "[[skills/llm-model-migration]]"
   - "[[skills/gateway-module-extraction]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # External Tool Evaluation — Drewgent Integration Workflow
@@ -147,7 +147,7 @@ Default recommendation: POC first (30 min) before integration. Verify with dry-r
 
 ## Related
 
-- [[P4-cortex/growth/INTEGRATION_PROTOCOL]] — when evaluation leads to "yes, integrate," follow this protocol
+- [[@memory/growth/INTEGRATION_PROTOCOL]] — when evaluation leads to "yes, integrate," follow this protocol
 - [[skills/llm-model-migration]] — sibling skill for LLM provider updates
 - [[skills/gateway-module-extraction]] — sibling skill for gateway refactoring
-- [[P4-cortex/knowledge/garry-tan-unified-architecture-drewgent-review]] — "fat skills, thin harness" lens for evaluating if the tool's complexity fits
+- [[@memory/knowledge/garry-tan-unified-architecture-drewgent-review]] — "fat skills, thin harness" lens for evaluating if the tool's complexity fits

@@ -3,8 +3,8 @@ name: pokemon-player
 description: Play Pokemon games autonomously via headless emulation. Starts a game server, reads structured game state from RAM, makes strategic decisions, and sends button inputs — all from the terminal.
 tags: [gaming, pokemon, emulator, pyboy, gameplay, gameboy]
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 # Pokemon Player
 
@@ -19,7 +19,7 @@ Play Pokemon games via headless emulation using the `pokemon-agent` package.
 ## Startup Procedure
 
 ### 1. First-time setup (clone, venv, install)
-The repo is YOUR_ORG/pokemon-agent on GitHub. Clone it, then
+The repo is NousResearch/pokemon-agent on GitHub. Clone it, then
 set up a Python 3.10+ virtual environment. Use uv (preferred for speed)
 to create the venv and install the package in editable mode with the
 pyboy extra. If uv is not available, fall back to python3 -m venv + pip.

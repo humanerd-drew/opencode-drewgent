@@ -1,6 +1,6 @@
 # WordPress Publish Workflow
 
-Content-manager drafts are published to yourdomain.com via WordPress MCP.
+Content-manager drafts are published to YOUR_DOMAIN via WordPress MCP.
 
 ## Architecture
 
@@ -52,7 +52,7 @@ echo '{"jsonrpc":"2.0","id":2,"method":"call_tool","params":{"name":"create_post
 
 - WP uploads: `/Volumes/humanerd/docker/wordpress/wp-content/` (NAS SMB mount)
 - MySQL data: `/Volumes/humanerd/docker/wordpress/db/` (NAS SMB mount)
-- Config: `~/.drewgent/wordpress/`
+- Config: `/Users/drew/.drewgent/wordpress/`
 
 ### Theme: Blocksy (Free)
 
@@ -126,8 +126,8 @@ EOF"
 docker exec humanerd-wp wp --allow-root <command>
 
 # Docker compose
-export DOCKER_HOST=unix://~/.colima/default/docker.sock
-cd ~/.drewgent/wordpress && docker-compose up -d
+export DOCKER_HOST=unix:///Users/drew/.colima/default/docker.sock
+cd /Users/drew/.drewgent/wordpress && docker-compose up -d
 
 # Colima (Docker runtime)
 colima status

@@ -5,7 +5,6 @@ description: >-
   PortOne V2 SDK into vanilla JS SPAs. Covers SDK loading, requestPayment API,
   payMethod selection (CARD / EASY_PAY for NaverPay/KakaoPay), payment response
   handling, and backend verification pattern.
-trigger:
   - user asks to add payment to a web app
   - user mentions PortOne / 아임포트 / KG이니시스 / KCP / PG사 결제
   - user provides a channelKey or storeId for a payment gateway

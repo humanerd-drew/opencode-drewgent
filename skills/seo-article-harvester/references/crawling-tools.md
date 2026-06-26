@@ -6,7 +6,7 @@ tags: [concept]
 created: 2026-05-20
 updated: 2026-05-20
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[skills/seo-article-harvester/SKILL]]"
 ---
 
@@ -83,5 +83,5 @@ mcp__firecrawl__crawl --url "https: //example.com/article"
 ## Related
 - [[skills/seo-article-harvester/SKILL]]
 
-- [[P3-sensors/skills/SKILL-INDEX]]
+- [[@action/skills/SKILL-INDEX]]
 

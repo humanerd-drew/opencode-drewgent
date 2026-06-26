@@ -6,7 +6,7 @@ tags: [concept]
 created: 2026-05-24
 updated: 2026-05-24
 links:
-  - "[[[[P4-cortex/knowledge/NEURONFS_RULES]]]]"
+  - "[[[[@memory/knowledge/NEURONFS_RULES]]]]"
 ---
 # Callouts Reference
 

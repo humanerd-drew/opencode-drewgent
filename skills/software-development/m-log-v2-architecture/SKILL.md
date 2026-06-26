@@ -2,8 +2,6 @@
 name: m-log-v2-architecture
 title: m-log-v2 Architecture
 description: "Domain-based project structure for m-log-v2 — Svelte 5 MPA frontend, Hono backend on CF Workers, CSS variables design system"
-trigger: "m-log-v2 전면 구조 개편 — Vanilla JS SPA → Svelte 5 MPA + Hono 백엔드"
-provenance:
   session: "2026-06-13 m-log-v2 restructuring"
   decision: "SPA 대신 MPA 선택"
 created: 2026-06-14

@@ -8,10 +8,10 @@ tags: [skill, assessment, framework, gap-analysis, evaluation]
 created: 2026-06-11
 updated: 2026-06-11
 links:
-  - "[[P1-limbic/persona/writing-style-guide]]"
+  - "[[@identity/persona/writing-style-guide]]"
   - "[[skills/harsh-critic]]"
   - "[[skills/software-development/codebase-structure-audit]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@identity/brain/rules]]"---
 
 # reference-gap-assessment
 
@@ -148,4 +148,4 @@ When saving external frameworks as reference files under `references/`, use:
 
 - [[skills/harsh-critic]] — completion bias defense (complementary, focuses on agent output)
 - [[skills/software-development/codebase-structure-audit]] — code-level audit methodology
-- [[P1-limbic/persona/writing-style-guide]] — communication tone for Korean assessments
+- [[@identity/persona/writing-style-guide]] — communication tone for Korean assessments

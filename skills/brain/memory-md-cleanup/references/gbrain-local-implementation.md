@@ -38,11 +38,11 @@ A bash script that walks wikilinks across P2-hippocampus (memory), P0-brainstem
 bash ~/.hermes/scripts/drewgent_graph_lookup.sh "launchd"
 # Output:
 #   ## Direct hits
-#     • ~/.drewgent/P2-hippocampus/memories/MEMORY.md
-#     • ~/.drewgent/P6-prefrontal/incidents/cron-jobs-stalled-20260601.md
-#     • ~/.drewgent/P6-prefrontal/incidents/launchd-mass-failure-20260610.md
-#     • ~/.drewgent/P6-prefrontal/incidents/cron-runner-launchd-detached-20260601.md
-#     • ~/.drewgent/P4-cortex/growth/discord-token-resilience-protocol.md
+#     • /Users/drew/.drewgent/P2-hippocampus/memories/MEMORY.md
+#     • /Users/drew/.drewgent/P6-prefrontal/incidents/cron-jobs-stalled-20260601.md
+#     • /Users/drew/.drewgent/P6-prefrontal/incidents/launchd-mass-failure-20260610.md
+#     • /Users/drew/.drewgent/P6-prefrontal/incidents/cron-runner-launchd-detached-20260601.md
+#     • /Users/drew/.drewgent/P4-cortex/growth/discord-token-resilience-protocol.md
 #   ## Wikilink graph (incoming)
 #     (no incoming wikilinks)
 #   ## Outgoing from memory
@@ -69,7 +69,7 @@ cron `2d9a31f2b661` (5m, no_agent)...
 After (compiled procedure, 6804 chars total):
 ```
 ## Launchd Hardening (procedures)
-→ vault: [[P6-prefrontal/incidents/launchd-mass-failure-20260610]]
+→ vault: [[@action/incidents/launchd-mass-failure-20260610]]
 
 **All launchd plists for AI agent services MUST use this template**:
 ```xml

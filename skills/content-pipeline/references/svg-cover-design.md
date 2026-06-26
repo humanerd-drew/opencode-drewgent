@@ -1,4 +1,4 @@
-# SVG Cover Design — yourdomain.com
+# SVG Cover Design — YOUR_DOMAIN
 
 ## Dimensions
 1200 × 630 pixels (standard blog cover, 2:1 ratio)

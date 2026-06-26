@@ -5,16 +5,14 @@ version: 1.1.0
 author: Drewgent
 created: 2026-06-14
 updated: 2026-06-14
-trigger: "Drewgent Linear → Huly migration. Huly Cloud (humanerd workspace) + @hcengineering/api-client integration."
-provenance:
   session: "2026-06-14 kanban-huly-integration"
   decision: "Huly Cloud free tier over self-host. Node.js API client over REST (WebSocket protocol)."
 prerequisites:
   env_vars: [HULY_KEY]
   commands: [node, npm]
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P3-sensors/integrations/huly]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@action/integrations/huly]]"
 references:
   - "references/selfhost-on-synology.md"
   - "references/pushhandler-realtime.md"

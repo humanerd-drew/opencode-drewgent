@@ -10,10 +10,10 @@ metadata:
     tags: [debugging, python, pdb, debugpy, breakpoints, dap, post-mortem]
     related_skills: [systematic-debugging, node-inspect-debugger, debugging-hermes-tui-commands]
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[software-development/systematic-debugging]]"
   - "[[software-development/node-inspect-debugger]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Python Debugger (pdb + debugpy)

@@ -4,7 +4,7 @@ Custom MCP server for WordPress management via wp-cli.
 
 ## Server
 
-`~/.drewgent/scripts/wordpress-mcp-server.js`
+`/Users/drew/.drewgent/scripts/wordpress-mcp-server.js`
 
 A Node.js STDIO MCP server that wraps `docker exec humanerd-wp wp --allow-root` commands as JSON-RPC 2.0 tools.
 

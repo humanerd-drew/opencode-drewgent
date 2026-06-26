@@ -1,6 +1,6 @@
 # Optional Skills
 
-Official skills maintained by YOUR_PROJECT_NAME that are **not activated by default**.
+Official skills maintained by HUMANERD that are **not activated by default**.
 
 These skills ship with the drewgent-agent repository but are not copied to
 `~/.drewgent/skills/` during setup. They are discoverable via the Skills Hub:

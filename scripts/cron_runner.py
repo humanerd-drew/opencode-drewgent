@@ -24,7 +24,7 @@ LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 # The system hermes CLI (Drewgent wrapper at ~/.local/bin/hermes,
 # which resolves to the Hermes-agent venv).
-HERMES = os.environ.get("HERMES_BIN", "hermes")
+HERMES = os.environ.get("HERMES_BIN", "/Users/drew/.local/bin/hermes")
 
 ts = datetime.now(timezone.utc).isoformat()
 log_file = LOG_DIR / f"{datetime.now().strftime('%Y-%m-%d')}.log"
@@ -44,7 +44,7 @@ try:
         # Strip trailing colon from PYTHONPATH to prevent ~/.drewgent
         # leaking into sys.path and shadowing hermes-agent modules.
         env={**os.environ,
-             "PYTHONPATH": str(Path.home() / ".drewgent" / "customize"),
+             "PYTHONPATH": "/Users/drew/.drewgent/customize",
              "HERMES_HOME": str(Path.home() / ".drewgent"),
              "HERMES_KANBAN_BOARD": "default"},
     )

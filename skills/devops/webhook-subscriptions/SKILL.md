@@ -8,8 +8,8 @@ created: 2026-05-20
 updated: 2026-05-20
 links: []
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"---
 
 
 
@@ -187,4 +187,4 @@ If webhooks aren't working:
 6. **Wrong event type?** Check `--events` filter matches what the service sends. Use `drewgent` webhook test <name>` to verify the route works.
 
 ## Related
-- [[P3-sensors/skills/SKILL-INDEX]]
+- [[@action/skills/SKILL-INDEX]]

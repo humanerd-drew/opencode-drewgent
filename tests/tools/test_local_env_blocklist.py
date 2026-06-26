@@ -4,8 +4,8 @@ Verifies that Drewgent-managed provider, tool, and gateway env vars are
 stripped from subprocess environments so external CLIs are not silently
 misrouted or handed Drewgent secrets.
 
-See: https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME/issues/1002
-See: https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME/issues/1264
+See: https://github.com/NousResearch/drewgent-agent/issues/1002
+See: https://github.com/NousResearch/drewgent-agent/issues/1264
 """
 
 import os

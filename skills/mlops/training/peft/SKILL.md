@@ -14,8 +14,8 @@ links:
   - "[[mlops/training/trl-fine-tuning]]"
   - "[[mlops/training/pytorch-fsdp]]"
   - "[[mlops/training/grpo-rl-training]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # PEFT (Parameter-Efficient Fine-Tuning)

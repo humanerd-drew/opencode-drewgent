@@ -8,13 +8,13 @@ created: 2026-05-20
 updated: 2026-05-20
 links: []
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[software-development/requesting-code-review]]"
   - "[[software-development/writing-plans]]"
   - "[[software-development/systematic-debugging]]"
   - "[[software-development/plan]]"
   - "[[software-development/spike]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 
@@ -352,4 +352,4 @@ Otherwise → not TDD
 No exceptions without the user's explicit permission.
 
 ## Related
-- [[P3-sensors/skills/SKILL-INDEX]]
+- [[@action/skills/SKILL-INDEX]]

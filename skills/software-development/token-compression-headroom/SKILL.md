@@ -9,12 +9,12 @@ links:
   - "[[skills/software-development/external-tool-evaluation]]"
   - "[[skills/software-development/python-nested-import-nameerror]]"
   - "[[skills/software-development/llm-model-migration]]"
-  - "[[P4-cortex/portfolio/drewgent]]"
-  - "[[P4-cortex/knowledge/NEURONFS_RULES]]"
-  - "[[P4-cortex/knowledge/headroom-poc-20260602]]"
-  - "[[P4-cortex/knowledge/token-compression-headroom-20260602]]"
-  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁task_qa_gate.neuron]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@memory/portfolio/drewgent]]"
+  - "[[@memory/knowledge/NEURONFS_RULES]]"
+  - "[[@memory/knowledge/headroom-poc-20260602]]"
+  - "[[@memory/knowledge/token-compression-headroom-20260602]]"
+  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁task_qa_gate.neuron]]"
+  - "[[@identity/brain/rules]]"---
 
 # headroom (token compression) — Drewgent POC + integration guide
 
@@ -65,7 +65,7 @@ PyO3 0.22.6 (headroom's Rust binding) does NOT officially support Python 3.14. A
 
 ```bash
 PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1 \
-  ~/.drewgent/source/drewgent-agent/.venv/bin/python3 -m pip install headroom-ai
+  /Users/drew/.drewgent/source/drewgent-agent/.venv/bin/python3 -m pip install headroom-ai
 ```
 
 **Do NOT use `--no-build-isolation`** (maturin missing in build env → `Cannot import 'maturin'`). With build-isolation + ABI3 env, builds a `cp314` wheel cleanly.
@@ -167,7 +167,7 @@ Use headroom_ai instead when:
 ```python
 # Test the patch end-to-end
 import importlib, sys
-sys.path.insert(0, "~/.drewgent/source/drewgent-agent")
+sys.path.insert(0, "/Users/drew/.drewgent/source/drewgent-agent")
 for m in list(sys.modules):
     if m.startswith("tools.YOUR_TOOL"):
         del sys.modules[m]
@@ -240,7 +240,7 @@ ids_kept = sum(1 for tid in original_task_ids if tid in compressed_str)
 1. `python3 -c "import ast; ast.parse(open('tools/your_tool.py').read())"` — syntax check
 2. Fresh module reload + call with and without new param — compare response sizes
 3. `ps -p $GATEWAY_PID` — confirm gateway still running 30s after restart
-4. `tail -50 ~/.drewgent/logs/gateway.log` — confirm "80 tools loaded" and no import errors
+4. `tail -50 /Users/drew/.drewgent/logs/gateway.log` — confirm "80 tools loaded" and no import errors
 5. `launchctl list | grep gateway` — confirm new PID after kickstart
 
 ## Lessons (POC + 4-layer patch, 2026-06-02)
@@ -277,9 +277,9 @@ Re-evaluate headroom_ai integration if **2 or more** of these become true:
 - `[[skills/software-development/external-tool-evaluation]]` — sibling tool eval pattern
 - `[[skills/software-development/python-nested-import-nameerror]]` — sibling Python 3.14 + ABI issue (json UnboundLocalError)
 - `[[skills/software-development/llm-model-migration]]` — sibling LLM version change pattern (M2.7→M3)
-- `[[P4-cortex/portfolio/drewgent]]` — Drewgent architecture
-- `[[P4-cortex/knowledge/NEURONFS_RULES]]` — file system rules
-- `[[P4-cortex/knowledge/headroom-poc-20260602]]` — headroom_ai POC result (sibling doc)
-- `[[P4-cortex/knowledge/token-compression-headroom-20260602]]` — Drewgent-native 4-layer cap result (sibling doc)
-- `[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁task_qa_gate.neuron]]` — QA gate (production integration 필수)
+- `[[@memory/portfolio/drewgent]]` — Drewgent architecture
+- `[[@memory/knowledge/NEURONFS_RULES]]` — file system rules
+- `[[@memory/knowledge/headroom-poc-20260602]]` — headroom_ai POC result (sibling doc)
+- `[[@memory/knowledge/token-compression-headroom-20260602]]` — Drewgent-native 4-layer cap result (sibling doc)
+- `[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁task_qa_gate.neuron]]` — QA gate (production integration 필수)
 - `[[agent/context_compressor]]` — Drewgent's existing conversation-level summarizer (complementary, not redundant)

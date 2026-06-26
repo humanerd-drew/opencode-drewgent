@@ -9,9 +9,9 @@ tags: [token-efficiency, search, file-tools, audit, evaluated-and-shipped]
 created: 2026-05-31
 updated: 2026-05-31
 links:
-  - "[[P4-cortex/knowledge/NEURONFS_RULES]]"
-  - "[[P5-ego/SELF_MODEL]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@memory/knowledge/NEURONFS_RULES]]"
+  - "[[@identity/SELF_MODEL]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # search_files Content Trim — Token-Efficient Default
@@ -24,7 +24,7 @@ Drewgent의 `search_files` tool은 757자짜리 line을 500자 (ripgrep MAX_CONT
 
 ## Fix (shipped 2026-05-31)
 
-`~/.drewgent/source/drewgent-agent/tools/file_tools.py` 의 `search_tool`에 2개 파라미터 추가:
+`/Users/drew/.drewgent/source/drewgent-agent/tools/file_tools.py` 의 `search_tool`에 2개 파라미터 추가:
 
 | param | type | default | 의미 |
 |---|---|---|---|
@@ -89,4 +89,4 @@ T4 (4th identical):         BLOCKED (4-consecutive guard)  ✅
 - `tools/file_tools.py:776` — `SEARCH_FILES_SCHEMA` (schema)
 - `tools/file_tools.py:825` — `_handle_search_files` (handler)
 - `file_operations.py:_search_with_rg/_search_with_grep` — ripgrep cap (500), unchanged
-- [[P4-cortex/knowledge/NEURONFS_RULES]] — file system architecture
+- [[@memory/knowledge/NEURONFS_RULES]] — file system architecture

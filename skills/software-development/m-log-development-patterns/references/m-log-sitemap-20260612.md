@@ -185,4 +185,4 @@ Indexes: `(user_id, report_type, fingerprint)`, `(anonymous_id, report_type, fin
 
 ## 참고: RESTRUCTURE-PLAN.md
 
-`$HOME/m-log/RESTRUCTURE-PLAN.md`에 Phase 1~3 리팩토링 계획 저장됨.
+`/Users/drew/m-log/RESTRUCTURE-PLAN.md`에 Phase 1~3 리팩토링 계획 저장됨.

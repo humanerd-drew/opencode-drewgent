@@ -6,11 +6,11 @@ tags: [concept]
 created: 2026-05-21
 updated: 2026-05-20
 links:
-  - "[[P4-cortex/growth/open-crab-ontology-drewgent-implementation]]"
-  - "[[P4-cortex/knowledge/NEURONFS_RULES]]"
-  - "[[P4-cortex/knowledge/OPENCRAB_ONTOLOGY]]"
-  - "[[P4-cortex/scripts/ontology_frontmatter_sync.py]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@memory/growth/open-crab-ontology-drewgent-implementation]]"
+  - "[[@memory/knowledge/NEURONFS_RULES]]"
+  - "[[@memory/knowledge/OPENCRAB_ONTOLOGY]]"
+  - "[[@memory/scripts/ontology_frontmatter_sync.py]]"
+  - "[[@identity/brain/rules]]"---
 
 
 
@@ -86,6 +86,6 @@ No orphan nodes found. All nodes have at least one connection.
 13 nodes exported as JSONL. Updated manually when new .neuron files are created.
 
 ## Related
-- [[P4-cortex/growth/open-crab-ontology-drewgent-implementation]] — Phase 1+2 implementation report
-- [[P4-cortex/knowledge/OPENCRAB_ONTOLOGY]] — 9-Space mapping to Drewgent P-layers
-- [[P4-cortex/scripts/ontology_frontmatter_sync.py]] — Auto frontmatter sync (cron)
+- [[@memory/growth/open-crab-ontology-drewgent-implementation]] — Phase 1+2 implementation report
+- [[@memory/knowledge/OPENCRAB_ONTOLOGY]] — 9-Space mapping to Drewgent P-layers
+- [[@memory/scripts/ontology_frontmatter_sync.py]] — Auto frontmatter sync (cron)

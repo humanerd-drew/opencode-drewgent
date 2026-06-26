@@ -6,13 +6,13 @@ author: Drewgent
 tags: [refactoring, codebase-archaeology, dead-code, cleanup, cloudflare-workers, wrangler]
 related_skills: [requesting-code-review, simplify-code, systematic-debugging]
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[software-development/codebase-refactoring]]"
   - "[[software-development/codebase-structure-audit]]"
   - "[[software-development/simplify-code]]"
   - "[[software-development/requesting-code-review]]"
   - "[[software-development/systematic-debugging]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Incremental Refactoring — Safe Codebase Surgery

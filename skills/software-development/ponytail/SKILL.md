@@ -2,11 +2,9 @@
 name: ponytail
 title: Ponytail — Lazy Senior Dev Mode
 description: Forces AI agents through a minimization checklist before writing code. 80-94% less code, 3-6x faster. Adapted from DietrichGebert/ponytail.
-trigger: "User shared github.com/DietrichGebert/ponytail for review and adoption discussion. Evaluated via external-tool-evaluation skill → H1 (ruleset-only) accepted."
 domain: software-development
 space: outcome
 type: workflow
-provenance:
   session: "2026-06-15 ponytail-adoption"
   decision: "Import the portable ruleset as a Hermes skill + AGENTS.md section, skip plugin infrastructure (Claude Code/Codex-specific). Ruleset-only H1 minimizes vendor lock-in; plugin layer evaluated separately if stable after 1-2 weeks."
 tags: [yagni, senior-dev, lazy, code-minimization, efficiency, coding-discipline]
@@ -14,7 +12,7 @@ created: 2026-06-15
 updated: 2026-06-15
 links:
   - "https://github.com/DietrichGebert/ponytail"
-  - "[[P0-brainstem/brain/rules/pre-coding-ritual]]"
+  - "[[@identity/brain/rules/pre-coding-ritual]]"
   - "[[skills/simplify-code]]"
   - "[[skills/test-driven-development]]"
   - "[[skills/systematic-debugging]]"

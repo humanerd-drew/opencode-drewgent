@@ -12,7 +12,7 @@ links:
   - "[[software-development/codebase-structure-audit]]"
   - "[[software-development/codebase-consolidation]]"
   - "[[software-development/incremental-refactoring]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Project Code Audit — Dead Code Detection & Safe Cleanup

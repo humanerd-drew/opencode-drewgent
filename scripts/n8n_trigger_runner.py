@@ -1,7 +1,7 @@
 
 import json, os, time
 
-HOME = os.environ.get('HOME', os.path.expanduser('~'))
+HOME = os.environ.get('HOME','/Users/drew')
 TRIGGER = os.environ.get('N8N_TRIGGER_TYPE','')
 TODAY = time.strftime('%Y-%m-%d')
 
@@ -14,21 +14,21 @@ def check_dir_files(path):
     except: return []
 
 if TRIGGER == 'trend-evaluate':
-    keep = check_dir(os.path.join(HOME, '.drewgent/P4-cortex/growth/trend-harvester/analyzed/keep'))
-    ev = check_dir(os.path.join(HOME, '.drewgent/P4-cortex/growth/trend-harvester/evaluated'))
+    keep = check_dir(os.path.join(HOME, '.drewgent/@memory/growth/trend-harvester/analyzed/keep'))
+    ev = check_dir(os.path.join(HOME, '.drewgent/@memory/growth/trend-harvester/evaluated'))
     ni = [f for f in keep if f not in set(ev)]
     print(f'{len(ni)}' if ni else 'silent')
 
 elif TRIGGER == 'trend-retire':
     try:
-        rpt = json.load(open(os.path.join(HOME, '.drewgent/P4-cortex/growth/trend-harvester/.usage_report.json')))
+        rpt = json.load(open(os.path.join(HOME, '.drewgent/@memory/growth/trend-harvester/.usage_report.json')))
         stale = rpt.get('stale_items', rpt.get('stale_count', 0))
         print(f'{stale}' if stale else 'silent')
     except: print('silent')
 
 elif TRIGGER == 'taste-review':
-    keep = check_dir(os.path.join(HOME, '.drewgent/P4-cortex/growth/trend-harvester/analyzed/keep'))
-    ap = check_dir(os.path.join(HOME, '.drewgent/P4-cortex/growth/trend-harvester/applied'))
+    keep = check_dir(os.path.join(HOME, '.drewgent/@memory/growth/trend-harvester/analyzed/keep'))
+    ap = check_dir(os.path.join(HOME, '.drewgent/@memory/growth/trend-harvester/applied'))
     ni = [f for f in keep if f not in set(ap)]
     print(f'{len(ni)}' if ni else 'silent')
 

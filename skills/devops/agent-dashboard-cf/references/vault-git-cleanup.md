@@ -1,6 +1,6 @@
 # Git Vault Cleanup Workflow
 
-When the dashboard shows many dirty files in the Git section (e.g., 246 uncommitted), use this workflow to clean up the vault repo and push to `YOUR_GITHUB_USER/drewgent`.
+When the dashboard shows many dirty files in the Git section (e.g., 246 uncommitted), use this workflow to clean up the vault repo and push to `humanerd-drew/drewgent`.
 
 ## Triggers
 - Dashboard Git section shows N > 0 uncommitted files
@@ -53,26 +53,26 @@ git commit -m "chore: vault sync — description of what changed"
 
 ## Step 3: Push (handling branch protection)
 
-`YOUR_GITHUB_USER/drewgent` has `main` branch protected (force push blocked).
+`humanerd-drew/drewgent` has `main` branch protected (force push blocked).
 
 ### If repos haven't diverged:
 ```bash
-git push YOUR_GITHUB_USER main
+git push humanerd-drew main
 ```
 
 ### If force push needed (local is the new source of truth):
 ```bash
 # 1. Check current protection
-gh api repos/YOUR_GITHUB_USER/drewgent/branches/main/protection
+gh api repos/humanerd-drew/drewgent/branches/main/protection
 
 # 2. Disable protection (temporary)
-gh api -X DELETE repos/YOUR_GITHUB_USER/drewgent/branches/main/protection
+gh api -X DELETE repos/humanerd-drew/drewgent/branches/main/protection
 
 # 3. Force push
-git push --force YOUR_GITHUB_USER main
+git push --force humanerd-drew main
 
 # 4. Re-enable protection
-gh api -X PUT repos/YOUR_GITHUB_USER/drewgent/branches/main/protection \
+gh api -X PUT repos/humanerd-drew/drewgent/branches/main/protection \
   --input - <<'EOF'
 {
   "required_status_checks": null,
@@ -85,9 +85,9 @@ EOF
 
 ### If remote has commits not in local:
 ```bash
-git fetch YOUR_GITHUB_USER main
-git log --oneline HEAD..YOUR_GITHUB_USER/main  # commits we don't have
-git merge YOUR_GITHUB_USER/main  # or rebase, depending on preference
+git fetch humanerd-drew main
+git log --oneline HEAD..humanerd-drew/main  # commits we don't have
+git merge humanerd-drew/main  # or rebase, depending on preference
 ```
 
 ## Step 4: Remove accidentally-tracked directories
@@ -104,7 +104,7 @@ git rm --cached -r wordpress/
 # Commit removal
 git add -A
 git commit -m "chore: remove wordpress/ from git tracking (local Docker setup)"
-git push YOUR_GITHUB_USER main
+git push humanerd-drew main
 ```
 
 ## Common pitfalls

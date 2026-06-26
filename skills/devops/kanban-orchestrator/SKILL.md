@@ -9,8 +9,8 @@ metadata:
     tags: [kanban, multi-agent, orchestration, routing]
     related_skills: [kanban-worker]
 links:
-  - "[[P0-brainstem/brain/rules]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
 ---
 
 # Kanban Orchestrator — Decomposition Playbook
@@ -23,15 +23,16 @@ Hermes setups vary widely. Some users run a single profile that does everything;
 
 Before fanning out, you must ground the decomposition in the profiles that actually exist. The dispatcher silently fails to spawn unknown assignee names — it doesn't autocorrect, doesn't suggest, doesn't fall back. So a card assigned to `researcher` on a setup that only has `docker-worker` just sits in `ready` forever.
 
-**Step 0: discover available profiles before planning.**
+**Step 0: assess your execution options before planning.**
 
-Use one of these:
+You have three execution paths:
 
-- `ls ~/.config/opencode/agents/*.md` — lists the agent profiles configured on this machine. Run it through your terminal tool if you have one; otherwise ask the user.
-- `kanban_list(assignee="<some-name>")` — sanity-check a single name. Returns an empty list (rather than an error) for an unknown assignee, so this only confirms a name you're already considering.
-- **Just ask the user.** "What profiles do you have set up?" is a fine first turn when the goal needs more than one specialist.
+- **`task(subagent_type="<name>")`** — opencode built-in. Fast, same-session. Names: explorer, implementer, tester, reviewer, reviewer-critical, security-reviewer, planner, orchestrator, designer, sre, analyst, content-manager, editor, archiver, seo-engineer. No config needed.
+- **`gjc_delegate_execute`** — GJC worktree isolation + tmux. For risky/isolated work.
+- **`gjc_delegate_team`** — GJC tmux parallel workers. For independent parallel subtasks.
+- **Direct execution** — you do the work yourself. For simple tasks.
 
-Cache the result in your working memory for the rest of the conversation. Re-asking every turn wastes a tool call.
+Cache which path you chose in working memory. GJC tools are available as MCP tools — check their descriptions at runtime.
 
 ## When to use the board (vs. just doing the work)
 
@@ -44,7 +45,7 @@ Create Kanban tasks when any of these are true:
 5. **Review / iteration is expected.** A reviewer profile loops on drafter output.
 6. **The audit trail matters.** Board rows persist in SQLite forever.
 
-If *none* of those apply — it's a small one-shot reasoning task — use `delegate_task` instead or answer the user directly.
+If *none* of those apply — it's a small one-shot reasoning task — use `task()` instead or answer the user directly.
 
 ## The anti-temptation rules
 
@@ -302,164 +303,45 @@ kanban_complete(
 
 ---
 
-## Agent Profiles — reusable subagent role definitions
+## GJC Delegation — worktree isolation + tmux parallelism
 
-Drewgent supports a **static agent profile system** at `~/.config/opencode/agents/<name>.md`. These profiles define reusable subagent roles — model, provider, instructions, and tool constraints — in a single file, then referenced by name when spawning work.
+### When to use GJC instead of task()
 
-### task() integration (built-in)
+| 상황 | task() | GJC |
+|------|--------|-----|
+| 단순 리뷰/분석 | ✅ | - |
+| 간단한 구현 | ✅ | - |
+| 위험한 리팩토링 (브랜치 분리) | - | ✅ `gjc_delegate_execute(worktree=...)` |
+| 병렬 독립 태스크 | ❌ (순차) | ✅ `gjc_delegate_team(goals=[...])` |
+| 다른 모델로 실행 | ❌ (부모 모델) | ✅ GJC 자체 모델 설정 |
+| computer-use 필요 | - | ✅ (실험적) |
 
-The `task` tool has a built-in `subagent_type` parameter. When set, the tool reads `~/.config/opencode/agents/<name>.md`, applies the subagent's model/provider/toolsets from the profile, and uses the profile's instructions:
+### GJC model tiers (via OPENCODE_API_KEY)
 
-```python
-task(
-    subagent_type="reviewer",
-    description="Security review",
-    prompt="Review PR #42 for security issues",
-)
-```
+GJC는 OpenCode Go 구독 모델 풀에 접근:
 
-The integration lives in opencode's native subagent dispatch. No YAML parsing library needed; uses stdlib regex for frontmatter.
+| Tier | GJC alias | Drewgent 용도 |
+|------|-----------|---------------|
+| `--smol` / default | `deepseek-v4-flash` | 탐색, 문서, 간단 구현 |
+| `--model deepseek-v4-pro` | `deepseek-v4-pro` | 코드 리뷰 |
+| `--model kimi-k2.7-code` | `kimi-k2.7-code` | 코드 생성 특화 |
+| `--slow` | `qwen3.7-max` | 복잡한 추론, 계획 |
 
-### Profile format
+### Using task() (opencode built-in — no profiles needed)
 
-Each profile is a Markdown file with YAML frontmatter:
-
-```markdown
----
-name: reviewer
-description: Reviews code against project conventions. Does NOT make changes.
-model: qwen3.7-max
-provider: opencode-go
-toolsets: [terminal, file, search]
-created: 2026-06-13
----
-
-# Reviewer
-
-You are a code review agent. ...
-```
-
-### Frontmatter fields
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| `name` | yes | Profile identifier, matches assignee or agent_profile reference |
-| `description` | yes | One-liner for discovery and auto-matching |
-| `model` | yes | Model ID (e.g. `deepseek-v4-flash`, `qwen3.7-max`) |
-| `provider` | yes | Hermes provider slug (e.g. `opencode-go`) |
-| `toolsets` | no | Toolset whitelist, e.g. `[terminal, file, search]` |
-| `instructions` | yes | Full role definition in the Markdown body |
-
-### Using profiles with kanban tasks
-
-The profile's **instructions** and **model** should be embedded directly in the kanban task body so the dispatched worker has self-contained context:
+`task(subagent_type="<type>")` is a built-in opencode tool. Available types are documented in the tool schema — no filesystem profiles needed:
 
 ```python
-kanban_create(
-    title="review PR #42",
-    assignee="<dispatcher-profile>",
-    skills=["kanban-worker"],
-    body=f"""
-    ## Agent Profile: reviewer
-    Model: qwen3.7-max | Provider: opencode-go
-
-    You are a code review agent. ...
-    """,
-)
+task(subagent_type="explorer", description="Analyze auth", prompt="analyze auth code")
+task(subagent_type="implementer", description="Impl login", prompt="implement login validation")
+task(subagent_type="tester", description="Test login", prompt="write tests")
 ```
 
-The `.md` file is the **canonical reference** — update it when the role definition changes, and all future tasks that copy from it stay consistent.
-
-### Cost-Aware Model Tiers
-
-All models run through OpenCode Go ($10/mo subscription — marginal cost = $0). Tier determines capability, latency, and rate-limit impact:
-
-| Tier | Model | Profiles | Latency | Use Case |
-|------|-------|----------|---------|----------|
-| **Flash** | `deepseek-v4-flash` | explorer, implementer, tester, archiver | Fastest | Read-only analysis, simple impl, tests, docs |
-| **Pro** | `deepseek-v4-pro` | reviewer | Moderate | General code review |
-| **Max** | `qwen3.7-max` | planner, reviewer-critical, security-reviewer | Slowest | Planning, critical review, security audit |
-
-### ESCALATE mechanism
-
-Flash-tier profiles contain an **ESCALATE signal** in their instructions. When the model determines the task requires stronger reasoning than it can provide, it responds with:
-
-```
-ESCALATE: <reason>
-```
-
-And stops. The caller detects this pattern and re-routes to a Max-tier model.
-
-### Current profiles (8 roles)
-
-```
-~/.drewgent/agents/
-├── README.md
-├── explorer.md              flash  읽기 전용 분석 (ESCALATE 가능)
-├── implementer.md           flash  구현 (ESCALATE 가능)
-├── tester.md                flash  테스트 (ESCALATE 가능)
-├── archiver.md              flash  문서화/기록
-├── reviewer.md              pro    일반 코드 리뷰
-├── reviewer-critical.md     max    중요 변경 심층 리뷰
-├── security-reviewer.md     max    보안 감사 (OWASP, crypto, auth)
-└── planner.md               max    태스크 분해/계획 (Tier 결정 포함)
-```
-
-### Pipeline (cost-aware, 3-tier)
-
-Not all tasks need the full pipeline. The planner determines the complexity tier, then adapts:
-
-**Tier 1 (단순)** — typo fix, trivial rename:
-  `Implementer(flash) → Archiver(flash)`
-
-**Tier 2 (보통)** — new function, moderate change:
-  `Explorer(flash) → Implementer(flash) ↔ Tester(flash) [≤2회 loop] → Archiver(flash)`
-
-**Tier 3 (복잡)** — architecture change, cross-cutting:
-  `Planner(max) → Explorer(flash) → Implementer(flash) ↔ Tester(flash) [≤3회 loop]`
-  `→ Reviewer(pro)`
-  `→ [security/auth/payment labels?] → Security-reviewer(max)`
-  `→ [critical/large label?] → Reviewer-critical(max)`
-  `→ Archiver(flash)`
-
-Implementer↔tester loop: tester fails → report to implementer → retry (max 2-3 attempts). After that, failure propagates up for human intervention.
-
-### Using agent profiles with task()
-
-Pre-defined subagent profiles live at `~/.config/opencode/agents/*.md` and are loaded via:
-
-```
-task(subagent_type="reviewer", description="Review PR", prompt="review this PR")
-```
-
-The `subagent_type` parameter is **baked into the task tool schema** — every agent sees it as an option in every session. No skills or memory needed to discover it; the tool description documents it.
-
-| Profile | File | Model | Role |
-|---------|------|-------|------|
-| planner | `agents/planner.md` | qwen3.7-max | Task decomposition + tier assignment |
-| explorer | `agents/explorer.md` | deepseek-v4-flash | Read-only codebase analysis |
-| implementer | `agents/implementer.md` | deepseek-v4-flash | Code implementation |
-| tester | `agents/tester.md` | deepseek-v4-flash | Test writing + verification |
-| reviewer | `agents/reviewer.md` | deepseek-v4-pro | General code review |
-| reviewer-critical | `agents/reviewer-critical.md` | qwen3.7-max | In-depth review for large/architectural changes |
-| security-reviewer | `agents/security-reviewer.md` | qwen3.7-max | Security audit |
-| archiver | `agents/archiver.md` | deepseek-v4-flash | Documentation, changelog, summary |
-
-Each profile sets model, provider, toolsets, and instructions. The caller's explicit parameters (goal, context, toolsets) override profile defaults. Some profiles (explorer, implementer, tester) can emit `ESCALATE: <reason>` to signal the task needs a stronger model.
-
-**Pipeline pattern in kanban workers:**
-
-```python
-task(subagent_type="explorer", description="Analyze auth code", prompt="analyze current auth code")
-task(subagent_type="implementer", description="Implement login", prompt="implement login validation")
-task(subagent_type="tester", description="Test login", prompt="write tests for login")
-```
-
-The profile system lives at `~/.config/opencode/agents/`. Add new profiles by dropping a `.md` file there.
+The `subagent_type` parameter is **baked into the task tool schema** — every agent sees it as an option in every session.
 
 ### Pipeline auto-decomposition via `kanban_create`
 
-The `kanban_create` tool now supports a `pipeline` parameter that automatically creates sequential child tasks:
+The `kanban_create` tool supports a `pipeline` parameter that creates sequential child tasks:
 
 ```
 kanban_create(
@@ -469,16 +351,7 @@ kanban_create(
 )
 ```
 
-This creates 5 tasks in dependency order:
-- `explorer: Add login validation` (no deps) → ready immediately
-- `implementer: Add login validation` (depends on explorer) → promotes when explorer done
-- `tester: Add login validation` (depends on implementer)
-- `reviewer: Add login validation` (depends on tester)
-- `archiver: Add login validation` (depends on reviewer)
-
-Each task has `skills=[stage_name]` so the dispatched worker loads the corresponding agent profile. The `assignee` is set automatically per stage (no need to pass `assignee` with pipeline).
-
-The `pipeline` parameter is documented in the `kanban_create` tool schema — every orchestrator agent sees it as an option.
+This creates 5 tasks in dependency order (each promotes when parent completes).
 
 ## Linear Bridge (hook-based — PAUSED 2026-06-14)
 

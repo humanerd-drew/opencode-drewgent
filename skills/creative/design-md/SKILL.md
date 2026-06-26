@@ -13,8 +13,8 @@ metadata:
 links:
   - "[[creative/architecture-diagram]]"
   - "[[creative/baoyu-infographic]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # DESIGN.md Skill

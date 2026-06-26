@@ -8,10 +8,10 @@ tags: [outcome, vault, obsidian, naming, graph]
 created: 2026-06-14
 updated: 2026-06-14
 links:
-  - "[[P0-brainstem/brain/rules]]"
-  - "[[P1-limbic/persona/SOUL]]"
-  - "[[P5-ego/SELF_MODEL]]"
-  - "[[P4-cortex/knowledge/NEURONFS_RULES]]"
+  - "[[@identity/brain/rules]]"
+  - "[[@identity/persona/SOUL]]"
+  - "[[@identity/SELF_MODEL]]"
+  - "[[@memory/knowledge/NEURONFS_RULES]]"
   - "[[brain-broken-link-fix/vault-health]]"
 ---
 
@@ -61,9 +61,9 @@ find ~/.drewgent -name '*.md' \
 | Scope | Recommended Style | Example |
 |-------|------------------|---------|
 | Unique filename | Short name `[[Slug]]` | `[[SELF_MODEL]]`, `[[rules]]` |
-| Non-unique filename | Full path `[[P-layer/path/Slug]]` | `[[P1-limbic/persona/SOUL]]` (not bare `[[SOUL]]`) |
+| Non-unique filename | Full path `[[P-layer/path/Slug]]` | `[[@identity/persona/SOUL]]` (not bare `[[SOUL]]`) |
 | Skill file | `[[skills/category/name/SKILL]]` | `[[skills/devops/kanban-worker/SKILL]]` |
-| Neuron file | `[[P0-brainstem/禁/slug]]` | `[[P0-brainstem/禁/禁task_qa_gate.neuron]]` |
+| Neuron file | `[[@identity/禁/slug]]` | `[[@identity/禁/禁task_qa_gate.neuron]]` |
 
 ## Obsidian Exclusion Configuration
 
@@ -213,7 +213,7 @@ When auditing vault wikilinks, **most "broken" links found by naive grep are fal
 ```python
 import re, os
 
-vault_root = "~/.drewgent"
+vault_root = "/Users/drew/.drewgent"
 all_md = []
 for root, dirs, files in os.walk(vault_root):
     dirs[:] = [d for d in dirs if d not in EXCLUDED]
@@ -261,7 +261,7 @@ for fp in all_md:
 
 | Detected broken link | Cause | Fix |
 |----------------------|-------|-----|
-| `[[P0-brainstem/.../禁/禁xxx]]` | Missing `.neuron` extension | Add `.neuron` → `[[P0-brainstem/.../禁/禁xxx.neuron]]` |
+| `[[@identity/.../禁/禁xxx]]` | Missing `.neuron` extension | Add `.neuron` → `[[@identity/.../禁/禁xxx.neuron]]` |
 | `[[skills/content-pipeline]]` | SKILL.md nested under directory | Change to `[[skills/content-pipeline/SKILL]]` |
 | `[[skills/seo-article-harvester]]` | Same pattern | Change to `[[skills/seo-article-harvester/SKILL]]` |
 
@@ -287,7 +287,7 @@ for fp in glob.glob("skills/*/DESCRIPTION.md"):
     # Insert links before closing ---
     content = content.replace(
         '\n---\n\n',
-        '\nlinks:\n  - "[[P3-sensors/skills/SKILL-INDEX]]"\n  - "[[P0-brainstem/brain/rules]]"\n---\n\n'
+        '\nlinks:\n  - "[[@action/skills/SKILL-INDEX]]"\n  - "[[@identity/brain/rules]]"\n---\n\n'
     )
     write(fp, content)
 ```
@@ -322,7 +322,7 @@ Many articles reference hub pages as plain text in their `links:` section:
 ```yaml
 links:
 - SEO_ai_llm_search_Hub        # Plain text — NOT a graph edge
-- "[[P2-hippocampus/.../index-by-topic]]"  # Proper wikilink
+- "[[@memory/.../index-by-topic]]"  # Proper wikilink
 ```
 
 Fix: replace `SEO_X_Hub` with `[[SEO_X_Hub]]` in the links list. Creates bidirectional edges since hubs already link to articles.
