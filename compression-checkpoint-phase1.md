@@ -1,0 +1,68 @@
+# Phase 1 Checkpoint: P-layer 7->3 Migration
+## Moves executed
+- MOVED: P0-brainstem/brain/rules.md -> @identity/brain/rules.md
+- MOVED: P1-limbic/persona/SOUL.md -> @identity/persona/SOUL.md
+- MOVED: P1-limbic/persona/writing-style-guide.md -> @identity/persona/writing-style-guide.md
+- MOVED: P5-ego/SELF_MODEL.md -> @identity/SELF_MODEL.md
+- MOVED: P2-hippocampus/memories -> @memory/memories
+- MOVED: P2-hippocampus/sessions -> @memory/sessions
+- MOVED: P4-cortex/knowledge -> @memory/knowledge
+- MOVED: P4-cortex/growth -> @memory/growth
+- MOVED: P3-sensors/skills/.bundled_manifest -> @action/skills/.bundled_manifest
+- SKIPPED_GITIGNORED: P3-sensors/skills/.hub
+- MOVED: P3-sensors/skills/.skills_prompt_snapshot.json -> @action/skills/.skills_prompt_snapshot.json
+- MOVED: P3-sensors/skills/SKILL-INDEX.md -> @action/skills/SKILL-INDEX.md
+- MOVED: P3-sensors/skills/agent-architecture -> @action/skills/agent-architecture
+- MOVED: P3-sensors/skills/agent-protocol -> @action/skills/agent-protocol
+- MOVED: P3-sensors/skills/apple -> @action/skills/apple
+- MOVED: P3-sensors/skills/autonomous-ai-agents -> @action/skills/autonomous-ai-agents
+- MOVED: P3-sensors/skills/brain -> @action/skills/brain
+- MOVED: P3-sensors/skills/brain-broken-link-fix -> @action/skills/brain-broken-link-fix
+- MOVED: P3-sensors/skills/brain-dashboard-system -> @action/skills/brain-dashboard-system
+- MOVED: P3-sensors/skills/creative -> @action/skills/creative
+- MOVED: P3-sensors/skills/data-science -> @action/skills/data-science
+- MOVED: P3-sensors/skills/dev-tools -> @action/skills/dev-tools
+- MOVED: P3-sensors/skills/devops -> @action/skills/devops
+- MOVED: P3-sensors/skills/diagramming -> @action/skills/diagramming
+- MOVED: P3-sensors/skills/docs -> @action/skills/docs
+- MOVED: P3-sensors/skills/domain -> @action/skills/domain
+- MOVED: P3-sensors/skills/email -> @action/skills/email
+- MOVED: P3-sensors/skills/feeds -> @action/skills/feeds
+- MOVED: P3-sensors/skills/gaming -> @action/skills/gaming
+- MOVED: P3-sensors/skills/gifs -> @action/skills/gifs
+- MOVED: P3-sensors/skills/github -> @action/skills/github
+- MOVED: P3-sensors/skills/harsh-critic -> @action/skills/harsh-critic
+- MOVED: P3-sensors/skills/inference-sh -> @action/skills/inference-sh
+- MOVED: P3-sensors/skills/mcp -> @action/skills/mcp
+- MOVED: P3-sensors/skills/media -> @action/skills/media
+- MOVED: P3-sensors/skills/memory -> @action/skills/memory
+- MOVED: P3-sensors/skills/mlops -> @action/skills/mlops
+- MOVED: P3-sensors/skills/note-taking -> @action/skills/note-taking
+- MOVED: P3-sensors/skills/productivity -> @action/skills/productivity
+- MOVED: P3-sensors/skills/qa -> @action/skills/qa
+- MOVED: P3-sensors/skills/research -> @action/skills/research
+- MOVED: P3-sensors/skills/security -> @action/skills/security
+- MOVED: P3-sensors/skills/semble-research -> @action/skills/semble-research
+- MOVED: P3-sensors/skills/session-pattern-archiver -> @action/skills/session-pattern-archiver
+- MOVED: P3-sensors/skills/skill-gym -> @action/skills/skill-gym
+- MOVED: P3-sensors/skills/smart-home -> @action/skills/smart-home
+- MOVED: P3-sensors/skills/social-media -> @action/skills/social-media
+- MOVED: P3-sensors/skills/trend-harvester -> @action/skills/trend-harvester
+- MOVED: P6-prefrontal/proposals -> @action/proposals
+- MOVED: P6-prefrontal/incidents -> @action/incidents
+- MOVED: P6-prefrontal/plans -> @action/plans
+- MOVED: P6-prefrontal/migrations -> @action/migrations
+- SYMLINK: P2-hippocampus/memories -> @memory/memories
+- SYMLINK: P2-hippocampus/sessions -> @memory/sessions
+- ROOT_LINK: memories -> @memory/memories
+- ROOT_LINK: sessions -> @memory/sessions
+- ROOT_LINK: skills_link -> @action/skills
+- OPCODECFG: skills.paths P3-sensors/skills -> @action/skills
+- GITIGNORE: ['/@identity/', '/@memory/', '/@action/', '@action/skills/.hub/']
+- LEFTOVER: P0-brainstem: ['P0-brainstem/_agent', 'P0-brainstem/bin', 'P0-brainstem/agent', 'P0-brainstem/verification', 'P0-brainstem/utils.py', 'P0-brainstem/p0-brain-ontology.jsonl', 'P0-brainstem/brain']
+- LEFTOVER: P1-limbic: ['P1-limbic/verification', 'P1-limbic/persona']
+- LEFTOVER: P2-hippocampus: ['P2-hippocampus/qa-evidence', 'P2-hippocampus/response_store.db-shm', 'P2-hippocampus/logging_v2.db', 'P2-hippocampus/state.db', 'P2-hippocampus/response_store.db-wal', 'P2-hippocampus/search', 'P2-hippocampus/README.md', 'P2-hippocampus/sessions', 'P2-hippocampus/knowledge', 'P2-hippocampus/kanban', 'P2-hippocampus/retro', 'P2-hippocampus/logging_v2.db-wal', 'P2-hippocampus/logging_v2.db-shm', 'P2-hippocampus/.drewgent_history', 'P2-hippocampus/vector', 'P2-hippocampus/response_store.db', 'P2-hippocampus/state.db-wal', 'P2-hippocampus/memories', 'P2-hippocampus/state.db-shm']
+- LEFTOVER: P3-sensors: ['P3-sensors/discord_threads.json', 'P3-sensors/sandboxes', 'P3-sensors/tools', 'P3-sensors/gateway_state', 'P3-sensors/channel_directory.json', 'P3-sensors/feishu_seen_message_ids.json', 'P3-sensors/skills', 'P3-sensors/resolver', 'P3-sensors/gateway', 'P3-sensors/cron']
+- LEFTOVER: P4-cortex: ['P4-cortex/insights', 'P4-cortex/taste-reviews', 'P4-cortex/archive', 'P4-cortex/plans', 'P4-cortex/content', 'P4-cortex/models_dev_cache.json', 'P4-cortex/scripts', 'P4-cortex/portfolio', 'P4-cortex/tmp']
+- LEFTOVER: P5-ego: ['P5-ego/config', 'P5-ego/.update_check', 'P5-ego/wiki', 'P5-ego/state']
+- LEFTOVER: P6-prefrontal: ['P6-prefrontal/archive', 'P6-prefrontal/checkpoints', 'P6-prefrontal/recovery-journal', 'P6-prefrontal/logs']

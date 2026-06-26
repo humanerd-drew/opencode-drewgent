@@ -22,7 +22,7 @@ hub_map = {
 }
 
 for year_dir in ['2024', '2025']:
-    path = f"~/.drewgent/P2-hippocampus/knowledge/seo-articles/{year_dir}"
+    path = f"/Users/drew/.drewgent/P2-hippocampus/knowledge/seo-articles/{year_dir}"
     for fpath in glob.glob(os.path.join(path, '*.md')):
         with open(fpath) as f:
             content = f.read()
@@ -113,7 +113,7 @@ For each group, added 3 random cross-links per article within the same source gr
 
 ### Skills → P-Layer Rules Mapping (71 skills)
 
-After the SEO work, all 121 identifiable SKILL.md files were linked to `[[P0-brainstem/brain/rules]]`:
+After the SEO work, all 121 identifiable SKILL.md files were linked to `[[@identity/brain/rules]]`:
 - 50 already had the link
 - 71 were missing it → added
 

@@ -12,8 +12,8 @@ Node.js script that:
 
 ## Usage
 ```bash
-export NODE_PATH=~/.drewgent/scripts/node_modules
-node ~/.drewgent/scripts/excalidraw-to-png.js \
+export NODE_PATH=/Users/drew/.drewgent/scripts/node_modules
+node /Users/drew/.drewgent/scripts/excalidraw-to-png.js \
   input.excalidraw.json \
   output.png
 ```

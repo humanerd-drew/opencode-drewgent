@@ -6,12 +6,12 @@ tags: [concept]
 created: 2026-05-21
 updated: 2026-05-20
 links:
-  - "[[P2-hippocampus/kanban/KANBAN_INDEX]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P4-cortex/growth/INTEGRATION_PROTOCOL]]"
-  - "[[P4-cortex/knowledge/prd-template]]"
+  - "[[@memory/kanban/KANBAN_INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@memory/growth/INTEGRATION_PROTOCOL]]"
+  - "[[@memory/knowledge/prd-template]]"
   - "[[memories/concepts/prd-schema]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@identity/brain/rules]]"---
 
 
 # Manyfast 아키텍처 분석 — Drewgent 내재화
@@ -287,6 +287,6 @@ AI 사용량 추적:
 - Manyfast Docs: https://docs.manyfast.io
 - PRD: https://docs.manyfast.io/plan/prd.md
 - Features: https://docs.manyfast.io/plan/features.md
-- Drewgent kanban: [[P2-hippocampus/kanban/KANBAN_INDEX]]
+- Drewgent kanban: [[@memory/kanban/KANBAN_INDEX]]
 - PRD Schema: [[memories/concepts/prd-schema]]
-- PRD Template: [[P4-cortex/knowledge/prd-template]]
+- PRD Template: [[@memory/knowledge/prd-template]]

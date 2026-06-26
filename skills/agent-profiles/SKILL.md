@@ -3,15 +3,13 @@ name: agent-profiles
 description: Authoring and using agent profiles — pre-defined subagent roles that set model, provider, toolsets, and instructions in one task() call. Covers profile format, the 14 standard roles, pipeline patterns, cost-tiered model assignment, and the ESCALATE mechanism for capability routing.
 category: autonomous-ai-agents
 created: 2026-06-13
-trigger: "2026-06-13 loop-engineering session — built 8 profiles after cost-aware routing analysis"
-provenance:
   session: "2026-06-13 model-routing-and-loop-engineering"
   decision: "Profiles as .md files with YAML frontmatter (same convention as SKILL.md) for consistency. Flash-tier as default workhorse, pro/max for quality-critical steps."
 tags: [agent, subagent, profile, routing, delegation, pipeline]
 links:
   - "[[skills/devops/kanban-orchestrator]]"
   - "[[skills/devops/kanban-worker]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Agent Profiles

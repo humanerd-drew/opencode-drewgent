@@ -8,12 +8,12 @@ created: 2026-05-20
 updated: 2026-05-20
 links: []
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[software-development/test-driven-development]]"
   - "[[software-development/requesting-code-review]]"
   - "[[software-development/plan]]"
   - "[[software-development/spike]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 
@@ -305,4 +305,4 @@ Frequent commits
 **A good plan makes implementation obvious.**
 
 ## Related
-- [[P3-sensors/skills/SKILL-INDEX]]
+- [[@action/skills/SKILL-INDEX]]

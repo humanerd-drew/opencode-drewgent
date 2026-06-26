@@ -5,12 +5,12 @@ description: Use this skill when the user wants a plan instead of execution.
 type: skill
 tags: [outcome]
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[software-development/writing-plans]]"
   - "[[software-development/test-driven-development]]"
   - "[[software-development/spike]]"
   - "[[software-development/requesting-code-review]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Plan Mode
@@ -104,6 +104,6 @@ When the user approves the plan with a short signal ("go", "실행", "그냥 지
 
 ## Related
 
-- [[P3-sensors/skills/SKILL-INDEX]]
+- [[@action/skills/SKILL-INDEX]]
 - `writing-plans` — for full multi-task implementation plans (vs. this skill's "ready-to-execute single task")
 - `subagent-driven-development` — when plan execution needs fresh-context subagent dispatch (not always needed; for "꼼꼼하게" requests, direct execution is preferred)

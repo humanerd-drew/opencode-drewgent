@@ -11,8 +11,8 @@ metadata:
     tags: [Multimodal, Image Segmentation, Computer Vision, SAM, Zero-Shot]
 
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Segment Anything Model (SAM)

@@ -32,11 +32,30 @@ from agent.obsidian_graph import ensure_backlink, ensure_related_section, wiki_l
 
 SEO_DIR = DREW_HOME / "P2-hippocampus" / "knowledge" / "seo-articles"
 
-# ── Quality guards (2026-06-01: letspl.me junk article 차단) ──
+# ── Quality guards (2026-06-23: v2 — tag cloud / protected post / content-dedup) ──
 # 본문이 너무 짧거나 title이 trivial하면 article로 저장하지 않음.
-# letspl.me 같은 밋업 feed의 "안녕하세요" 같은 placeholder를 건너뛰기 위한 안전망.
 MIN_TITLE_LENGTH = 10  # 한글 5자 / 영문 10자
 MIN_BODY_LENGTH = 200   # 미만이면 placeholder 또는 crawl 실패로 간주
+MIN_BODY_PARAGRAPHS = 2  # 최소 2문단 이상 (tag cloud 필터)
+
+# Protected post / paywall 패턴 — 본문에 이게 있으면 skip
+BODY_JUNK_PATTERNS = [
+    r"보호된 글", r"protected", r"members only", r"login to read",
+    r"sign in", r"subscribe to continue", r"premium content",
+    r"이 글은 회원만 읽을 수", r"유료 회원 전용",
+]
+
+# 제목 기반 쓰레기 패턴 (한글 자모만, 단일 문자, test marker)
+TITLE_JUNK_PATTERNS = [
+    r"^[ㄱ-ㅎㅏ-ㅣ\s]{1,5}$",  # 자모만: ㅇ, ㄴ, ㅁㅎ
+    r"^[a-zA-Z]{1,2}$",         # 단일/이중 영문자: r, hi
+    r"^[ㅗㅠㅓ]{3,}$",           # 랜덤 자모
+    r"^안녕", r"^하이", r"^ㅎㅇ", r"^hello$", r"^test",
+    r"^궁금", r"^반갑", r"^뭘", r"^팀원",
+]
+
+# Content-dedup: 같은 본문의 중복 저장 방지
+DEDUP_HASH_CACHE_SIZE = 500  # 최근 N개 body hash 보관
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_SEO")  # 환경변수에서 설정
 DISCORD_CHANNEL_ID = "1504328297419640872"
 
@@ -61,6 +80,43 @@ SEO_KEYWORDS = [
     "search traffic", "click-through", "conversion rate",
     "aibo", "google discover", "google labs",
 ]
+
+def has_real_content(body: str) -> bool:
+    """Body에 실제 문장(prose)이 있는지 확인. tag cloud / nav scrap만 있는 경우 거절."""
+    text = re.sub(r"\s+", " ", body).strip()
+    
+    # Sentence boundary count = 실제 문장 수 추정
+    sentences = [s.strip() for s in re.split(r"[.!?]\s+", text) if len(s.strip()) > 15]
+    if len(sentences) < MIN_BODY_PARAGRAPHS:
+        return False
+    
+    # Separator-heavy content (tag clouds): 공백/파이프/slash 로만 이어진 긴 덩어리
+    words = text.split()
+    if len(words) > 0:
+        sep_count = sum(1 for w in words if w in ("|", "•", "/", "→", "-") or len(w) == 1)
+        if sep_count / len(words) > 0.3:
+            return False
+    
+    # Protected post / paywall 패턴
+    for pat in BODY_JUNK_PATTERNS:
+        if re.search(pat, text, re.I):
+            return False
+    
+    return True
+
+
+def is_title_junk(title: str) -> bool:
+    """쓰레기 타이틀 패턴 매칭"""
+    for pat in TITLE_JUNK_PATTERNS:
+        if re.search(pat, title):
+            return True
+    return False
+
+
+def body_hash(content: str) -> str:
+    """Content-dedup용 body hash (앞 1000자)"""
+    return hashlib.md5(content.strip()[:1000].encode()).hexdigest()
+
 
 def is_seo_relevant(title: str, domain: str) -> bool:
     domain_clean = domain.removeprefix("www.").removeprefix("blog.")
@@ -132,6 +188,24 @@ def save_url_cache(cache: set):
     index_file = SEO_DIR / "collected_urls.json"
     index_file.write_text(json.dumps(sorted(cache), ensure_ascii=False, indent=2))
 
+def build_body_hash_cache() -> dict:
+    """최근 저장된 article의 body hash 캐시 로드"""
+    cache_file = SEO_DIR / "collected_hashes.json"
+    if cache_file.exists():
+        try:
+            return json.loads(cache_file.read_text())
+        except Exception:
+            pass
+    return {}
+
+def save_body_hash_cache(cache: dict):
+    """body hash 캐시 저장 (오래된 항목 prune)"""
+    cache_file = SEO_DIR / "collected_hashes.json"
+    # Keep only newest N
+    sorted_items = sorted(cache.items(), key=lambda x: x[1].get("ts", 0), reverse=True)
+    pruned = {k: v for k, v in sorted_items[:DEDUP_HASH_CACHE_SIZE]}
+    cache_file.write_text(json.dumps(pruned, ensure_ascii=False, indent=2))
+
 # ── RSS 파싱 ────────────────────────────────────────
 def fetch_rss(url: str, timeout: int = 20) -> Optional[ET.Element]:
     """RSS/Atom 피드를 가져와서 파싱"""
@@ -152,7 +226,7 @@ def fetch_rss(url: str, timeout: int = 20) -> Optional[ET.Element]:
         return None
 
 def parse_feed_items(root: ET.Element) -> list:
-    """RSS 또는 Atom 피드에서 item 목록 추출"""
+    """RSS 또는 Atom 피드에서 item 목록 추출 (description/summary 포함)"""
     items = []
     # namespace 처리
     ns = {n.split(":")[1]: n.split(":")[0] + ":" for n in root.attrib.values() if ":" in n}
@@ -163,8 +237,14 @@ def parse_feed_items(root: ET.Element) -> list:
         link = _text(item, "link")
         pub_date = _text(item, "pubDate")
         guid = _text(item, "guid") or link
+        # RSS description: full or summary text
+        desc_el = item.find("description")
+        description = ""
+        if desc_el is not None and desc_el.text:
+            description = re.sub(r"<[^>]+>", " ", desc_el.text)
+            description = html.unescape(re.sub(r"\s+", " ", description).strip())
         if title and link:
-            items.append({"title": html.unescape(title.strip()), "link": link.strip(), "pub_date": pub_date, "guid": guid})
+            items.append({"title": html.unescape(title.strip()), "link": link.strip(), "pub_date": pub_date, "guid": guid, "description": description})
     
     # Atom
     for entry in root.findall("entry"):
@@ -173,8 +253,16 @@ def parse_feed_items(root: ET.Element) -> list:
         link = link_el.get("href") if link_el is not None else _text(entry, "link")
         pub_date = _text(entry, "published") or _text(entry, "updated")
         guid = _text(entry, "id") or link
+        # Atom summary / content
+        summary = ""
+        for tag in ("summary", "content"):
+            el = entry.find(tag)
+            if el is not None and el.text:
+                summary = re.sub(r"<[^>]+>", " ", el.text)
+                summary = html.unescape(re.sub(r"\s+", " ", summary).strip())
+                break
         if title and link:
-            items.append({"title": html.unescape(title.strip()), "link": link.strip(), "pub_date": pub_date, "guid": guid})
+            items.append({"title": html.unescape(title.strip()), "link": link.strip(), "pub_date": pub_date, "guid": guid, "description": summary})
     
     return items
 
@@ -495,6 +583,8 @@ def main():
     
     # URL 캐시 로드
     url_cache = build_url_cache()
+    # Body hash 캐시 로드 (중복 본문 방지)
+    body_hash_cache = build_body_hash_cache()
     print(f"   기존 수집 URL: {len(url_cache)}개")
     print()
     
@@ -559,7 +649,13 @@ def main():
         url = item["link"] or item["guid"]
         title = item.get("title", "").strip()
         
-        # 1) Title guard: 너무 짧은 title은 junk (letspl.me의 "안녕하세요" 같은 것 차단)
+        # 1) Title junk 패턴 (자모만, 단일문자, test marker)
+        if is_title_junk(title):
+            skipped_count += 1
+            print(f"   ⏭️ SKIP (title junk): {title!r} — {url}")
+            continue
+        
+        # 2) Title length guard
         if len(title) < MIN_TITLE_LENGTH:
             skipped_count += 1
             print(f"   ⏭️ SKIP (title<{MIN_TITLE_LENGTH}): {title!r} — {url}")
@@ -567,12 +663,18 @@ def main():
         
         print(f"[{i}/{len(all_new_items)}] 크롤링: {title[:60]}...")
         
-        # 2) Body guard: crawl 후 본문이 너무 짧으면 junk
+        # 3) Body guard: crawl 후 본문이 너무 짧거나 tag cloud / protected post
         article = crawl_article(url)
         if not article or not article.get("content"):
-            skipped_count += 1
-            print(f"   ⏭️ SKIP (no content): {url}")
-            continue
+            # Fallback: RSS description/summary (크롤 차단 시에도 RSS 요약은 확보)
+            rss_desc = item.get("description", "").strip()
+            if len(rss_desc) >= MIN_BODY_LENGTH and has_real_content(rss_desc):
+                article = {"title": title, "content": rss_desc, "source_url": url}
+                print(f"   ⚡ RSS summary fallback: {len(rss_desc)}자")
+            else:
+                skipped_count += 1
+                print(f"   ⏭️ SKIP (no content): {url}")
+                continue
         
         content = article.get("content", "").strip()
         if len(content) < MIN_BODY_LENGTH:
@@ -580,9 +682,23 @@ def main():
             print(f"   ⏭️ SKIP (body<{MIN_BODY_LENGTH} chars, {len(content)}자): {title!r}")
             continue
         
+        # 4) Real content quality check (tag cloud / nav / protected post)
+        if not has_real_content(content):
+            skipped_count += 1
+            print(f"   ⏭️ SKIP (junk body — tag cloud / protected): {title!r}")
+            continue
+        
+        # 5) Content-dedup: 같은 본문 중복 저장 방지
+        h = body_hash(content)
+        if h in body_hash_cache:
+            skipped_count += 1
+            print(f"   ⏭️ SKIP (duplicate body): {title!r}")
+            continue
+        
         article["title"] = title
         filepath = save_article(article)
         saved_files.append(filepath)
+        body_hash_cache[h] = {"slug": filepath.stem, "ts": datetime.now().timestamp()}
         print(f"   ✅ 저장: {filepath.name}")
         
         # 속도 제한: 1초 대기
@@ -590,6 +706,8 @@ def main():
     
     # URL 캐시 저장
     save_url_cache(url_cache)
+    # Body hash 캐시 저장
+    save_body_hash_cache(body_hash_cache)
     
     # Discord 전달
     print()

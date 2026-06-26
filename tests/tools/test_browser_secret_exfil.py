@@ -31,7 +31,7 @@ class TestBrowserSecretExfil:
     def test_allows_normal_url(self):
         """Normal URLs pass the secret check (may fail for other reasons)."""
         from tools.browser_tool import browser_navigate
-        result = browser_navigate("https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME")
+        result = browser_navigate("https://github.com/NousResearch/drewgent-agent")
         parsed = json.loads(result)
         # Should NOT be blocked by secret detection
         assert "API key or token" not in parsed.get("error", "")

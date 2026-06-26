@@ -11,11 +11,11 @@ license: CC BY 4.0 (content) / MIT (code)
 created: 2026-06-01
 updated: 2026-06-01
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[skills/humanerd-site]]"
   - "[[skills/seo-audit]]"
-  - "[[P4-cortex/knowledge/obsidian-vault-site-principle]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@memory/knowledge/obsidian-vault-site-principle]]"
+  - "[[@identity/brain/rules]]"---
 
 
 # specification-website
@@ -108,10 +108,10 @@ Code MIT. Content CC BY 4.0. Site source: <https://github.com/jdevalk/specificat
 
 When citing, use the page's canonical URL and the `updated` frontmatter field as the as-of date. The spec changes — re-fetch rather than relying on a cached copy more than a few weeks old.
 
-## yourdomain.com 적용 노트
+## YOUR_DOMAIN 적용 노트
 
-yourdomain.com에 직접 와닿는 항목 (Drewgent 추가 메모):
+YOUR_DOMAIN에 직접 와닿는 항목 (Drewgent 추가 메모):
 
 - `required` 누락 위험: `<meta name="theme-color">`, `color-scheme`, `/robots.txt` (Quartz 기본 미생성), `/sitemap-index.xml`
 - `recommended` 큰 가치: `/llms.txt`, MCP 서버 노출, `/.well-known/agent-skills/`, `Accept: text/markdown` 미들웨어
-- `agent-readiness` 카테고리 18개 항목은 yourdomain.com처럼 AI 에이전트가 읽을 대상인 사이트에 특히 중요
+- `agent-readiness` 카테고리 18개 항목은 YOUR_DOMAIN처럼 AI 에이전트가 읽을 대상인 사이트에 특히 중요

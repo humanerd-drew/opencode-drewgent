@@ -13,8 +13,8 @@ links:
   - "[[skills/devops/cron-script-fastpath]]"
   - "[[skills/software-development/yaml-config-patch-drewgent]]"
   - "[[skills/software-development/llm-model-migration]]"
-  - "[[P4-cortex/growth/KANBAN-REVIEW-20260520]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@memory/growth/KANBAN-REVIEW-20260520]]"
+  - "[[@identity/brain/rules]]"---
 
 # Drewgent LLM Cost Optimization — 3-Round Implementation
 
@@ -77,8 +77,8 @@ auxiliary:
 ```python
 import yaml
 for p in [
-    '~/.drewgent/config.yaml',
-    '~/.drewgent/P5-ego/config/config.yaml',
+    '/Users/drew/.drewgent/config.yaml',
+    '/Users/drew/.drewgent/P5-ego/config/config.yaml',
 ]:
     c = yaml.safe_load(open(p))
     aux = c['auxiliary']['compression']
@@ -166,9 +166,9 @@ def _run_script_subprocess(
 
 ```python
 import sys, json
-sys.path.insert(0, '~/.drewgent/source/drewgent-agent')
+sys.path.insert(0, '/Users/drew/.drewgent/source/drewgent-agent')
 from cron.scheduler import run_job
-jobs = json.load(open('~/.drewgent/cron/jobs.json'))['jobs']
+jobs = json.load(open('/Users/drew/.drewgent/cron/jobs.json'))['jobs']
 for job_id in ('a130ff5768c1', 'e402e47447c1'):
     job = next(j for j in jobs if j['id'] == job_id)
     success, output, final, error = run_job(job)
@@ -238,8 +238,8 @@ def run_worker(task_id):
 
 ```python
 import sqlite3, subprocess, time
-DB = '~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
-VENV = '~/.drewgent/source/drewgent-agent/.venv/bin/python'
+DB = '/Users/drew/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
+VENV = '/Users/drew/.drewgent/source/drewgent-agent/.venv/bin/python'
 
 # 1. Insert shell + instruction tasks
 conn = sqlite3.connect(DB)
@@ -250,11 +250,11 @@ conn.execute("INSERT INTO tasks ... VALUES (?, 'ready', 'default', 'Run kanban c
 conn.commit(); conn.close()
 
 # 2. Run dispatcher
-subprocess.run([VENV, '~/.drewgent/scripts/dispatch_once_default.py'],
-               env={'DREW_HOME': '~/.drewgent', **os.environ}, check=True)
+subprocess.run([VENV, '/Users/drew/.drewgent/scripts/dispatch_once_default.py'],
+               env={'DREW_HOME': '/Users/drew/.drewgent', **os.environ}, check=True)
 
 # 3. Wait for workers, check logs
-log_dir = Path('~/.drewgent/P4-cortex/scripts/kanban/logs/workers')
+log_dir = Path('/Users/drew/.drewgent/P4-cortex/scripts/kanban/logs/workers')
 for _ in range(30):
     if (log_dir / f'{shell_id}.log').exists() and (log_dir / f'{instr_id}.log').exists():
         time.sleep(2)  # let write settle

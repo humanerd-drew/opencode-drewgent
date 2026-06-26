@@ -7,14 +7,14 @@ tags: [skill, software-development, refactoring, drewgent-gateway]
 created: 2026-06-01
 updated: 2026-06-12
 links:
-  - "[[P0-brainstem/brain/rules]]"
-  - "[[P4-cortex/plans/gateway_decomposition_plan]]"
+  - "[[@identity/brain/rules]]"
+  - "[[@memory/plans/gateway_decomposition_plan]]"
   - "[[software-development/python-large-file-patch-drewgent]]"
   - "[[software-development/codebase-refactoring]]"
   - "[[software-development/incremental-refactoring]]"
   - "[[software-development/codebase-structure-audit]]"
   - "[[software-development/requesting-code-review]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
 ---
 
 # Skill: Extracting Modules from gateway/run.py
@@ -136,7 +136,7 @@ for p in glob.glob('gateway/*.py'):
 "
 
 # 2. Import check
-cd ~/.drewgent/source/drewgent-agent
+cd /Users/drew/.drewgent/source/drewgent-agent
 python3 -c "from gateway.sentinel_guard import SentinelGuard; print('SentinelGuard importable')"
 
 # 3. Check for orphaned extracted methods (defined but never called or registered)

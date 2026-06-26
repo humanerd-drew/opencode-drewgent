@@ -1,8 +1,6 @@
 ---
 name: fusion-agent
 description: "Agent-level multi-model deliberation on OpenCode Go. Uses task() to simulate OpenRouter Fusion's panel+judge pipeline — parallel subagents with distinct perspectives, then structured synthesis. Zero marginal cost (OpenCode Go subscription). Reach for it when a single model isn't enough — research, expert critique, compare-and-contrast."
-trigger: "2026-06-16 OpenRouter Fusion discovery — user said '연구해보자. 오픈코드 고에서 할 수 있을 것 같은데.'"
-provenance:
   session: "2026-06-16 fusion-research"
   decision: "Agent-level Fusion (Option A) — delegate_task로 panel+judge 패턴을 OpenCode Go 위에서 직접 구현. 인프라/비용 변경 불필요. OpenRouter의 plugins/tools 시스템에 의존하지 않음."
 version: 1.0.0

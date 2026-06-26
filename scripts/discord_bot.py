@@ -24,7 +24,7 @@ DB_PATH = os.path.join(HOME, ".drewgent", "discord_sessions.db")
 OPCODE_SERVE = "http://localhost:8642"
 MAX_MSG_LEN = 1900          # Discord safe content length
 MAX_STATUS_CONTENT = 1850   # leave room for emoji + whitespace prefixes
-STREAM_TIMEOUT = 180        # seconds
+STREAM_TIMEOUT = 300        # seconds
 
 intents = discord.Intents.default()
 intents.message_content = True

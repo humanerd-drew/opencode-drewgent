@@ -10,10 +10,10 @@ metadata:
     tags: [Whisper, Speech Recognition, ASR, Multimodal, Multilingual, OpenAI, Speech-To-Text, Transcription, Translation, Audio Processing]
 
 links:
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Whisper - Robust Speech Recognition

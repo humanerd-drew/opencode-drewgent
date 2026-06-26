@@ -7,18 +7,18 @@ license: MIT
 metadata:
   drewgent:
     tags: [opencode, setup, configuration, multi-agent, spawning, cli, gateway, development]
-    homepage: https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME
+    homepage: https://github.com/NousResearch/drewgent-agent
     related_skills: [claude-code, codex, opencode]
 links:
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Drewgent Agent
 
-Drewgent Agent is an open-source AI agent framework by YOUR_PROJECT_NAME that runs in your terminal, messaging platforms, and IDEs. It belongs to the same category as Claude Code (Anthropic), Codex (OpenAI), and OpenClaw — autonomous coding and task-execution agents that use tool calling to interact with your system. Drewgent works with any LLM provider (OpenRouter, Anthropic, OpenAI, DeepSeek, local models, and 15+ others) and runs on Linux, macOS, and WSL.
+Drewgent Agent is an open-source AI agent framework by HUMANERD that runs in your terminal, messaging platforms, and IDEs. It belongs to the same category as Claude Code (Anthropic), Codex (OpenAI), and OpenClaw — autonomous coding and task-execution agents that use tool calling to interact with your system. Drewgent works with any LLM provider (OpenRouter, Anthropic, OpenAI, DeepSeek, local models, and 15+ others) and runs on Linux, macOS, and WSL.
 
 What makes Drewgent different:
 
@@ -33,13 +33,13 @@ People use Drewgent for software development, research, system administration, d
 
 **This skill helps you work with Drewgent Agent effectively** — setting it up, configuring features, spawning additional agent instances, troubleshooting issues, finding the right commands and settings, and understanding how the system works when you need to extend or contribute to it.
 
-**Docs:** https://drewgent-agent.your-domain.example/docs/
+**Docs:** https://drewgent-agent.humanerd.ai/docs/
 
 ## Quick Start
 
 ```bash
 # Install
-curl -fsSL https://raw.githubusercontent.com/YOUR_GITHUB_USER/YOUR_REPO_NAME/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/drewgent-agent/main/scripts/install.sh | bash
 
 # Drewgent now runs via opencode (the hermes CLI has been removed).
 # Interactive chat (default)
@@ -259,7 +259,7 @@ Edit with `drewgent` config edit` or `drewgent` config set section.key value`.
 | `smart_model_routing` | `enabled`, `cheap_model` |
 | `checkpoints` | `enabled`, `max_snapshots` (50) |
 
-Full config reference: https://drewgent-agent.your-domain.example/docs/user-guide/configuration
+Full config reference: https://drewgent-agent.humanerd.ai/docs/user-guide/configuration
 
 ### Providers
 
@@ -283,7 +283,7 @@ Full config reference: https://drewgent-agent.your-domain.example/docs/user-guid
 
 Plus: AI Gateway, OpenCode Zen, OpenCode Go, MiniMax CN, GitHub Copilot ACP.
 
-Full provider docs: https://drewgent-agent.your-domain.example/docs/integrations/providers
+Full provider docs: https://drewgent-agent.humanerd.ai/docs/integrations/providers
 
 ### Toolsets
 
@@ -466,18 +466,18 @@ grep -i "failed to send\|error" ~/.drewgent/logs/gateway.log | tail -20
 
 | Looking for... | Location |
 |----------------|----------|
-| Config options | `drewgent` config edit` or [Configuration docs](https://drewgent-agent.your-domain.example/docs/user-guide/configuration) |
-| Available tools | `drewgent` tools list` or [Tools reference](https://drewgent-agent.your-domain.example/docs/reference/tools-reference) |
-| Slash commands | `/help` in session or [Slash commands reference](https://drewgent-agent.your-domain.example/docs/reference/slash-commands) |
-| Skills catalog | `drewgent skills browse` or [Skills catalog](https://drewgent-agent.your-domain.example/docs/reference/skills-catalog) |
-| Provider setup | `drewgent` model` or [Providers guide](https://drewgent-agent.your-domain.example/docs/integrations/providers) |
-| Platform setup | `drewgent gateway setup` or [Messaging docs](https://drewgent-agent.your-domain.example/docs/user-guide/messaging/) |
-| MCP servers | `drewgent` mcp list` or [MCP guide](https://drewgent-agent.your-domain.example/docs/user-guide/features/mcp) |
-| Profiles | `drewgent` profile list` or [Profiles docs](https://drewgent-agent.your-domain.example/docs/user-guide/profiles) |
-| Cron jobs | `drewgent` cron list` or [Cron docs](https://drewgent-agent.your-domain.example/docs/user-guide/features/cron) |
-| Memory | `drewgent` memory status` or [Memory docs](https://drewgent-agent.your-domain.example/docs/user-guide/features/memory) |
-| Env variables | `drewgent` config env-path` or [Env vars reference](https://drewgent-agent.your-domain.example/docs/reference/environment-variables) |
-| CLI commands | `drewgent --help` or [CLI reference](https://drewgent-agent.your-domain.example/docs/reference/cli-commands) |
+| Config options | `drewgent` config edit` or [Configuration docs](https://drewgent-agent.humanerd.ai/docs/user-guide/configuration) |
+| Available tools | `drewgent` tools list` or [Tools reference](https://drewgent-agent.humanerd.ai/docs/reference/tools-reference) |
+| Slash commands | `/help` in session or [Slash commands reference](https://drewgent-agent.humanerd.ai/docs/reference/slash-commands) |
+| Skills catalog | `drewgent skills browse` or [Skills catalog](https://drewgent-agent.humanerd.ai/docs/reference/skills-catalog) |
+| Provider setup | `drewgent` model` or [Providers guide](https://drewgent-agent.humanerd.ai/docs/integrations/providers) |
+| Platform setup | `drewgent gateway setup` or [Messaging docs](https://drewgent-agent.humanerd.ai/docs/user-guide/messaging/) |
+| MCP servers | `drewgent` mcp list` or [MCP guide](https://drewgent-agent.humanerd.ai/docs/user-guide/features/mcp) |
+| Profiles | `drewgent` profile list` or [Profiles docs](https://drewgent-agent.humanerd.ai/docs/user-guide/profiles) |
+| Cron jobs | `drewgent` cron list` or [Cron docs](https://drewgent-agent.humanerd.ai/docs/user-guide/features/cron) |
+| Memory | `drewgent` memory status` or [Memory docs](https://drewgent-agent.humanerd.ai/docs/user-guide/features/memory) |
+| Env variables | `drewgent` config env-path` or [Env vars reference](https://drewgent-agent.humanerd.ai/docs/reference/environment-variables) |
+| CLI commands | `drewgent --help` or [CLI reference](https://drewgent-agent.humanerd.ai/docs/reference/cli-commands) |
 | Gateway logs | `~/.drewgent/logs/gateway.log` |
 | Session files | `~/.drewgent/sessions/` or `drewgent` sessions browse` |
 | Source code | `~/.drewgent/drewgent-agent/` |
@@ -486,7 +486,7 @@ grep -i "failed to send\|error" ~/.drewgent/logs/gateway.log | tail -20
 
 ## Contributor Quick Reference
 
-For occasional contributors and PR authors. Full developer docs: https://drewgent-agent.your-domain.example/docs/developer-guide/
+For occasional contributors and PR authors. Full developer docs: https://drewgent-agent.humanerd.ai/docs/developer-guide/
 
 ### Project Layout
 

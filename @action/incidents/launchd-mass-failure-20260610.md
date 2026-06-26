@@ -102,7 +102,7 @@ Memory presents these as resolved. Actual state 6/10: gateway dead 4 days, n8n d
 ## 3. Resolution (2026-06-10 16:00–16:35 KST)
 
 ### 3-1. Watchdog cron (P0-1)
-- Wrote `~/.drewgent/P4-cortex/scripts/drewgent_launchd_watchdog.sh`
+- Wrote `/Users/drew/.drewgent/P4-cortex/scripts/drewgent_launchd_watchdog.sh`
 - 6 watched labels: `ai.drewgent.{cron-runner,gateway,kanban-dashboard,n8n}` + `com.drewgent.quartz-{fswatch,deploy}`
 - Symlink: `~/.hermes/scripts/drewgent_launchd_watchdog.sh` (no_agent=True cron requires `~/.hermes/scripts/`)
 - Cron job id: `2d9a31f2b661`, every 5 min, no_agent=True (zero LLM tokens, pure bash)
@@ -186,7 +186,7 @@ Memory presents these as resolved. Actual state 6/10: gateway dead 4 days, n8n d
 - `~/.zshrc` adds `PYTHONPATH=~/.drewgent/customize`.
 - `~/.local/bin/hermes` wrapper patched: removed `unset PYTHONPATH` (which
   intentionally defeated the customize layer). Original kept as `hermes.bak`.
-- `ai.drewgent.gateway.plist` adds `PYTHONPATH=~/.drewgent/customize`.
+- `ai.drewgent.gateway.plist` adds `PYTHONPATH=/Users/drew/.drewgent/customize`.
 - **Verified**: `hermes cron list 2>&1 | grep -c "Gateway is not running"` = `0`.
 - **Smoke test cron** `f0b39d211970` (Sun 10:00 KST) verifies all 4 checks pass.
 

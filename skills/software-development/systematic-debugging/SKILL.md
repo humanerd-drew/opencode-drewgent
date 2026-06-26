@@ -7,7 +7,6 @@ description: Multi-phase debugging protocol — find root cause before fixing. C
 tags: [outcome, debugging, root-cause]
 created: 2026-06-11
 updated: 2026-06-13
-provenance:
   session: "2026-06-13 opencode-go model-routing architecture-verification"
   decision: "Added Phase 0: Architecture Investigation — verify provider wiring before answering. Prevents confident wrong answers based on naming conventions (e.g. assuming opencode-go/deepseek-v4-flash routes through OpenRouter). Covers provider registration check, naming convention pitfall, auto-resolution chain, and recovery protocol."
   previous:
@@ -15,11 +14,11 @@ provenance:
     session: "2026-06-12 m-log dating report debugging"
     decision: "Added destructured-variable-missing pattern to Frontend SPA Debugging — common bug when adding new state properties to Component views"
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[software-development/python-debugpy]]"
   - "[[software-development/node-inspect-debugger]]"
   - "[[software-development/test-driven-development]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 
@@ -1348,5 +1347,5 @@ From debugging sessions:
 
 ## Related
 ## Related
-- [[P3-sensors/skills/SKILL-INDEX]]
+- [[@action/skills/SKILL-INDEX]]
 - `references/css-layer-debug.md` — CSS z-index conflict patterns, backdrop-filter WebKit bug, dual CSS variable system diagnosis, NAS canonical source check protocol

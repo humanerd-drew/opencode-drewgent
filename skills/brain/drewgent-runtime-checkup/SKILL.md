@@ -8,10 +8,10 @@ tags: [skill, checkup, runtime, verification]
 created: 2026-06-01
 updated: 2026-06-11
 links:
-  - "[[P3-sensors/gateway/drewgent-architecture-dataflow]]"
-  - "[[P2-hippocampus/kanban/KANBAN_INDEX]]"
-  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/gateway/drewgent-architecture-dataflow]]"
+  - "[[@memory/kanban/KANBAN_INDEX]]"
+  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Drewgent Runtime Checkup
@@ -480,9 +480,9 @@ P0는 critical (한 줄로 fix 필요), P1은 단기 개선, P2는 장기 검토
 
 ## Related
 
-- [[P3-sensors/gateway/drewgent-architecture-dataflow]] — 전체 데이터 흐름
-- [[P2-hippocampus/kanban/KANBAN_INDEX]] — kanban 시스템 개요
-- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]] — "files are truth" 원칙
+- [[@action/gateway/drewgent-architecture-dataflow]] — 전체 데이터 흐름
+- [[@memory/kanban/KANBAN_INDEX]] — kanban 시스템 개요
+- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]] — "files are truth" 원칙
 - `launchd-process-health-check` — **the skill that pairs with this one for infra-level findings**. Sub-pattern 6 in that skill (jobs.json patch has zero effect on a dead scheduler) is the meta-pattern for Pattern E in `cron-jobs-stalled`. The 6/10 incident response ran these two skills together.
 - `cron-jobs-stalled` — for cron-stall-specific findings. Pattern E (silent scheduler death) added 2026-06-10.
 - `~/.drewgent/P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁incident_aware.neuron` (P0 policy) — auto-loads this skill + the 6/10 incident doc when watchdog fires or user requests "에이전트 상태 점검". Trip-wires the cross-layer diff path so the agent doesn't re-discover the 6 root causes from scratch.

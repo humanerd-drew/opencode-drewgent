@@ -4,8 +4,6 @@ description: >
   CMO-style autonomous content agent. Observes user's work activity (sessions, git, kanban),
   curates narrative-worthy material, produces multi-format drafts (blog + X thread),
   maintains narrative arc continuity, and generates visual assets (SVG cover, Mermaid, Excalidraw PNG).
-trigger: "2026-06-14 — Designed and built the content-manager agent after user rejected multi-stage pipeline in favor of a single agent profile + cron"
-provenance:
   session: "2026-06-14 content-manager-cmo-agent"
   decision: "Agent profile + cron trigger + narrative_arc.md tracking file (not a multi-stage pipeline). SVG over paid image API (user: '비용 발생안시키고 싶어'). Excalidraw→PNG via Puppeteer for architecture diagrams."
 category: autonomous-ai-agents
@@ -15,7 +13,7 @@ updated: 2026-06-14
 links:
   - "[[agent-profiles]]"
   - "[[skills/content-pipeline]]"
-  - "[[P4-cortex/content/narrative_arc.md]]"
+  - "[[@memory/content/narrative_arc.md]]"
 ---
 
 # Content Management — CMO Agent
@@ -44,15 +42,30 @@ Per-run output:
     └── content-inventory.md               ← Updated with new entry
 ```
 
+## Data Sources
+
+In addition to direct work activity, content-manager monitors two automated collection pipelines:
+
+### 1. Trend Harvester
+- **Location**: `@memory/growth/trend-harvester/{collected,applied,evaluated}/`
+- **Content**: GitHub trending repos scored via 5-axis philosophy filter (6h cycle)
+- **Use**: Pick applied/evaluated items with high scores → write "AI Tool of the Week" posts or deep-dives into tools that got integrated into Drewgent
+
+### 2. SEO Article Harvester
+- **Location**: `P2-hippocampus/knowledge/seo-articles/YYYY/`
+- **Content**: 1,642+ SEO/marketing articles from 28 RSS feeds (6h cycle)
+- **Use**: Surface notable Google updates, agentic web trends, or shifts in AI/discovery landscape → write analysis/opinion posts linking to YOUR_DOMAIN's own ARD integration
+
 ## Agent Profile
 
 Defined at `~/.drewgent/agents/content-manager.md`. Full instructions include:
 
 1. **Load Knowledge Base** — Read brand-guide, glossary, content-inventory, narrative_arc
-2. **Gather Context** — session_search, git log, kanban completions
+2. **Gather Context** — session_search, git log, kanban completions, harvester outputs
 3. **Mine for Stories** — Score 1-10 (reader value, drew-angle, narrative fit). ≥7 proceed
 4. **Draft Content** — Blog post with embedded SVG cover + Mermaid + Excalidraw PNG
-5. **Update Tracking Files** — narrative_arc.md + content-inventory.md
+5. **Publish Draft** — `create_post` via WordPress MCP (status=draft)
+6. **Update Tracking Files** — narrative_arc.md + content-inventory.md
 
 ## Web Research
 
@@ -98,8 +111,8 @@ For complex architecture/flow diagrams. Two-step process:
 2. Convert to PNG via headless Chrome: `scripts/excalidraw-to-png.js`
 
 ```
-NODE_PATH=~/.drewgent/scripts/node_modules \
-  node ~/.drewgent/scripts/excalidraw-to-png.js \
+NODE_PATH=/Users/drew/.drewgent/scripts/node_modules \
+  node /Users/drew/.drewgent/scripts/excalidraw-to-png.js \
     input.excalidraw.json \
     output.png
 ```
@@ -112,6 +125,64 @@ NODE_PATH=~/.drewgent/scripts/node_modules \
 | **glossary** | `P4-cortex/content/glossary.md` | Project terms (Drewgent, M-LOG, etc.) |
 | **narrative_arc** | `P4-cortex/content/narrative_arc.md` | Published content continuity tracking |
 | **content-inventory** | `P4-cortex/content/content-inventory.md` | All drafts/published with dedup topics |
+| **writing-style-guide** | `P1-limbic/persona/writing-style-guide.md` | Tone, forbidden expressions, Korean voice |
+| **taste-signals** | `P4-cortex/content/taste-signals.md` | Draft vs published diff 기록 — 네 수정 패턴 학습 |
+| **form-template** | `https://dev.to/siiddhantt/building-reefwatch-a-coral-powered-production-triage-agent-23hf` | Canonical blog post 구조 — 반드시 이 형태를 따라라 |
+
+## Post-Publish Enrichment — Links & References
+
+After drafting, enrich the post with links before saving as draft:
+
+1. **내부 링크**: Scan `narrative_arc.md` and `content-inventory.md` for existing posts on related topics. Add internal links where natural (e.g., "v0.8 simplification post ([link])에서 다뤘듯이...")
+2. **외부 참조**: Check SEO harvester articles for relevant sources (e.g., Google announcements, agentic web trends). Link to original sources where cited.
+3. **상호 참조 클러스터**: Posts on the same pillar (BUILD LOG, AI & TOOLS, SYSTEMS, CREATIVE) should interlink. Episode 1→2→3 of a season should form a chain.
+4. **용어 링크**: First mention of Drewgent/M-LOG/ARD 등 should link to the glossary or relevant explanation if it's the first post in a series.
+
+Format example:
+```html
+<!-- wp:paragraph -->
+<p><strong>덜어내는 작업</strong>은 <a href="/?p=XX">v0.8 architecture compression 포스트</a>에서 자세히 다뤘다. 이번 글은 그 연장선에 있는 <strong>연결하기</strong>에 대한 이야기다.</p>
+<!-- /wp:paragraph -->
+```
+
+## Voice & Form (Critical — Read Before Drafting)
+
+### Form Template (ReefWatch)
+
+이 구조를 반드시 따라라. 모든 포스트는 이 템플릿을 프레임으로 사용한다.
+
+```
+1. Hook-first opening — 짧고 강한 문장. 문제를 직접 던진다.
+   "Production incidents almost never break in one place."
+   "A normal chatbot... But that is not triage. That is a polished to-do list."
+
+2. Problem → Decision → Build Path
+   "I wanted something more useful: an agent that could..."
+   "The design constraint from the start: no evidence, no answer."
+
+3. "What This Guide Builds" — bullet list of deliverables
+4. Why <technology> section — "Why [X] belongs at the center" — 결정 이유
+5. Build path (slices) — numbered slices showing progressive build:
+   "Slice 1: Prove [X] Can Be The Data Plane"
+   "Slice 2: Keep [X] Warm"
+   Structure: What I Built → Why It Mattered
+6. Architecture diagrams (Mermaid 또는 SVG)
+7. Key design decisions with failure modes table
+8. Personal closing ("Thanks for reading...")
+```
+
+### Voice Rules
+
+1. **반말 + 1인칭** ("저", "나"). 독자에게 "당신"으로 직접 말한다.
+2. **금지**: "이 글은", 추상 주어, 존댓말, AI투 카피 ("~에 대해 알아보겠습니다")
+3. **Bold** 로 핵심 문장 강조
+4. **짧은 문장**. 문제 → 바로 해결.
+5. **개인적인 깨달음을 중심으로**: "That was useful because it proved..."
+6. **거대한 시스템 프롬프트를 거부한다**: "I stopped trying to make one heroic system prompt do everything"
+7. **숫자를 써라**: "14→6 agents", "43→25 scripts"
+8. **딱 하나의 주장만**: 포스트 하나에 하나의 테제
+
+Before drafting, study `https://YOUR_DOMAIN/` `s published posts (ID 12, 13) to absorb Drew's actual voice.
 
 ## Content Pillars (Editorial Judgment)
 
@@ -122,7 +193,7 @@ NODE_PATH=~/.drewgent/scripts/node_modules \
 
 ## Pitfalls
 
-- **No existing insights reference**: The agent must NOT reference existing files in `memories/insights/` from before its first run. Those are from a previous system.
+- **Draft must feel like Drew wrote it, not an AI**: If the draft sounds like generic LLM content, rewrite it. If you can't match the voice, produce nothing.
 - **SILENT is correct**: If nothing worth publishing, produce nothing. Don't force output.
 - **Quality over quantity**: One great post per run beats five mediocre ones. The cron runs daily, backlog clears over time.
 - **Never ask Drew what to write**: The CMO decides. Present the draft.
@@ -131,27 +202,91 @@ NODE_PATH=~/.drewgent/scripts/node_modules \
 
 ## WordPress Publishing Pipeline
 
-Content-manager can publish to the yourdomain.com WordPress site via a custom STDIO MCP server.
+Content-manager publishes to YOUR_DOMAIN (WordPress + GeneratePress) via the WordPress MCP server.
 
-**MCP server**: `~/scripts/wordpress-mcp-server.js` — wraps wp-cli commands as JSON-RPC 2.0 tools:
-- `create_post` — title, content, category, tags, status, featured_image
-- `upload_media` — file upload by path
-- `list_posts` / `get_post` — read content
-- `create_category` — manage taxonomy
-- `set_site_option` / `set_theme_mod` — site config
+**MCP server**: Registered in `~/.config/opencode/opencode.jsonc` as `mcp.wordpress`.
+Script: `~/scripts/wordpress-mcp-server.js` — wraps `wp-cli` via `docker exec`.
+Tools: `create_post`, `upload_media`, `list_posts`, `get_post`, `create_category`, `set_site_option`, `set_theme_mod`.
 
-**Registered in Hermes config**: `mcp_servers.wordpress` at `~/.hermes/config.yaml`
+### Content Format (Critical)
 
-**WordPress setup**: Docker Compose at `~/.drewgent/wordpress/`, data on NAS `/Volumes/humanerd/docker/wordpress/`. Admin at `http://localhost:8080/wp-admin`.
+WordPress uses the Gutenberg block editor. **Post content MUST be Gutenberg-compatible HTML, NOT raw Markdown.**
 
-**Theme**: Blocksy (free). Customized with:
-- Color palette (bronze accent #8b7355)
-- Google Fonts: Noto Sans KR + Noto Serif KR + JetBrains Mono
-- Custom CSS for typography and card layouts
-- Logo uploaded and set
-- Pages: Home / Blog / About — categories match content pillars
+Good:
+```html
+<!-- wp:paragraph -->
+<p><strong>핵심 문장은 Bold로.</strong> 이렇게 써야 제대로 렌더링된다.</p>
+<!-- /wp:paragraph -->
 
-Reference: `references/wordpress-mcp-publishing.md`
+<!-- wp:heading {"level":2} -->
+<h2>슬라이스 제목</h2>
+<!-- /wp:heading -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>code block here</code></pre>
+<!-- /wp:code -->
+```
+
+Bad (will show raw text):
+```markdown
+## Markdown 제목
+**볼드** _이탤릭_
+```
+
+**Rules:**
+- NO YAML frontmatter — WordPress stores metadata separately
+- NO raw Markdown (`#`, `##`, `**`, `*`, `- `) — use HTML tags
+- ALL content must be wrapped in Gutenberg comment blocks (`<!-- wp:paragraph -->...<!-- /wp:paragraph -->`)
+- Use `<!-- wp:list -->` for lists, `<!-- wp:code -->` for code blocks, `<!-- wp:heading {"level":2} -->` for headings
+- Use `<!-- wp:html -->...<!-- /wp:html -->` for custom HTML sections (cards, hero, etc.)
+
+### Auto-Publish Flow (Fully Autonomous)
+
+```
+content-manager agent (every 3h)
+  → writes draft (Gutenberg HTML, proper pillar category name like "Build Log")
+  → calls create_post (status=draft), category=pillar name (not ID)
+  → reviewer agent runs QA (within 1h)
+  → fixes issues → promotes to publish
+  → updates narrative_arc + content-inventory
+```
+
+**규칙:**
+- **No CLI approval needed.** Pipeline is fully autonomous.
+- content-manager는 `category` 필드에 카테고리 **이름**(ID 아님)을 전달: `"Build Log"`, `"AI & Tools"`, `"Systems"`, `"Creative"`
+- Draft 생성 후 editor agent가 자동 QA → 수정 → publish
+- 사용자가 마음에 안 들면 wp-admin에서 unpublish → 다음 run 때 반영
+- "이건 publish하지 마" 같은 피드백은 memory에 저장되어 다음 draft에 반영됨
+
+### Growth Loop (Taste Signal → Better Drafts)
+
+회차를 거듭할수록 네 취향에 가까워지는 구조:
+
+```
+1. content-manager draft → publish
+2. 사용자가 wp-admin에서 수정
+3. content_diff_analyzer (매일 05:00)
+     → draft vs published diff 추출
+     → taste-signals.md에 기록
+4. content-manager가 다음 draft 전에 taste-signals.md 읽음
+     → "지난번엔 이런 표현이 수정됐구나"
+     → writing-style-guide에 반영
+5. 다음 draft가 개선됨
+```
+
+매일 05:00에 diff 분석 → taste-signals.md 업데이트. content-manager는 매 실행 전에 이 파일을 읽어서 네가 평소에 뭘 고치는지 학습한다. 쓰면 쓸수록 네 목소리에 가까워짐.
+
+### Site Config
+
+| Property | Value |
+|----------|-------|
+| URL | `https://YOUR_DOMAIN` |
+| Admin | `https://YOUR_DOMAIN/wp-admin` |
+| Theme | GeneratePress 3.6.1 |
+| Fonts | Noto Sans KR (body), Noto Serif KR (headings), JetBrains Mono (code) |
+| Colors | `#fafaf8` bg, `#8b7355` accent, `#1c1c1a` text |
+| Layout | no-sidebar, separate-containers |
+| Tunnel | Cloudflare Tunnel (launchd: `ai.drewgent.cloudflared-wp`) |
 
 ## Relationship to content-pipeline Skill
 

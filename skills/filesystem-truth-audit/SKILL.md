@@ -8,10 +8,10 @@ tags: [skill, filesystem-truth, audit, memory, vault, diagnostics]
 created: 2026-06-01
 updated: 2026-06-01
 links:
-  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]]"
-  - "[[P5-ego/SELF_MODEL]]"
-  - "[[P3-sensors/gateway/drewgent-architecture-dataflow]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]]"
+  - "[[@identity/SELF_MODEL]]"
+  - "[[@action/gateway/drewgent-architecture-dataflow]]"
+  - "[[@identity/brain/rules]]"---
 
 # Filesystem Truth Audit — Memory vs Reality 검증
 
@@ -55,7 +55,7 @@ grep -rn "applied\|patched\|configured" ~/.drewgent/P4-cortex/growth 2>/dev/null
 
 ```bash
 # 2a. 단일 path 직접 확인
-test -f ~/.drewgent/source/drewgent-agent/tools/drewgent_kanban_db.py && echo EXISTS || echo MISSING
+test -f /Users/drew/.drewgent/source/drewgent-agent/tools/drewgent_kanban_db.py && echo EXISTS || echo MISSING
 
 # 2b. 이름으로 전체 검색
 find ~/.drewgent -name "drewgent_kanban_db.py" -type f 2>/dev/null
@@ -72,7 +72,7 @@ Drewgent는 root가 바뀔 수 있음:
 - quarantine: `~/.drewgent/P6-prefrontal/archive/quarantine-.../`
 
 ```bash
-readlink -f ~/.drewgent/source/drewgent-agent 2>/dev/null
+readlink -f /Users/drew/.drewgent/source/drewgent-agent 2>/dev/null
 ls -la ~/.drewgent/source/ 2>/dev/null
 ls -la ~/.drewgent/P6-prefrontal/archive/ 2>/dev/null
 ```
@@ -97,7 +97,7 @@ ls -la ~/.drewgent/P6-prefrontal/archive/ 2>/dev/null
 - readlink 없이 ls로 확인하면 symlink target를 모름
 - brain root를 source root로 착각 — `~/.drewgent` (brain home) ≠ `~/.drewgent/source/drewgent-agent` (code root)
 - quarantine 안에 진짜 있을 수도 — 옛 파일이 archive로 이동했을 수 있음
-- vault path ≠ filesystem path — wikilink `[[P4-cortex/...]]` ↔ `~/.drewgent/P4-cortex/...` 변환 필요
+- vault path ≠ filesystem path — wikilink `[[@memory/...]]` ↔ `~/.drewgent/P4-cortex/...` 변환 필요
 - "Done" marker는 validation 안 됨 — implementation_plan.md 등의 status를 무조건 신뢰하지 말 것
 
 ## Verification
@@ -118,6 +118,6 @@ echo "claimed=$N_CLAIM real=$N_REAL"
 
 ## Related
 
-- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]] — P0 강제 규칙
-- [[P5-ego/SELF_MODEL]] — self-model에 path claim
-- [[P6-prefrontal/migrations/drewgent-root-consolidation-20260506]] — root 변경 migration
+- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]] — P0 강제 규칙
+- [[@identity/SELF_MODEL]] — self-model에 path claim
+- [[@action/migrations/drewgent-root-consolidation-20260506]] — root 변경 migration

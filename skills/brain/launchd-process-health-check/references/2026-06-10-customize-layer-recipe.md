@@ -26,7 +26,7 @@ configured. Missing any one and the layer is silently invisible.
 
 | Path | Where | What to set |
 |---|---|---|
-| **Gateway plist** | `~/Library/LaunchAgents/ai.drewgent.gateway.plist` | `<key>PYTHONPATH</key><string>~/.drewgent/customize</string>` in `EnvironmentVariables` dict |
+| **Gateway plist** | `~/Library/LaunchAgents/ai.drewgent.gateway.plist` | `<key>PYTHONPATH</key><string>/Users/drew/.drewgent/customize</string>` in `EnvironmentVariables` dict |
 | **Shell env** (for `hermes cron list` from terminal) | `~/.zshrc` | `export PYTHONPATH="$HOME/.drewgent/customize:${PYTHONPATH:-}"` |
 | **The `hermes` bash wrapper** | `~/.local/bin/hermes` | **Remove the `unset PYTHONPATH` line.** Original kept as `hermes.bak`. |
 
@@ -38,7 +38,7 @@ configured. Missing any one and the layer is silently invisible.
 #!/usr/bin/env bash
 unset PYTHONPATH          # ← THIS line defeats the customize layer
 unset PYTHONHOME
-exec "$HOME/.hermes/hermes-agent/venv/bin/hermes" "$@"
+exec "/Users/drew/.hermes/hermes-agent/venv/bin/hermes" "$@"
 ```
 
 The `unset PYTHONPATH` is **deliberate** — hermes wants the venv hermes to
@@ -58,7 +58,7 @@ cat > ~/.local/bin/hermes <<'EOF'
 # customize layer takes effect. Original wrapper (saved as hermes.bak)
 # explicitly unset PYTHONPATH, which broke our customize layer.
 unset PYTHONHOME
-exec "$HOME/.hermes/hermes-agent/venv/bin/hermes" "$@"
+exec "/Users/drew/.hermes/hermes-agent/venv/bin/hermes" "$@"
 EOF
 chmod +x ~/.local/bin/hermes
 ```
@@ -249,7 +249,7 @@ tab-separated text but the actual output is plist-format JSON:
 ```
 $ launchctl list ai.drewgent.gateway
 {
-    "StandardOutPath" = "~/.drewgent/logs/gateway.log";
+    "StandardOutPath" = "/Users/drew/.drewgent/logs/gateway.log";
     ...
     "PID" = 91604;
     "Program" = "...";

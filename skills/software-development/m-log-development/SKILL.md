@@ -3,8 +3,6 @@ name: m-log-development
 title: M-LOG Development
 description: Development patterns for the M-LOG (사주 분석) project — CF Workers MPA with Hono backend, Svelte 5 pages, PortOne payment, D1 database, LLM reports, ontology-driven analysis.
 version: 2.5.0
-trigger: "2026-06-14 Parallel page creation via delegate_task, directory URL pattern for ASSETS, AppShell children() snippet pattern, CSS variables enforcement, no-mock-data requirement"
-provenance:
   session: "2026-06-13 m-log-v2 restructuring (continued 2026-06-14)"
   decision: "Domain 디렉토리 + 동사-명사.kebab-case.ts + AGENTS.md = 에이전트가 검색 키워드로 바로 찾는 구조"
   learnings:

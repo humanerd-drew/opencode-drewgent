@@ -2,8 +2,6 @@
 title: Synology NAS SSH Automation
 name: nas-synology-ssh-automation
 description: "Automate read-only inspection and supervised destructive operations on the user's Synology DS920+ NAS via expect + SSH. Covers connection config, sudo+password handling, read-only diagnostics, and the read-only-first policy for external system debugging."
-trigger: "When the user references the NAS (192.168.1.53), DS920+, 'humanerd' Synology, or asks to inspect/modify docker containers, /volume1/docker stacks, or DSM settings from a remote machine."
-provenance:
   session: "2026-06-15 huly-selfhost-account-auth-debug"
   decision: "Captured the expect+SSH automation pattern (with sudo+password) that has now been used in multiple sessions (Huly self-host, m-log search, general NAS ops). Made it a class-level skill instead of a per-session recipe."
 domain: devops
@@ -12,7 +10,7 @@ updated: 2026-06-15
 links:
   - "[[software-development/huly-integration]]"
   - "[[software-development/systematic-debugging]]"
-  - "[[P3-sensors/integrations/huly]]"
+  - "[[@action/integrations/huly]]"
 ---
 
 # Synology NAS SSH Automation
@@ -87,7 +85,7 @@ expect eof
 - **Wrap each command in its own `expect` block.** Don't assume the next prompt will arrive on a fixed schedule.
 - **Keep timeouts realistic (60s for normal commands, 120s+ for `docker compose up`).** Timeouts too short cause expect to give up mid-command with no useful error.
 - **`sudo cmd1 && sudo cmd2 && sudo cmd3` in a single send HANGs** — the first sudo authenticates and 5-minute credential cache kicks in. The second sudo runs without a password prompt, but expect's `expect "drew@"` is still waiting for the prompt that never comes, then hangs on the third sudo. **Workaround**: wrap all the chained commands in one `sudo bash -c '...'` so sudo only prompts once: `sudo bash -c 'mkdir -p /foo && chmod 777 /foo && cd /bar && docker compose up -d' > /tmp/out.log 2>&1; tail -3 /tmp/out.log; echo DONE`.
-- **DSM login banner delays `drew@` prompt matching.** SSH opens with a 5-line "Using terminal commands to modify system configs..." system warning before the actual `drew@YOUR_PROJECT_NAME:~$` prompt. expect's `expect "drew@"` matches the first `drew@` it sees (the banner's `drew@` if any), not the real shell prompt. **Always** use `expect "drew@YOUR_PROJECT_NAME"` (or `expect "drew@YOUR_PROJECT_NAME:~"` for tightest match) when matching, and add a 1-2 second sleep before the first `send` so the banner finishes printing.
+- **DSM login banner delays `drew@` prompt matching.** SSH opens with a 5-line "Using terminal commands to modify system configs..." system warning before the actual `drew@HUMANERD:~$` prompt. expect's `expect "drew@"` matches the first `drew@` it sees (the banner's `drew@` if any), not the real shell prompt. **Always** use `expect "drew@HUMANERD"` (or `expect "drew@HUMANERD:~"` for tightest match) when matching, and add a 1-2 second sleep before the first `send` so the banner finishes printing.
 - **`sudo tee`, `sudo sed -i`, `sudo bash -c 'multi-command'` get flagged as destructive** by the agent security policy and return `BLOCKED: User denied this command` even for non-destructive content (e.g. `sudo tee config.yml > /dev/null` to write a config). **`printf 'line1\nline2\n' > file` is the safe pattern** for writing files — it's a single short command, no heredoc, no tee, and the agent's destructive heuristic doesn't match it. See "Safe file writes" below.
 
 ## Read-Only Diagnostics (safe to run anytime)

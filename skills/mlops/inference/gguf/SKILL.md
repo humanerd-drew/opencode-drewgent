@@ -14,8 +14,8 @@ links:
   - "[[mlops/inference/vllm]]"
   - "[[mlops/inference/outlines]]"
   - "[[mlops/inference/guidance]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # GGUF - Quantization Format for llama.cpp

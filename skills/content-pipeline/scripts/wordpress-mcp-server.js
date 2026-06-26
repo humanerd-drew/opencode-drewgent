@@ -8,7 +8,7 @@
  * Registered in Hermes config.yaml mcp_servers.wordpress
  * 
  * Usage (test): printf '{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n' | \
- *   node ~/.drewgent/scripts/wordpress-mcp-server.js
+ *   node /Users/drew/.drewgent/scripts/wordpress-mcp-server.js
  */
 const { execSync } = require('child_process');
 

@@ -2,7 +2,7 @@
 name: telephony
 description: Give Drewgent phone capabilities without core tool changes. Provision and persist a Twilio number, send and receive SMS/MMS, make direct calls, and place AI-driven outbound calls through Bland.ai or Vapi.
 version: 1.0.0
-author: YOUR_PROJECT_NAME
+author: HUMANERD
 license: MIT
 metadata:
   drewgent:

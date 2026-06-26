@@ -7,8 +7,8 @@ created: 2026-05-20
 updated: 2026-05-20
 links:
   - "[[../SKILL]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P4-cortex/growth/drewgent-kanban-implementation-plan]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@memory/growth/drewgent-kanban-implementation-plan]]"
 ---
 
 
@@ -348,4 +348,4 @@ python3 worker_script.py
 ## Related
 
 - [[../SKILL]] — Kanban Worker skill overview
-- [[P4-cortex/growth/drewgent-kanban-implementation-plan]] — Full implementation plan
+- [[@memory/growth/drewgent-kanban-implementation-plan]] — Full implementation plan

@@ -8,15 +8,15 @@ created: 2026-05-20
 updated: 2026-05-20
 links: []
 links:
-  - "[[P5-ego/SELF_MODEL]]"
+  - "[[@identity/SELF_MODEL]]"
 ---
 
 
 # Drewgent on Docker Hub
 
 **Docker Images:**
-- `YOUR_DOCKER_USER/YOUR_IMAGE_NAME:latest` - Gateway + Agent
-- `YOUR_DOCKER_USER/YOUR_IMAGE_NAME-monitor:latest` - Discord Monitor
+- `YOUR_DOCKER_USER/drewgent:latest` - Gateway + Agent
+- `YOUR_DOCKER_USER/drewgent-monitor:latest` - Discord Monitor
 
 ## Quick Start
 

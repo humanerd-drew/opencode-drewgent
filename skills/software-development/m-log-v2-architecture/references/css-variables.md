@@ -1,7 +1,7 @@
 # CSS Variables Design System (m-log-v2)
 
-출처: `$HOME/m-log/DESIGN_REFERENCE.md`
-원본 CSS: `$HOME/m-log/public/app/shared/theme/variables.css`
+출처: `/Users/drew/m-log/DESIGN_REFERENCE.md`
+원본 CSS: `/Users/drew/m-log/public/app/shared/theme/variables.css`
 
 ## 핵심 토큰
 

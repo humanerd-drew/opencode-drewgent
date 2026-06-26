@@ -8,7 +8,7 @@ metadata:
     tags: [yuanbao, mention, at, group, members, 元宝, 派, 艾特]
     related_skills: []
 links:
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Yuanbao Group Interaction

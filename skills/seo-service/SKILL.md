@@ -1,7 +1,5 @@
 ---
 title: seo-service
-trigger: "SEO 콘텐츠 자동 최적화 SaaS 구축 — RSS 기반 규칙 자동 업데이트 + 사이트 진단 + 자동 수정"
-provenance:
   session: "2026-06-20 seo-service-planning"
   decision: "m-log 아키텍처를 fork해서 SEO 도메인으로 리팩토링. 3단계 차별화: 지속적 모니터링, 자동 수정, 트렌드 선제 대응"
 created: 2026-06-20
@@ -72,5 +70,5 @@ RSS로 수집된 2,853+ SEO 기사를 지식베이스로 삼아 사용자의 블
 ```
 
 ## Related
-- SEO articles: `[[P2-hippocampus/knowledge/seo-articles]]`
-- Product plan: `[[P4-cortex/growth/seo/seo-service/product-plan]]`
+- SEO articles: `[[@memory/knowledge/seo-articles]]`
+- Product plan: `[[@memory/growth/seo/seo-service/product-plan]]`

@@ -59,7 +59,7 @@ Bundled skills (in `skills/`) ship with every Drewgent install. They should be *
 
 If your skill is official and useful but not universally needed (e.g., a paid service integration, a heavyweight dependency), put it in **`optional-skills/`** — it ships with the repo but isn't activated by default. Users can discover it via `drewgent skills browse` (labeled "official") and install it with `drewgent skills install` (no third-party warning, builtin trust).
 
-If your skill is specialized, community-contributed, or niche, it's better suited for a **Skills Hub** — upload it to a skills registry and share it in the [YOUR_PROJECT_NAME Discord](https://YOUR_DISCORD_INVITE). Users can install it with `drewgent skills install`.
+If your skill is specialized, community-contributed, or niche, it's better suited for a **Skills Hub** — upload it to a skills registry and share it in the [HUMANERD Discord](https://discord.gg/NousResearch). Users can install it with `drewgent skills install`.
 
 ---
 
@@ -77,7 +77,7 @@ If your skill is specialized, community-contributed, or niche, it's better suite
 ### Clone and install
 
 ```bash
-git clone --recurse-submodules https://github.com/humanerd-drew/opencode-drewgent.git
+git clone --recurse-submodules https://github.com/NousResearch/drewgent-agent.git
 cd drewgent-agent
 
 # Create venv with Python 3.11
@@ -99,10 +99,10 @@ npm install
 ```bash
 mkdir -p ~/.drewgent/{cron,sessions,logs,memories,skills}
 cp cli-config.yaml.example ~/.drewgent/config.yaml
-touch ~/.YOURAGENT/.env
+touch ~/.drewgent/.env
 
 # Add at minimum an LLM provider key:
-echo 'OPENROUTER_API_KEY=sk-or-v1-your-key' >> ~/.YOURAGENT/.env
+echo 'OPENROUTER_API_KEY=sk-or-v1-your-key' >> ~/.drewgent/.env
 ```
 
 ### Run
@@ -189,7 +189,7 @@ drewgent-agent/
 ├── optional-skills/          # Official optional skills (discoverable via hub, not activated by default)
 ├── environments/             # RL training environments (Atropos integration)
 ├── tests/                    # Test suite
-├── website/                  # Documentation site (drewgent-agent.your-domain.example)
+├── website/                  # Documentation site (drewgent-agent.humanerd.ai)
 │
 ├── cli-config.yaml.example   # Example configuration (copied to ~/.drewgent/config.yaml)
 └── AGENTS.md                 # Development guide for AI coding assistants
@@ -200,7 +200,7 @@ drewgent-agent/
 | Path | Purpose |
 |------|---------|
 | `~/.drewgent/config.yaml` | Settings (model, terminal, toolsets, compression, etc.) |
-| `~/.YOURAGENT/.env` | API keys and secrets |
+| `~/.drewgent/.env` | API keys and secrets |
 | `~/.drewgent/auth.json` | OAuth credentials (Nous Portal) |
 | `~/.drewgent/skills/` | All active skills (bundled + hub-installed + agent-created) |
 | `~/.drewgent/memories/` | Persistent memory (MEMORY.md, USER.md) |
@@ -637,7 +637,7 @@ prerequisites:
   commands: [curl, jq]            # Advisory CLI checks
 ```
 
-Gateway and messaging sessions never collect secrets in-band; they instruct the user to run `drewgent setup` or update `~/.YOURAGENT/.env` locally.
+Gateway and messaging sessions never collect secrets in-band; they instruct the user to run `drewgent setup` or update `~/.drewgent/.env` locally.
 
 **When to declare required environment variables:**
 - The skill uses an API key or token that should be collected securely at load time
@@ -834,7 +834,7 @@ test(tools): add unit tests for file_operations
 
 ## Reporting Issues
 
-- Use [GitHub Issues](https://github.com/humanerd-drew/opencode-drewgent/issues)
+- Use [GitHub Issues](https://github.com/NousResearch/drewgent-agent/issues)
 - Include: OS, Python version, Drewgent version (`drewgent` version`), full error traceback
 - Include steps to reproduce
 - Check existing issues before creating duplicates
@@ -844,7 +844,7 @@ test(tools): add unit tests for file_operations
 
 ## Community
 
-- **Discord**: [YOUR_DISCORD_INVITE](https://YOUR_DISCORD_INVITE) — for questions, showcasing projects, and sharing skills
+- **Discord**: [discord.gg/NousResearch](https://discord.gg/NousResearch) — for questions, showcasing projects, and sharing skills
 - **GitHub Discussions**: For design proposals and architecture discussions
 - **Skills Hub**: Upload specialized skills to a registry and share them with the community
 

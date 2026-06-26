@@ -8,14 +8,14 @@ tags: [skill, audit, skills, hygiene, diagnostics, dead-code]
 created: 2026-06-03
 updated: 2026-06-03
 links:
-  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁no_linear_workflow]]"
-  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]]"
+  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁no_linear_workflow]]"
+  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]]"
   - "[[skills/filesystem-truth-audit]]"
   - "[[skills/cron-jobs-stalled]]"
   - "[[skills/kanban-dispatcher-stalled]]"
-  - "[[P5-ego/SELF_MODEL]]"
-  - "[[P1-limbic/persona/SOUL]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@identity/SELF_MODEL]]"
+  - "[[@identity/persona/SOUL]]"
+  - "[[@identity/brain/rules]]"---
 
 # Skill Usage Audit — 3-Criteria Hard Evidence 분류
 
@@ -36,7 +36,7 @@ filesystem_truth + active workflow 매핑으로 판정. P0-brainstem 강제.
 Drewgent는 hugh-kim 박스에서 ~100개 skill을 가져왔는데, 그 중 60%는 한 번도 안 쓰는 dead 코드.
 단일 기준 (mtime 또는 위키 wikilink만) 으로는 오판 위험:
 - mtime만 → "최근에 수정 안 했어도 active일 수 있음" (예: kanban-worker는 5/20 이후 mtime 그대로지만 cron에서 매일 호출)
-- wikilink만 → "위키에 언급 안 됐어도 active일 수 있음" (예: humanerd-content-status-enforcement는 6/1에 만들어졌고 6/1부터 매번 yourdomain.com 빌드 시 사용)
+- wikilink만 → "위키에 언급 안 됐어도 active일 수 있음" (예: humanerd-content-status-enforcement는 6/1에 만들어졌고 6/1부터 매번 YOUR_DOMAIN 빌드 시 사용)
 - cron 등록만 → "cron에 안 올라가도 active일 수 있음" (예: filesystem-truth-audit은 skill_view로 수동 호출)
 
 → **3가지 hard evidence 모두 모자라야 dead로 판정**.
@@ -259,10 +259,10 @@ Options:
 
 ## Related
 
-- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁no_linear_workflow]] — 정책 위반 scan
-- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]] — "filesystem = truth" 원칙
+- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁no_linear_workflow]] — 정책 위반 scan
+- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]] — "filesystem = truth" 원칙
 - [[skills/filesystem-truth-audit]] — memory vs reality 검증 (유사 audit 패턴)
 - [[skills/cron-jobs-stalled]] — dead cron 진단 (유사 진단 패턴)
 - [[skills/kanban-dispatcher-stalled]] — dead worker reclaim (유사 진단 패턴)
-- [[P5-ego/SELF_MODEL]] — agent identity anchor
-- [[P1-limbic/persona/SOUL]] — voice anchor
+- [[@identity/SELF_MODEL]] — agent identity anchor
+- [[@identity/persona/SOUL]] — voice anchor

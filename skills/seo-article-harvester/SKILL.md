@@ -8,11 +8,11 @@ tags: [outcome, seo, rss, crawling, pipeline]
 created: 2026-05-20
 updated: 2026-06-14
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[skills/seo-article-harvester/references/crawling-tools]]"
-  - "[[P2-hippocampus/knowledge/seo-articles]]"
-  - "[[P4-cortex/growth/seo/index]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@memory/knowledge/seo-articles]]"
+  - "[[@memory/growth/seo/index]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # SEO Article Harvester — Full Pipeline
@@ -134,7 +134,7 @@ P4-cortex/growth/seo/
 ```
 
 ## Related
-- [[P3-sensors/skills/SKILL-INDEX]]
-- [[P4-cortex/growth/seo/index]]
+- [[@action/skills/SKILL-INDEX]]
+- [[@memory/growth/seo/index]]
 - `references/crawling-tools.md` — 크롤링 도구
 - `references/discord-webhook-limits.md` — Discord embed 제한

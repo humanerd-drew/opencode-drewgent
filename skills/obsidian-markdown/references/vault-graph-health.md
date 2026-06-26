@@ -98,7 +98,7 @@ find ~/.drewgent -name '*.md' -not -path '*/cron/*' -not -path '*/.trash/*' \
 ```
 
 충돌이 발견되면:
-- **P-layer 핵심 파일**은 반드시 full canonical path로 링크 (`[[P1-limbic/persona/SOUL]]` — short name `[[SOUL]]` 금지)
+- **P-layer 핵심 파일**은 반드시 full canonical path로 링크 (`[[@identity/persona/SOUL]]` — short name `[[SOUL]]` 금지)
 - **중복이 불가피한 파일** (SKILL.md, index.md)은 경로를 포함한 wikilink만 사용
 
 ## 8. Graph Health Checklist

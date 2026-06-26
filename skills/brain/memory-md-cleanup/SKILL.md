@@ -6,7 +6,7 @@ created: 2026-05-20
 updated: 2026-06-10
 category: brain
 links:
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 # MEMORY.md Cleanup
 
@@ -122,7 +122,7 @@ When cleanup still leaves memory at 7,000-8,000 chars (cut removes resolved entr
 
 **Pitfall**:
 - **Don't compile so aggressively that operational numbers get lost** — port, plist label, token, version go in *verbatim*. Compile the *narrative*, not the *numbers*.
-- **Don't add wikilinks that don't exist** — `[[P6-prefrontal/incidents/launchd-mass-failure-20260610 § 6.6]]` only works if the target file path is real. Verify with `ls`.
+- **Don't add wikilinks that don't exist** — `[[@action/incidents/launchd-mass-failure-20260610 § 6.6]]` only works if the target file path is real. Verify with `ls`.
 - **Full implementation record (Karpathy + GBrain hybrid, 3-pillar mapping, graph_lookup script usage, tradeoffs vs real GBrain)**: see `references/gbrain-local-implementation.md`.
 
 ## Beyond 8K Cap — Direct Write Bypass (verified 2026-06-10)

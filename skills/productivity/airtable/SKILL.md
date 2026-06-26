@@ -13,8 +13,8 @@ metadata:
     tags: [Airtable, Productivity, Database, API]
     homepage: https://airtable.com/developers/web/api/introduction
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Airtable — Bases, Tables & Records

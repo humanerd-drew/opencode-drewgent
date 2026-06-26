@@ -7,10 +7,10 @@ tags: [productivity, seo, geo, site-management]
 created: 2026-05-22
 updated: 2026-05-22
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P4-cortex/growth/INTEGRATION_PROTOCOL]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@memory/growth/INTEGRATION_PROTOCOL]]"
   - "[[skills/humanerd-site]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@identity/brain/rules]]"---
 
 # SEO + GEO Audit — humanerd.site 감사 및 관리
 
@@ -131,4 +131,4 @@ python3 ~/.drewgent/P4-cortex/scripts/seo_audit.py \
 
 ## Related
 - [[skills/humanerd-site]] — site management
-- [[P4-cortex/growth/INTEGRATION_PROTOCOL]] — integration protocol
+- [[@memory/growth/INTEGRATION_PROTOCOL]] — integration protocol

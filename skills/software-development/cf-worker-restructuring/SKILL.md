@@ -9,8 +9,8 @@ metadata:
     tags: [cloudflare, workers, refactoring, architecture]
     related_skills: [plan, systematic-debugging, simplify-code, python-large-file-patch-drewgent]
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # CF Worker Restructuring

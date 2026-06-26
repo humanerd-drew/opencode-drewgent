@@ -8,13 +8,13 @@ tags: [refactoring, deduplication, structural, architecture]
 created: 2026-06-11
 updated: 2026-06-11
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[software-development/codebase-refactoring]]"
   - "[[software-development/codebase-structure-audit]]"
   - "[[software-development/incremental-refactoring]]"
   - "[[software-development/project-code-audit]]"
   - "[[software-development/simplify-code]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Codebase Consolidation

@@ -8,9 +8,9 @@ tags: [outcome]
 created: 2026-05-20
 updated: 2026-06-15
 links:
-  - "[[P2-hippocampus/kanban/KANBAN_INDEX]]"
+  - "[[@memory/kanban/KANBAN_INDEX]]"
   - "[[skills/automation/DESCRIPTION]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Kanban Dashboard Skill
@@ -45,12 +45,12 @@ Flask server가 kanban board를 렌더링. SSE 실시간 업데이트 + 드래�
 ## LaunchAgent (Self-Healing, Auto-Restart)
 
 ```
-~/Library/LaunchAgents/ai.drewgent.kanban-dashboard.plist
+/Users/drew/Library/LaunchAgents/ai.drewgent.kanban-dashboard.plist
 ```
 
 - `KeepAlive: SuccessfulExit=false` → 프로세스 죽으면 자동 재시작
 - MacMini 재부팅해도 자동 실행
-- 로그: `~/.drewgent/P6-prefrontal/logs/kanban-server.log`
+- 로그: `/Users/drew/.drewgent/P6-prefrontal/logs/kanban-server.log`
 
 ## 관리 명령
 
@@ -63,7 +63,7 @@ launchctl start ai.drewgent.kanban-dashboard
 launchctl stop ai.drewgent.kanban-dashboard
 
 # 로그 확인
-tail -f ~/.drewgent/P6-prefrontal/logs/kanban-server.log
+tail -f /Users/drew/.drewgent/P6-prefrontal/logs/kanban-server.log
 ```
 
 ## 엔드포인트
@@ -115,7 +115,7 @@ tail -f ~/.drewgent/P6-prefrontal/logs/kanban-server.log
 - draft 경로가 없으면 버튼 미표시
 
 ### File path convention
-- 절대경로: `~/.drewgent/P2-hippocampus/memories/insights/YYYY-MM-slug.md`
+- 절대경로: `/Users/drew/.drewgent/P2-hippocampus/memories/insights/YYYY-MM-slug.md`
 - 상대경로 (URL용): `P2-hippocampus/memories/insights/YYYY-MM-slug.md`
 - vault name: `Drewgent` (고정 — `~/.drewgent` 디렉토리명)
 - Obsidian URL 동작 조건: macOS에서 Obsidian이 설치되어 있어야 함. Safari/Chrome/Firefox에서 `obsidian://` scheme 핸들러 등록 필요.
@@ -133,8 +133,8 @@ Kanban 보드 정리 프로토콜 — content pipeline에서 생성된 draft-tre
 
 ## 파일
 
-- Server script: `~/.drewgent/P4-cortex/scripts/kanban_dashboard_server.py`
-- LaunchAgent plist: `~/Library/LaunchAgents/ai.drewgent.kanban-dashboard.plist`
+- Server script: `/Users/drew/.drewgent/P4-cortex/scripts/kanban_dashboard_server.py`
+- LaunchAgent plist: `/Users/drew/Library/LaunchAgents/ai.drewgent.kanban-dashboard.plist`
 
 ## Pitfalls
 
@@ -149,7 +149,7 @@ Kanban 보드 정리 프로토콜 — content pipeline에서 생성된 draft-tre
 - **Edit API idempotency**: `POST /kanban/api/edit` always updates body (even empty string) but only updates title if non-empty. To clear body, send `body=` (empty). The edit event is logged in `task_events` with kind='edited'.
 - **JS modal functions are in f-string**: `openModal()`, `switchTab()`, `editBody()`, `saveBody()`, `cancelEdit()`, `escapeHtml()` are all embedded in the Python f-string HTML template. Any syntax error in these JS functions breaks the entire modal. After editing, verify with `curl -s http://macmini:8765/kanban | grep -c 'function openModal'` (>0 means present).
 - **Card enrichment on page load**: `_extract_summary()` and `_extract_source()` run at page render time — they add server-side compute per card. For boards with 50+ cards, consider caching or moving extraction to JS. Currently fine for <30 cards.
-- **Obsidian URL dependency**: `obsidian://open` requires (1) Obsidian.app installed on macOS, (2) browser-registered URL scheme handler. Links silently fail on non-macOS or without Obsidian. The `_obsidian_url()` function only generates URLs for paths under `~/.drewgent/` — other paths render as plain text.
+- **Obsidian URL dependency**: `obsidian://open` requires (1) Obsidian.app installed on macOS, (2) browser-registered URL scheme handler. Links silently fail on non-macOS or without Obsidian. The `_obsidian_url()` function only generates URLs for paths under `/Users/drew/.drewgent/` — other paths render as plain text.
 - **Draft path format sensitivity**: `_extract_draft_path()` relies on the exact section header `## Draft 파일 위치` in the body. If the content-pipeline changes this header (e.g. to `## Draft Location`), draft links stop rendering silently. The regex also expects the path on the immediately following line.
 - **Modal draft link via JS regex**: The Obsidian button in the modal Description tab is generated client-side by a regex against `task.body`. This means if the body is edited via the dashboard (Edit button), the Obsidian link updates automatically on next modal open — no page reload needed. But if the body is edited externally (DB direct, API), the modal shows stale links until reload.
 

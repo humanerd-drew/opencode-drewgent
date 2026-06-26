@@ -12,8 +12,8 @@ metadata:
     requires_toolsets: [terminal]
     supersedes: [find-nearby]
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Maps Skill

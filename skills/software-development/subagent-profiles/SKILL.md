@@ -1,23 +1,24 @@
 ---
 name: subagent-profiles
-title: Subagent Profiles
+title: Subagent Profiles (Archived)
 description: >-
-  Define and manage role-based agent profiles for delegated tasks. Each profile
-  specifies model, provider, toolsets, and instructions — loaded automatically
-  by task(subagent_type='reviewer').
-trigger: >-
-  Loop engineering (addyo.substack.com/p/loop-engineering) — split maker from
-  checker, assign different models per role. Drewgent config from 2026-06-13
-  added OpenCode Go routing and built the agent profile loader into
-  delegate_tool.py.
+  **2026-06-23: Superseded by GJC Coordinator MCP.** OMO subagent profile system
+  (delegate.ts + agents/*.md) was replaced by Gajae-Code. Use `task()` for simple
+  subagent work (opencode built-in) or `gjc_delegate_*` for isolated/parallel tasks.
 domain: software-development
 space: growth
 type: mechanism
 tags: [subagent, profile, delegation, model-routing, loop-engineering]
-references:
-  - loop-engineering.md
 created: 2026-06-13
-updated: 2026-06-14
+updated: 2026-06-23
 ---
 
-# Subagent Profiles
+# Subagent Profiles (Archived)
+
+This skill is archived. The OMO subagent profile system (`~/.config/opencode/agents/*.md` + `delegate.ts`) has been removed.
+
+## Current replacement
+
+- **`task(subagent_type="<type>")** — opencode built-in. Types: explorer, implementer, tester, reviewer, reviewer-critical, security-reviewer, planner, orchestrator, designer, sre, analyst, content-manager, editor, archiver, seo-engineer.
+- **`gjc_delegate_execute(goal, worktree?, acceptance?)`** — GJC worktree isolation + tmux execution.
+- **`gjc_delegate_team(goals=[...])`** — GJC tmux parallel workers.

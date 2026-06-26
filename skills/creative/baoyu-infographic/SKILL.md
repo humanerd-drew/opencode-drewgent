@@ -13,8 +13,8 @@ metadata:
 links:
   - "[[creative/architecture-diagram]]"
   - "[[creative/design-md]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Infographic Generator

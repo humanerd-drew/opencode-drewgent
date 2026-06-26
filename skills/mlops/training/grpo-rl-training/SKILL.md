@@ -14,8 +14,8 @@ links:
   - "[[mlops/training/peft]]"
   - "[[mlops/training/trl-fine-tuning]]"
   - "[[mlops/training/pytorch-fsdp]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # GRPO/RL Training with TRL

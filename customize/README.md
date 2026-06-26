@@ -20,7 +20,7 @@ right label for *this* environment.
 ## Activation
 
 Two activation paths:
-- **Gateway plist**: `EnvironmentVariables.PYTHONPATH=~/.drewgent/customize`
+- **Gateway plist**: `EnvironmentVariables.PYTHONPATH=/Users/drew/.drewgent/customize`
 - **Shell env** (for `hermes cron list` from terminal):
   `export PYTHONPATH=~/.drewgent/customize:$PYTHONPATH` in `~/.zshrc`
 

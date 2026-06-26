@@ -5,16 +5,14 @@ type: document
 space: concept
 description: "Trend Harvester keep 리스트에서 고품질 툴을 1개 선정하여 심층 분석, taste 결정을 추출, vault에 기록"
 tags: [taste, review, learning, growth]
-trigger: "Taste Exposure Loop — Month 1 of '30x AI Engineer' 90-day plan"
-provenance:
   session: "2026-06-14 taste-discussion"
   decision: "Trend Harvester keep 리스트 활용, 주 2회 심층 분석 루틴 — kanban delegation 패턴으로 cron timeout 회피"
 created: 2026-06-14
 updated: 2026-06-14
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
-  - "[[P3-sensors/skills/trend-harvester]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
+  - "[[@action/skills/trend-harvester]]"
 ---
 
 # Taste Review Skill
@@ -77,9 +75,8 @@ tags: [taste-review, YYYY-MM]
 created: YYYY-MM-DD
 links:
   - "[[trend-harvester]]"
-  - "[[P4-cortex/growth/trend-harvester/analyzed/keep/xxxx.json]]"
-  - "[[P0-brainstem/brain/rules]]"
-provenance:
+  - "[[@memory/growth/trend-harvester/analyzed/keep/xxxx.json]]"
+  - "[[@identity/brain/rules]]"
   session: "YYYY-MM-DD taste-review"
   trigger: "scheduled taste review"
 ---

@@ -16,8 +16,8 @@ metadata:
 links:
   - "[[creative/sketch]]"
   - "[[creative/architecture-diagram]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # macOS Computer Use (universal, any-model)

@@ -15,8 +15,8 @@ metadata:
 
 links:
   - "[[social-media/xurl]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Xitter — X/Twitter via x-cli
@@ -122,7 +122,7 @@ chmod 600 ~/.config/x-cli/.env
 
 ```bash
 x-cli user get openai
-x-cli tweet search "from:YOUR_ORG" --max 3
+x-cli tweet search "from:NousResearch" --max 3
 x-cli me mentions --max 5
 ```
 

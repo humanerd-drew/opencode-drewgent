@@ -14,8 +14,8 @@ links:
   - "[[creative/sketch]]"
   - "[[creative/claude-design]]"
   - "[[creative/design-md]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 ## Related Skills
@@ -23,8 +23,8 @@ links:
 - [[creative/sketch]]
 - [[creative/claude-design]]
 - [[creative/design-md]]
-- [[P3-sensors/skills/SKILL-INDEX]]
-- [[P0-brainstem/brain/rules]]
+- [[@action/skills/SKILL-INDEX]]
+- [[@identity/brain/rules]]
 
 ## Support Files
 

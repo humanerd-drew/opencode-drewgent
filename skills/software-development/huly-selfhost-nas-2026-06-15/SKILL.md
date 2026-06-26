@@ -3,7 +3,6 @@ title: Huly Self-Host on Synology NAS — Session Reference (2026-06-15)
 name: huly-selfhost-nas-2026-06-15
 description: "Session-specific details from the 2026-06-15 NAS Huly self-host session — the bugs that weren't bugs, the credential masking traps, and the actual working path."
 type: reference
-provenance:
   session: "2026-06-15 huly-selfhost-reset"
   decision: "Captured because the parent huly-integration skill already covered the high-level lessons but missed the specific gotchas that wasted hours: credential masking in expect, the chrooted hang symptom, the two-step setup.sh invocation, and the user-stated 'agent should execute, not instruct' preference."
 created: 2026-06-15

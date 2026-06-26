@@ -9,11 +9,11 @@ metadata:
     tags: [governance, neuronfs, vorq, constraints, defaults, security]
     category: brain
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
+  - "[[@action/skills/SKILL-INDEX]]"
   - "[[neuron-fs-brain]]"
   - "[[neuronfs-subsumption-ordering]]"
-  - "[[P4-cortex/knowledge/NEURONFS_RULES]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@memory/knowledge/NEURONFS_RULES]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # NeuronFS Governance Defaults

@@ -15,8 +15,8 @@ links:
   - "[[mlops/inference/gguf]]"
   - "[[mlops/inference/outlines]]"
   - "[[mlops/inference/guidance]]"
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # vLLM - High-Performance LLM Serving

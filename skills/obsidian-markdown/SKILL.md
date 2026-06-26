@@ -8,11 +8,11 @@ tags: [concept, obsidian, vault, graph]
 created: 2026-05-24
 updated: 2026-06-11
 links:
-  - "[[P1-limbic/persona/SOUL]]"
-  - "[[P2-hippocampus/memories/SCHEMA]]"
-  - "[[P5-ego/SELF_MODEL]]"
+  - "[[@identity/persona/SOUL]]"
+  - "[[@memory/memories/SCHEMA]]"
+  - "[[@identity/SELF_MODEL]]"
   - "[[wikilinks]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@identity/brain/rules]]"---
 
 # Obsidian Flavored Markdown Skill
 

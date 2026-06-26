@@ -19,18 +19,23 @@
       "schedule_display": "0 */6 * * *",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 57
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
-      "deliver": "discord:YOUR_SEO_CHANNEL_ID",
+      "created_at": "2026-05-14T12:59:08.850448+09:00",
+      "next_run_at": "2026-06-16T18:00:00+09:00",
+      "last_run_at": "2026-06-16T12:01:21.322552+09:00",
+      "last_status": "ok",
+      "last_error": null,
+      "deliver": "discord:1504328297419640872",
       "origin": null
     },
     {
       "id": "6596a0876cb9",
-      "name": "YourAgent log rotation",
+      "name": "Drewgent log rotation",
       "prompt": "",
       "skills": [],
       "skill": null,
@@ -48,12 +53,18 @@
       "schedule_display": "0 4 * * *",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 7
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
+      "created_at": "2026-06-10T16:47:58.448427+09:00",
+      "next_run_at": "2026-06-17T04:00:00+09:00",
+      "last_run_at": "2026-06-16T04:00:43.004920+09:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
       "deliver": "local",
       "origin": null,
       "enabled_toolsets": null,
@@ -62,7 +73,7 @@
     },
     {
       "id": "80bda2815f40",
-      "name": "YourAgent harmony check (cross-layer diff)",
+      "name": "Drewgent harmony check (cross-layer diff)",
       "prompt": "",
       "skills": [],
       "skill": null,
@@ -80,12 +91,18 @@
       "schedule_display": "0 9 * * *",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 8
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
+      "created_at": "2026-06-10T17:15:15.684430+09:00",
+      "next_run_at": "2026-06-17T09:00:00+09:00",
+      "last_run_at": "2026-06-16T09:00:24.877970+09:00",
+      "last_status": "error",
+      "last_error": "Script exit 1: ",
+      "last_delivery_error": null,
       "deliver": "local",
       "origin": null,
       "enabled_toolsets": null,
@@ -94,16 +111,20 @@
     },
     {
       "id": "drewgent-cron-runner-001",
-      "name": "kanban-dispatcher (all boards, consolidated)",
-      "script": "AGENT_HOME/scripts/cron_runner.py",
+      "name": "kanban-dispatcher (disabled — Hermes removed)",
+      "script": "/Users/drew/.drewgent/scripts/cron_runner.py",
       "schedule": {
         "kind": "cron",
         "expr": "* * * * *",
         "display": "* * * * *"
       },
-      "enabled": true,
-      "state": "scheduled",
-      "deliver": "local"
+      "enabled": false,
+      "state": "paused",
+      "next_run_at": null,
+      "deliver": "local",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null
     },
     {
       "id": "4f9e0a862d83",
@@ -127,13 +148,19 @@
       "schedule_display": "0 20 * * *",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 5
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
-      "deliver": "discord:YOUR_RETRO_CHANNEL_ID",
+      "created_at": "2026-06-11T12:59:39.071370+09:00",
+      "next_run_at": "2026-06-16T20:00:00+09:00",
+      "last_run_at": "2026-06-15T20:22:06.451169+09:00",
+      "last_status": "error",
+      "last_error": "TimeoutError: Cron job 'Daily Retro' idle for 604s (limit 600s) — last activity: waiting for provider response (streaming)",
+      "last_delivery_error": null,
+      "deliver": "discord:1492431680269713558",
       "origin": null,
       "enabled_toolsets": null,
       "workdir": null,
@@ -159,13 +186,57 @@
       "schedule_display": "0 */6 * * *",
       "repeat": {
         "times": null,
+        "completed": 11
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-13T19:33:08.958796+09:00",
+      "next_run_at": "2026-06-16T18:00:00+09:00",
+      "last_run_at": "2026-06-16T12:07:18.970017+09:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1491953631119937728",
+      "origin": null,
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    },
+    {
+      "id": "f7c9a2b14e03",
+      "name": "trend-scorer",
+      "prompt": "",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "trend_scorer.py",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 */6 * * *",
+        "display": "30 */6 * * *"
+      },
+      "schedule_display": "30 */6 * * *",
+      "repeat": {
+        "times": null,
         "completed": 0
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
-      "deliver": "discord:YOUR_TREND_CHANNEL_ID",
+      "created_at": "2026-06-26T18:00:00+09:00",
+      "next_run_at": "2026-06-27T01:00:00+09:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1491953631119937728",
       "origin": null,
       "enabled_toolsets": null,
       "workdir": null,
@@ -174,7 +245,7 @@
     {
       "id": "4093dbee0282",
       "name": "trend-evaluate-trigger",
-      "prompt": "Trend Harvester 평가 트리거.\n\n목표: analyzed/keep에 새 항목이 있는지 확인하고, 있으면 kanban evaluation task를 생성하라.\n\nSteps:\n1. AGENT_HOME/@action/growth/trend-harvester/analyzed/keep/ 에 JSON 파일 리스트 확인\n2. AGENT_HOME/@memory/growth/trend-harvester/evaluated/ 에 평가 완료된 파일 리스트 확인\n3. evaluated/에 없는 keep 파일이 새 항목 (evaluation 대상)\n4. 새 항목이 있으면:\n   - kanban_create로 evaluation task 생성 (title: \"trend-evaluate: YYYY-MM-DD\", assignee: \"default\")\n   - task body에 새 항목 수와 첫 3개 항목 preview 포함\n   - Reply: \"Created trend evaluation task for N new items\"\n5. 새 항목이 없으면: \"[SILENT]\"\n\nImportant: 빠르게 완료할 것. kanban_create 한 번 호출하고 끝내면 된다.",
+      "prompt": "Trend Harvester 평가 트리거.\n\n목표: analyzed/keep에 새 항목이 있는지 확인하고, 있으면 kanban evaluation task를 생성하라.\n\nSteps:\n1. ~/.drewgent/@memory/growth/trend-harvester/analyzed/keep/ 에 JSON 파일 리스트 확인\n2. ~/.drewgent/@memory/growth/trend-harvester/evaluated/ 에 평가 완료된 파일 리스트 확인\n3. evaluated/에 없는 keep 파일이 새 항목 (evaluation 대상)\n4. 새 항목이 있으면:\n   - kanban_create로 evaluation task 생성 (title: \"trend-evaluate: YYYY-MM-DD\", assignee: \"default\")\n   - task body에 새 항목 수와 첫 3개 항목 preview 포함\n   - Reply: \"Created trend evaluation task for N new items\"\n5. 새 항목이 없으면: \"[SILENT]\"\n\nImportant: 빠르게 완료할 것. kanban_create 한 번 호출하고 끝내면 된다.",
       "skills": [
         "trend-harvester"
       ],
@@ -193,13 +264,19 @@
       "schedule_display": "0 10 * * *",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 3
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
-      "deliver": "discord:YOUR_TREND_CHANNEL_ID",
+      "created_at": "2026-06-13T19:33:21.596401+09:00",
+      "next_run_at": "2026-06-17T10:00:00+09:00",
+      "last_run_at": "2026-06-16T10:00:51.246063+09:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1491953631119937728",
       "origin": null,
       "enabled_toolsets": null,
       "workdir": null,
@@ -225,13 +302,19 @@
       "schedule_display": "0 6 * * *",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 3
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
-      "deliver": "discord:YOUR_TREND_CHANNEL_ID",
+      "created_at": "2026-06-13T19:33:25.369068+09:00",
+      "next_run_at": "2026-06-17T06:00:00+09:00",
+      "last_run_at": "2026-06-16T06:07:09.133979+09:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1491953631119937728",
       "origin": null,
       "enabled_toolsets": null,
       "workdir": null,
@@ -240,7 +323,7 @@
     {
       "id": "97890eb305a2",
       "name": "trend-retire-trigger",
-      "prompt": "Trend Harvester 폐기 트리거.\n\n목표: usage report에서 stale 항목을 확인하고, 있으면 kanban retire task를 생성하라.\n\nSteps:\n1. AGENT_HOME/@memory/growth/trend-harvester/.usage_report.json 읽기\n2. stale_count > 0 이면:\n   - kanban_create로 retire task 생성 (title: \"trend-retire: YYYY-MM-DD\", assignee: \"default\")\n   - task body에 stale 항목 수와 목록 포함\n   - Reply: \"Created trend retire task for N stale items\"\n3. stale_count == 0 이면: \"[SILENT]\"\n\nImportant: 빠르게 완료할 것.",
+      "prompt": "Trend Harvester 폐기 트리거.\n\n목표: usage report에서 stale 항목을 확인하고, 있으면 kanban retire task를 생성하라.\n\nSteps:\n1. ~/.drewgent/@memory/growth/trend-harvester/.usage_report.json 읽기\n2. stale_count > 0 이면:\n   - kanban_create로 retire task 생성 (title: \"trend-retire: YYYY-MM-DD\", assignee: \"default\")\n   - task body에 stale 항목 수와 목록 포함\n   - Reply: \"Created trend retire task for N stale items\"\n3. stale_count == 0 이면: \"[SILENT]\"\n\nImportant: 빠르게 완료할 것.",
       "skills": [
         "trend-harvester"
       ],
@@ -259,13 +342,19 @@
       "schedule_display": "0 10 * * 1",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 1
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
-      "deliver": "discord:YOUR_TREND_CHANNEL_ID",
+      "created_at": "2026-06-13T19:33:30.705429+09:00",
+      "next_run_at": "2026-06-22T10:00:00+09:00",
+      "last_run_at": "2026-06-15T10:00:52.849248+09:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1491953631119937728",
       "origin": null,
       "enabled_toolsets": null,
       "workdir": null,
@@ -274,7 +363,7 @@
     {
       "id": "66d907f7bce4",
       "name": "taste-review-trigger",
-      "prompt": "Taste Review 트리거.\n\n목표: Trend Harvester keep 리스트에서 아직 taste review 안 된 항목이 있는지 확인하고, 있으면 kanban taste-review task를 생성하라.\n\nSteps:\n1. AGENT_HOME/@action/growth/trend-harvester/analyzed/keep/ 에 JSON 파일 리스트 확인\n2. AGENT_HOME/@memory/growth/trend-harvester/applied/ 에 이미 처리된 파일 확인\n3. keep에 있고 applied에 없는 항목이 review 대상\n4. 대상이 있으면:\n   - kanban_create로 task 생성 (title: \"taste-review: YYYY-MM-DD\", assignee: \"default\")\n   - body에 첫 1개 항목의 name, description, url 포함 (한 번에 1개만 리뷰)\n   - task body에 taste-review skill을 따르라고 명시 (5-질문 분석 프레임워크 포함)\n   - Reply: \"Created taste review task for [tool-name]\"\n5. 대상이 없으면: \"[SILENT]\"\n\nImportant: 빠르게 완료할 것. kanban_create 한 번 호출하고 끝.",
+      "prompt": "Taste Review 트리거.\n\n목표: Trend Harvester keep 리스트에서 아직 taste review 안 된 항목이 있는지 확인하고, 있으면 kanban taste-review task를 생성하라.\n\nSteps:\n1. ~/.drewgent/@memory/growth/trend-harvester/analyzed/keep/ 에 JSON 파일 리스트 확인\n2. ~/.drewgent/@memory/growth/trend-harvester/applied/ 에 이미 처리된 파일 확인\n3. keep에 있고 applied에 없는 항목이 review 대상\n4. 대상이 있으면:\n   - kanban_create로 task 생성 (title: \"taste-review: YYYY-MM-DD\", assignee: \"default\")\n   - body에 첫 1개 항목의 name, description, url 포함 (한 번에 1개만 리뷰)\n   - task body에 taste-review skill을 따르라고 명시 (5-질문 분석 프레임워크 포함)\n   - Reply: \"Created taste review task for [tool-name]\"\n5. 대상이 없으면: \"[SILENT]\"\n\nImportant: 빠르게 완료할 것. kanban_create 한 번 호출하고 끝.",
       "skills": [
         "taste-review"
       ],
@@ -293,13 +382,19 @@
       "schedule_display": "0 10 * * 2,5",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 1
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
-      "deliver": "discord:YOUR_RETRO_CHANNEL_ID",
+      "created_at": "2026-06-13T19:41:26.700840+09:00",
+      "next_run_at": "2026-06-19T10:00:00+09:00",
+      "last_run_at": "2026-06-16T10:01:11.850712+09:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1492431680269713558",
       "origin": null,
       "enabled_toolsets": null,
       "workdir": null,
@@ -325,13 +420,19 @@
       "schedule_display": "0 3 * * * (daily 03:00)",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 3
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
-      "deliver": "discord:YOUR_SEO_CHANNEL_ID",
+      "created_at": "2026-06-13T20:20:53.827665+09:00",
+      "next_run_at": "2026-06-17T12:00:00+09:00",
+      "last_run_at": "2026-06-16T12:07:31.585257+09:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1504328297419640872",
       "origin": null,
       "enabled_toolsets": null,
       "workdir": null,
@@ -340,7 +441,7 @@
     {
       "id": "064e11fcb2e8",
       "name": "seo-trend-trigger",
-      "prompt": "SEO 주간 트렌드 리포트 트리거.\n\n목표: 최근 분석된 SEO 기사가 있는지 확인하고, 있으면 kanban trend-report task를 생성하라.\n\nSteps:\n1. AGENT_HOME/@action/growth/seo/analyzed/ 디렉토리에서 최근 7일 내 분석 결과 확인\n2. 분석 결과가 있으면:\n   - kanban_create로 trend report task 생성 (title: \"seo-trend-report: YYYY-MM-DD\", assignee: \"default\")\n   - body에 최근 분석된 기사 수 포함\n   - Reply: \"Created seo trend report task for N analyzed articles\"\n3. 분석 결과가 없으면: \"[SILENT]\"\n\nImportant: 빠르게 완료할 것.",
+      "prompt": "SEO 주간 트렌드 리포트 트리거.\n\n목표: 최근 분석된 SEO 기사가 있는지 확인하고, 있으면 kanban trend-report task를 생성하라.\n\nSteps:\n1. ~/.drewgent/P4-cortex/growth/seo/analyzed/ 디렉토리에서 최근 7일 내 분석 결과 확인\n2. 분석 결과가 있으면:\n   - kanban_create로 trend report task 생성 (title: \"seo-trend-report: YYYY-MM-DD\", assignee: \"default\")\n   - body에 최근 분석된 기사 수 포함\n   - Reply: \"Created seo trend report task for N analyzed articles\"\n3. 분석 결과가 없으면: \"[SILENT]\"\n\nImportant: 빠르게 완료할 것.",
       "skills": [
         "seo-article-harvester"
       ],
@@ -359,13 +460,19 @@
       "schedule_display": "0 14 * * 1",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 1
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
-      "deliver": "discord:YOUR_SEO_CHANNEL_ID",
+      "created_at": "2026-06-13T20:21:34.060883+09:00",
+      "next_run_at": "2026-06-22T14:00:00+09:00",
+      "last_run_at": "2026-06-15T14:00:43.500509+09:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1504328297419640872",
       "origin": null,
       "enabled_toolsets": null,
       "workdir": null,
@@ -374,7 +481,7 @@
     {
       "id": "d0d0b98c845b",
       "name": "content-manager-periodic",
-      "prompt": "You are the autonomous content manager / CMO. Proceed SILENTLY — no greetings.\n\n## Workflow\n\n### 1. Load Knowledge Base + Web Research\nRead all 4 files in AGENT_HOME/@action/content/\nOptionally web search for: related projects, technical context, memes/cultural references\n\n### 2. Gather Activity\nsession_search() + git log (7 days) in AGENT_HOME and AGENT_HOME/projects/your-project\n\n### 3. Check Material\nAt most ONE story. SILENT if nothing new.\n\n### 4. Produce Content + Rich Visuals\n\n**Blog post** → `@memory/insights/YYYY-MM-DD-slug.md`\n\n**SVG cover** → `@memory/insights/YYYY-MM-DD-slug-cover.svg` (1200x630, rich illustration)\n\n**SVG meme** (optional) → `@memory/insights/YYYY-MM-DD-slug-meme.svg` — if the story has a natural meme angle. Templates: Drake reject/approve, \"this is fine\", galaxy brain, distracted boyfriend.\n\n**Mermaid diagrams** inline for architecture flows\n\n**Excalidraw + PNG** if there's an architecture angle\n\n**X thread** → `@memory/insights/YYYY-MM-DD-slug-thread.txt`\n\n**Update** narrative_arc.md + content-inventory.md\n\n### 5. Report\nkanban_complete with summary + metadata + artifacts (absolute paths to ALL created files)\n\nUse kanban_heartbeat() for long ops.",
+      "prompt": "1. Check kanban for pending tasks where created_by='content-planner' — prioritize those over self-initiated ideas\n2. If content-planner task exists, use its body as the brief and follow it, then mark it done via kanban_complete\n3. If no planner task: check recent work activity (kanban DB + git log), harvester data (trend keep, SEO analyzed articles) for narrative-worthy material\n4. Score 1-10. Gutenberg HTML 형식으로 blog 작성. WordPress MCP로 create_post(status=publish). ReefWatch form template. writing-style-guide 준수.\n5. SILENT if nothing new — but don't skip just because there's no planner task.",
       "skills": [],
       "skill": null,
       "model": "deepseek-v4-pro",
@@ -385,19 +492,25 @@
       "context_from": null,
       "schedule": {
         "kind": "cron",
-        "expr": "0 12 * * *",
-        "display": "0 12 * * *"
+        "expr": "0 */1 * * *",
+        "display": "0 */1 * * * (hourly)"
       },
-      "schedule_display": "0 12 * * *",
+      "schedule_display": "0 */1 * * * (hourly)",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 3
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
-      "deliver": "discord:YOUR_CONTENT_CHANNEL_ID",
+      "created_at": "2026-06-14T03:20:37.704225+09:00",
+      "next_run_at": "2026-06-27T00:07:43.880106+09:00",
+      "last_run_at": "2026-06-15T12:11:32.243414+09:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1492883985473208522",
       "origin": null,
       "enabled_toolsets": [
         "terminal",
@@ -407,7 +520,7 @@
         "kanban",
         "web"
       ],
-      "workdir": "~/AGENT_HOME",
+      "workdir": "/Users/drew/.drewgent",
       "profile": null
     },
     {
@@ -430,12 +543,18 @@
       "schedule_display": "every 5m",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 209
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
+      "created_at": "2026-06-15T15:48:12.118213+09:00",
+      "next_run_at": "2026-06-16T12:04:47.734507+09:00",
+      "last_run_at": "2026-06-16T11:59:47.734507+09:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
       "deliver": "local",
       "origin": null,
       "enabled_toolsets": null,
@@ -468,6 +587,12 @@
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
+      "created_at": "2026-06-21T02:52:36.802709+00:00",
+      "next_run_at": "2026-06-27T00:16:27.376912+09:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
       "deliver": "local",
       "origin": null,
       "enabled_toolsets": null,
@@ -476,7 +601,7 @@
     },
     {
       "id": "trend-evaluate-legacy",
-      "name": "Trend Evaluate (n8n trigger)",
+      "name": "Trend Evaluate (n8n trigger — DISABLED, duplicate)",
       "prompt": "",
       "skills": [],
       "skill": null,
@@ -485,26 +610,15 @@
       "base_url": null,
       "script": "n8n_trigger_runner.py",
       "no_agent": true,
-      "context_from": null,
       "schedule": {
         "kind": "interval",
         "minutes": 2,
         "display": "every 2m"
       },
-      "schedule_display": "every 2m",
-      "repeat": {
-        "times": null,
-        "completed": 0
-      },
-      "enabled": true,
-      "state": "scheduled",
-      "paused_at": null,
-      "paused_reason": null,
+      "enabled": false,
+      "state": "paused",
       "deliver": "local",
-      "origin": null,
-      "enabled_toolsets": null,
-      "workdir": null,
-      "profile": null
+      "next_run_at": "2026-06-27T00:11:20.483978+09:00"
     },
     {
       "id": "a7f3c92eb150",
@@ -532,7 +646,13 @@
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
-      "deliver": "discord:YOUR_SEO_CHANNEL_ID",
+      "created_at": "2026-06-21T13:41:29.889891+09:00",
+      "next_run_at": "2026-06-27T05:00:00+09:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1504328297419640872",
       "origin": null,
       "enabled_toolsets": null,
       "workdir": null,
@@ -541,7 +661,7 @@
     {
       "id": "d4e5f6012a93",
       "name": "Orphan Audit (monthly)",
-      "prompt": "Audit the agent system for orphan artifacts — cron output directories with no matching job, stale lock files, dead symlinks, and unused script references. Check these locations:\n\n1. AGENT_HOME/cron/output/ — list subdirectories, cross-ref with job IDs in jobs.json\n2. AGENT_HOME/cron/.tick.lock — age check\n3. AGENT_HOME/scripts/ — find .sh and .py files referenced in no jobs (only report, don't delete)\n4. AGENT_HOME/cron/jobs.json — find jobs whose referenced script file no longer exists\n\nReport:\n- Total orphans found\n- List each with path and age\n- Do NOT modify anything — audit only\n\nIf zero orphans: respond with [SILENT]",
+      "prompt": "Audit the Drewgent system for orphan artifacts — cron output directories with no matching job, stale lock files, dead symlinks, and unused script references. Check these locations:\n\n1. ~/.drewgent/cron/output/ — list subdirectories, cross-ref with job IDs in jobs.json\n2. ~/.drewgent/cron/.tick.lock — age check\n3. ~/.drewgent/scripts/ — find .sh and .py files referenced in no jobs (only report, don't delete)\n4. ~/.drewgent/cron/jobs.json — find jobs with last_error containing 'Script not found'\n\nReport:\n- Total orphans found\n- List each with path and age\n- Do NOT modify anything — audit only\n\nIf zero orphans: respond with [SILENT]",
       "skills": [],
       "skill": null,
       "model": null,
@@ -564,7 +684,13 @@
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
-      "deliver": "discord:YOUR_SEO_CHANNEL_ID",
+      "created_at": "2026-06-21T13:41:29.889891+09:00",
+      "next_run_at": "2026-06-27T10:00:00+09:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1504328297419640872",
       "origin": null,
       "enabled_toolsets": null,
       "workdir": null,
@@ -573,7 +699,7 @@
     {
       "id": "c7d8e9f0a1b2",
       "name": "wiki-compile",
-      "prompt": "Compile raw @memory data into structured wiki pages under @identity/wiki/compiled/.\n\nSteps:\n1. Scan @memory/memories/ for new/changed raw data since last compile\n2. Scan @memory/knowledge/ for new raw knowledge\n3. For each new topic cluster:\n   - Create a compiled page at @identity/wiki/compiled/<topic>.md\n   - Structure: frontmatter (title, type: wiki-page, source, last_compiled) + summary + key facts + links back to @memory sources\n4. Update @identity/wiki/index.md with new page entries under 'Compiled Pages'\n5. Report: number of pages created/updated\n\nCompile only what has changed. Do not regenerate existing pages.",
+      "prompt": "Wiki Compile — compile knowledge from entire .drewgent vault into P5-ego/wiki/compiled/\n\nScan these knowledge sources:\n1. P2-hippocampus/ — memories, knowledge, sessions (raw data)\n2. P3-sensors/ — gateway integration docs, sensor architecture\n3. P4-cortex/ — taste reviews, growth records, skill index\n4. P6-prefrontal/incidents/ — postmortems, outage analysis\n5. skills/*/SKILL.md — design decisions behind each skill\n6. AGENTS.md — system documentation\n\nFor each topic cluster, create/update compiled/<topic>.md with:\n- Core decisions (what)\n- Rationale (why)\n- Alternatives considered\n- Current status as of today\n\nThen update P5-ego/wiki/index.md with links to all compiled pages.\n\nDO NOT scan: scripts/, cron/, logs/, customize/, kanban.db (infrastructure, not knowledge)",
       "skills": [],
       "skill": null,
       "model": null,
@@ -596,6 +722,12 @@
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
+      "created_at": "2026-06-21T13:41:29.889891+09:00",
+      "next_run_at": "2026-06-27T03:00:00+09:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
       "deliver": "local",
       "origin": null,
       "enabled_toolsets": null,
@@ -605,7 +737,7 @@
     {
       "id": "b2a1f0e9d8c7",
       "name": "wiki-lint",
-      "prompt": "Daily wiki health check.\n\nSteps:\n1. Check all compiled pages in @identity/wiki/compiled/ exist and have valid frontmatter\n2. Check @identity/wiki/index.md exists and has frontmatter\n3. Compare compiled pages against raw @memory data sources — flag any pages where source data has changed but compiled page hasn't been updated\n4. Check for compiled pages with no corresponding @memory source data (orphans)\n5. Check for raw @memory data that hasn't been compiled in >7 days (stale)\n6. Update @identity/wiki/lint-report.md with findings\n7. If issues found, report count; otherwise [SILENT]",
+      "prompt": "Daily wiki health check.\n\nSteps:\n1. Check all compiled pages in P5-ego/wiki/compiled/ exist and have valid frontmatter\n2. Check P5-ego/wiki/index.md exists and has frontmatter\n3. Compare compiled pages against raw P2 data sources — flag any pages where source data has changed but compiled page hasn't been updated\n4. Check for compiled pages with no corresponding P2 source data (orphans)\n5. Check for raw P2 data that hasn't been compiled in >7 days (stale)\n6. Update P5-ego/wiki/lint-report.md with findings\n7. If issues found, report count; otherwise [SILENT]",
       "skills": [],
       "skill": null,
       "model": null,
@@ -628,11 +760,127 @@
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
+      "created_at": "2026-06-21T13:41:29.889891+09:00",
+      "next_run_at": "2026-06-27T04:00:00+09:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
       "deliver": "local",
       "origin": null,
       "enabled_toolsets": null,
       "workdir": null,
       "profile": "explorer"
+    },
+    {
+      "id": "content-taste-diff",
+      "name": "Content taste diff analyzer",
+      "script": "content_diff_analyzer.py",
+      "no_agent": true,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 5 * * *",
+        "display": "0 5 * * * (daily 05:00)"
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "deliver": "discord:1492883985473208522",
+      "next_run_at": "2026-06-27T05:00:00+09:00"
+    },
+    {
+      "id": "9f593df2d72a",
+      "name": "Housekeeper",
+      "prompt": "",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "drewgent_housekeeper.py",
+      "no_agent": true,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 * * * *",
+        "display": "0 * * * *"
+      },
+      "schedule_display": "0 * * * *",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-26T13:00:00+09:00",
+      "next_run_at": "2026-06-27T01:00:00+09:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "deliver": null,
+      "origin": "discussion 2026-06-26 groq-housekeeper"
+    },
+    {
+      "id": "a1b2c3d4",
+      "name": "content-graph-engine",
+      "description": "Build content graph (TF-IDF + taxonomy), suggest internal links, verify, apply",
+      "script": "content_graph_builder.py",
+      "no_agent": true,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 6 * * *",
+        "display": "0 6 * * * (daily 06:00)"
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "deliver": "discord:1492883985473208522",
+      "next_run_at": "2026-06-27T06:00:00+09:00"
+    },
+    {
+      "id": "c4e5f6a7b8d9",
+      "name": "content-planner",
+      "prompt": "Content Strategy Planner — decide WHAT to write next.\n\nGoal: Read the three input sources, check narrative_arc.md for current series state, and decide if a new content task should be created in kanban. If yes, create it with a detailed brief. If nothing new, respond [SILENT].\n\n## Input Sources\n\n### 1. Narrative Arc Status\nRead ~/.drewgent/P4-cortex/content/narrative_arc.md. Identify:\n- Published episodes (by date)\n- Current active series/season\n- Planned but unwritten episodes\n- Gaps: what topics are covered vs what's missing\n\n### 2. Trend Harvester Keep List\nScan ~/.drewgent/@memory/growth/trend-harvester/analyzed/keep/ for JSON files with scores. Check ~/.drewgent/@memory/growth/trend-harvester/applied/ to see which have been fully processed.\n\nFind items that:\n- novelty >= 0.7 (fresh, unexpected angle)\n- relevance >= 0.8 (directly applicable to Drewgent)\n- NOT yet in applied/ (not fully used)\n\nFor each high-value find, note: name, description, url, which Drewgent system it connects to.\n\n### 3. Recent Work Activity\nCheck:\n- Recent kanban tasks: sqlite3 ~/.drewgent/kanban.db \"SELECT title, status FROM tasks ORDER BY created_at DESC LIMIT 10;\"\n- Recent git log: git -C ~/.drewgent log --oneline -15\n- Check if any kanban tasks with title containing 'content-planner' already exist and are still pending (don't duplicate)\n\n## Decision Logic\n\nScore potential content topics 1-10:\n- 8-10: Strong series fit or major insight. Create kanban task immediately.\n- 5-7: Good standalone piece. Create kanban task with lower priority.\n- 1-4: Not worth writing about now. Skip.\n\nScoring factors:\n- Does it connect to an existing series theme? (+2)\n- Is it a unique insight from the user's actual experience, not summarizing an external article? (+3)\n- Does it reveal taste/decision-making process? (+2)\n- Is it timely (connected to recent work)? (+1)\n- Is the topic already covered by an existing ep? (-2)\n\n## Output\n\nIf content-worthy (score 7+):\n1. kanban_create with title \"content: <topic-slug>\"\n2. Body includes: content type (series-episode | standalone | evolution-log), proposed title, one-liner hook, key insights to cover (3-5 bullets), suggested model (flash/pro), brief description\n3. created_by: \"content-planner\"\n4. Reply with what was created and why\n\nIf nothing worth writing: reply [SILENT]\n\nConstraints:\n- Never duplicate an existing kanban task (check kanban first)\n- Don't force content — if nothing is interesting, say nothing\n- Prioritize depth over frequency: one solid piece > three weak ones\n- Follow writing-style-guide §8 (im-not-ai) in briefs\n- Keep the entire task under 3 LLM turns. Decide fast.",
+      "skills": [],
+      "skill": null,
+      "model": "opencode-go/deepseek-v4-pro",
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 15 * * *",
+        "display": "30 15 * * * (daily 15:30 KST — after content-graph-engine)"
+      },
+      "schedule_display": "30 15 * * * (daily 15:30 KST — after content-graph-engine)",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-26T18:00:00+09:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1492883985473208522",
+      "origin": "discussion 2026-06-26 content-planner-pipeline",
+      "enabled_toolsets": [
+        "terminal",
+        "file",
+        "search",
+        "session_search",
+        "kanban",
+        "web"
+      ],
+      "workdir": "/Users/drew/.drewgent",
+      "profile": null,
+      "next_run_at": "2026-06-27T15:30:00+09:00"
     }
-  ]
+  ],
+  "updated_at": "2026-06-27T00:17:27.376912+09:00"
 }

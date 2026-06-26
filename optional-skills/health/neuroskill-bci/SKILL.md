@@ -7,7 +7,7 @@ description: >
   Requires a BCI wearable (Muse 2/S or OpenBCI) and the NeuroSkill desktop app
   running locally.
 version: 1.0.0
-author: Drewgent Agent + YOUR_PROJECT_NAME
+author: Drewgent Agent + HUMANERD
 license: MIT
 metadata:
   drewgent:

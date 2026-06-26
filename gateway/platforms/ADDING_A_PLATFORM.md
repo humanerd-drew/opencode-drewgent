@@ -8,7 +8,7 @@ created: 2026-05-20
 updated: 2026-05-20
 links: []
 links:
-  - "[[P5-ego/SELF_MODEL]]"
+  - "[[@identity/SELF_MODEL]]"
 ---
 
 

@@ -1,16 +1,16 @@
-# Site Layout Design — yourdomain.com
+# Site Layout Design — YOUR_DOMAIN
 
 WordPress site structure and page layouts.
 
 ## Site Map
 
 ```
-yourdomain.com/
+YOUR_DOMAIN/
 ├── / (Home — static front page)
 │   ├── Hero: "시스템을 구축하며 배운 것들"
 │   ├── Recent posts (card grid, 2 columns)
 │   ├── Category filter tabs: All / Build Log / AI & Tools / Systems / Creative
-│   └── Projects section (3 cards: Drewgent / M-LOG / yourdomain.com)
+│   └── Projects section (3 cards: Drewgent / M-LOG / YOUR_DOMAIN)
 ├── /blog/ (Posts page)
 │   └── Category-filtered post list (same layout)
 └── /about/ (About page)

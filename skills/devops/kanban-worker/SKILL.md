@@ -9,19 +9,21 @@ metadata:
     tags: [kanban, multi-agent, collaboration, workflow, pitfalls]
     related_skills: [kanban-orchestrator]
 links:
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Kanban Worker — Pitfalls and Examples
 
 kanban-worker: this is the detail layer.
 
-## Agent profiles
+## Sub-steps with task()
 
-When your task requires sub-steps (analysis → implementation → testing), use `task(subagent_type="<name>", description="summary", prompt="...")` to spawn pre-configured subagents. The 8 available profiles are documented in the `kanban-orchestrator` skill. Flash profiles cost $0 marginal (OpenCode Go subscription); pro/max profiles use stronger models for quality-critical steps. The `subagent_type` parameter is built into the `task` tool schema — discoverable without loading a skill.
+When your task requires sub-steps (analysis → implementation → testing), use `task(subagent_type="<name>", description="summary", prompt="...")` to spawn subagents. Types: explorer, implementer, tester, reviewer. The `subagent_type` parameter is built into the `task` tool schema — discoverable without loading a skill.
+
+For worktree-isolated or tmux-parallel work, use `gjc_delegate_execute` / `gjc_delegate_team` via GJC Coordinator MCP.
 
 ## Workspace handling
 

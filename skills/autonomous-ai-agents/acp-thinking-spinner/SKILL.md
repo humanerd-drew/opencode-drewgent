@@ -2,8 +2,8 @@
 name: acp-thinking-spinner
 description: Add a "Thinking..." spinner card to an ACP server's tool-call stack so ACP clients (Zed Agent Panel, openCode TUI, JetBrains/VS Code ACP UI) show a working indicator during the LLM API call phase. Triggers when working on an Agent Client Protocol (ACP) server and the user wants LLM-thinking visibility in the client's tool-call stack.
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # ACP Thinking Spinner — Tool-Card Pattern

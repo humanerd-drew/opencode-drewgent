@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _DREW_MODEL_WARNING = (
-    "Your Organization Drewgent 3 & 4 models are NOT agentic and are not designed "
+    "Nous Research Drewgent 3 & 4 models are NOT agentic and are not designed "
     "for use with Drewgent Agent. They lack the tool-calling capabilities "
     "required for agent workflows. Consider using an agentic model instead "
     "(Claude, GPT, Gemini, DeepSeek, etc.)."

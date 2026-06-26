@@ -7,9 +7,9 @@ tags: [skill, kanban, operations]
 created: 2026-05-31
 updated: 2026-05-31
 links:
-  - "[[P2-hippocampus/kanban/KANBAN_INDEX]]"
-  - "[[P4-cortex/growth/kanban-maintenance-guide]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@memory/kanban/KANBAN_INDEX]]"
+  - "[[@memory/growth/kanban-maintenance-guide]]"
+  - "[[@identity/brain/rules]]"---
 
 # Kanban Stuck Task Diagnosis & Recovery
 
@@ -26,7 +26,7 @@ links:
 # 1. Find all in_progress tasks with their worker status
 python3 -c "
 import sqlite3
-db = '~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
+db = '/Users/drew/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
 conn = sqlite3.connect(db)
 cur = conn.cursor()
 for id_, title, board, pid, expires in cur.execute(
@@ -48,7 +48,7 @@ python3 -c "
 import sqlite3
 from datetime import datetime, timezone
 
-db = '~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
+db = '/Users/drew/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
 conn = sqlite3.connect(db)
 cur = conn.cursor()
 
@@ -90,7 +90,7 @@ conn.close()
 # Quick health check
 python3 -c "
 import sqlite3
-db = '~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
+db = '/Users/drew/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
 conn = sqlite3.connect(db)
 cur = conn.cursor()
 
@@ -115,7 +115,7 @@ conn.close()
 ```bash
 python3 -c "
 import json
-with open('~/.drewgent/cron/jobs.json') as f:
+with open('/Users/drew/.drewgent/cron/jobs.json') as f:
     data = json.load(f)
 jobs = data['jobs'] if 'jobs' in data else data
 for j in jobs:

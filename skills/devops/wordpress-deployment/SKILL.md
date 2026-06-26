@@ -4,7 +4,6 @@ name: wordpress-deployment
 description: "WordPress on Docker (colima) with Blocksy theme, custom fonts, MCP server for AI agent integration."
 created: 2026-06-15
 updated: 2026-06-15
-provenance:
   session: "2026-06-14 content-cmo-agent"
   decision: "WordPress chosen over Quartz for full CMS capabilities. Blocksy over GeneratePress for free custom Korean font support."
 links:
@@ -29,7 +28,7 @@ Docker (colima) ──→ WordPress (localhost:8080)
 
 ```bash
 cd ~/.drewgent/wordpress
-export DOCKER_HOST=unix://~/.colima/default/docker.sock
+export DOCKER_HOST=unix:///Users/drew/.colima/default/docker.sock
 docker-compose up -d
 ```
 
@@ -86,7 +85,7 @@ Registered in `~/.hermes/config.yaml`:
 mcp_servers:
   wordpress:
     command: node
-    args: ["~/.drewgent/scripts/wordpress-mcp-server.js"]
+    args: ["/Users/drew/.drewgent/scripts/wordpress-mcp-server.js"]
 ```
 
 ## Content Pipeline Integration
@@ -98,7 +97,7 @@ graph LR
     A[Content-manager] --> B[Draft files]
     B --> C[WordPress MCP]
     C --> D[WordPress post]
-    D --> E[yourdomain.com]
+    D --> E[YOUR_DOMAIN]
 ```
 
 ## Maintenance
@@ -120,7 +119,7 @@ docker exec humanerd-wp wp --allow-root plugin update --all
 
 ## Pitfalls
 
-- **Docker socket**: Must use `DOCKER_HOST=unix://~/.colima/default/docker.sock` when running commands outside of colima context
+- **Docker socket**: Must use `DOCKER_HOST=unix:///Users/drew/.colima/default/docker.sock` when running commands outside of colima context
 - **docker-compose vs docker compose**: This system uses standalone `docker-compose` v5.1.4, not the Docker plugin
 - **No wp-cli in container by default**: Installed via `curl -sO https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar`
 - **Permalink rewrite**: Apache's mod_rewrite is enabled but .htaccess must be manually populated with WordPress rewrite rules after permalink changes

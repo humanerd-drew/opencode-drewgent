@@ -8,14 +8,18 @@ tags: [concept]
 created: 2026-05-20
 updated: 2026-06-15
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[autonomous-ai-agents/delegate-task-tool]]"
-  - "[[autonomous-ai-agents/opencode]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[devops/kanban-orchestrator]]"
   - "[[software-development/writing-plans]]"
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
-# Subagent-Driven Development
+# Subagent-Driven Development (Superseded by GJC)
+
+> **2026-06-23:** OMO (delegate.ts + agents/*.md) replaced by GJC Coordinator MCP.
+> The `task()` approach in this skill still works (opencode built-in), but use
+> `gjc_delegate_execute` / `gjc_delegate_team` when you need worktree isolation
+> or tmux parallelism. See `kanban-orchestrator` skill for current patterns.
 
 ## Overview
 
@@ -233,8 +237,6 @@ Also add:
 **Lesson:** For mechanical splits, TypeScript compilation is NOT enough verification. You MUST trace at least one critical call path to confirm behavioral equivalence.
 
 ## Related
-- [[P3-sensors/skills/SKILL-INDEX]]
-- [[autonomous-ai-agents/delegate-task-tool]]
-- [[autonomous-ai-agents/opencode]]
+- [[@action/skills/SKILL-INDEX]]
 - [[software-development/writing-plans]]
 - [[software-development/project-restructure]]

@@ -2,8 +2,6 @@
 title: WordPress CMS
 name: wordpress-cms
 description: WordPress CMS setup on Docker + Blocksy theme + MCP integration for autonomous content publishing
-trigger: "yourdomain.com 사이트를 Quartz에서 WordPress로 전환하면서 구축한 인프라"
-provenance:
   session: "2026-06-14 wordpress-setup"
   decision: "CMS 워크플로우 + blocksy 무료로 커스텀 폰트/디자인 가능 → Quartz 대체"
 created: 2026-06-14
@@ -12,7 +10,7 @@ updated: 2026-06-14
 
 # WordPress CMS
 
-WordPress + Docker + Blocksy + MCP integration for yourdomain.com.
+WordPress + Docker + Blocksy + MCP integration for YOUR_DOMAIN.
 
 ## Docker Setup
 
@@ -32,8 +30,8 @@ services:
     ports: ["8080:80"]
     volumes:
       - /Volumes/humanerd/docker/wordpress/wp-content:/var/www/html/wp-content
-      - ~/.drewgent/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
-      - ~/.drewgent/wordpress/wp-content/themes:/var/www/html/wp-content/themes
+      - /Users/drew/.drewgent/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
+      - /Users/drew/.drewgent/wordpress/wp-content/themes:/var/www/html/wp-content/themes
 ```
 
 **pw 저장:** `~/.drewgent/wordpress/.wp-env` (chmod 600)
@@ -106,7 +104,7 @@ RewriteRule . /index.php [L]
 
 Custom MCP server for autonomous agent→WordPress interaction.
 
-**Path:** `~/.drewgent/scripts/wordpress-mcp-server.js`
+**Path:** `/Users/drew/.drewgent/scripts/wordpress-mcp-server.js`
 **Config:** `mcp_servers.wordpress` in `~/.hermes/config.yaml`
 **Backend:** Node.js wrapping `docker exec humanerd-wp wp --allow-root` via STDIO JSON-RPC 2.0
 
@@ -125,7 +123,7 @@ Custom MCP server for autonomous agent→WordPress interaction.
 ### Test
 
 ```bash
-printf '{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n' | node ~/.drewgent/scripts/wordpress-mcp-server.js
+printf '{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n' | node /Users/drew/.drewgent/scripts/wordpress-mcp-server.js
 ```
 
 ## Huly MCP Integration

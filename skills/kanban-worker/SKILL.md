@@ -7,12 +7,12 @@ tags: [concept]
 created: 2026-05-20
 updated: 2026-06-10
 links:
-  - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P4-cortex/growth/drewgent-kanban-implementation-plan]]"
+  - "[[@action/skills/SKILL-INDEX]]"
+  - "[[@memory/growth/drewgent-kanban-implementation-plan]]"
   - "[[kanban-dashboard]]"
   - "[[kanban-orchestrator]]"
   - "[[references/protocol.md]]"
-  - "[[P0-brainstem/brain/rules]]"---
+  - "[[@identity/brain/rules]]"---
 
 
 
@@ -180,5 +180,5 @@ Each script opens its own SQLite connection and runs 5 phases:
 
 ## Related
 
-- [[P4-cortex/growth/drewgent-kanban-implementation-plan]]
-- [[P3-sensors/skills/SKILL-INDEX]]
+- [[@memory/growth/drewgent-kanban-implementation-plan]]
+- [[@action/skills/SKILL-INDEX]]
