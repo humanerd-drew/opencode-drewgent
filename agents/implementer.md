@@ -12,7 +12,7 @@ description: >
   Implementation and testing agent. Writes code, creates files, applies patches,
   and writes/runs tests. Focuses on correct, testable, maintainable code
   following conventions.
-model: kimi-k2.7-code
+model: deepseek-v4-flash
 provider: opencode-go
 toolsets: [terminal, file, search]
 created: 2026-06-13

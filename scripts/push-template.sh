@@ -110,7 +110,7 @@ for f in "${TEMPLATE_FILES[@]}"; do
     # Sanitize: replace personal domain
     if grep -q "humanerd\.kr" "$WORKTREE/$f" 2>/dev/null; then
       sed -i '' 's/humanerd\.kr/YOUR_DOMAIN/g' "$WORKTREE/$f"
-      echo -e "  ${YELLOW}↻${NC} $f (sanitized humanerd.kr)"
+      echo -e "  ${YELLOW}↻${NC} $f (sanitized YOUR_DOMAIN)"
     fi
     # Sanitize: replace personal email
     if grep -q "drew@humanerd" "$WORKTREE/$f" 2>/dev/null; then
@@ -118,7 +118,7 @@ for f in "${TEMPLATE_FILES[@]}"; do
       echo -e "  ${YELLOW}↻${NC} $f (sanitized email)"
     fi
     # Sanitize: replace personal Docker Hub
-    if grep -q "humanerdkr/" "$WORKTREE/$f" 2>/dev/null; then
+    if grep -q "YOUR_DOCKER_USER/" "$WORKTREE/$f" 2>/dev/null; then
       sed -i '' 's/humanerdkr\//YOUR_DOCKER_USER\//g' "$WORKTREE/$f"
       echo -e "  ${YELLOW}↻${NC} $f (sanitized docker user)"
     fi
