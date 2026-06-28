@@ -56,6 +56,7 @@ EXCLUDE_PATTERNS=(
   "^agent/"
   "^agents/"
   "^@memory/"
+  "^@identity/"
   "^cron/jobs\.json"
   "^P2-hippocampus/kanban/"
   "^P2-hippocampus/knowledge/"
