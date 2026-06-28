@@ -598,7 +598,7 @@ def _find_all_skills(*, skip_disabled: bool = False) -> List[Dict[str, Any]]:
 
 def _load_category_description(category_dir: Path) -> Optional[str]:
     """
-    Load category description from cache/skill-index.json or legacy DESCRIPTION.md.
+    Load category description from DESCRIPTION.md if it exists.
 
     Args:
         category_dir: Path to the category directory
@@ -606,34 +606,16 @@ def _load_category_description(category_dir: Path) -> Optional[str]:
     Returns:
         Description string or None if not found
     """
-    # Prefer centralized cache
-    try:
-        from drewgent_constants import get_drewgent_home
-        index_path = get_drewgent_home() / "cache" / "skill-index.json"
-        if index_path.exists():
-            data = json.loads(index_path.read_text(encoding="utf-8"))
-            categories = data.get("categories") or {}
-            try:
-                cat_key = str(category_dir.relative_to(SKILLS_DIR))
-            except ValueError:
-                cat_key = category_dir.name
-            desc = categories.get(cat_key)
-            if desc:
-                if len(desc) > MAX_DESCRIPTION_LENGTH:
-                    desc = desc[: MAX_DESCRIPTION_LENGTH - 3] + "..."
-                return desc
-    except Exception as e:
-        logger.debug("Could not read skill index cache: %s", e)
-
-    # Fallback to legacy DESCRIPTION.md
     desc_file = category_dir / "DESCRIPTION.md"
     if not desc_file.exists():
         return None
 
     try:
         content = desc_file.read_text(encoding="utf-8")
+        # Parse frontmatter if present
         frontmatter, body = _parse_frontmatter(content)
 
+        # Prefer frontmatter description, fall back to first non-header line
         description = frontmatter.get("description", "")
         if not description:
             for line in body.strip().split("\n"):
@@ -642,6 +624,7 @@ def _load_category_description(category_dir: Path) -> Optional[str]:
                     description = line
                     break
 
+        # Truncate to reasonable length
         if len(description) > MAX_DESCRIPTION_LENGTH:
             description = description[: MAX_DESCRIPTION_LENGTH - 3] + "..."
 

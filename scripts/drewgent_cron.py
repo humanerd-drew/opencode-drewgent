@@ -154,79 +154,15 @@ def load_jobs():
         return []
     jobs = []
     for job in data.get("jobs", []):
+        if not job.get("script") or job.get("no_agent") is not True:
+            continue
         if job.get("enabled") is not True or job.get("state") == "paused":
             continue
-        no_agent = job.get("no_agent")
-        has_script = bool(job.get("script"))
-        has_prompt = bool(job.get("prompt"))
-        # Script job: no_agent=True (or absent/null with a script) → run script directly
-        try:
-            if has_script and (no_agent is True or no_agent is None):
-                spec = parse_schedule(job)
-                if spec:
-                    job["_spec"] = spec
-                    jobs.append(job)
-                continue
-            # Agent job: no_agent=False + prompt → dispatch via opencode run
-            if no_agent is False and has_prompt:
-                spec = parse_schedule(job)
-                if spec:
-                    job["_spec"] = spec
-                    job["_is_agent"] = True
-                    jobs.append(job)
-                continue
-        except Exception as e:
-            name = job.get("name", job.get("id", "?"))
-            print(f"[cron] Skipping malformed job '{name}': {e}")
-            continue
+        spec = parse_schedule(job)
+        if spec:
+            job["_spec"] = spec
+            jobs.append(job)
     return jobs
-
-
-OPENCODE_BIN = "/opt/homebrew/bin/opencode"
-OPENCODE_ATTACH = "http://localhost:8642"
-
-
-def run_agent_job(job):
-    """opencode run --attach으로 AI agent cron job 실행."""
-    name = job.get("name", job.get("id", "unknown"))
-    prompt = job.get("prompt", "")
-    if not prompt:
-        print(f"[{name}] 프롬프트 없음 — 스킵")
-        return
-
-    model = job.get("model", "")
-    model_flag = []
-    if model:
-        if "/" in model:
-            model_flag = ["--model", model]
-        else:
-            model_flag = ["--model", f"opencode-go/{model}"]
-
-    try:
-        r = subprocess.run(
-            [OPENCODE_BIN, "run", "--attach", OPENCODE_ATTACH, *model_flag, prompt],
-            capture_output=True, text=True, timeout=600,
-        )
-        out = (r.stdout or "").strip()
-        err = (r.stderr or "").strip()
-
-        if r.returncode != 0:
-            print(f"[{name}] opencode run 실패 (exit {r.returncode}): {err[:300]}")
-            return
-
-        # [SILENT] → skip delivery
-        if out.upper().startswith("[SILENT]"):
-            print(f"[{name}] [SILENT] — 배달 생략")
-            return
-
-        print(f"[{name}] 응답: {out[:300]}")
-        deliver = job.get("deliver")
-        if deliver:
-            _send_discord(name, deliver, out, os.environ)
-    except subprocess.TimeoutExpired:
-        print(f"[{name}] TIMEOUT (600s)")
-    except Exception as e:
-        print(f"[{name}] 오류: {e}")
 
 
 def main():
@@ -246,14 +182,11 @@ def main():
         spec = job["_spec"]
         if not due(job_id, spec, state, now, t, now_min):
             continue
-        if job.get("_is_agent"):
-            run_agent_job(job)
-        else:
-            path = resolve_script(job["script"])
-            if path is None:
-                print(f"[{name}] 스크립트 없음: {job['script']}")
-                continue
-            run(name, path, build_env(job), job.get("deliver"))
+        path = resolve_script(job["script"])
+        if path is None:
+            print(f"[{name}] 스크립트 없음: {job['script']}")
+            continue
+        run(name, path, build_env(job), job.get("deliver"))
         if spec[0] == "interval":
             state[job_id] = now
         else:

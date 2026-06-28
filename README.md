@@ -390,21 +390,6 @@ Deep reasoning for architecture, planning, and security.
 | **tester** | (inherits parent) | Test writing and verification |
 | **reviewer** | (inherits parent) | Standard code review |
 
-### Model Assignment Strategy
-
-The profile-to-model mapping above reflects the **cost-optimized** assignment. The original **performance-optimized** assignment used stronger models for all execution tasks — the shift was motivated by OpenCode Go's subscription quota ($30/week): execution tasks (writing, code generation, doc compilation) perform just as well on flash-tier models, while planning and review remain on pro/max.
-
-| Profile | Performance Opt. (original) | Cost Opt. (current) | Cost delta |
-|---------|---------------------------|-------------------|------------|
-| implementer | kimi-k2.7-code ($0.012/call) | deepseek-v4-flash ($0.00038/call) | **-97%** |
-| content-manager (periodic) | deepseek-v4-pro ($0.0035/call) | openai/gpt-oss-120b via Groq (free) | free |
-| wiki-compile | deepseek-v4-pro ($0.0035/call) | deepseek-v4-flash ($0.00038/call) | -89% |
-| reviewer | deepseek-v4-pro | unchanged | — |
-| planner | qwen3.7-max | unchanged | — |
-| reviewer-critical | qwen3.7-max | unchanged | — |
-
-The `content-manager` periodic cron job for `YOUR_DOMAIN` uses Groq Free Tier (`openai/gpt-oss-120b`, 500 t/s, 30 RPM, 1K RPD) — zero cost with 120B parameters. Direct `task()` calls still use the profile-defined `deepseek-v4-pro`.
-
 ### Handoff Contract
 
 Every pipeline-capable profile includes a structured handoff section. When completing a pipeline task, agents structure their `kanban_complete` `result` as JSON:
@@ -884,7 +869,7 @@ opencode-drewgent is built on the shoulders of these open-source projects:
 | [opencode](https://opencode.ai) | [Anomaly](https://github.com/anomalyco) | AI coding agent platform | MIT |
 | [gbrain](https://github.com/garrytan/gbrain) | Garry Tan | MCP-based knowledge graph & hybrid search | — |
 | [codebase-memory-mcp](https://github.com/anomalyco/opencode) | Anomaly | Codebase knowledge graph | MIT |
-| [Gajae-Code](https://github.com/Yeachan-Heo/gajae-code) | [Yeachan-Heo](https://github.com/Yeachan-Heo) | GJC Coordinator MCP — worktree isolation, tmux parallel execution | — |
+| [Gajae-Code](https://gajae-code.com) | — | GJC Coordinator MCP — worktree isolation, tmux parallel execution | — |
 | [discord-mcp](https://github.com/anomalyco/discord-mcp) | Anomaly | Discord MCP server | MIT |
 | [PortOne](https://developers.portone.io) | PortOne | Korean payment gateway SDK | — |
 | [Cloudflare Agents SDK](https://developers.cloudflare.com/agents) | Cloudflare | Stateful agent framework for Workers | MIT |
