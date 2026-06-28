@@ -1,7 +1,12 @@
 #!/bin/bash
 # office_autopilot.sh — OmO-powered kanban dispatcher
-# Picks one pending task, dispatches via OmO Sisyphus orchestrator.
 set -e
+
+# Check if another ultrawork session is already running
+if pgrep -f "opencode run.*ultrawork" > /dev/null 2>&1; then
+  echo "another session running, skip"
+  exit 0
+fi
 
 DB="$HOME/.drewgent/kanban.db"
 PENDING=$(sqlite3 "$DB" "SELECT count(*) FROM tasks WHERE status IN ('todo','ready') AND claim_lock IS NULL;" 2>/dev/null || echo 0)
@@ -14,14 +19,14 @@ fi
 LOG="$HOME/.drewgent/logs/office-autopilot.log"
 echo "[$(date '+%Y-%m-%d %H:%M')] OmO dispatching $PENDING pending tasks" >> "$LOG"
 
-# Process ALL pending tasks in one OmO session.
-# OmO's ultrawork mode handles multiple tasks sequentially.
+# Process tasks via ultrawork
 opencode run --attach http://localhost:8642 \
-  "ultrawork: process all pending kanban tasks.
+  "ultrawork: process pending kanban tasks.
 
 1. Read pending tasks: sqlite3 $DB \"SELECT id, title, body FROM tasks WHERE status IN ('todo','ready') AND claim_lock IS NULL ORDER BY priority DESC, created_at ASC;\"
 2. For each task, process it fully:
-   - Parse the body JSON for steps, assignee, completion criteria
-   - Delegate work via task() or category routing
-   - Mark complete: sqlite3 $DB \"UPDATE tasks SET status='completed', completed_at=datetime('now') WHERE id='<task_id>';\"
-3. After all tasks, report summary of what was done." 2>&1
+   - trend-evaluate / trend-apply: run the evaluation, call kanban complete
+   - content-news / content-insight / content-series: write blog post (Gutenberg HTML, correct category). Update narrative_arc.md + content-inventory.md after publish.
+   - trend-discuss: discussion tasks — read body, analyze, report summary
+   - other: process per task body
+3. After ALL tasks processed: report summary." 2>&1

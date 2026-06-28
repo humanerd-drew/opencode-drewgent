@@ -36,7 +36,7 @@ from typing import Optional
 # but if that Python lacks openai, run_job() will dispatch to cron_runner.py
 # via subprocess.run([sys.executable, ...]) and cron_runner.py will in turn
 # use the venv python to guarantee openai is importable.
-_venv_python = str(Path(__file__).parent.parent / "source" / "drewgent-agent" / ".venv" / "bin" / "python")
+_venv_python = str(Path(__file__).parent.parent / "venv" / "bin" / "python3")
 
 # Add parent directory to path for imports BEFORE repo-level imports.
 # Without this, standalone invocations (e.g. after `drewgent update` reloads
@@ -350,13 +350,17 @@ def _run_job_script(script_path: str) -> tuple[bool, str]:
     if not path.is_file():
         return False, f"Script path is not a file: {path}"
 
+    is_shell = path.suffix == ".sh"
+    if is_shell:
+        os.chmod(path, path.stat().st_mode | 0o111)  # ensure executable
     try:
         result = subprocess.run(
-            [sys.executable, str(path)],
+            [str(path)] if is_shell else [sys.executable, str(path)],
             capture_output=True,
             text=True,
             timeout=_SCRIPT_TIMEOUT,
             cwd=str(path.parent),
+            shell=is_shell,
         )
         stdout = (result.stdout or "").strip()
         stderr = (result.stderr or "").strip()
