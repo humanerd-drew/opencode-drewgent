@@ -101,26 +101,9 @@ If the story has a natural meme angle, create a companion SVG. Recognizable meme
 
 See `references/svg-meme-templates.md` for SVG code templates.
 
-### 2. Mermaid Diagrams → SVG Image (WordPress)
-**CRITICAL: WordPress/GeneratePress does NOT render Mermaid natively.**
-Mermaid code blocks MUST be converted to SVG images before publishing.
-
-Process:
-1. Draft the diagram as Mermaid code (graph TD/LR, sequenceDiagram, flowchart)
-2. Render to SVG via `https://mermaid.ink/svg/{base64}` API:
-   ```
-   B64=$(echo -n "MERMAID_CODE" | base64)
-   curl -s -o diagram.svg "https://mermaid.ink/svg/$B64"
-   ```
-3. Upload SVG to WordPress media via `wp media import` or WordPress MCP `upload_media`
-4. Get the attachment URL (e.g. `https://YOUR_DOMAIN/wp-content/uploads/YYYY/MM/diagram.svg`)
-5. Replace Mermaid code with Gutenberg image block:
-   ```html
-   <!-- wp:image {"id":NNN,"sizeSlug":"full"} -->
-   <figure class="wp-block-image size-full"><img src="..." alt="..." class="wp-image-NNN"/></figure>
-   <!-- /wp:image -->
-   ```
-6. NEVER leave raw Mermaid code blocks in WordPress post content
+### 2. Mermaid Diagrams
+Inline ````mermaid` code blocks. Quartz renders natively as SVG.
+Types: graph TD/LR, sequenceDiagram, flowchart
 
 ### 3. Excalidraw → PNG
 For complex architecture/flow diagrams. Two-step process:
@@ -256,16 +239,12 @@ Bad (will show raw text):
 - ALL content must be wrapped in Gutenberg comment blocks (`<!-- wp:paragraph -->...<!-- /wp:paragraph -->`)
 - Use `<!-- wp:list -->` for lists, `<!-- wp:code -->` for code blocks, `<!-- wp:heading {"level":2} -->` for headings
 - Use `<!-- wp:html -->...<!-- /wp:html -->` for custom HTML sections (cards, hero, etc.)
-- **NO Mermaid code blocks** (` ```mermaid`) — WordPress can't render them. Convert to SVG image and use `<!-- wp:image -->` instead.
 
 ### Auto-Publish Flow (Fully Autonomous)
 
 ```
 content-manager agent (every 3h)
-  → writes draft with Mermaid diagrams (Gutenberg HTML)
-  → renders each Mermaid block → SVG via mermaid.ink API
-  → uploads SVG to WordPress media library
-  → replaces Mermaid code with <!-- wp:image --> blocks
+  → writes draft (Gutenberg HTML, proper pillar category name like "Build Log")
   → calls create_post (status=draft), category=pillar name (not ID)
   → reviewer agent runs QA (within 1h)
   → fixes issues → promotes to publish
