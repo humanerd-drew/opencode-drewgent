@@ -20,7 +20,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 _DREWGENT_HOME = Path.home() / ".drewgent"
-_P4_TREND = _DREWGENT_HOME / "P4-cortex" / "growth" / "trend-harvester"
+_TREND_DIR = _DREWGENT_HOME / "@memory" / "growth" / "trend-harvester"
 _STALE_DAYS = 30  # No reference in N days = stale candidate
 
 # Search targets
@@ -95,7 +95,7 @@ def check_neurons(name: str, slug: str) -> list:
 
 
 def main():
-    applied_dir = _P4_TREND / "applied"
+    applied_dir = _TREND_DIR / "applied"
     if not applied_dir.exists():
         print(json.dumps({"error": "applied/ directory not found", "items": [], "stale_count": 0, "active_count": 0}))
         return 2
@@ -162,7 +162,7 @@ def main():
     }
     
     # Write report
-    report_path = _P4_TREND / ".usage_report.json"
+    report_path = _TREND_DIR / ".usage_report.json"
     report_path.write_text(json.dumps(report, indent=2, ensure_ascii=False))
     
     # Summary to stdout (this becomes the cron delivery)

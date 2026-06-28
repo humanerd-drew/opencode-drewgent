@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Trend Harvester — P4-cortex AI Trend Collection & 5-Axis Filtering
+Trend Harvester — @memory AI Trend Collection & 5-Axis Filtering
 
 Collects AI tools/techniques from GitHub trending and GeekNews RSS,
 scores through Drewgent's 5-axis philosophy filter.
@@ -14,6 +14,7 @@ Usage:
 """
 
 import argparse
+import concurrent.futures
 import hashlib
 import json
 import os
@@ -26,9 +27,9 @@ from urllib.parse import urlparse
 
 # ---- config ----
 _DREWGENT_HOME = Path.home() / ".drewgent"
-_P4_TREND = _DREWGENT_HOME / "P4-cortex" / "growth" / "trend-harvester"
-_STATE_FILE = _P4_TREND / ".harvester_state.json"
-_PID_FILE = _P4_TREND / ".harvester.lock"
+_TREND_DIR = _DREWGENT_HOME / "@memory" / "growth" / "trend-harvester"
+_STATE_FILE = _TREND_DIR / ".harvester_state.json"
+_PID_FILE = _TREND_DIR / ".harvester.lock"
 _DRY_RUN = False
 _SOURCE = "all"  # "all", "github", "geeknews"
 
@@ -289,7 +290,7 @@ def fetch_original_content(entry: dict) -> dict:
         entry["content"] = entry.get("geeknews_content", "")
         return entry
 
-    html = _fetch_url(entry["original_url"], timeout=15)
+    html = _fetch_url(entry["original_url"], timeout=8)
     if not html:
         entry["content_status"] = "fetch_failed"
         entry["content"] = entry.get("geeknews_content", "")
@@ -664,15 +665,18 @@ def write_collected(item: dict, base_dir: Path) -> None:
 # ---- main ----
 
 def main() -> int:
-    global _DRY_RUN, _SOURCE
+    global _DRY_RUN, _SOURCE, _SKIP_ORIGINAL
 
     parser = argparse.ArgumentParser(description="Drewgent Trend Harvester")
     parser.add_argument("--dry-run", action="store_true", help="Collect and score, don't write files")
     parser.add_argument("--source", choices=["all", "github", "geeknews"], default="all",
                         help="Source to collect from (default: all)")
+    parser.add_argument("--fetch-original", action="store_true",
+                        help="Fetch original URL content (slower, better for LLM evaluation)")
     args = parser.parse_args()
     _DRY_RUN = args.dry_run
     _SOURCE = args.source
+    _SKIP_ORIGINAL = not args.fetch_original
 
     log(f"Trend Harvester starting (dry_run={_DRY_RUN}, source={_SOURCE})")
 
@@ -697,12 +701,19 @@ def main() -> int:
             entries = fetch_geeknews_rss()
             log(f"  Found {len(entries)} entries from RSS")
 
-            # For each entry, fetch topic page to get original_url + geeknews_content
-            for entry in entries:
-                entry_filled = fetch_topic_page(entry)
-                # Apply original content fetch with judgment
-                entry_filled = fetch_original_content(entry_filled)
-                all_items.append(entry_filled)
+            # Process entries in parallel (ThreadPoolExecutor)
+            total = len(entries)
+            PARALLEL_WORKERS = 8
+            with concurrent.futures.ThreadPoolExecutor(max_workers=PARALLEL_WORKERS) as ex:
+                def process_single(entry):
+                    entry_filled = fetch_topic_page(entry)
+                    entry_filled["content_status"] = "from_rss"
+                    entry_filled["content"] = entry_filled.get("geeknews_content", "")
+                    if not _SKIP_ORIGINAL:
+                        entry_filled = fetch_original_content(entry_filled)
+                    return entry_filled
+                batch = ex.map(process_single, entries)
+                all_items.extend(batch)
 
         log(f"Total collected: {len(all_items)} items")
 
@@ -717,10 +728,10 @@ def main() -> int:
             result = score_trend(item)
 
             # Write to collected/
-            write_collected(item, _P4_TREND)
+            write_collected(item, _TREND_DIR)
 
             # Write to analyzed/ subdir based on decision
-            write_trend(result, _P4_TREND)
+            write_trend(result, _TREND_DIR)
 
             if result["decision"] == "keep":
                 keep_count += 1
@@ -732,7 +743,7 @@ def main() -> int:
         log(f"Results: keep={keep_count}, review={review_count}, graveyard={graveyard_count}")
 
         # Build top_keeps for the report JSON
-        keep_dir = _P4_TREND / "analyzed" / "keep"
+        keep_dir = _TREND_DIR / "analyzed" / "keep"
         top_keeps = []
         if keep_dir.exists() and not _DRY_RUN:
             keep_files = sorted(keep_dir.glob("*.json"), key=lambda f: f.stat().st_mtime, reverse=True)[:10]
@@ -750,7 +761,7 @@ def main() -> int:
                     continue
 
         if not _DRY_RUN:
-            write_report_json(keep_count, review_count, graveyard_count, top_keeps, _P4_TREND)
+            write_report_json(keep_count, review_count, graveyard_count, top_keeps, _TREND_DIR)
 
         # Update state
         if not _DRY_RUN:

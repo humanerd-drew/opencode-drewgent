@@ -86,6 +86,7 @@ const tools = {
         `--post_title="${args.title.replace(/"/g, '\\"').replace(/\\$/g, '\\\\$')}"`,
         `--post_status=${args.status || "publish"}`,
       ];
+      pieceParts.push(`--post_author=1`);
       if (args.category) pieceParts.push(`--post_category="${args.category}"`);
       if (args.tags) pieceParts.push(`--tags="${args.tags}"`);
       if (args.date) pieceParts.push(`--post_date="${args.date}"`);
