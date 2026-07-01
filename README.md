@@ -594,6 +594,50 @@ Before writing code, every agent applies the minimization checklist:
 
 ---
 
+## Vault Secrets
+
+All API keys and tokens are stored **encrypted** using Drewgent's vault system. No plaintext secrets on disk.
+
+### Architecture
+
+```
+User provides key → vault_cli.py set KEY VALUE
+                           ↓
+                    Fernet encrypt → vault.enc
+                    Master key in OS keyring (macOS Keychain / Win Credential Manager / Linux libsecret)
+                           ↓
+                    Shell hook → eval "$(vault env)" → export ENV vars
+                           ↓
+                    opencode.jsonc → {env:VAR} reference
+```
+
+### Quick Start
+
+```bash
+pip install cryptography keyring
+python3 scripts/vault_cli.py init
+vault set OPENAI_API_KEY "sk-..."     # encrypted immediately
+vault set DISCORD_TOKEN "MT-..."      # never in .zshrc
+vault list                            # stored keys
+eval "$(vault env)"                   # export to environment
+```
+
+### Agent Rule
+
+When the agent receives a key, it **must** use `vault set KEY VALUE` — never write plaintext to `.zshrc`, `.env`, or `opencode.jsonc`. Config references use `{env:VAR}` syntax only.
+
+### Setup for New Installs
+
+1. `pip install cryptography keyring`
+2. `python3 scripts/vault_cli.py init` (creates master key in OS keyring)
+3. Add shell hook to `.zshrc`: `eval "$(python3 ~/.drewgent/scripts/vault_cli.py env 2>/dev/null)" || true`
+4. `vault scan` to find existing plaintext keys
+5. `vault migrate` to encrypt and replace with `{env:VAR}`
+
+The skill `skill("vault-secrets")` documents the full protocol.
+
+---
+
 ## Cron & Automation
 
 Drewgent uses a launchd-driven 60-second tick that dispatches `scripts/drewgent_cron.py`. The scheduler (`cron/scheduler.py`) reads `cron/jobs.json` and fires jobs at their scheduled intervals.
