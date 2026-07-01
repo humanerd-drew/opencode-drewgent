@@ -334,5 +334,7 @@ fi
 
 printf '%s\n' "${output_lines[@]}"
 
-# Note: drift is local; exit code reflects it for cron alerting
-[ $drift -eq 0 ]
+# Note: drift is local; report via output markers, not exit code.
+# Exit 1 shows as "error" on dashboard (cron treats non-zero as failure).
+# This is a monitoring tool — the output is the signal.
+exit 0

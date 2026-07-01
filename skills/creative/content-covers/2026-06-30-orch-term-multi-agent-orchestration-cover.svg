@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d0d1a"/>
+      <stop offset="50%" stop-color="#12122a"/>
+      <stop offset="100%" stop-color="#1a1a30"/>
+    </linearGradient>
+    <linearGradient id="glow1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7b5f3d" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#7b5f3d" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="glow2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4a90d9" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#4a90d9" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="glow3" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#50c878" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#50c878" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="blur1"><feGaussianBlur stdDeviation="60"/></filter>
+    <filter id="blur2"><feGaussianBlur stdDeviation="40"/></filter>
+    <linearGradient id="termBorder" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4a90d9" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#7b5f3d" stop-opacity="0.3"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="200" cy="500" r="250" fill="url(#glow1)" filter="url(#blur1)"/>
+  <circle cx="1000" cy="150" r="200" fill="url(#glow2)" filter="url(#blur2)"/>
+  <circle cx="600" cy="630" r="180" fill="url(#glow3)" filter="url(#blur1)"/>
+  <g fill="#ffffff" fill-opacity="0.03">
+    <circle cx="100" cy="100" r="1.5"/><circle cx="200" cy="100" r="1.5"/><circle cx="300" cy="100" r="1.5"/><circle cx="400" cy="100" r="1.5"/><circle cx="500" cy="100" r="1.5"/><circle cx="600" cy="100" r="1.5"/><circle cx="700" cy="100" r="1.5"/><circle cx="800" cy="100" r="1.5"/><circle cx="900" cy="100" r="1.5"/><circle cx="1000" cy="100" r="1.5"/><circle cx="1100" cy="100" r="1.5"/>
+    <circle cx="100" cy="200" r="1.5"/><circle cx="200" cy="200" r="1.5"/><circle cx="300" cy="200" r="1.5"/><circle cx="400" cy="200" r="1.5"/><circle cx="500" cy="200" r="1.5"/><circle cx="600" cy="200" r="1.5"/><circle cx="700" cy="200" r="1.5"/><circle cx="800" cy="200" r="1.5"/><circle cx="900" cy="200" r="1.5"/><circle cx="1000" cy="200" r="1.5"/><circle cx="1100" cy="200" r="1.5"/>
+    <circle cx="100" cy="300" r="1.5"/><circle cx="200" cy="300" r="1.5"/><circle cx="300" cy="300" r="1.5"/><circle cx="400" cy="300" r="1.5"/><circle cx="500" cy="300" r="1.5"/><circle cx="600" cy="300" r="1.5"/><circle cx="700" cy="300" r="1.5"/><circle cx="800" cy="300" r="1.5"/><circle cx="900" cy="300" r="1.5"/><circle cx="1000" cy="300" r="1.5"/><circle cx="1100" cy="300" r="1.5"/>
+    <circle cx="100" cy="400" r="1.5"/><circle cx="200" cy="400" r="1.5"/><circle cx="300" cy="400" r="1.5"/><circle cx="400" cy="400" r="1.5"/><circle cx="500" cy="400" r="1.5"/><circle cx="600" cy="400" r="1.5"/><circle cx="700" cy="400" r="1.5"/><circle cx="800" cy="400" r="1.5"/><circle cx="900" cy="400" r="1.5"/><circle cx="1000" cy="400" r="1.5"/><circle cx="1100" cy="400" r="1.5"/>
+    <circle cx="100" cy="500" r="1.5"/><circle cx="200" cy="500" r="1.5"/><circle cx="300" cy="500" r="1.5"/><circle cx="400" cy="500" r="1.5"/><circle cx="500" cy="500" r="1.5"/><circle cx="600" cy="500" r="1.5"/><circle cx="700" cy="500" r="1.5"/><circle cx="800" cy="500" r="1.5"/><circle cx="900" cy="500" r="1.5"/><circle cx="1000" cy="500" r="1.5"/><circle cx="1100" cy="500" r="1.5"/>
+  </g>
+  <g transform="translate(420, 160)">
+    <rect x="0" y="0" width="360" height="260" rx="8" fill="#151528" stroke="url(#termBorder)" stroke-width="1.5"/>
+    <rect x="0" y="0" width="360" height="28" rx="8" fill="#1a1a35"/>
+    <rect x="0" y="14" width="360" height="14" fill="#1a1a35"/>
+    <circle cx="16" cy="14" r="5" fill="#4a90d9" fill-opacity="0.6"/>
+    <circle cx="32" cy="14" r="5" fill="#7b5f3d" fill-opacity="0.6"/>
+    <circle cx="48" cy="14" r="5" fill="#50c878" fill-opacity="0.6"/>
+    <rect x="8" y="36" width="170" height="100" rx="4" fill="#0d0d1a" stroke="#4a90d9" stroke-opacity="0.2" stroke-width="1"/>
+    <rect x="182" y="36" width="170" height="100" rx="4" fill="#0d0d1a" stroke="#7b5f3d" stroke-opacity="0.2" stroke-width="1"/>
+    <rect x="8" y="144" width="170" height="100" rx="4" fill="#0d0d1a" stroke="#50c878" stroke-opacity="0.2" stroke-width="1"/>
+    <rect x="182" y="144" width="170" height="100" rx="4" fill="#0d0d1a" stroke="#4a90d9" stroke-opacity="0.2" stroke-width="1"/>
+    <g fill="#e8e4df" font-family="monospace" font-size="8" opacity="0.5">
+      <text x="16" y="52">$ claude "refactor auth"</text>
+      <text x="16" y="64">Analyzing codebase...</text>
+      <text x="16" y="76">Found 3 modules to update</text>
+      <text x="16" y="88">|████████░░░| 67%</text>
+      <text x="190" y="52">$ codex "write tests"</text>
+      <text x="190" y="64">Generating test suite...</text>
+      <text x="190" y="76">auth.test.ts ✓ 12/12</text>
+      <text x="190" y="88">|██████████| 100%</text>
+      <text x="16" y="160">$ gemini "review PR #42"</text>
+      <text x="16" y="172">Reviewing diff...</text>
+      <text x="16" y="184">Found 2 concerns @ line 87</text>
+      <text x="16" y="196">|█████░░░░░| 50%</text>
+      <text x="190" y="160">$ git status</text>
+      <text x="190" y="172">On branch feat/auth-v2</text>
+      <text x="190" y="184">3 files changed</text>
+      <text x="190" y="196">Ready to commit</text>
+    </g>
+  </g>
+  <g opacity="0.7">
+    <circle cx="370" cy="260" r="16" fill="#4a90d9" fill-opacity="0.15" stroke="#4a90d9" stroke-opacity="0.4" stroke-width="1"/>
+    <text x="370" y="265" text-anchor="middle" fill="#4a90d9" font-size="12" font-family="monospace" opacity="0.8">A1</text>
+    <circle cx="810" cy="230" r="16" fill="#7b5f3d" fill-opacity="0.15" stroke="#7b5f3d" stroke-opacity="0.4" stroke-width="1"/>
+    <text x="810" y="235" text-anchor="middle" fill="#7b5f3d" font-size="12" font-family="monospace" opacity="0.8">A2</text>
+    <circle cx="380" cy="460" r="16" fill="#50c878" fill-opacity="0.15" stroke="#50c878" stroke-opacity="0.4" stroke-width="1"/>
+    <text x="380" y="465" text-anchor="middle" fill="#50c878" font-size="12" font-family="monospace" opacity="0.8">A3</text>
+    <circle cx="820" cy="460" r="16" fill="#4a90d9" fill-opacity="0.15" stroke="#4a90d9" stroke-opacity="0.4" stroke-width="1"/>
+    <text x="820" y="465" text-anchor="middle" fill="#4a90d9" font-size="12" font-family="monospace" opacity="0.8">A4</text>
+  </g>
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="1" stroke-dasharray="3,3">
+    <line x1="370" y1="276" x2="436" y2="320"/>
+    <line x1="810" y1="246" x2="764" y2="320"/>
+    <line x1="380" y1="444" x2="436" y2="400"/>
+    <line x1="820" y1="444" x2="764" y2="400"/>
+  </g>
+  <text x="600" y="560" text-anchor="middle" fill="#e8e4df" font-family="system-ui,sans-serif" font-size="28" font-weight="bold">AI 에이전트를 한 창에 담는다는 것</text>
+  <text x="600" y="592" text-anchor="middle" fill="#8a8680" font-family="system-ui,sans-serif" font-size="14">혼자 만든 오케스트레이션 도구가 내 인프라와 닮은 이유</text>
+  <text x="600" y="618" text-anchor="middle" fill="#5a5650" font-family="system-ui,sans-serif" font-size="11">YOUR_DOMAIN · AI &amp; Tools · 2026.06.30</text>
+</svg>

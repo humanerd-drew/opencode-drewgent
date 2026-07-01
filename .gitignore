@@ -77,7 +77,9 @@ update_status.json
 auth.json
 auth.lock
 .master_pass
-.vault_key
+# Vault moved to ~/.config/drewgent/ (outside repo). No vault data files in repo.
+vault.enc
+vault.key
 .vault_salt
 .skills_prompt_snapshot.json
 .update_check

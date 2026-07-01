@@ -27,12 +27,24 @@ import urllib.error
 HOME = os.path.expanduser("~")
 DREWGENT = os.path.join(HOME, ".drewgent")
 LOG_FILE = os.path.join(DREWGENT, "logs", "opencode.stderr.log")
+_BACKUP_LOG_FILE = os.path.join(DREWGENT, "logs", "opencode.stderr.log.20260629-144123.bak")
 OLD_LOG_FILE = os.path.join(DREWGENT, "logs", "agent.log")
+
+# Collect all available log files for multi-source reads
+_LOG_SOURCES = []
+for _p in (LOG_FILE, _BACKUP_LOG_FILE, OLD_LOG_FILE):
+    if os.path.isfile(_p) and os.path.getsize(_p) > 0:
+        _LOG_SOURCES.append(_p)
+# If no source has data, fall back to LOG_FILE (empty but exists)
+if not _LOG_SOURCES and os.path.isfile(LOG_FILE):
+    _LOG_SOURCES.append(LOG_FILE)
 
 _EXTRA_PATH = os.pathsep.join([
     os.path.join(HOME, ".local", "bin"),
     "/opt/homebrew/bin",
     "/usr/local/bin",
+    "/usr/sbin",
+    "/sbin",
 ])
 _EXTRA_ENV = {"PATH": _EXTRA_PATH + os.pathsep + os.environ.get("PATH", "")}
 
@@ -45,6 +57,7 @@ def run(cmd, timeout=15):
     """Run a shell command, return (stdout, stderr, exit_code)."""
     try:
         env = {**_EXTRA_ENV, **os.environ}
+        env["PATH"] = _EXTRA_PATH + os.pathsep + env.get("PATH", "")
         r = subprocess.run(
             cmd, capture_output=True, text=True, timeout=timeout, shell=True, env=env
         )
@@ -624,62 +637,80 @@ def collect_timeline(cron_data, sessions, recent_errors):
     return deduped[:12]  # max 12 events
 
 
-def _kst_date_counts(log):
-    """Parse opencode UTC log, count lines by KST date (+9h).
-    Returns dict: 'YYYY-MM-DD' -> count"""
+def _kst_date_counts(logs=None):
+    """Parse opencode UTC logs, count lines by KST date (+9h).
+    Accepts a list of log paths or a single path. Returns dict: 'YYYY-MM-DD' -> count"""
     import re, calendar
+    if logs is None:
+        logs = _LOG_SOURCES
+    if isinstance(logs, str):
+        logs = [logs]
     counts = {}
-    try:
-        with open(log, "r", errors="ignore") as f:
-            for line in f:
-                m = re.match(r'timestamp=(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})', line)
-                if not m:
-                    continue
-                utc_d = m.group(1)
-                h = int(m.group(2)[:2]) + 9  # KST = UTC+9
-                if h >= 24:
-                    utc_ts = calendar.timegm(time.strptime(utc_d + " 00:00:00", "%Y-%m-%d %H:%M:%S"))
-                    kst_date = time.strftime("%Y-%m-%d", time.gmtime(utc_ts + 86400))
-                else:
-                    kst_date = utc_d
-                counts[kst_date] = counts.get(kst_date, 0) + 1
-    except Exception:
-        pass
+    for log in logs:
+        try:
+            with open(log, "r", errors="ignore") as f:
+                for line in f:
+                    m = re.match(r'timestamp=(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})', line)
+                    if not m:
+                        continue
+                    utc_d = m.group(1)
+                    h = int(m.group(2)[:2]) + 9  # KST = UTC+9
+                    if h >= 24:
+                        utc_ts = calendar.timegm(time.strptime(utc_d + " 00:00:00", "%Y-%m-%d %H:%M:%S"))
+                        kst_date = time.strftime("%Y-%m-%d", time.gmtime(utc_ts + 86400))
+                    else:
+                        kst_date = utc_d
+                    counts[kst_date] = counts.get(kst_date, 0) + 1
+        except Exception:
+            pass
     return counts
 
 
-def _kst_hourly_counts(log):
-    """Count opencode log lines per KST hour for KST today."""
+def _kst_hourly_counts(logs=None):
+    """Count opencode log lines per KST hour for KST today.
+    Accepts a list of log paths or a single path."""
     import re, calendar
+    if logs is None:
+        logs = _LOG_SOURCES
+    if isinstance(logs, str):
+        logs = [logs]
     kst_now = time.gmtime(time.time() + 9 * 3600)
     today_kst = time.strftime("%Y-%m-%d", kst_now)
     hours = [0] * 24
-    try:
-        with open(log, "r", errors="ignore") as f:
-            for line in f:
-                m = re.match(r'timestamp=(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})', line)
-                if not m:
-                    continue
-                h = (int(m.group(2)[:2]) + 9) % 24
-                utc_d = m.group(1)
-                if h < 9:  # wrapped to next KST day
-                    utc_ts = calendar.timegm(time.strptime(utc_d + " 00:00:00", "%Y-%m-%d %H:%M:%S"))
-                    kst_date = time.strftime("%Y-%m-%d", time.gmtime(utc_ts + 86400))
-                else:
-                    kst_date = utc_d
-                if kst_date == today_kst:
-                    hours[h] += 1
-    except Exception:
-        pass
+    for log in logs:
+        try:
+            with open(log, "r", errors="ignore") as f:
+                for line in f:
+                    m = re.match(r'timestamp=(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})', line)
+                    if not m:
+                        continue
+                    h = (int(m.group(2)[:2]) + 9) % 24
+                    utc_d = m.group(1)
+                    if h < 9:  # wrapped to next KST day
+                        utc_ts = calendar.timegm(time.strptime(utc_d + " 00:00:00", "%Y-%m-%d %H:%M:%S"))
+                        kst_date = time.strftime("%Y-%m-%d", time.gmtime(utc_ts + 86400))
+                    else:
+                        kst_date = utc_d
+                    if kst_date == today_kst:
+                        hours[h] += 1
+        except Exception:
+            pass
     return [{"hour": i, "count": hours[i]} for i in range(24)]
 
 
 def collect_daily_usage():
     """Count activity from agent log for multiple time windows."""
-    log = LOG_FILE if os.path.isfile(LOG_FILE) else OLD_LOG_FILE
+    # Use opencode logs; fall back to old agent.log only if nothing else exists
+    if _LOG_SOURCES:
+        opencode_logs = [p for p in _LOG_SOURCES if "opencode" in p]
+        logs = opencode_logs if opencode_logs else _LOG_SOURCES
+        primary_log = logs[0]
+    else:
+        logs = [OLD_LOG_FILE]
+        primary_log = OLD_LOG_FILE
 
-    if log == LOG_FILE:
-        kst_date_counts = _kst_date_counts(log)
+    if "opencode" in primary_log or len(logs) > 1:
+        kst_date_counts = _kst_date_counts(logs)
         kst_now_t = time.gmtime(time.time() + 9 * 3600)
         today = time.strftime("%Y-%m-%d", kst_now_t)
         yesterday = time.strftime("%Y-%m-%d", time.gmtime(time.time() + 9 * 3600 - 86400))
@@ -700,10 +731,7 @@ def collect_daily_usage():
                     hours5 += c
                 elif days_off == 1 and kst_h >= 5:
                     hours5 += c if kst_h >= 5 else 0
-                # Simple: count today + yesterday lines as rough hours5
-                # More accurate would need per-hour parsing
-        # Simpler hours5: use _kst_hourly_counts and sum last 5
-        hours5_data = _kst_hourly_counts(log)
+        hours5_data = _kst_hourly_counts(logs)
         hours5 = sum(h["count"] for h in hours5_data if h["hour"] >= max(0, kst_h - 5))
 
     else:
@@ -777,9 +805,13 @@ def collect_daily_usage():
 
 def collect_model_usage():
     """Parse opencode log for per-model usage stats."""
-    log = LOG_FILE if os.path.isfile(LOG_FILE) else OLD_LOG_FILE
-    if not os.path.isfile(log):
-        return {"models": [], "total_calls": 0}
+    logs = [p for p in _LOG_SOURCES if "opencode" in p] if _LOG_SOURCES else []
+    if not logs:
+        log = OLD_LOG_FILE
+        if os.path.isfile(log):
+            logs = [log]
+        else:
+            return {"models": [], "total_calls": 0}
 
     import re
     from collections import defaultdict
@@ -789,45 +821,45 @@ def collect_model_usage():
     model_providers = defaultdict(set)
     total_calls = 0
 
-    try:
-        with open(log, "r", errors="ignore") as f:
-            f.seek(0, 2)
-            size = f.tell()
-            f.seek(max(0, size - 1024 * 1024))
-            content = f.read()
-    except Exception:
-        return {"models": [], "total_calls": 0}
+    for log in logs:
+        try:
+            with open(log, "r", errors="ignore") as f:
+                f.seek(0, 2)
+                size = f.tell()
+                f.seek(max(0, size - 1024 * 1024))
+                content = f.read()
+        except Exception:
+            continue
 
-    # If opencode structured log — parse key=value format
-    if log == LOG_FILE:
-        # Count model calls from message=stream lines
-        for m in re.finditer(r'message=stream\s+providerID=(\S+)\s+modelID=(\S+)', content):
-            prov = m.group(1)
-            model_name = m.group(2).strip()
-            if '/' in model_name:
-                model_name = model_name.split('/')[-1]
-            if model_name:
-                model_counts[model_name] += 1
-                total_calls += 1
-                model_providers[model_name].add(prov)
+        # If opencode structured log — parse key=value format
+        if "opencode" in log or LOG_FILE and log == LOG_FILE:
+            # Count model calls from message=stream lines
+            for m in re.finditer(r'message=stream\s+providerID=(\S+)\s+modelID=(\S+)', content):
+                prov = m.group(1)
+                model_name = m.group(2).strip()
+                if '/' in model_name:
+                    model_name = model_name.split('/')[-1]
+                if model_name:
+                    model_counts[model_name] += 1
+                    total_calls += 1
+                    model_providers[model_name].add(prov)
 
-        # Token data from message=created lines (session-level totals)
-        for m in re.finditer(
-            r'message=created\s+.*?'
-            r'tokens\.input=(\d+)\s+tokens\.output=(\d+)\s+',
-            content,
-        ):
-            try:
-                inp = int(m.group(1))
-                out = int(m.group(2))
-                # Credit to the most-used model
-                if model_counts:
-                    top = max(model_counts, key=model_counts.get)
-                    model_tokens[top]["in"] += inp
-                    model_tokens[top]["out"] += out
-                    model_tokens[top]["total"] += inp + out
-            except ValueError:
-                pass
+            # Token data from message=created lines (session-level totals)
+            for m in re.finditer(
+                r'message=created\s+.*?'
+                r'tokens\.input=(\d+)\s+tokens\.output=(\d+)\s+',
+                content,
+            ):
+                try:
+                    inp = int(m.group(1))
+                    out = int(m.group(2))
+                    if model_counts:
+                        top = max(model_counts, key=model_counts.get)
+                        model_tokens[top]["in"] += inp
+                        model_tokens[top]["out"] += out
+                        model_tokens[top]["total"] += inp + out
+                except ValueError:
+                    pass
     else:
         # Legacy Hermes format
         for m in re.finditer(r'model=(\S+)', content):
@@ -904,13 +936,15 @@ def collect_skill_categories():
 
 def collect_hourly_usage():
     """Count log lines per hour for today (KST)."""
-    log = LOG_FILE if os.path.isfile(LOG_FILE) else OLD_LOG_FILE
-    if log == LOG_FILE:
-        return _kst_hourly_counts(log)
+    opencode_logs = [p for p in _LOG_SOURCES if "opencode" in p] if _LOG_SOURCES else []
+    if opencode_logs:
+        return _kst_hourly_counts(opencode_logs)
+    if _LOG_SOURCES:
+        return _kst_hourly_counts(_LOG_SOURCES)
     today = time.strftime("%Y-%m-%d")
     hours = []
     for h in range(24):
-        out, _, _ = run("grep -c '" + today + " " + f"{h:02d}" + "' " + log + " 2>/dev/null || echo 0", timeout=3)
+        out, _, _ = run("grep -c '" + today + " " + f"{h:02d}" + "' " + OLD_LOG_FILE + " 2>/dev/null || echo 0", timeout=3)
         count = int(out.strip()) if out.strip().isdigit() else 0
         hours.append({"hour": h, "count": count})
     return hours
@@ -972,9 +1006,10 @@ def collect_provider_usage():
 
 def collect_weekly_trend():
     """Log lines per day for last 7 days (KST)."""
-    log = LOG_FILE if os.path.isfile(LOG_FILE) else OLD_LOG_FILE
-    if log == LOG_FILE:
-        kst_date_counts = _kst_date_counts(log)
+    opencode_logs = [p for p in _LOG_SOURCES if "opencode" in p] if _LOG_SOURCES else []
+    logs = opencode_logs if opencode_logs else _LOG_SOURCES
+    if logs:
+        kst_date_counts = _kst_date_counts(logs)
         today_kst = time.strftime("%Y-%m-%d", time.gmtime(time.time() + 9 * 3600))
         days = []
         for i in range(6, -1, -1):
@@ -985,10 +1020,25 @@ def collect_weekly_trend():
     import subprocess
     for i in range(7):
         d = time.strftime("%Y-%m-%d", time.localtime(time.time() - i * 86400))
-        out, _, _ = run("grep -c '" + d + "' " + log + " 2>/dev/null || echo 0", timeout=5)
+        out, _, _ = run("grep -c '" + d + "' " + OLD_LOG_FILE + " 2>/dev/null || echo 0", timeout=5)
         count = int(out.strip()) if out.strip().isdigit() else 0
         days.append({"date": d, "count": count})
     return list(reversed(days))
+
+
+def collect_monthly_trend():
+    """Log lines per day for last 30 days (KST)."""
+    opencode_logs = [p for p in _LOG_SOURCES if "opencode" in p] if _LOG_SOURCES else []
+    logs = opencode_logs if opencode_logs else _LOG_SOURCES
+    if logs:
+        kst_date_counts = _kst_date_counts(logs)
+        today_kst = time.strftime("%Y-%m-%d", time.gmtime(time.time() + 9 * 3600))
+        days = []
+        for i in range(29, -1, -1):
+            d = time.strftime("%Y-%m-%d", time.gmtime(time.time() + 9 * 3600 - i * 86400))
+            days.append({"date": d, "count": kst_date_counts.get(d, 0)})
+        return days
+    return []
 
 
 def collect_live_activity():
@@ -1069,7 +1119,7 @@ def collect_live_activity():
                 ev["icon"] = "&#9989;"
                 ev["text"] = "Session done"
                 ev["type"] = "done"
-            elif level_val := kv.get("level", "") in ("ERROR", "WARN"):
+            elif (level_val := kv.get("level", "")) in ("ERROR", "WARN"):
                 ev["icon"] = "&#10071;"
                 ev["text"] = (level_val + ": " + msg)[:80]
                 ev["type"] = "error"
@@ -1466,12 +1516,21 @@ def main():
         "hourly": hourly,
         "session_details": sess_details,
         "provider_usage": prov_usage,
+        "monthly": collect_monthly_trend(),
         "weekly": weekly,
         "brain": brain,
         "today": today_summary,
         "timeline": timeline,
         "live": live,
     }
+
+    # Save to local state file (fallback for dashboard use)
+    state_path = os.path.join(DREWGENT, "agent-dashboard-state.json")
+    try:
+        with open(state_path, "w") as f:
+            json.dump({"latest": payload, "pushed_at": ts}, f, indent=2, ensure_ascii=False)
+    except Exception:
+        pass
 
     if dry_run:
         print(f"\n[Dry run] Payload ({len(json.dumps(payload))} bytes):")

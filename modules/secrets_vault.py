@@ -58,7 +58,7 @@ class SecretsVault:
 
     def __init__(self, vault_path: Path = None, key_path: Path = None):
         self.vault_path = vault_path or Path.home() / ".drewgent" / "secrets_vault.json"
-        self.key_path = key_path or Path.home() / ".drewgent" / ".vault_key"
+        self.key_path = key_path or Path.home() / ".config" / "drewgent" / "vault.key"
 
         self.vault_path.parent.mkdir(parents=True, exist_ok=True)
 
