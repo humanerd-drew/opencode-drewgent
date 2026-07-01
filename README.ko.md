@@ -356,6 +356,50 @@ launchd 기반 60초 틱, `cron/jobs.json`에서 작업 정의:
 
 ---
 
+## Vault Secrets — 암호화된 키 관리
+
+모든 API 키와 토큰은 **암호화**되어 보관됩니다. 디스크에 평문이 존재하지 않습니다.
+
+### 구조
+
+```
+사용자가 키 전달 → vault set KEY VALUE
+                          ↓
+                   Fernet 암호화 → vault.enc
+                   Master key는 OS keyring (macOS Keychain / Windows Credential Manager / Linux libsecret)
+                          ↓
+                   Shell hook → eval "$(vault env)" → 환경변수 export
+                          ↓
+                   opencode.jsonc → {env:VAR} 참조
+```
+
+### 빠른 시작
+
+```bash
+pip install cryptography keyring
+python3 scripts/vault_cli.py init
+vault set OPENAI_API_KEY "sk-..."     # 즉시 암호화 저장
+vault set DISCORD_TOKEN "MT-..."      # .zshrc에 절대 평문 안 씀
+vault list                            # 저장된 키 목록
+eval "$(vault env)"                   # 환경변수로 내보내기
+```
+
+### 에이전트 규칙
+
+에이전트가 키를 받으면 **반드시** `vault set KEY VALUE`로 암호화 저장해야 합니다. 절대 `.zshrc`, `.env`, `opencode.jsonc`에 평문으로 쓰지 않습니다. 설정 파일에서는 `{env:VAR}` 문법만 사용합니다.
+
+### 새 설치 시 설정
+
+1. `pip install cryptography keyring`
+2. `python3 scripts/vault_cli.py init` (OS keyring에 master key 생성)
+3. `.zshrc`에 hook 추가: `eval "$(python3 ~/.drewgent/scripts/vault_cli.py env 2>/dev/null)" || true`
+4. `vault scan`으로 기존 평문 키 탐색
+5. `vault migrate`로 암호화 + `{env:VAR}` 자동 변환
+
+전체 프로토콜은 `skill("vault-secrets")` 참조.
+
+---
+
 ## 디렉토리 구조
 
 ```
