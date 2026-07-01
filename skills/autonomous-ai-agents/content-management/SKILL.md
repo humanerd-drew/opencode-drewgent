@@ -126,7 +126,6 @@ NODE_PATH=/Users/drew/.drewgent/scripts/node_modules \
 | **narrative_arc** | `P4-cortex/content/narrative_arc.md` | Published content continuity tracking |
 | **content-inventory** | `P4-cortex/content/content-inventory.md` | All drafts/published with dedup topics |
 | **writing-style-guide** | `P1-limbic/persona/writing-style-guide.md` | Tone, forbidden expressions, Korean voice |
-| **taste-signals** | `P4-cortex/content/taste-signals.md` | Draft vs published diff 기록 — 네 수정 패턴 학습 |
 | **form-template** | `https://dev.to/siiddhantt/building-reefwatch-a-coral-powered-production-triage-agent-23hf` | Canonical blog post 구조 — 반드시 이 형태를 따라라 |
 
 ## Post-Publish Enrichment — Links & References
@@ -240,41 +239,31 @@ Bad (will show raw text):
 - Use `<!-- wp:list -->` for lists, `<!-- wp:code -->` for code blocks, `<!-- wp:heading {"level":2} -->` for headings
 - Use `<!-- wp:html -->...<!-- /wp:html -->` for custom HTML sections (cards, hero, etc.)
 
-### Auto-Publish Flow (Fully Autonomous)
+### Pipeline (2026-07-01 redesign)
 
 ```
-content-manager agent (every 3h)
-  → writes draft (Gutenberg HTML, proper pillar category name like "Build Log")
-  → calls create_post (status=draft), category=pillar name (not ID)
-  → reviewer agent runs QA (within 1h)
-  → fixes issues → promotes to publish
-  → updates narrative_arc + content-inventory
+content-curator (script, 08:00/15:00, $0)
+  → reads: trend keep, SEO articles, git, kanban, narrative arc, backlog
+  → heuristic dedup + scoring
+  → kanban INSERT (content-write / trend-review / creative-write)
+  → office-autopilot (5m) picks up → orchestrator → content-manager agent
+    → writes draft (Gutenberg HTML, SVG cover)
+    → calls create_post(status="draft")
+    → content-editor (agent, 12:00/20:00) → QA → publish
+    → updates narrative_arc + content-inventory
 ```
 
 **규칙:**
 - **No CLI approval needed.** Pipeline is fully autonomous.
-- content-manager는 `category` 필드에 카테고리 **이름**(ID 아님)을 전달: `"Build Log"`, `"AI & Tools"`, `"Systems"`, `"Creative"`
+- `create_post` 호출 시 **반드시** `slug`, `author`, `category` 전달. `tags`는 절대 전달 금지.
+- `slug`: 영어 kebab-case (예: `model-routing-architecture`). 절대 한글/빈 값 금지.
+- `author`: `1` (humanerd) — 전 카테고리 공통
+- `category`: 카테고리 **이름**(ID 아님): `"Build Log"`, `"AI & Tools"`, `"Systems"`, `"Creative"`
+- **Creative pillar는 explicit-only.** 자동 감지 금지. kanban task / 사용자 요청 / `creative-backlog.md` 참조 시에만 작성.
+- SVG cover를 생성했다면 `featured_image`에 절대 경로 전달
 - Draft 생성 후 editor agent가 자동 QA → 수정 → publish
 - 사용자가 마음에 안 들면 wp-admin에서 unpublish → 다음 run 때 반영
 - "이건 publish하지 마" 같은 피드백은 memory에 저장되어 다음 draft에 반영됨
-
-### Growth Loop (Taste Signal → Better Drafts)
-
-회차를 거듭할수록 네 취향에 가까워지는 구조:
-
-```
-1. content-manager draft → publish
-2. 사용자가 wp-admin에서 수정
-3. content_diff_analyzer (매일 05:00)
-     → draft vs published diff 추출
-     → taste-signals.md에 기록
-4. content-manager가 다음 draft 전에 taste-signals.md 읽음
-     → "지난번엔 이런 표현이 수정됐구나"
-     → writing-style-guide에 반영
-5. 다음 draft가 개선됨
-```
-
-매일 05:00에 diff 분석 → taste-signals.md 업데이트. content-manager는 매 실행 전에 이 파일을 읽어서 네가 평소에 뭘 고치는지 학습한다. 쓰면 쓸수록 네 목소리에 가까워짐.
 
 ### Site Config
 

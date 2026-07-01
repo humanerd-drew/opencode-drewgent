@@ -14,11 +14,14 @@ Registered in `~/.hermes/config.yaml` under `mcp_servers.wordpress`.
 
 | Tool | Description | Key Params |
 |------|-------------|------------|
-| `create_post` | Create new post | title, content, category, tags, status, date |
-| `upload_media` | Upload file (image/SVG) | file_path, title |
+| `create_post` | Create new post | title, content, category, slug, author, status, date, featured_image |
+| `upload_media` | Upload file (host path → container) | file_path, title |
+| `set_featured_image` | Upload + set post thumbnail | post_id, image_path |
+| `update_post` | Update existing post | id, title, content, slug, status, category, date |
 | `list_posts` | List published posts | posts_per_page, status |
 | `get_post` | Get post by ID | id |
 | `create_category` | Add taxonomy | name, slug |
+| `list_categories` | List all categories | — |
 | `set_site_option` | Update WP option | key, value |
 | `set_theme_mod` | Set theme mod (JSON) | key, value |
 

@@ -6,7 +6,7 @@ type: skill
 space: outcome
 tags: [outcome, seo, rss, crawling, pipeline]
 created: 2026-05-20
-updated: 2026-06-14
+updated: 2026-06-29
 links:
   - "[[@action/skills/SKILL-INDEX]]"
   - "[[skills/seo-article-harvester/references/crawling-tools]]"
@@ -49,11 +49,12 @@ links:
 - **Worker**: Kanban worker
 - **Input**: `seo-articles/YYYY/*.md` (아직 분석 안 된 새 기사)
 - **Process**:
-  1. Read new article files (tracked via seo_analysis_state.json)
-  2. LLM extracts: summary (1-2문장), topic tags, SEO relevance score (1-5)
-  3. Identify critical: Google algo updates, penalty risks, major industry news
-  4. Write analysis to `P4-cortex/growth/seo/analyzed/YYYY-MM-DD-hash.json`
-  5. If critical insight found: create kanban task for human attention
+1. Read new article files (tracked via seo_analysis_state.json)
+2. LLM extracts: summary (1-2문장), topic tags, SEO relevance score (1-5)
+3. Identify critical: Google algo updates, penalty risks, major industry news
+4. **Extract GEO/AI-search signals**: AI citation readiness, brand-authority/mention trends, AI crawler analysis, platform-specific optimization (ChatGPT / Perplexity / Gemini / Google AI Overviews), schema markup for AI, and citability scoring insights
+5. Write analysis to `P4-cortex/growth/seo/analyzed/YYYY-MM-DD-hash.json`
+6. If critical insight found (including GEO/AI-search shifts): create kanban task for human attention
 - **State file**: `P4-cortex/growth/seo/seo_analysis_state.json`
 - **LLM 필요?**: ✅ Yes
 
@@ -118,6 +119,18 @@ P4-cortex/growth/seo/
 - `openschema.co.jp/feed`, `hnrss.org/frontpage`, `dev.to/feed`
 - `news.ycombinator.com/rss`, `techmeme.com/feed.xml`
 
+## GEO/AI-Search Signal Extraction
+
+The analyzer should surface Generative Engine Optimization (GEO) concepts alongside traditional SEO:
+
+| Signal | What to capture |
+|--------|-----------------|
+| **Citability scoring** | Passage length, self-contained facts, direct-answer structure, citation readiness |
+| **AI crawler analysis** | New AI bot signals (GPTBot, ClaudeBot, PerplexityBot), robots.txt guidance, `llms.txt` relevance |
+| **Brand authority** | Brand mentions as an AI visibility signal, entity authority shifts |
+| **Platform optimization** | ChatGPT, Perplexity, Gemini, Google AI Overviews-specific tactics |
+| **Schema for AI** | JSON-LD, `llms.txt`, ARD/AI discovery signals, structured data for LLM consumption |
+
 ## Analysis Format (worker output)
 
 ```json
@@ -125,9 +138,12 @@ P4-cortex/growth/seo/
   "article_url": "https://...",
   "title": "Article Title",
   "summary": "1-2 sentence LLM summary",
-  "topic_tags": ["google-update", "core-web-vitals", "ranking"],
+  "topic_tags": ["google-update", "core-web-vitals", "ranking", "geo", "ai-search"],
   "relevance_score": 4,
+  "geo_relevance_score": 3,
+  "ai_citation_readiness": 3,
   "key_insight": "Main actionable takeaway",
+  "geo_insight": "AI-search / GEO takeaway, if any",
   "is_critical": false,
   "analyzed_at": "2026-06-14T12:00:00"
 }
