@@ -62,6 +62,41 @@ WordPress 사이트(YOUR_DOMAIN) 보안 및 SEO 정리 내역:
 - 작성자 누락 버그 수정: MCP 서버에 `--post_author=1` 추가
 - content-manager agent 프로필에 slug/category 컨벤션 명시
 
+### Manufacturing Bridge (2026-07-02)
+
+**trigger:** "agent-wiki Taste Review — 제조 품질공학과 에이전트 하네스의 동형사상 formalize"
+**decision:** "참조 문서 → 3-tier enforcement. ponytail과 통합. patterns registry로 확장 가능."
+
+Drewgent는 6대 품질 패턴을 정식 동형매핑으로 관리한다. 새 메커니즘/가드레일 설계 전 이 표를 먼저 참조.
+
+```
+harness/patterns/manufacturing-bridge.md    ← 정본 (6개 패턴 + 파일 매핑 + enforcement)
+P0-brainstem/brain/rules.md                 ← 3-tier 참조 (Tier 1 행동규칙 / Tier 2 lint / Tier 3 禁)
+scripts/bridge-lint.sh                      ← config-driven 태그 검증 (patterns registry 기반)
+```
+
+| 패턴 | 원리 | Drewgent 구현체 |
+|------|------|----------------|
+| 점진제동 | 先경고→조이기→늦추기→세우기 | launchd ThrottleInterval, cron skip, HITL |
+| 구조적 불가능 | "하지 마" 규칙이 아닌 구조적 차단 | watcher exclude, chmod 600, vault_cli, ponytail |
+| 자동정지+HITL | guardrail trip → 인간 판단 | AskUserQuestion, kanban_block, prod-write guard |
+| flaky vs systematic | 단발 vs 반복 실패 분류 | cron_state.json, P6-prefrontal/logs/ |
+| 두눈 실증 | CI-green ≠ live-works | D1/gbrain 직접 쿼리, process list, screenshot |
+| 사전 위험 식별 | RPN = 심각도×발생×검출 | cron/jobs.json, skills/, kanban task 생성 시 |
+
+### Template Gap Fixes (2026-07-02)
+
+**trigger:** "README 체크리스트 없이 clone 시 cron/Discord/launchd 동작 안 하는 문제"
+**decision:** "setup.sh + launchd 템플릿 + .env.example 보강. 예측 가능성 6→9/10."
+
+| 갭 | 해결 |
+|----|------|
+| launchd plist 없음 | `launchd/*.plist.example` 3개 (opencode serve, cron, discord-bot) |
+| .env.example에 DISCORD/OPENAI 없음 | `DISCORD_BOT_TOKEN`, `OPENAI_API_KEY` 섹션 추가 |
+| 첫 실행 원스톱 없음 | `scripts/setup.sh` (deps 설치, .env 생성, launchd 가이드) |
+| README에 절차 없음 | "First-run Checklist" 6단계 테이블 (한글/영문) |
+| push-template `.env.example` 누락 | exclude 패턴 `^\.env` → `^\.env$` 수정 |
+
 ### Agent System
 
 Drewgent는 **opencode**의 내장 `task()` + **GJC Coordinator MCP** 조합으로 작동.
