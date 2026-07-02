@@ -109,13 +109,26 @@ The principle: **the prompt is more informative than the output.** When you read
 # 1. Install opencode
 curl -fsSL https://opencode.ai/install | sh
 
-# 2. Clone this repo as your Drewgent directory
+# 2. Clone this repo
 git clone git@github.com:humanerd-drew/opencode-drewgent.git ~/.drewgent
-
-# 3. Start opencode
 cd ~/.drewgent
-opencode
+
+# 3. Run the setup script
+bash scripts/setup.sh
 ```
+
+### First-run Checklist (post clone)
+
+| # | Step | Command / Action | Required? |
+|---|------|-----------------|-----------|
+| 1 | Run setup | `bash scripts/setup.sh` — installs deps, creates .env, checks environment | ✅ |
+| 2 | Set API keys | Edit `~/.drewgent/.env` — add `OPENCODE_API_KEY` (required), `DISCORD_BOT_TOKEN` (optional), `OPENAI_API_KEY` (optional) | ✅ |
+| 3 | Rename (optional) | `skill("rename-drewgent")` — replaces all `drewgent` → `<yourname>gent` | 🔄 |
+| 4 | Verify | `bash scripts/bridge-lint.sh` — checks manufacturing-bridge tag compliance | 🔄 |
+| 5 | Install launchd (macOS) | `for f in launchd/*.plist.example; do n=$(basename "$f" .example); cp "$f" ~/Library/LaunchAgents/"$n" && launchctl load ~/Library/LaunchAgents/"$n"; done` — enables cron, opencode serve, Discord bot daemons | 🔄 |
+| 6 | Start opencode | `opencode` — interactive session | ✅ |
+
+**Not working?** See [Troubleshooting](#troubleshooting) below. Missing API keys? Check `~/.drewgent/.env`.
 
 ### Requirements
 
@@ -736,6 +749,10 @@ Two Discord integration paths:
 ├── harness/                    Quality engineering patterns
 │   └── patterns/
 │       └── manufacturing-bridge.md  6‑pattern quality bridge (3‑tier enforcement)
+├── launchd/                    Launchd plist templates (macOS daemons)
+│   ├── ai.yourgent.opencode.plist.example
+│   ├── ai.yourgent.cron.plist.example
+│   └── ai.yourgent.discord-bot.plist.example
 │
 ├── agents/                     16 subagent profile definitions
 │   ├── explorer.md             Read-only analysis (flash)
