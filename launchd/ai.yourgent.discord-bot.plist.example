@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>ai.{{AGENT_NAME}}.discord-bot</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>{{PYTHON_PATH}}</string>
+        <string>{{DREWGENT_DIR}}/scripts/discord_bot.py</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>{{DREWGENT_DIR}}</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>{{PATH}}</string>
+        <key>DISCORD_BOT_TOKEN</key>
+        <string>{{DISCORD_BOT_TOKEN}}</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>WaitForNetworkInterface</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+        <key>ThrottleInterval</key>
+        <integer>10</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>{{DREWGENT_DIR}}/logs/discord-bot.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>{{DREWGENT_DIR}}/logs/discord-bot.err.log</string>
+</dict>
+</plist>
