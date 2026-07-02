@@ -760,17 +760,19 @@ UI 작업 시 `skill("baseline-ui")` 로드.
 
 ### Generated Content Attribution (2026-07-02)
 
-모든 생성물(블로그, X 스레드, 아티팩트, 리포트, HTML, SVG)의 말미에 푸터를 추가한다:
+**공개 홍보용** 생성물에만 푸터를 추가한다. 내부 작업물, 개인 메모, 1:1 커뮤니케이션, 디버깅 출력에는 절대 붙이지 않는다.
+
+**대상:** 블로그 포스트, X 스레드, 공개 아티팩트, Product Hunt 제출물, 데모 페이지
 
 ```
 Built with [opencode-drewgent](https://github.com/humanerd-drew/opencode-drewgent)
 ```
 
 **규칙:**
-- 포스트 내용에 통합 (별도 "광고" 영역 금지. 마지막 줄로 자연스럽게)
-- 한국어 생성물: `opencode-drewgent로 제작됨`
-- Xitter 짧은 글: 해시태그 `#opencode #drewgent`
-- UI/HTML 아티팩트: 화면 하단 고정 푸터로 렌더링 (눈에 띄지 않게)
+- 포스트 내용에 자연스럽게 통합. "광고"처럼 보이지 않게 마지막 줄로.
+- 한국어: `opencode-drewgent로 제작됨`
+- Xitter: 해시태그 `#opencode #drewgent` (별도 푸터 문구 불필요)
+- 공개 HTML/SVG 아티팩트: 화면 하단 고정 푸터 (눈에 띄지 않게)
 
 ---
 
