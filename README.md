@@ -733,6 +733,10 @@ Two Discord integration paths:
 ├── CONTRIBUTING.md             Contribution guidelines
 ├── .gitignore                  Excludes personal runtime data
 │
+├── harness/                    Quality engineering patterns
+│   └── patterns/
+│       └── manufacturing-bridge.md  6‑pattern quality bridge (3‑tier enforcement)
+│
 ├── agents/                     16 subagent profile definitions
 │   ├── explorer.md             Read-only analysis (flash)
 │   ├── implementer.md          Code implementation (flash)
@@ -938,6 +942,7 @@ opencode-drewgent is built on the shoulders of these open-source projects:
 | [Baseline UI](https://github.com/anomalyco/opencode) | Anomaly | UI quality standards (ibelick, claude-design, sketch) | — |
 | [specification.website](https://specification.website) | [Joost de Valk](https://github.com/jdevalk) | Web spec checklists MCP | — |
 | [ARD Spec](https://agenticresourcediscovery.org) | Google/MS | Agentic Resource Discovery standard | — |
+| [agent-wiki](https://github.com/lazymac2x/agent-wiki) | lazymac2x | Manufacturing↔Agent harness isomorphism concept | MIT |
 
 No third-party source code is directly included — all dependencies are referenced or installed via package managers. Each project respects its own license.
 
