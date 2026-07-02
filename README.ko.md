@@ -410,6 +410,9 @@ eval "$(vault env)"                   # 환경변수로 내보내기
 ├── skills/                     60+ 카테고리, 100+ 스킬
 ├── @action/                    액션 레이어 (스킬, 제안, 계획, 인시던트)
 ├── @memory/                    메모리/성장 데이터 (git 제외)
+├── harness/                    품질 엔지니어링 패턴
+│   └── patterns/
+│       └── manufacturing-bridge.md  6대 패턴 브리지 (3-tier enforcement)
 ├── scripts/                    27개 자동화 스크립트
 ├── cron/                       jobs.json + scheduler.py
 ├── P0-brainstem/               거버넌스 규칙 (.neuron)
@@ -459,6 +462,7 @@ eval "$(vault env)"                   # 환경변수로 내보내기
 | [Ponytail](https://github.com/DietrichGebert/ponytail) | Dietrich Gebert | 코드 최소화 체크리스트 |
 | [NeuronFS](https://github.com/rhino-acoustic/NeuronFS) | [rhino-acoustic](https://github.com/rhino-acoustic) | 뇌 기반 거버넌스 시스템 |
 | [ARD Spec](https://agenticresourcediscovery.org) | Google/MS | Agentic Resource Discovery |
+| [agent-wiki](https://github.com/lazymac2x/agent-wiki) | lazymac2x | 제조↔에이전트 동형사상 개념 |
 
 ---
 

@@ -17,6 +17,7 @@ links:
   - "[[skills/test-driven-development]]"
   - "[[skills/systematic-debugging]]"
   - "[[skills/external-tool-evaluation]]"
+  - "[[harness/patterns/manufacturing-bridge]]"
 ---
 
 # Ponytail — Lazy Senior Dev Mode
