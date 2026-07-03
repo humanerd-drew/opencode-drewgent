@@ -40,7 +40,7 @@ def _env(key: str, fallback="") -> str:
     return os.environ.get(key, fallback)
 
 DISCORD_WEBHOOK   = _env("DISCORD_WEBHOOK_URL", "")
-AGENT_WEBHOOK     = "https://discord.com/api/webhooks/REVOKED/REVOKED"
+AGENT_WEBHOOK     = _env("AGENT_WEBHOOK_URL", "")
 BOT_TOKEN         = _env("DISCORD_BOT_TOKEN", "")
 CHANNEL_DIR       = Path.home() / ".drewgent" / "channel_directory.json"
 THREAD_STATE_FILE = Path.home() / ".drewgent" / "discord_threads.json"
