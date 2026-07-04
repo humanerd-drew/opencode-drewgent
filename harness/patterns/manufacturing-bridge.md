@@ -77,7 +77,7 @@ links:
 |----------|-----------|----------|------|
 | watcher exclude | vault.key, secrets_vault.json 읽기 | opencode.jsonc watcher 경로 제외 | `~/.config/opencode/opencode.jsonc` |
 | chmod 600 | DB/Admin credential 노출 | 파일 권한으로 읽기 원천 차단 | `~/.drewgent/wordpress/.wp-env` |
-| gbrain source isolation | vault 파일 직접 탐색 | CLI-only 접근, MCP로는 불가 | gbrain serve config |
+| knowledge.db isolation | knowledge.db 직접 탐색 | CLI-only 접근, MCP로는 불가 | chmod 600, watcher exclude |
 | vault_cli.py 의무화 | API 키 평문 저장 | set/get 외 저장 경로 없음 | `~/.drewgent/scripts/vault_cli.py` |
 | 禁 blind_write | 파일 읽기 없는 쓰기 | tool 설계상 Read 선행 필수 + P0 규칙 | rules.md 禁 rule |
 | launchd KeepAlive 패턴 | 잘못된 재시작 조건 | `SuccessfulExit: false` 고정 | 모든 `ai.drewgent.*.plist` |
@@ -145,7 +145,7 @@ links:
 | 3현 | 의미 | 검증 방법 | 적용 파일 |
 |-----|------|-----------|----------|
 | 현장 | 실제 실행 환경 | `launchd list`, `docker ps`, `ps aux`, process list | 배포/디버그 시 |
-| 현물 | 실제 상태 | D1 직접 SELECT, gbrain query, `cron_state.json` 파일 읽기 | QA 단계 |
+| 현물 | 실제 상태 | D1 직접 SELECT, recall query, `cron_state.json` 파일 읽기 | QA 단계 |
 | 현실 | 실제 결과 | HTTP response status, terminal output, screenshot capture | 최종 확인 |
 
 **규칙:** implementer 출력 검증 시 3현 의무화. "빌드 통과했다" = 완료 아님. P1 결함.

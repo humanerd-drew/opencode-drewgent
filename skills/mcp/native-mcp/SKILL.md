@@ -11,7 +11,7 @@ metadata:
 
 links:
   - "[[mcp/mcporter]]"
-  - "[[mcp/gbrain-integration-drewgent]]"
+  - "[[mcp/gbrain-integration-drewgent]]" # DEPRECATED — gbrain removed 2026-07-05
   - "[[@action/skills/SKILL-INDEX]]"
   - "[[@identity/brain/rules]]"
 ---
@@ -340,7 +340,7 @@ mcp_servers:
   company_api:
     url: "https://mcp.mycompany.com/v1/mcp"
     headers:
-      Authorization: "Bearer sk-xxxxxxxxxxxxxxxxxxxx"
+      Authorization: "Bearer sk-PLACEHOLDER"
       X-Team-Id: "engineering"
     timeout: 180
     connect_timeout: 30
@@ -367,7 +367,7 @@ mcp_servers:
   company_api:
     url: "https://mcp.internal.company.com/mcp"
     headers:
-      Authorization: "Bearer sk-xxxxxxxxxxxxxxxxxxxx"
+      Authorization: "Bearer sk-PLACEHOLDER"
     timeout: 300
 ```
 

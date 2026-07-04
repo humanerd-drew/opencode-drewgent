@@ -1,5 +1,7 @@
 # opencode-drewgent
 
+[![YOUR_DOMAIN](https://img.shields.io/badge/blog-YOUR_DOMAIN-8B7355)](https://YOUR_DOMAIN)
+
 **AI 에이전트를 위한 오픈소스 개인 비서 프레임워크**
 
 opencode-drewgent는 `opencode` 위에서 동작하는 개인 AI 에이전트 시스템의 **아키텍처 레퍼런스**입니다. subagent 오케스트레이션, kanban 기반 파이프라인, 크론 자동화, 지식 그래프를 포함한 **운영 가능한 에이전트 시스템**입니다.
@@ -38,7 +40,7 @@ P6-prefrontal   → 전략. 계획, 제안, 사후 분석
 3. **구조를 가짐** — 평범한 텍스트 더미가 아닌 연결된 그래프
 4. **버전 관리 가능** — git이 모든 결정과 변경 추적
 
-P-레이어 디렉토리 자체가 Obsidian 볼트입니다. gbrain을 통한 하이브리드 검색으로 에이전트가 질의하고, 인간은 Obsidian에서 그래프 뷰로 탐색합니다.
+P-레이어 디렉토리 자체가 Obsidian 볼트입니다. recall()/remember() 도구(SQLite FTS5 + Ollama 벡터 검색)로 에이전트가 질의하고, 인간은 Obsidian에서 그래프 뷰로 탐색합니다.
 
 ### Filesystem = Truth
 
@@ -190,10 +192,10 @@ bash scripts/init-template.sh --name yourname
 └────────────────────────────────────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────────────┐
-│  지식 계층 (LLM Wiki + gbrain)                           │
+│  지식 계층 (LLM Wiki + knowledge.db)                     │
 │                                                        │
 │  P5-ego/wiki/compiled/  ← 컴파일된 지식 (최우선 조회)    │
-│  gbrain MCP             ← 벡터 + 키워드 하이브리드 검색  │
+│  knowledge.db           ← SQLite FTS5 + 벡터 검색       │
 │  codebase-memory-mcp    ← 코드베이스 지식 그래프         │
 │  @memory/               ← 원시 데이터 (최후의 수단)       │
 └────────────────────────────────────────────────────────┘
@@ -281,7 +283,7 @@ RAG와 달리, 지식을 미리 컴파일해서 축적:
 
 조회 우선순위:
 1. `P5-ego/wiki/compiled/` — 컴파일드 지식 (최우선)
-2. `gbrain query` — 벡터 검색
+2. `recall()` — 벡터 + 키워드 검색
 3. `codebase-memory-mcp` — 코드베이스 지식 그래프
 4. `@memory/` — 원시 데이터
 
@@ -345,12 +347,6 @@ launchd 기반 60초 틱, `cron/jobs.json`에서 작업 정의:
       "type": "local",
       "command": ["gjc", "mcp-serve", "coordinator"],
       "env": { "OPENCODE_API_KEY": "{env:OPENCODE_API_KEY}" }
-    },
-    "gbrain": {
-      "type": "local",
-      "command": ["gbrain", "serve"],
-      "env": { "OPENAI_API_KEY": "ollama-local" },
-      "timeout": 120000
     }
   }
 }
@@ -365,7 +361,7 @@ launchd 기반 60초 틱, `cron/jobs.json`에서 작업 정의:
 | wordpress | stdio | WordPress 포스트 관리 |
 | gajae-code | stdio | GJC Coordinator (워크트리 격리, tmux 병렬) |
 | portone | stdio | 포트원 결제 게이트웨이 |
-| gbrain | stdio | 개인 볼트 하이브리드 검색 |
+| opencode-knowledge | built-in | 교차 세션 메모리 — recall, remember, memory-stats |
 
 ---
 
@@ -459,7 +455,7 @@ eval "$(vault env)"                   # 환경변수로 내보내기
 | 문제 | 해결 |
 |------|------|
 | `opencode`를 찾을 수 없음 | 설치: `curl -fsSL https://opencode.ai/install \| sh` 또는 `brew install anomalyco/tap/opencode` |
-| `gbrain`을 찾을 수 없음 | [github.com/garrytan/gbrain](https://github.com/garrytan/gbrain)에서 설치하거나 `opencode.jsonc`에서 `"enabled": false` 설정 |
+| knowledge.db 없음 | 첫 `recall()` 호출 시 자동 생성. Ollama `nomic-embed-text` 모델 필요 |
 | rename 스크립트가 macOS `sed`에서 실패 | macOS `sed`는 BSD 문법 사용. `brew install gnu-sed`로 GNU sed 설치 |
 | Cron 작업이 실행되지 않음 | `cron/` 디렉토리 존재 확인, `jobs.json`에 `"enabled": true` 설정, `drewgent_cron.py` 스케줄러 실행 필요 |
 | `@identity/` 플레이스홀더가 그대로 보임 | `@identity/SELF_MODEL.md`, `@identity/persona/SOUL.md`, `writing-style-guide.md`를 에이전트에 맞게 수정 |
@@ -469,7 +465,6 @@ eval "$(vault env)"                   # 환경변수로 내보내기
 | 프로젝트 | 저자 | 용도 |
 |---------|------|------|
 | [opencode](https://opencode.ai) | [Anomaly](https://github.com/anomalyco) | AI 코딩 에이전트 플랫폼 |
-| [gbrain](https://github.com/garrytan/gbrain) | Garry Tan | 지식 그래프 & 하이브리드 검색 |
 | [codebase-memory-mcp](https://github.com/anomalyco/opencode) | Anomaly | 코드베이스 지식 그래프 |
 | [Gajae-Code](https://gajae-code.com) | — | GJC Coordinator MCP |
 | [discord-mcp](https://github.com/anomalyco/discord-mcp) | Anomaly | Discord MCP 서버 |

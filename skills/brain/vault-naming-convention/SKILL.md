@@ -140,7 +140,7 @@ grep -roh '\[\[[^]]*\]\]' ~/.drewgent --include='*.md' \
 grep -c '\[\[[^]]*\]\]' ~/.drewgent/P0-brainstem/**/*.md 2>/dev/null
 
 # Orphan files (0 inbound, 0 outbound)
-# Use gbrain find_orphans or scan manually
+# Use recall("orphans") or scan manually
 ```
 
 ## Philosophy: Build It Right Once

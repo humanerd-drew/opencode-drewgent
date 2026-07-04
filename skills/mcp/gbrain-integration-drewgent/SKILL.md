@@ -1,9 +1,9 @@
 ---
 title: gbrain-integration-drewgent
 name: gbrain-integration-drewgent
-description: Install and configure GBrain as a Hermes MCP server for Drewgent vault hybrid search
+description: "⚠️ DEPRECATED — gbrain replaced by SQLite FTS5 + Ollama embeddings (2026-07-05). Use recall()/remember() tools instead."
 type: skill
-tags: [gbrain, mcp, vault, search, drewgent]
+tags: [gbrain, mcp, vault, search, drewgent, deprecated]
 
 links:
   - "[[mcp/native-mcp]]"
@@ -143,7 +143,7 @@ Running an MCP test or CLI session can spawn a temporary gbrain subprocess. If t
 A no-agent cron job runs every 15 minutes to detect and kill orphaned gbrain processes:
 
 ```bash
-# Script: ~/.drewgent/scripts/drewgent_gbrain_watchdog.sh
+# [REMOVED 2026-07-05] Script: ~/.drewgent/scripts/drewgent_gbrain_watchdog.sh
 # Cron:   gbrain-watchdog (ID: 0fb33852686c)
 ```
 

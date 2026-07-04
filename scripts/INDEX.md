@@ -12,7 +12,7 @@
 | discord_bot.py | Discord ↔ opencode gateway | launchd |
 | discord_send.py | Discord message chunk sender | drewgent_cron.py, skills/ |
 | drewgent_cron.py | Cron dispatcher (60s interval) | launchd |
-| drewgent_gbrain_watchdog.sh | gbrain brain sync health check | skills/ |
+| ~~drewgent_gbrain_watchdog.sh~~ | ~~gbrain brain sync health check~~ | ~~skills/~~ (REMOVED) |
 | drewgent_harmony_check.sh | Vault graph integrity check | cron/jobs.json, skills/ |
 | drewgent_log_rotate.sh | Log rotation and compression | cron/jobs.json, skills/ |
 | excalidraw-to-png.js | Excalidraw diagram to PNG conversion | skills/ |

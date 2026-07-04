@@ -3,6 +3,7 @@
 [🇰🇷 한국어](README.ko.md)
 
 [![Built for opencode](https://img.shields.io/badge/Built%20for-opencode-8A2BE2)](https://opencode.ai)
+[![YOUR_DOMAIN](https://img.shields.io/badge/blog-YOUR_DOMAIN-8B7355)](https://YOUR_DOMAIN)
 
 Drewgent is an **autonomous software engineering agent system** built on [opencode](https://opencode.ai). It orchestrates specialized subagents through opencode's built-in `task()` and GJC Coordinator MCP for isolated/parallel execution, with a kanban-backed pipeline for structured context handoff, failure tracking, and background automation.
 
@@ -49,7 +50,7 @@ The agent needs a persistent memory that:
 A database can do 1 and 2. Only **files with wikilinks** can do all four.
 
 The P-layer directories *are* an Obsidian vault. Every file has YAML frontmatter, typed tags, and `[[wikilinks]]` to other files. This means:
-- An agent can `gbrain_query("what's the refresh token policy?")` and get a ranked answer from the knowledge graph
+- An agent can `recall("refresh token policy")` and get ranked results from the knowledge base (SQLite FTS5 + vector search)
 - A human can open the same directory in Obsidian and see the exact same graph, with backlinks, graph views, and local graphs
 - Git tracks who changed what, when, and why — the full audit trail of every architectural decision
 
@@ -246,15 +247,17 @@ The vault is designed for high backlink density. Key principles:
 - **Wiki-attachment images**: Referenced via `![[file.png]]` syntax
 - **Excluded from Obsidian**: Runtime data directories (`P2-hippocampus/kanban/`, `logs/`, `cache/`, etc.) — configured in `.obsidian/` at runtime (not in repo)
 
-### Querying the Vault
+### Querying the Knowledge Base
 
-Agents query the vault via gbrain (MCP server for hybrid search):
+Agents query the knowledge base via recall/remember tools (SQLite FTS5 + Ollama vector search):
 
 ```
-gbrain_query("auth patterns")             → semantic + keyword search
-gbrain_get_backlinks("P5-ego/SELF_MODEL") → find all pages that reference self-model
-gbrain_find_orphans()                      → find pages with no inbound links
+recall("auth patterns")             → semantic + keyword search (cosine sim + FTS5 fallback)
+memory-stats()                      → DB statistics, embedding coverage
+remember("decision: ...")           → store a fact with auto-embedding
 ```
+
+For cross-session memory, opencode's built-in `memory()` tool is used. The knowledge.db replaces gbrain's PGLite — zero daemon, zero API cost.
 
 For local Obsidian CLI operations, the `skills/obsidian-cli/` skill provides workflows.
 
@@ -585,12 +588,6 @@ Before writing code, every agent applies the minimization checklist:
       "type": "local",
       "command": ["gjc", "mcp-serve", "coordinator"],
       "env": { "OPENCODE_API_KEY": "{env:OPENCODE_API_KEY}" }
-    },
-    "gbrain": {
-      "type": "local",
-      "command": ["gbrain", "serve"],
-      "env": { "OPENAI_API_KEY": "ollama-local" },
-      "timeout": 120000
     }
   }
 }
@@ -605,7 +602,7 @@ Before writing code, every agent applies the minimization checklist:
 | **wordpress** | local (stdio) | WordPress post/category/media management via wp-cli on Docker | None (local) |
 | **gajae-code** | local (stdio) | GJC Coordinator — worktree isolation, tmux parallel execution, structured delegation | `OPENCODE_API_KEY` env |
 | **portone** | local (stdio) | PortOne (포트원) V2 payment gateway — docs, test channels, payment queries | None (local) |
-| **gbrain** | local (stdio) | PGLite hybrid search over personal vault — vector + keyword, entity tracking, takes/calibration | `OPENAI_API_KEY` env |
+| **opencode-knowledge** | built-in | Cross-session memory — recall, remember, memory-stats | None (local) |
 
 ---
 
@@ -668,7 +665,7 @@ Drewgent uses a launchd-driven 60-second tick that dispatches `scripts/drewgent_
 | 6 hours | trend-collect | Scrape GitHub trending repos (8 workers) | trend_harvester.py |
 | 6 hours | trend-scorer | Heuristic trend scoring (30 min after collect) | trend_scorer.py |
 | Daily 03:00 | seo-analyze | Analyze collected SEO articles | seo_analyzer.sh |
-| Daily 04:00 | housekeeper (deep clean) | Log rotation, wiki lint, QA digest, gbrain sync | drewgent_housekeeper.py |
+| Daily 04:00 | housekeeper (deep clean) | Log rotation, wiki lint, QA digest, knowledge.db maintenance | drewgent_housekeeper.py |
 | Daily 05:00 | content taste diff | Content taste diff analysis | content_diff_analyzer.py |
 | Daily 05:00 | cron health check | Full cron system health verification | cron_health_check.py |
 | Daily 06:00 | usage watch | Track token usage and adoption | trend_usage_watch.py |
@@ -891,7 +888,7 @@ The `.gitignore` is configured to exclude all of these. If you clone this repo, 
 | Problem | Solution |
 |---------|----------|
 | `opencode` not found | Install: `curl -fsSL https://opencode.ai/install \| sh` or `brew install anomalyco/tap/opencode` |
-| `gbrain` not found | Install from [github.com/garrytan/gbrain](https://github.com/garrytan/gbrain) or set `"enabled": false` in `opencode.jsonc` |
+| knowledge.db not found | Created automatically on first `recall()` call. Requires Ollama with `nomic-embed-text` model for embeddings |
 | Rename script fails on macOS `sed` | macOS `sed` uses BSD syntax. If errors occur: `brew install gnu-sed` |
 | Cron jobs don't trigger | Ensure `cron/` directory exists and `jobs.json` has `"enabled": true`. Requires `drewgent_cron.py` scheduler running |
 | Merge conflicts on `git pull upstream` | `git checkout --ours <file>` to keep your version, `--theirs` to accept upstream template |
@@ -936,7 +933,6 @@ The rename skill is at `skills/software-development/rename-drewgent/SKILL.md`.
 ## Related
 
 - [opencode](https://opencode.ai) — The CLI agent platform Drewgent runs on
-- [gbrain](https://github.com/anomalyco/gbrain) — Local PGLite brain server for hybrid search
 - [lazyweb](https://lazyweb.com) — 281k+ real app screenshots for UI design reference
 - [specification.website](https://specification.website) — Web spec checklists and best practices
 
@@ -949,7 +945,6 @@ opencode-drewgent is built on the shoulders of these open-source projects:
 | Project | Author | Purpose | License |
 |---------|--------|---------|---------|
 | [opencode](https://opencode.ai) | [Anomaly](https://github.com/anomalyco) | AI coding agent platform | MIT |
-| [gbrain](https://github.com/garrytan/gbrain) | Garry Tan | MCP-based knowledge graph & hybrid search | — |
 | [codebase-memory-mcp](https://github.com/anomalyco/opencode) | Anomaly | Codebase knowledge graph | MIT |
 | [Gajae-Code](https://github.com/Yeachan-Heo/gajae-code) | [Yeachan-Heo](https://github.com/Yeachan-Heo) | GJC Coordinator MCP — worktree isolation, tmux parallel execution | — |
 | [discord-mcp](https://github.com/anomalyco/discord-mcp) | Anomaly | Discord MCP server | MIT |

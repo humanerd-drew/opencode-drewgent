@@ -13,7 +13,7 @@ prerequisites:
 
 links:
   - "[[mcp/native-mcp]]"
-  - "[[mcp/gbrain-integration-drewgent]]"
+  - "[[mcp/gbrain-integration-drewgent]]" # DEPRECATED — gbrain removed 2026-07-05
   - "[[@action/skills/SKILL-INDEX]]"
   - "[[@identity/brain/rules]]"
 ---
