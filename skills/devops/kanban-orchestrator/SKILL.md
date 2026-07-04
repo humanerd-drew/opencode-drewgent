@@ -190,7 +190,7 @@ When spawned by the autopilot, read all tasks with `status='todo'` or `status='r
 | Bug/infra/outage | sre | Read-only first |
 | Research/explore | explorer | Return structured findings |
 | Design/UI | designer | Lazyweb + baseline-ui |
-| Data/analysis | analyst | Kanban DB, git log, gbrain |
+| Data/analysis | analyst | Kanban DB, git log, knowledge.db |
 | Review/QA | reviewer | Always after implementer |
 
 ### Processing rules

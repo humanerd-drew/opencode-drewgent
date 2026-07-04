@@ -11,7 +11,7 @@ metadata:
 
 links:
   - "[[mcp/mcporter]]"
-  - "[[mcp/gbrain-integration-drewgent]]" # DEPRECATED — gbrain removed 2026-07-05
+  # gbrain-integration-drewgent — REMOVED 2026-07-05 (replaced by knowledge.db recall/remember)
   - "[[@action/skills/SKILL-INDEX]]"
   - "[[@identity/brain/rules]]"
 ---

@@ -15,13 +15,6 @@
   },
 
   "mcp": {
-    "gbrain": {
-      "type": "local",
-      "command": ["/Users/drew/.bun/bin/gbrain", "serve"],
-      "enabled": true,
-      "environment": { "OPENAI_API_KEY": "ollama-local" },
-      "timeout": 120000
-    },
     "lazyweb": {
       "type": "remote",
       "url": "https://www.lazyweb.com/mcp",

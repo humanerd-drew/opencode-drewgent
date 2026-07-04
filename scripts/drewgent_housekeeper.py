@@ -113,16 +113,16 @@ def check_launchd():
     missing = services - running
     return missing, dead
 
-def check_gbrain_orphans():
-    """Return orphan page count. (Classification deferred to deep clean.)"""
-    r = subprocess.run(["gbrain", "find-orphans", "--json"],
-                       capture_output=True, text=True, timeout=15,
-                       env={**os.environ, "PYTHONPATH": ""})
-    if r.returncode != 0:
+def check_knowledge_db():
+    """Check knowledge.db health."""
+    db_path = DREW_HOME / "knowledge.db"
+    if not db_path.exists():
         return -1
     try:
-        d = json.loads(r.stdout)
-        return d.get("total_orphans", d.get("orphans", -1))
+        db = sqlite3.connect(str(db_path))
+        cnt = db.execute("SELECT count(*) FROM embeddings").fetchone()[0]
+        db.close()
+        return cnt
     except:
         return -1
 
@@ -174,6 +174,19 @@ def check_disk():
         return int(pct)
     return None
 
+# ── Bridge lint ──────────────────────────────────────────────────
+
+def check_bridge_lint():
+    """Run manufacturing-bridge tag lint. Returns (ok: bool, summary: str)."""
+    script = SCRIPTS / "bridge-lint.sh"
+    if not script.exists():
+        return False, "bridge-lint.sh 없음"
+    r = subprocess.run(["bash", str(script)], capture_output=True, text=True, timeout=30)
+    out = r.stdout.strip()
+    if r.returncode == 0:
+        return True, out.split("\n")[-1] if out else "pass"
+    return False, out.split("\n")[-1] if out else "fail"
+
 # ── Deep clean extras ────────────────────────────────────────────
 
 def rotate_logs():
@@ -199,13 +212,18 @@ def clean_cron_output():
             count += 1
     return count
 
-def purge_gbrain():
-    """Purge soft-deleted gbrain pages and classify orphans."""
-    r = subprocess.run(["gbrain", "purge-deleted-pages", "--older-than-hours", "72"],
-                       capture_output=True, text=True, timeout=30,
-                       env={**os.environ, "PYTHONPATH": ""})
-    purged = r.returncode == 0
-    return purged
+def vacuum_knowledge_db():
+    """VACUUM knowledge.db for storage efficiency."""
+    db_path = DREW_HOME / "knowledge.db"
+    if not db_path.exists():
+        return False
+    try:
+        db = sqlite3.connect(str(db_path))
+        db.execute("VACUUM")
+        db.close()
+        return True
+    except:
+        return False
 
 def archive_completed_kanban():
     """Archive kanban tasks completed > 7 days ago."""
@@ -269,74 +287,110 @@ def prune_memory_sessions():
 
 
 def digest_qa_evidence():
-    """Batch-digest completed QA evidence directories (≥48h old).
+    """Digest completed QA evidence directories into wiki summary.
 
-    A UUID directory is considered "digestible" when it has existed
-    for ≥48 hours. Aggregate key signals to wiki page, then delete.
+    Reads all non-lib task directories (any naming convention).
+    Uses .qa-evidence.json manifest when available, falls back to contract.json.
+    Preserves source directories — does NOT delete.
     """
     qa_dir = DREW_HOME / "P2-hippocampus" / "qa-evidence"
     if not qa_dir.exists():
         return 0, 0
-    cut = time.time() - 48 * 86400
-    uuid_dirs = [d for d in qa_dir.iterdir()
-                 if d.is_dir() and len(d.name) == 36 and d.name.count("-") == 4
-                 and d.stat().st_mtime < cut]
-    if not uuid_dirs:
+
+    task_dirs = sorted([d for d in qa_dir.iterdir() if d.is_dir() and d.name != "lib"],
+                       key=lambda d: d.stat().st_mtime, reverse=True)
+    if not task_dirs:
         return 0, 0
 
     wiki_dir = DREW_HOME / "P5-ego" / "wiki"
     wiki_dir.mkdir(parents=True, exist_ok=True)
-    digested = 0
-    for d in uuid_dirs:
+    digest_log = wiki_dir / "qa-evidence-summary.md"
+
+    entries = []
+    for d in task_dirs:
+        manifest = d / ".qa-evidence.json"
         contract = d / "contract.json"
-        if not contract.exists():
-            continue
         try:
-            data = json.loads(contract.read_text())
-            # Append entry to digest log
-            digest_log = wiki_dir / "qa-evidence-digest.md"
-            title = data.get("title", data.get("task_id", d.name))
-            entry = f"- `{d.name}` **{title}** — criteria: {len(data.get('criteria', []))}, digested: {datetime.now().strftime('%Y-%m-%d')}\n"
-            MAX_ENTRIES = 100
-            if digest_log.exists():
-                old = digest_log.read_text()
-                if entry not in old:
-                    # Keep header/frontmatter + last MAX_ENTRIES entries
-                    lines = old.splitlines()
-                    header_end = 0
-                    for i, l in enumerate(lines):
-                        if l.startswith("Auto-digested"):
-                            header_end = i + 2
-                            break
-                    entries = [l for l in lines[header_end:] if l.startswith("- `")]
-                    recent = entries[-(MAX_ENTRIES - 1):]
-                    body = "\n".join(lines[:header_end]) + "\n" + "\n".join(recent) + "\n" + entry
-                    digest_log.write_text(body)
+            if manifest.exists():
+                data = json.loads(manifest.read_text())
+                status = data.get("delivery_status", "?")
+                score = data.get("full_qa_score", "?")
+                phases = ", ".join(data.get("phases_completed", []))
+                task_id = data.get("task_id", d.name)
+            elif contract.exists():
+                data = json.loads(contract.read_text())
+                status = "INCOMPLETE"
+                score = "?"
+                phases = "contract"
+                task_id = data.get("task_id", d.name)
             else:
-                header = "---\ntitle: QA Evidence Digest\ntype: index\nspace: meta\n---\n\n# QA Evidence Digest\n\nAuto-digested from raw evidence directories (48h TTL).\n\n"
-                digest_log.write_text(header + entry)
-            shutil.rmtree(d)
-            digested += 1
+                continue
+
+            created = data.get("created_at", "")[:10] if manifest.exists() else ""
+            entry = {
+                "task_id": task_id,
+                "status": status,
+                "score": score,
+                "phases": phases,
+                "created": created,
+            }
+            entries.append(entry)
         except:
             continue
-    return digested, len(uuid_dirs)
+
+    body = "---\ntitle: QA Evidence Summary\ntype: index\nspace: meta\n---\n\n# QA Evidence Summary\n\n"
+    body += f"Total: {len(entries)} tasks\n\n"
+    body += "| Task ID | Status | Score | Phases | Created |\n"
+    body += "|---------|--------|-------|--------|---------|\n"
+    for e in entries[:100]:
+        body += f"| {e['task_id']} | {e['status']} | {e['score']} | {e['phases']} | {e['created']} |\n"
+
+    digest_log.write_text(body)
+    return len(entries), len(task_dirs)
 
 
-def sync_wiki_to_gbrain():
-    """Import P5-ego/wiki/ pages to gbrain."""
+def ingest_wiki_to_knowledge():
+    """Ingest P5-ego/wiki/ pages into knowledge.db."""
+    db_path = DREW_HOME / "knowledge.db"
     wiki_dir = DREW_HOME / "P5-ego" / "wiki"
-    if not wiki_dir.exists():
+    if not wiki_dir.exists() or not db_path.exists():
         return False
-    r = subprocess.run(
-        ["gbrain", "import", str(wiki_dir), "--no-embed"],
-        capture_output=True, text=True, timeout=120,
-        env={**os.environ, "PYTHONPATH": ""}
-    )
-    ok = r.returncode == 0
-    if not ok:
-        print(f"gbrain import stderr: {r.stderr[:500]}")
-    return ok
+    try:
+        db = sqlite3.connect(str(db_path))
+        for f in wiki_dir.rglob("*.md"):
+            content = f.read_text(encoding="utf-8", errors="replace")
+            slug = f.relative_to(DREW_HOME).as_posix()
+            db.execute(
+                "INSERT OR IGNORE INTO facts (slug, type, content) VALUES (?, 'wiki', ?)",
+                (slug, content[:5000])
+            )
+        db.commit()
+        db.close()
+        return True
+    except:
+        return False
 
+
+# ── Session ingest ───────────────────────────────────────────────
+
+def ingest_sessions():
+    """Ingest new P2 session logs into knowledge.db."""
+    script = DREW_HOME / "scripts" / "ingest_sessions.py"
+    if not script.exists():
+        return -1
+    r = subprocess.run(
+        ["python3", str(script)],
+        capture_output=True, text=True, timeout=600,
+    )
+    if r.returncode == 0:
+        line = r.stdout.strip().split("\n")[0] if r.stdout else "ok"
+        print(f"  session ingest: {line}")
+        return 0
+    print(f"  session ingest FAILED: {r.stderr[:200]}")
+    return -1
+
+
+# ── Contradiction audit ─────────────────────────────────────────
 
 # ── Report builder ───────────────────────────────────────────────
 
@@ -362,14 +416,14 @@ def main():
 
     tmux_killed = check_tmux()
     missing_svc, dead_svc = check_launchd()
-    orphans = check_gbrain_orphans()
+    embedding_cnt = check_knowledge_db()
     stale = check_kanban_stale()
     stopped = check_cron_jobs()
     disk_pct = check_disk()
 
     sections = [
         ("🖥 프로세스", []),
-        ("🧠 GBrain", []),
+        ("🧠 Knowledge DB", []),
         ("📋 Kanban", []),
         ("⏰ Cron", []),
         ("💾 디스크", []),
@@ -384,8 +438,9 @@ def main():
         procs.append(f"서비스 비정상: {', '.join(dead_svc)}")
     sections[0] = ("🖥 프로세스", procs)
 
-    sections[1] = ("🧠 GBrain",
-                   [f"고아 페이지 {orphans}개"] if orphans > 0 else [])
+    sections[1] = ("🧠 Knowledge DB",
+                   [f"임베딩 {embedding_cnt}개"] if embedding_cnt > 0 else
+                   [f"DB 없음"] if embedding_cnt == -1 else [])
 
     sections[2] = ("📋 Kanban",
                    [f"stale {stale}건 회수"] if stale > 0 else
@@ -404,16 +459,17 @@ def main():
     if is_deep:
         logs_removed = rotate_logs()
         cron_out_removed = clean_cron_output()
-        gbrain_purged = purge_gbrain()
+        db_vacuumed = vacuum_knowledge_db()
         archived = archive_completed_kanban()
         sess_db_n, sess_db_sz = prune_state_sessions()
         sess_files_n, sess_files_sz = prune_memory_sessions()
         qa_digested, qa_total = digest_qa_evidence()
-        wiki_synced = sync_wiki_to_gbrain()
+        wiki_ingested = ingest_wiki_to_knowledge()
+        sess_ingested = ingest_sessions()
 
         digest_items = [f"로그 {logs_removed}개 삭제" if logs_removed else "로그 정상",
                         f"cron output {cron_out_removed}개 삭제" if cron_out_removed else "cron output 정상",
-                        "gbrain purge 완료" if gbrain_purged else "gbrain purge 실패",
+                        "knowledge.db VACUUM 완료" if db_vacuumed else "knowledge.db VACUUM 실패",
                         f"kanban {archived}건 아카이브" if archived else "kanban 아카이브 없음"]
         if sess_db_n > 0:
             digest_items.append(f"state.db 세션 {sess_db_n}건 정리 ({sess_db_sz / 1024 / 1024:.0f}MB)")
@@ -421,7 +477,10 @@ def main():
             digest_items.append(f"메모리 세션 {sess_files_n}파일 정리 ({sess_files_sz / 1024 / 1024:.0f}MB)")
         if qa_digested > 0:
             digest_items.append(f"QA evidence {qa_digested}/{qa_total}건 digest")
-        digest_items.append(f"wiki→gbrain {'✅' if wiki_synced else '❌'}")
+        digest_items.append(f"wiki→knowledge.db {'✅' if wiki_ingested else '❌'}")
+        bridge_ok, bridge_msg = check_bridge_lint()
+        digest_items.append(f"bridge-lint {'✅' if bridge_ok else '⚠️'} — {bridge_msg}")
+        digest_items.append(f"session→knowledge.db {'✅' if sess_ingested == 0 else '❌'}")
         digest_items.append(f"디스크 {disk_pct}% 사용" if disk_pct else "디스크 확인 불가")
 
         sections.append(("🧽 정리", digest_items))

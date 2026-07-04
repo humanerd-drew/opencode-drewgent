@@ -76,81 +76,14 @@ Incident docs (P6-prefrontal/incidents/) and neurons (P0-brainstem/禁*.neuron) 
 
 **Mapping**: by topic affinity. Each incident doc gets `## Related Neurons`; each neuron gets `## Related Incidents`.
 
-## GBrain Integration — External Knowledge Graph Search
+## ~~GBrain~~ → Knowledge DB (SQLite FTS5 + Ollama)
 
-GBrain (https://github.com/garrytan/gbrain) provides hybrid search (keyword + vector) over the vault via MCP. Installed at `~/gbrain/` with PGLite backend.
+GBrain was removed on 2026-07-04/05. Replaced by:
+- **`knowledge.db`** — SQLite FTS5 (keyword) + Ollama nomic-embed-text (vector)
+- **`recall()` / `remember()`** — opencode native MCP tools (auto-discovered)
+- **`scripts/recall.py`** — CLI equivalent
 
-### Architecture
-
-```
-Drewgent Agent ──MCP client──→ GBrain MCP server (gbrain serve)
-                                       │
-                                       ├── PGLite (brain.pglite, 3151 pages)
-                                       ├── Ollama embedding (mxbai-embed-large)
-                                       └── Config: ~/.gbrain/config.json
-```
-
-### Installation Summary
-
-1. Install Bun: `brew install oven-sh/bun/bun`
-2. Clone + build: `git clone https://github.com/garrytan/gbrain.git ~/gbrain && cd ~/gbrain && bun install && bun run build:all`
-3. Init brain: `gbrain init --pglite --embedding-model openai:mxbai-embed-large --embedding-dimensions 1536`
-4. Configure local embedding (Ollama): set `provider_base_urls: {"openai": "http://localhost:11434/v1"}` in `~/.gbrain/config.json`
-5. Import vault: `gbrain import ~/.drewgent --yes --source drewgent-vault`
-6. Register MCP server in config.yaml:
-```yaml
-mcp_servers:
-  gbrain:
-    command: /Users/drew/.bun/bin/gbrain
-    args: ["serve"]
-    timeout: 120
-```
-
-### Available Tools (89 total)
-
-Key tools the agent can use:
-- `search` — keyword FTS over all vault pages
-- `query` — hybrid search (vector + keyword, when embedding configured)
-- `get_page`, `put_page`, `delete_page` — CRUD
-- `get_backlinks`, `get_links`, `traverse_graph` — graph operations
-- `find_orphans` — pages with no inbound wikilinks
-- `think` — multi-hop synthesis with citations
-- `get_stats`, `get_health` — brain diagnostics
-- `sync_brain` — sync vault files to brain DB
-
-### Known Limitations
-
-- **Embedding key validation**: Even with `provider_base_urls` pointing at Ollama, OpenAI client library validates `OPENAI_API_KEY`. Set a dummy `sk-*` key in MCP server env. If key validation is blocking, disable embedding entirely:
-  ```json
-  // ~/.gbrain/config.json
-  { "embedding_disabled": true }
-  ```
-  Keyword FTS works without embeddings. Re-enable when a valid API key is available.
-- **Backlinks not extracted by default** — run `gbrain extract links --yes` after import
-- **First import of large vaults** may timeout; import per-zone with `--no-embed`
-- **MCP config format** — `args` must be a YAML list, `env` must be a YAML dict (not JSON strings). Wrong format causes `dictionary update sequence element #0 has length 1` error in `hermes mcp test`.
-- **MCP tools visible only on session start** — adding a server mid-session requires gateway reload or next session. `hermes mcp test <name>` verifies connection but doesn't inject tools into running session.
-- **GBrain's two-repo architecture** differs from Drewgent's unified vault approach. GBrain is a search overlay, not a vault replacement.
-
-### When to Use
-
-- Natural-language search across entire vault
-- Retrieve incident docs / neurons / memories by topic, not exact phrase
-- Complement to bash graph scripts (lookup/gap analysis)
-
-### When NOT to Use
-
-- Structural vault maintenance (use this skill's 3-step protocol)
-- Gap analysis / dangling link detection (use `bash ~/.hermes/scripts/drewgent_graph_gap_analysis.sh`)
-- Policy enforcement (use P0 neurons + harmony check)
-
-### Verification
-
-```bash
-gbrain stats
-gbrain search "launchd cron stall" --limit 5
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | gbrain serve | head -5
-```
+See AGENTS.md "Knowledge Management" section for full architecture.
 
 ## Auto-Generated Orphan Management
 

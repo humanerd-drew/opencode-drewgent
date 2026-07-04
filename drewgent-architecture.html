@@ -117,14 +117,14 @@
         <!-- MCP Server Cluster -->
         <rect x="680" y="190" width="280" height="80" rx="8" fill="rgba(251, 146, 60, 0.2)" stroke="#fb923c" stroke-width="1"/>
         <text x="820" y="210" fill="#fb923c" font-size="10" font-weight="600" text-anchor="middle">MCP Servers</text>
-        <text x="820" y="228" fill="#94a3b8" font-size="8" text-anchor="middle">gbrain · discord · wordpress</text>
+        <text x="820" y="228" fill="#94a3b8" font-size="8" text-anchor="middle">knowledge · discord · wordpress</text>
         <text x="820" y="244" fill="#94a3b8" font-size="8" text-anchor="middle">gjc-coordinator · codebase-memory</text>
 
         <!-- ==================== LAYER 3: BRAIN ==================== -->
-        <!-- gbrain -->
+        <!-- knowledge.db -->
         <rect x="100" y="320" width="240" height="100" rx="8" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
-        <text x="220" y="345" fill="white" font-size="12" font-weight="600" text-anchor="middle">gbrain</text>
-        <text x="220" y="363" fill="#94a3b8" font-size="9" text-anchor="middle">PGLite Vector DB</text>
+        <text x="220" y="345" fill="white" font-size="12" font-weight="600" text-anchor="middle">knowledge.db</text>
+        <text x="220" y="363" fill="#94a3b8" font-size="9" text-anchor="middle">SQLite FTS5 + Ollama</text>
         <text x="220" y="380" fill="#94a3b8" font-size="8" text-anchor="middle">Hybrid Search · Takes · Facts</text>
         <text x="220" y="395" fill="#94a3b8" font-size="8" text-anchor="middle">Calibrated Beliefs</text>
 
@@ -212,7 +212,7 @@
         <line x1="300" y1="270" x2="220" y2="318" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow-violet)"/>
         <line x1="420" y1="270" x2="500" y2="318" stroke="#64748b" stroke-width="1" marker-end="url(#arrow)"/>
 
-        <!-- gbrain ←→ P-Layer -->
+        <!-- knowledge.db ←→ P-Layer -->
         <line x1="340" y1="370" x2="378" y2="370" stroke="#a78bfa" stroke-width="1" marker-end="url(#arrow-violet)"/>
         <line x1="380" y1="370" x2="342" y2="370" stroke="#a78bfa" stroke-width="1"/>
         <text x="360" y="363" fill="#64748b" font-size="7" text-anchor="middle">sync</text>
@@ -255,7 +255,7 @@
           <h3>Components</h3>
         </div>
         <ul>
-          <li>• 5 MCP servers (gbrain, discord, wordpress, gjc, codebase-memory)</li>
+          <li>• 5 MCP servers (discord, wordpress, gjc, codebase-memory, portone)</li>
           <li>• 9 launchd services with KeepAlive</li>
           <li>• 12 cron jobs dispatched via drewgent_cron.py</li>
           <li>• 15 agent profiles (explorer → implementer → reviewer)</li>
@@ -269,7 +269,7 @@
         </div>
         <ul>
           <li>• Runtime: opencode (DeepSeek V4 + Kimi K2.7 + Qwen 3.7)</li>
-          <li>• Storage: PGLite (gbrain) + SQLite (kanban) + Obsidian FS</li>
+          <li>• Storage: SQLite (knowledge.db + kanban) + Obsidian FS</li>
           <li>• Infra: launchd (macOS) + colima (Docker) + Cloudflare Tunnel</li>
           <li>• Languages: Python 3.14, Node.js, shell</li>
           <li>• Frontend: WordPress + GeneratePress (YOUR_DOMAIN)</li>

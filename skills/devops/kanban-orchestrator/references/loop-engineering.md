@@ -58,7 +58,7 @@ Framework: 5 building blocks + 1 memory store
 | Requirement | Drewgent Status |
 |-------------|----------------|
 | MCP protocol | Native MCP client built-in + mcporter CLI |
-| Service connectors | MCP catalog (gbrain, specification-website) |
+| Service connectors | MCP catalog (knowledge.db, specification-website) |
 | Plugin packaging | Plugin system (model-providers, hooks, gateway plugins) |
 | Shell hooks | `hooks:` config section — pre/post tool call, LLM call |
 

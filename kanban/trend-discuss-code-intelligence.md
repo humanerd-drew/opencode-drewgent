@@ -129,4 +129,4 @@ SurrealDB dependency and pre-1.0 status make this too risky. Design is solid but
 
 ### Understand-Anything: **Skip for code intelligence** (but note for wiki)
 
-Not an MCP server — it's a Claude Code plugin. The Karpathy wiki analysis feature is interesting but Drewgent already has gbrain + wiki-compile for that.
+Not an MCP server — it's a Claude Code plugin. The Karpathy wiki analysis feature is interesting but Drewgent already has knowledge.db + wiki-compile for that.

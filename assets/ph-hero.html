@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>opencode-drewgent — Product Hunt Hero</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'JetBrains Mono', monospace; background: #020617; width: 1280px; height: 640px; overflow: hidden; color: white; }
+  .container { width: 1280px; height: 640px; padding: 40px 48px; position: relative; background: #020617; }
+  .grid { position: absolute; inset: 0; opacity: 0.15; }
+  .grid line { stroke: #1e293b; stroke-width: 1; }
+
+  /* Header */
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #22d3ee, #a78bfa); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: #020617; }
+  .logo-text { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+  .logo-sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+  .badge { display: flex; gap: 8px; }
+  .badge-item { background: #0f172a; border: 1px solid #334155; border-radius: 4px; padding: 4px 10px; font-size: 10px; color: #94a3b8; }
+  .badge-item span { color: #22d3ee; }
+
+  .tagline { font-size: 13px; color: #94a3b8; margin-bottom: 28px; }
+
+  /* 7-layer brain */
+  .brain { display: flex; gap: 12px; margin-bottom: 28px; }
+  .layer { flex: 1; padding: 10px 0; border-radius: 6px; text-align: center; border: 1.5px solid; position: relative; }
+  .layer-num { font-size: 9px; opacity: 0.6; margin-bottom: 3px; }
+  .layer-name { font-size: 11px; font-weight: 600; }
+  .layer-desc { font-size: 8px; opacity: 0.7; margin-top: 2px; }
+
+  .l0 { background: rgba(239,68,68,0.15); border-color: #ef4444; }
+  .l1 { background: rgba(249,115,22,0.15); border-color: #f97316; }
+  .l2 { background: rgba(234,179,8,0.15); border-color: #eab308; }
+  .l3 { background: rgba(34,211,238,0.15); border-color: #22d3ee; }
+  .l4 { background: rgba(52,211,153,0.15); border-color: #34d399; }
+  .l5 { background: rgba(167,139,250,0.15); border-color: #a78bfa; }
+  .l6 { background: rgba(244,114,182,0.15); border-color: #f472b6; }
+
+  /* Main grid: left details + right visual */
+  .main { display: flex; gap: 32px; }
+  .left { flex: 0 0 380px; }
+  .right { flex: 1; }
+
+  /* Feature cards */
+  .features { display: flex; flex-direction: column; gap: 8px; }
+  .fcard { background: #0f172a; border: 1px solid #1e293b; border-radius: 6px; padding: 10px 14px; }
+  .fcard-title { font-size: 10px; font-weight: 600; color: #22d3ee; margin-bottom: 2px; }
+  .fcard-text { font-size: 9px; color: #94a3b8; line-height: 1.4; }
+
+  /* Right: Manufacturing bridge + processes */
+  .bridge-title { font-size: 10px; color: #64748b; margin-bottom: 8px; font-weight: 600; }
+  .bridge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 16px; }
+  .bcard { background: #0f172a; border: 1px solid #1e293b; border-radius: 4px; padding: 8px 10px; }
+  .bcard-name { font-size: 9px; font-weight: 600; color: #22d3ee; }
+  .bcard-desc { font-size: 8px; color: #64748b; }
+
+  /* Pipeline */
+  .pipeline { display: flex; gap: 6px; align-items: center; margin-top: 12px; }
+  .pstep { background: #0f172a; border: 1px solid #334155; border-radius: 4px; padding: 6px 10px; font-size: 9px; text-align: center; flex: 1; }
+  .parrow { color: #475569; font-size: 12px; }
+  .pstep.highlight { border-color: #22d3ee; background: rgba(34,211,238,0.1); }
+
+  /* Footer */
+  .footer { position: absolute; bottom: 24px; left: 48px; right: 48px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #1e293b; padding-top: 14px; }
+  .footer-left { font-size: 10px; color: #475569; }
+  .footer-left a { color: #22d3ee; text-decoration: none; }
+  .footer-right { display: flex; gap: 16px; font-size: 9px; color: #334155; }
+  .footer-right span { display: flex; align-items: center; gap: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <svg class="grid" width="1280" height="640">
+    <defs><pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/></pattern></defs>
+    <rect width="1280" height="640" fill="url(#g)"/>
+  </svg>
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="logo">
+        <div class="logo-icon">D</div>
+        <div>
+          <div class="logo-text">opencode-drewgent</div>
+          <div class="logo-sub">/humanerd-drew/opencode-drewgent</div>
+        </div>
+      </div>
+    </div>
+    <div class="badge">
+      <div class="badge-item">MIT <span>license</span></div>
+      <div class="badge-item">100+ <span>skills</span></div>
+      <div class="badge-item">Built for <span>opencode</span></div>
+    </div>
+  </div>
+
+  <div class="tagline">Open-source personal AI agent template — 7-layer brain, manufacturing quality patterns, kanban pipeline</div>
+
+  <!-- 7-layer brain -->
+  <div class="brain">
+    <div class="layer l0"><div class="layer-num">P0</div><div class="layer-name">brainstem</div><div class="layer-desc">Survival · 禁 rules</div></div>
+    <div class="layer l1"><div class="layer-num">P1</div><div class="layer-name">limbic</div><div class="layer-desc">Identity · Voice</div></div>
+    <div class="layer l2"><div class="layer-num">P2</div><div class="layer-name">hippocampus</div><div class="layer-desc">Memory · Sessions</div></div>
+    <div class="layer l3"><div class="layer-num">P3</div><div class="layer-name">sensors</div><div class="layer-desc">Gateway · Tools</div></div>
+    <div class="layer l4"><div class="layer-num">P4</div><div class="layer-name">cortex</div><div class="layer-desc">Growth · Taste</div></div>
+    <div class="layer l5"><div class="layer-num">P5</div><div class="layer-name">ego</div><div class="layer-desc">Self-model</div></div>
+    <div class="layer l6"><div class="layer-num">P6</div><div class="layer-name">prefrontal</div><div class="layer-desc">Strategy · Plans</div></div>
+  </div>
+
+  <!-- Main content -->
+  <div class="main">
+    <div class="left">
+      <div class="features">
+        <div class="fcard">
+          <div class="fcard-title">▸ subagent orchestration</div>
+          <div class="fcard-text">task() for same-model delegation · gjc_delegate for worktree-isolated parallel execution · 16 profiles across flash/pro/max tiers</div>
+        </div>
+        <div class="fcard">
+          <div class="fcard-title">▸ kanban pipeline</div>
+          <div class="fcard-text">Crash-surviving multi-stage workflow with auto context handoff, dependency resolution, and archiver post-hook</div>
+        </div>
+        <div class="fcard">
+          <div class="fcard-title">▸ cron + launchd automation</div>
+          <div class="fcard-text">60-second tick scheduler · 20+ jobs · graduated remediation (Andon pattern) · self-healing via launchd KeepAlive</div>
+        </div>
+        <div class="fcard">
+          <div class="fcard-title">▸ vault secrets</div>
+          <div class="fcard-text">Fernet-encrypted API keys · OS keyring master key · {env:VAR} config references · migrate from plaintext</div>
+        </div>
+        <div class="fcard">
+          <div class="fcard-title">▸ Obsidian knowledge graph</div>
+          <div class="fcard-text">knowledge.db (FTS5+vector) · wikilinked P-layer vault · LLM wiki compile pattern · queryable by both agents and humans</div>
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="bridge-title">manufacturing quality bridge (6 patterns → agent harness)</div>
+      <div class="bridge-grid">
+        <div class="bcard"><div class="bcard-name">Andon</div><div class="bcard-desc">Graduated remediation: warn → torque → slow → stop</div></div>
+        <div class="bcard"><div class="bcard-name">Poka-yoke</div><div class="bcard-desc">Structural impossibility over rules (chmod 600, watcher exclude)</div></div>
+        <div class="bcard"><div class="bcard-name">Jidoka</div><div class="bcard-desc">Auto-stop + HITL (AskUserQuestion, kanban_block)</div></div>
+        <div class="bcard"><div class="bcard-name">SPC</div><div class="bcard-desc">Flaky vs systematic: don't retry roots</div></div>
+        <div class="bcard"><div class="bcard-name">3-hyun</div><div class="bcard-desc">Gemba-genbutsu-genjitsu: build-green ≠ live-works</div></div>
+        <div class="bcard"><div class="bcard-name">FMEA</div><div class="bcard-desc">RPN scoring for new cron jobs & skills</div></div>
+      </div>
+
+      <div class="bridge-title" style="margin-top:8px;">kanban pipeline</div>
+      <div class="pipeline">
+        <div class="pstep highlight">explorer</div><div class="parrow">→</div>
+        <div class="pstep">implementer</div><div class="parrow">→</div>
+        <div class="pstep">reviewer</div><div class="parrow">→</div>
+        <div class="pstep">archiver</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-left">
+      <a href="https://github.com/humanerd-drew/opencode-drewgent">github.com/humanerd-drew/opencode-drewgent</a> · MIT
+    </div>
+    <div class="footer-right">
+      <span>⬤ opencode</span>
+      <span>⚙ 100+ skills</span>
+      <span>📦 launchd + cron</span>
+      <span>🔒 vault</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

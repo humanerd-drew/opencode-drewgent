@@ -11,12 +11,12 @@
       "identifier": "urn:air:drewgent.ai:agent:analyst",
       "displayName": "Analyst",
       "type": "application/opencode-subagent+json",
-      "description": "Data analysis agent. Queries kanban DB, git log, gbrain stats for patterns, trends, and insights. Produces structured reports. Read-only on production data.",
+      "description": "Data analysis agent. Queries kanban DB, git log, knowledge.db for patterns, trends, and insights. Produces structured reports. Read-only on production data.",
       "capabilities": ["data-analysis", "report-generation", "pattern-discovery", "statistical-analysis"],
       "representativeQueries": [
         "analyze kanban completion trends this week",
         "what patterns do you see in git commit history",
-        "show me gbrain stats and anomalies"
+        "show me knowledge.db stats and anomalies"
       ],
       "tags": ["data", "analytics", "reporting", "read-only"],
       "version": "1.0.0",

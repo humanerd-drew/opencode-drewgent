@@ -29,7 +29,7 @@ done
 | mlops training | axolotl, unsloth, peft, trl-fine-tuning, grpo-rl-training, pytorch-fsdp | 0 → 3.3 |
 | creative | architecture-diagram, baoyu-infographic, claude-design, comfyui, design-md, humanizer, pretext, sketch, touchdesigner-mcp | 0 → 5.0 |
 | mlops/inference | gguf, guidance, obliteratus, outlines, vllm | 0 → 5.0 |
-| mcp | mcporter, native-mcp, gbrain-integration-drewgent | 0 → 5.0 |
+| mcp | mcporter, native-mcp | 0 → 5.0 |
 | social-media | xitter, xurl | 0 → 5.0 |
 | apple | macos-computer-use | 0 → 4.0 |
 

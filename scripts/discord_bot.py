@@ -276,7 +276,7 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
                     "task": "🤖",
                     "discord": "💬", "discord_send": "💬",
                     "sqlite": "🗄️", "sqlite3": "🗄️",
-                    "gbrain": "🧠", "query": "🧠",
+                    "recall": "🧠", "query": "🧠",
                     "lazyweb": "🎨",
                     "todowrite": "📋",
                     "skill": "📎",

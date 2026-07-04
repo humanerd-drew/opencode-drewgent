@@ -51,7 +51,7 @@ Assessment of Drewgent against the [loop engineering framework](https://addyo.su
 | Requirement | Drewgent |
 |---|---|
 | MCP protocol | Native MCP client + mcporter |
-| Connectors | gbrain, specification-website, linear MCP (installed) |
+| Connectors | knowledge.db, specification-website, linear MCP (installed) |
 | Plugin packaging | Plugin system + shell hooks |
 | Event-driven integration | `post_tool_call` hook on `kanban_complete` → Linear sync |
 

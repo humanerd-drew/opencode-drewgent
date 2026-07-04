@@ -51,7 +51,7 @@ else
     echo -e "  ${YELLOW}  → Edit .env and add your API keys:${NC}"
     echo -e "  ${YELLOW}    OPENCODE_API_KEY     (required — opencode serve)${NC}"
     echo -e "  ${YELLOW}    DISCORD_BOT_TOKEN    (optional — Discord integration)${NC}"
-    echo -e "  ${YELLOW}    OPENAI_API_KEY       (optional — gbrain knowledge graph)${NC}"
+    echo -e "  ${YELLOW}    OLLAMA_HOST           (optional — knowledge.db vector search)${NC}"
 fi
 
 # ── 4. Launchd services (macOS only) ──
@@ -98,5 +98,5 @@ else
     echo -e "  3. (Recommended) Rename: ${BLUE}skill(\"rename-drewgent\")${NC}"
     echo -e "  4. (macOS) Install launchd: follow instructions above"
     echo -e "  5. (Optional) Set up Discord: add DISCORD_BOT_TOKEN to .env"
-    echo -e "  6. (Optional) Set up gbrain: install from https://github.com/garrytan/gbrain"
+    echo -e "  6. (Optional) Set up knowledge.db: ${BLUE}brew install ollama && ollama pull nomic-embed-text${NC}"
 fi

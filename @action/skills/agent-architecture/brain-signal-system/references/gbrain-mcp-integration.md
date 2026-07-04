@@ -1,6 +1,8 @@
 # GBrain MCP Integration — Local Vault Search Engine
 
-GBrain (github.com/garrytan/gbrain) provides hybrid search (keyword + vector) over markdown vaults. Connects to Hermes/OpenClaw via MCP protocol — zero code change, just config.yaml entry.
+⚠️ **DEPRECATED — gbrain removed 2026-07-05.** Replaced by knowledge.db (SQLite FTS5 + Ollama).
+
+GBrain (github.com/garrytan/gbrain) provided hybrid search (keyword + vector) over markdown vaults. Connected to Hermes/OpenClaw via MCP protocol — zero code change, just config.yaml entry.
 
 ## Install
 
