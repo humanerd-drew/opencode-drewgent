@@ -24,11 +24,13 @@ DB_PATH = os.path.join(HOME, ".drewgent", "discord_sessions.db")
 OPCODE_SERVE = "http://localhost:8642"
 MAX_MSG_LEN = 1900          # Discord safe content length
 MAX_STATUS_CONTENT = 1850   # leave room for emoji + whitespace prefixes
-STREAM_TIMEOUT = 300        # seconds
 
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
+
+# Track active opencode run tasks per thread ID for cleanup on thread close.
+_active_tasks: dict[str, asyncio.Task] = {}
 
 
 # ---------------------------------------------------------------------------
@@ -147,6 +149,7 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
         *cmd,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
+        limit=1024 * 1024,  # 1MB readline buffer (default 64KB was too small)
     )
 
     status_msg: Optional[discord.Message] = None
@@ -311,13 +314,27 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
                 )
                 await _set_status("❌", str(err))
 
-    async with thread.typing():
-        try:
-            await asyncio.wait_for(_read_stream(), timeout=STREAM_TIMEOUT)
-        except asyncio.TimeoutError:
-            proc.kill()
-            await _set_status("❌", "timeout")
-            error_seen = True
+    # Background typing heartbeat (Discord typing expires after ~10s).
+    async def _typing_heartbeat() -> None:
+        while True:
+            try:
+                await thread.trigger_typing()
+                await asyncio.sleep(8)
+            except asyncio.CancelledError:
+                break
+
+    typing_task = asyncio.create_task(_typing_heartbeat())
+
+    try:
+        await _read_stream()
+    except asyncio.CancelledError:
+        proc.kill()
+        raise
+    except Exception:
+        proc.kill()
+        raise
+    finally:
+        typing_task.cancel()
 
     # Clean up the subprocess and read any leftover stderr.
     if proc.returncode is None:
@@ -376,7 +393,40 @@ async def on_message(msg: discord.Message) -> None:
             thread = msg.channel  # type: ignore[assignment]
             thread_id = str(msg.channel.id)
 
-    await stream_opencode(thread, msg.clean_content, thread_id)  # type: ignore[arg-type]
+    # Cancel any previous task for this thread (stale session).
+    prev = _active_tasks.get(thread_id)
+    if prev and not prev.done():
+        prev.cancel()
+
+    task = asyncio.create_task(stream_opencode(thread, msg.clean_content, thread_id))  # type: ignore[arg-type]
+    _active_tasks[thread_id] = task
+    task.add_done_callback(lambda _: _active_tasks.pop(thread_id, None))
+
+
+# ---------------------------------------------------------------------------
+# Thread close → session cleanup
+# ---------------------------------------------------------------------------
+async def _cleanup_thread(thread_id: str) -> None:
+    """Cancel active task and delete session DB entry for a closed thread."""
+    task = _active_tasks.pop(thread_id, None)
+    if task and not task.done():
+        task.cancel()
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("DELETE FROM sessions WHERE thread_id=?", (thread_id,))
+    conn.commit()
+    conn.close()
+
+
+@client.event
+async def on_thread_update(before: discord.Thread, after: discord.Thread) -> None:
+    if not after.archived:
+        return
+    await _cleanup_thread(str(after.id))
+
+
+@client.event
+async def on_thread_remove(thread: discord.Thread) -> None:
+    await _cleanup_thread(str(thread.id))
 
 
 if __name__ == "__main__":
