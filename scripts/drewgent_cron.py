@@ -53,6 +53,8 @@ def parse_schedule(job):
                 return ("interval", int(h[2:]) * 3600)
             if m == "0" and h.isdigit() and dom == "*" and mon == "*" and dow == "*":
                 return ("daily", int(h))
+            if m == "0" and "," in h and all(p.isdigit() for p in h.split(",")) and dom == "*" and mon == "*" and dow == "*":
+                return ("daily_multi", [int(p) for p in h.split(",")])
             if m == "0" and h.isdigit() and dom == "*" and mon == "*" and dow.isdigit():
                 return ("weekly", int(dow), int(h))
         except ValueError:
@@ -70,6 +72,10 @@ def due(key, spec, state, now, t, now_min):
         _, h = spec
         today = time.strftime("%Y-%m-%d", t)
         return t.tm_hour == h and state.get(f"{key}_day") != today
+    if spec[0] == "daily_multi":
+        _, hours = spec
+        today = time.strftime("%Y-%m-%d", t)
+        return t.tm_hour in hours and state.get(f"{key}_day") != today
     if spec[0] == "weekly":
         _, cron_dow, h = spec
         py_wday = (cron_dow + 6) % 7  # cron 0=일 → python 6=일

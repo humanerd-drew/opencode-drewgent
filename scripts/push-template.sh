@@ -49,24 +49,94 @@ echo -e "\n${BLUE}[2/5] Filtering template-safe files...${NC}"
 
 # Files that should NEVER go to public
 EXCLUDE_PATTERNS=(
+  # ── Runtime / personal ──
   "^agent-dashboard-state"
   "^config\.yaml"
   "^\.env$"
   "^\.envrc$"
   "^kanban\.db"
-  "^agent/"
-  "^agents/"
   "^@memory/"
   "^@identity/"
   "^cron/jobs\.json"
-  "^P2-hippocampus/kanban/"
-  "^P2-hippocampus/knowledge/"
-  "^P2-hippocampus/memories/"
-  "^P5-ego/config/"
-  "^P5-ego/state/"
-  "^P5-ego/wiki/compiled/"
-  "^scripts/archive/"
   "^cron/output/"
+
+  # ── Hermes legacy (dead code, removed 2026-07-07) ──
+  "^agent/"
+  "^agents/"
+  "^acp_adapter/"
+  "^acp_registry/"
+  "^brain/"
+  "^customize/"
+  "^datagen-config-examples/"
+  "^docker/"
+  "^docs/"
+  "^drewgent_cli/"
+  "^environments/"
+  "^gateway/"
+  "^hooks/"
+  "^kanban/"
+  "^landingpage/"
+  "^modules/"
+  "^optional-skills/"
+  "^packaging/"
+  "^plugins/"
+  "^tools/"
+  "^tests/"
+  "^run_agent\.py"
+  "^cli\.py"
+  "^rl_cli\.py"
+  "^batch_runner\.py"
+  "^cron_runner\.py"
+  "^mcp_serve\.py"
+  "^mini_swe_runner\.py"
+  "^model_tools\.py"
+  "^toolsets\.py"
+  "^toolset_distributions\.py"
+  "^trajectory_compressor\.py"
+  "^utils\.py"
+  "^check_drewgent_update\.py"
+  "^drewgent_constants\.py"
+  "^drewgent_logging\.py"
+  "^drewgent_state\.py"
+  "^drewgent_time\.py"
+  "^drewgent$"
+  "^drewgent-architecture\.html"
+  "^cli-config\.yaml\.example"
+  "^MANIFEST\.in"
+  "^pyproject\.toml"
+  "^setup-drewgent\.sh"
+  "^SOUL\.md$"
+  "^DOCKERHUB\.md$"
+  "^kanban-orchestrator\.md"
+  "^cq-all-zones\.png"
+  "^Dockerfile$"
+  "^Dockerfile\.simple$"
+  "^\.gitmodules$"
+
+  # ── Private scripts (agent infra, not template-worthy) ──
+  "^scripts/content_"
+  "^scripts/cron_seo_"
+  "^scripts/ingest_"
+  "^scripts/recall\.py$"
+  "^scripts/seo_"
+  "^scripts/trend_"
+  "^scripts/n8n_trigger_runner\.py$"
+  "^scripts/oneshot_digest\.py$"
+  "^scripts/drewgent_gbrain_watchdog\.sh$"
+  "^scripts/wordpress-mcp-server\.js$"
+
+  # ── Junk / Hermes-era releases ──
+  "^Ep\.[2-8]\.html$"
+  "^compression-checkpoint-phase1\.md$"
+  "^refactor_plan_phase_[abc]\.md$"
+  "^RELEASE_v0\.[2-7]\.0\.md$"
+
+  # ── Content / site-specific ──
+  "^content-graph-engine/"
+  "^wordpress/"
+  "^seo-i-backend/"
+
+  # ── Build / infra ──
   "node_modules/"
   "\.omo/"
   "\.plans/"
@@ -99,6 +169,44 @@ if [[ ${#TEMPLATE_FILES[@]} -eq 0 ]]; then
   echo -e "${YELLOW}  No template-safe files to push.${NC}"
   exit 0
 fi
+
+# ── Step 2.5: Secret scan ──
+echo -e "\n${BLUE}[2.5/5] Scanning for hardcoded secrets...${NC}"
+
+SECRET_PATTERNS=(
+  'discord\.com/api/webhooks/'        # Discord webhooks
+  'slack\.com/api/webhooks/'          # Slack webhooks
+  'api\.telegram\.org/bot'            # Telegram bot tokens
+  'sk-[A-Za-z0-9]{20,}'              # OpenAI/Anthropic keys
+  'ghp_[A-Za-z0-9]{36}'              # GitHub personal access tokens
+  'gho_[A-Za-z0-9]{36}'              # GitHub OAuth tokens
+  'xox[baprs]-[A-Za-z0-9-]{24,}'     # Slack tokens
+  'AKIA[0-9A-Z]{16}'                 # AWS access keys
+)
+
+SECRET_FOUND=false
+for f in "${TEMPLATE_FILES[@]}"; do
+  if [[ -f "$f" ]]; then
+    for pattern in "${SECRET_PATTERNS[@]}"; do
+      if grep -qE "$pattern" "$f" 2>/dev/null; then
+        matches=$(grep -oE "$pattern" "$f" | head -1)
+        echo -e "  ${RED}⚠ SECRET DETECTED${NC} in $f: ${YELLOW}$matches${NC}"
+        SECRET_FOUND=true
+      fi
+    done
+  fi
+done
+
+if [[ "$SECRET_FOUND" == true ]]; then
+  echo -e "\n${RED}╔═══════════════════════════════════════════════════════════╗${NC}"
+  echo -e "${RED}║  BLOCKED: Hardcoded secrets detected in template files.   ║${NC}"
+  echo -e "${RED}║  Fix them (use env vars, not literals) before re-pushing. ║${NC}"
+  echo -e "${RED}╚═══════════════════════════════════════════════════════════╝${NC}"
+  git worktree remove "$WORKTREE" 2>/dev/null || true
+  exit 1
+fi
+
+echo -e "${GREEN}  ✓ No secrets detected${NC}"
 
 # ── Step 3: Create worktree ──
 echo -e "\n${BLUE}[3/5] Creating worktree from public/$PUBLIC_BRANCH...${NC}"
@@ -133,6 +241,35 @@ for f in "${TEMPLATE_FILES[@]}"; do
     fi
   fi
 done
+
+# ── Step 4.5: Remove excluded files from worktree ──
+echo -e "\n${BLUE}[4.5/5] Removing excluded/stale files from worktree...${NC}"
+
+REMOVED_COUNT=0
+# Remove files that match EXCLUDE_PATTERNS
+while IFS= read -r f; do
+  skip=false
+  for pattern in "${EXCLUDE_PATTERNS[@]}"; do
+    if [[ "$f" =~ $pattern ]]; then
+      skip=true
+      break
+    fi
+  done
+  if [[ "$skip" == true ]] && [[ -f "$WORKTREE/$f" ]]; then
+    rm "$WORKTREE/$f"
+    echo -e "  ${RED}✗${NC} $f (excluded)"
+    ((REMOVED_COUNT++))
+  fi
+done < <(cd "$WORKTREE" && git ls-files 2>/dev/null)
+
+# Remove empty directories that had all their files removed
+(cd "$WORKTREE" && find . -type d -empty -not -path './.git/*' -delete 2>/dev/null) || true
+
+if [[ $REMOVED_COUNT -gt 0 ]]; then
+  echo -e "  ${GREEN}  Removed $REMOVED_COUNT excluded file(s)${NC}"
+else
+  echo -e "  ${YELLOW}  No excluded files to remove${NC}"
+fi
 
 # ── Step 5: Commit + push ──
 echo -e "\n${BLUE}[5/5] Committing and pushing...${NC}"

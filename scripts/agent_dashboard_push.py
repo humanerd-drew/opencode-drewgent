@@ -49,7 +49,7 @@ _EXTRA_PATH = os.pathsep.join([
 _EXTRA_ENV = {"PATH": _EXTRA_PATH + os.pathsep + os.environ.get("PATH", "")}
 
 # Defaults — override via env or CLI
-ENDPOINT = os.environ.get("AGENT_DASHBOARD_URL", "http://localhost:8766")
+ENDPOINT = os.environ.get("AGENT_DASHBOARD_URL", "https://agent-dashboard.humanerd-me.workers.dev")
 PUSH_SECRET = os.environ.get("AGENT_DASHBOARD_SECRET", "")
 
 
@@ -804,106 +804,119 @@ def collect_daily_usage():
 
 
 def collect_model_usage():
-    """Parse opencode log for per-model usage stats."""
-    logs = [p for p in _LOG_SOURCES if "opencode" in p] if _LOG_SOURCES else []
-    if not logs:
-        log = OLD_LOG_FILE
-        if os.path.isfile(log):
-            logs = [log]
-        else:
-            return {"models": [], "total_calls": 0}
-
-    import re
+    """Query opencode SQLite DB for real per-model token/call/cost data."""
+    import sqlite3, json
     from collections import defaultdict
 
-    model_counts = defaultdict(int)
-    model_tokens = defaultdict(lambda: {"in": 0, "out": 0, "total": 0})
-    model_providers = defaultdict(set)
-    total_calls = 0
-
-    for log in logs:
-        try:
-            with open(log, "r", errors="ignore") as f:
-                f.seek(0, 2)
-                size = f.tell()
-                f.seek(max(0, size - 1024 * 1024))
-                content = f.read()
-        except Exception:
-            continue
-
-        # If opencode structured log — parse key=value format
-        if "opencode" in log or LOG_FILE and log == LOG_FILE:
-            # Count model calls from message=stream lines
-            for m in re.finditer(r'message=stream\s+providerID=(\S+)\s+modelID=(\S+)', content):
-                prov = m.group(1)
-                model_name = m.group(2).strip()
-                if '/' in model_name:
-                    model_name = model_name.split('/')[-1]
-                if model_name:
-                    model_counts[model_name] += 1
-                    total_calls += 1
-                    model_providers[model_name].add(prov)
-
-            # Token data from message=created lines (session-level totals)
-            for m in re.finditer(
-                r'message=created\s+.*?'
-                r'tokens\.input=(\d+)\s+tokens\.output=(\d+)\s+',
-                content,
-            ):
-                try:
-                    inp = int(m.group(1))
-                    out = int(m.group(2))
-                    if model_counts:
-                        top = max(model_counts, key=model_counts.get)
-                        model_tokens[top]["in"] += inp
-                        model_tokens[top]["out"] += out
-                        model_tokens[top]["total"] += inp + out
-                except ValueError:
-                    pass
-    else:
-        # Legacy Hermes format
-        for m in re.finditer(r'model=(\S+)', content):
-            model_name = m.group(1).strip()
-            if model_name and '/' in model_name:
-                model_name = model_name.split('/')[-1]
-            if model_name:
-                model_counts[model_name] += 1
-                total_calls += 1
-
-        for m in re.finditer(
-            r'model=(\S+).*?in=(\d+)\s+out=(\d+)\s+total=(\d+)',
-            content,
-        ):
-            model_name = m.group(1).strip()
-            if '/' in model_name:
-                model_name = model_name.split('/')[-1]
-            try:
-                model_tokens[model_name]["in"] += int(m.group(2))
-                model_tokens[model_name]["out"] += int(m.group(3))
-                model_tokens[model_name]["total"] += int(m.group(4))
-            except ValueError:
-                pass
-
-        for m in re.finditer(r'model=(\S+)\s+provider=(\S+)', content):
-            model_name = m.group(1).strip()
-            if '/' in model_name:
-                model_name = model_name.split('/')[-1]
-            model_providers[model_name].add(m.group(2).strip())
-
+    db_path = os.path.expanduser("~/.local/share/opencode/opencode.db")
     models = []
-    for name, count in sorted(model_counts.items(), key=lambda x: -x[1]):
-        tk = model_tokens.get(name, {"in": 0, "out": 0, "total": 0})
-        providers = list(model_providers.get(name, []))
-        models.append({
-            "name": name,
-            "calls": count,
-            "tokens_in": tk["in"],
-            "tokens_out": tk["out"],
-            "tokens_total": tk["total"],
-            "providers": providers,
-        })
+    total_calls = 0
+    total_cost = 0.0
+    has_real_data = False
 
-    return {"models": models, "total_calls": total_calls}
+    if os.path.isfile(db_path):
+        try:
+            conn = sqlite3.connect(db_path)
+            conn.row_factory = sqlite3.Row
+            # Aggregate from message table (per-LLM-call granularity)
+            rows = conn.execute("""
+                SELECT
+                    json_extract(data, '$.modelID') as model,
+                    json_extract(data, '$.providerID') as provider,
+                    COUNT(*) as calls,
+                    SUM(json_extract(data, '$.tokens.total')) as tokens_total,
+                    SUM(json_extract(data, '$.tokens.input')) as tokens_input,
+                    SUM(json_extract(data, '$.tokens.output')) as tokens_output,
+                    SUM(json_extract(data, '$.cost')) as cost
+                FROM message
+                WHERE json_extract(data, '$.tokens.total') IS NOT NULL
+                  AND json_extract(data, '$.tokens.total') > 0
+                GROUP BY model
+                ORDER BY tokens_total DESC
+            """).fetchall()
+
+            for row in rows:
+                model_name = row["model"] or "unknown"
+                if "/" in model_name:
+                    model_name = model_name.split("/")[-1]
+                c = row["calls"] or 0
+                t = row["tokens_total"] or 0
+                ti = row["tokens_input"] or 0
+                to = row["tokens_output"] or 0
+                cost = row["cost"] or 0.0
+                total_calls += c
+                total_cost += cost
+                models.append({
+                    "name": model_name,
+                    "calls": c,
+                    "tokens_in": ti,
+                    "tokens_out": to,
+                    "tokens_total": t,
+                    "cost": round(cost, 6),
+                    "tokens_estimated": False,
+                    "providers": [row["provider"]] if row["provider"] else [],
+                })
+
+            has_real_data = len(models) > 0
+            conn.close()
+        except Exception as e:
+            print(f"  [warn] SQLite query failed: {e}")
+
+    # Fallback: log parsing for call counts + estimation
+    if not has_real_data:
+        logs = [p for p in _LOG_SOURCES if "opencode" in p] if _LOG_SOURCES else []
+        if not logs:
+            log = OLD_LOG_FILE
+            if os.path.isfile(log):
+                logs = [log]
+        if logs:
+            import re
+            model_counts = defaultdict(int)
+            model_providers = defaultdict(set)
+            for log in logs:
+                try:
+                    with open(log, "r", errors="ignore") as f:
+                        f.seek(0, 2)
+                        size = f.tell()
+                        f.seek(max(0, size - 1024 * 1024))
+                        content = f.read()
+                except Exception:
+                    continue
+                for m in re.finditer(r'message=stream\s+providerID=(\S+)\s+modelID=(\S+)', content):
+                    model_name = m.group(2).strip().split("/")[-1]
+                    if model_name:
+                        model_counts[model_name] += 1
+                        total_calls += 1
+                        model_providers[model_name].add(m.group(1))
+                for m in re.finditer(r'model=(\S+)\s+provider=(\S+)', content):
+                    model_name = m.group(1).strip().split("/")[-1]
+                    model_providers[model_name].add(m.group(2).strip())
+
+            _TOKENS_PER_CALL = {
+                'deepseek-v4-flash': 1200, 'deepseek-v4-flash-experimental': 1200,
+                'deepseek-v4-pro': 3000, 'glm-5.2': 3000, 'minimax-m3': 3000,
+                'kimi-k2.7-code': 4000,
+                'qwen3.7-max': 6000, 'qwen3.7-plus': 6000, 'qwq-plus': 6000, 'qwq-32b': 6000,
+            }
+            _DEFAULT_TOKENS = 1500
+            for name, count in sorted(model_counts.items(), key=lambda x: -x[1]):
+                models.append({
+                    "name": name, "calls": count,
+                    "tokens_in": 0, "tokens_out": 0,
+                    "tokens_total": count * _TOKENS_PER_CALL.get(name, _DEFAULT_TOKENS),
+                    "cost": 0.0,
+                    "tokens_estimated": True,
+                    "providers": list(model_providers.get(name, [])),
+                })
+
+    # Sort by tokens descending
+    models.sort(key=lambda m: -m["tokens_total"])
+    return {
+        "models": models,
+        "total_calls": total_calls,
+        "total_cost": round(total_cost, 4),
+        "tokens_estimated": has_real_data is False,
+    }
 
 
 def collect_cpu_details():

@@ -81,12 +81,16 @@ Search results strengthen the draft's credibility and relevance.
 
 Three types of images produced per post, all $0 cost, plus optional meme SVGs:
 
-### 1. SVG Cover Illustration
-Model writes SVG XML directly (1200×630). Supports paths, gradients, filters, transforms.
-- Dark theme: `#0d0d1a` → `#1a1a30` gradient
-- Accent: `#7b5f3d` (amber), `#4a90d9` (blue), `#50c878` (teal)
-- Embed: `![[YYYY-MM-DD-slug-cover.svg|800]]`
-- References: `references/svg-cover-design.md`, `references/svg-meme-templates.md`
+### 1. Cover Image (CF Workers AI, $0, 1024×512)
+AI-generated conceptual illustration via FLUX on Cloudflare Workers AI. Four scene templates:
+- **garden** — 태양 정원 (Creative)
+- **city** — 덩굴 도시 (Build Log)
+- **shepherd** — 사막의 양치기 (AI & Tools)
+- **connector** — 연결자 (Systems)
+
+All feature: anthropomorphic blue sheep, lion silhouette, geometric sun, cracked earth.
+See `scripts/cover_gen.py` for prompts. Featured image via MCP `create_post(featured_image=...)`.
+Fallback: SVG templates at `references/svg-templates/`.
 
 ### 1b. Meme SVG (optional — cultural reference)
 
@@ -196,7 +200,8 @@ Before drafting, study `https://YOUR_DOMAIN/` `s published posts (ID 12, 13) to 
 - **SILENT is correct**: If nothing worth publishing, produce nothing. Don't force output.
 - **Quality over quantity**: One great post per run beats five mediocre ones. The cron runs daily, backlog clears over time.
 - **Never ask Drew what to write**: The CMO decides. Present the draft.
-- **SVG over paid APIs**: User explicitly rejected FAL.ai and other paid image generation. SVG is the primary cover format. Excalidraw PNG for architecture. No DALL-E, Midjourney, FLUX, etc.
+- **CF Workers AI FLUX for covers**: Free tier, $0. `cover_gen.py` generates 1024×512 PNG via 4 scene templates. SVG templates as fallback only.
+- **Excalidraw PNG for architecture**: Complex diagrams via headless Chrome export.
 - **Try first, retreat when proven**: User explicitly corrected: "변화를 두려워 하지마. 상상만으로 결정하지마. 상정한 방향을 현재 환경에 최대한 적용해보고, 그래도 비효율이면 그때 물러서." Apply the best approach to the current environment first; only retreat when the data says it's inefficient — not from imagined objections.
 
 ## WordPress Publishing Pipeline
@@ -247,9 +252,9 @@ content-curator (script, 08:00/15:00, $0)
   → heuristic dedup + scoring
   → kanban INSERT (content-write / trend-review / creative-write)
   → office-autopilot (5m) picks up → orchestrator → content-manager agent
-    → writes draft (Gutenberg HTML, SVG cover)
-    → calls create_post(status="draft")
-    → content-editor (agent, 12:00/20:00) → QA → publish
+    → writes post (Gutenberg HTML, SVG cover)
+    → calls create_post(status="publish")  (creative-write만 draft)
+    → content-editor (agent, 12:00/20:00) → 사후 QA
     → updates narrative_arc + content-inventory
 ```
 
