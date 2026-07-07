@@ -5,16 +5,30 @@ type: document
 space: concept
 tags: [concept]
 created: 2026-05-20
-updated: 2026-06-23
+updated: 2026-07-07
 links: []
-links:
-  - "[[@memory/knowledge/NEURONFS_RULES]]"
 ---
 
 
-# Drewgent Changelog
+# opencode-drewgent Changelog
 
-All notable changes to Drewgent Agent are documented here.
+All notable changes to opencode-drewgent are documented here.
+
+---
+
+## [0.9.0] — 2026-07-07
+
+### Template Restructure — Hermes Purge + Separate Repo
+
+#### What changed
+- **Hermes legacy removed**: All 930+ files (379K lines) from the NousResearch Hermes-Agent fork deleted. `agent/`, `gateway/`, `tools/`, `drewgent_cli/`, `plugins/`, `hooks/`, `tests/` and 50+ root files removed. Template is now opencode-native only.
+- **Junk cleanup**: `Ep.2-8.html`, `refactor_plan_phase_*.md`, `RELEASE_v0.*.md`, `SOUL.md` (duplicate), `cq-all-zones.png`, and 12 other stale files removed.
+- **Private scripts excluded**: 24 private scripts (`content_*`, `ingest_*`, `seo_*`, `trend_*`, `recall.py`, `wordpress-mcp-server.js`, etc.) excluded from template.
+- **Separate repo**: Template now lives at `~/.drewgent/opencode-drewgent/` as standalone git repo. Direct `git push origin main`.
+- **sync-template.sh**: Replaces push-template.sh. Simple cp + sanitize + commit + push.
+- **@identity/ restored**: SELF_MODEL, rules, persona, writing-style-guide included.
+- **README reordered**: Quick Start moved above Philosophy. wordpress-mcp-server.js references removed.
+- **Private repo**: `humanerd-drew/drewgent` now tracks the full private agent source.
 
 ---
 
