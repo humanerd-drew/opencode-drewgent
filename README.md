@@ -9,6 +9,42 @@ Drewgent is an **autonomous software engineering agent system** built on [openco
 
 This is **not** a standalone agent framework. It's the configuration and extension layer — skills, scripts, tools, MCP servers, automation, and a persistent knowledge graph — that sits on top of opencode.
 
+## Quick Start
+
+```bash
+# 1. Install opencode
+curl -fsSL https://opencode.ai/install | sh
+
+# 2. Clone this repo
+git clone git@github.com:humanerd-drew/opencode-drewgent.git ~/.drewgent
+cd ~/.drewgent
+
+# 3. Run the setup script
+bash scripts/setup.sh
+```
+
+### First-run Checklist (post clone)
+
+| # | Step | Command / Action | Required? |
+|---|------|-----------------|-----------|
+| 1 | Run setup | `bash scripts/setup.sh` — installs deps, creates .env, checks environment | ✅ |
+| 2 | Set API keys | Edit `~/.drewgent/.env` — add `OPENCODE_API_KEY` (required), `DISCORD_BOT_TOKEN` (optional), `OPENAI_API_KEY` (optional) | ✅ |
+| 3 | Rename (optional) | `skill("rename-drewgent")` — replaces all `drewgent` → `<yourname>gent` | 🔄 |
+| 4 | Verify | `bash scripts/bridge-lint.sh` — checks manufacturing-bridge tag compliance | 🔄 |
+| 5 | Install launchd (macOS) | `for f in launchd/*.plist.example; do n=$(basename "$f" .example); cp "$f" ~/Library/LaunchAgents/"$n" && launchctl load ~/Library/LaunchAgents/"$n"; done` — enables cron, opencode serve, Discord bot daemons | 🔄 |
+| 6 | Start opencode | `opencode` — interactive session | ✅ |
+
+**Not working?** See [Troubleshooting](#troubleshooting) below. Missing API keys? Check `~/.drewgent/.env`.
+
+### Requirements
+
+- **macOS** or **Linux**
+- **opencode** CLI (v1.x+)
+- **Python** 3.11+
+- **Model subscription** (opencode-go or bring-your-own provider)
+
+---
+
 ## Philosophy
 
 ### Why "Drewgent"?
@@ -103,42 +139,6 @@ Every architectural decision in this repo records **why it was made**:
 - Kanban tasks include origin, session, and decision rationale
 
 The principle: **the prompt is more informative than the output.** When you read a completed proposal six months later, the provenance tells you *why*, not just *what*.
-
----
-
-## Quick Start
-
-```bash
-# 1. Install opencode
-curl -fsSL https://opencode.ai/install | sh
-
-# 2. Clone this repo
-git clone git@github.com:humanerd-drew/opencode-drewgent.git ~/.drewgent
-cd ~/.drewgent
-
-# 3. Run the setup script
-bash scripts/setup.sh
-```
-
-### First-run Checklist (post clone)
-
-| # | Step | Command / Action | Required? |
-|---|------|-----------------|-----------|
-| 1 | Run setup | `bash scripts/setup.sh` — installs deps, creates .env, checks environment | ✅ |
-| 2 | Set API keys | Edit `~/.drewgent/.env` — add `OPENCODE_API_KEY` (required), `DISCORD_BOT_TOKEN` (optional), `OPENAI_API_KEY` (optional) | ✅ |
-| 3 | Rename (optional) | `skill("rename-drewgent")` — replaces all `drewgent` → `<yourname>gent` | 🔄 |
-| 4 | Verify | `bash scripts/bridge-lint.sh` — checks manufacturing-bridge tag compliance | 🔄 |
-| 5 | Install launchd (macOS) | `for f in launchd/*.plist.example; do n=$(basename "$f" .example); cp "$f" ~/Library/LaunchAgents/"$n" && launchctl load ~/Library/LaunchAgents/"$n"; done` — enables cron, opencode serve, Discord bot daemons | 🔄 |
-| 6 | Start opencode | `opencode` — interactive session | ✅ |
-
-**Not working?** See [Troubleshooting](#troubleshooting) below. Missing API keys? Check `~/.drewgent/.env`.
-
-### Requirements
-
-- **macOS** or **Linux**
-- **opencode** CLI (v1.x+)
-- **Python** 3.11+
-- **Model subscription** (opencode-go or bring-your-own provider)
 
 ---
 
@@ -579,10 +579,6 @@ Before writing code, every agent applies the minimization checklist:
       "type": "local",
       "command": ["discord-mcp"],
       "env": { "DISCORD_TOKEN": "{env:DISCORD_BOT_TOKEN}" }
-    },
-    "wordpress": {
-      "type": "local",
-      "command": ["node", "scripts/wordpress-mcp-server.js"]
     },
     "gajae-code": {
       "type": "local",
