@@ -152,7 +152,8 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
         limit=1024 * 1024,  # 1MB readline buffer (default 64KB was too small)
     )
 
-    status_msg: Optional[discord.Message] = None
+    reasoning_msg: Optional[discord.Message] = None
+    tool_msg: Optional[discord.Message] = None
     text_messages: List[discord.Message] = []  # final-answer message(s)
     final_text = ""
     last_session: Optional[str] = None
@@ -162,16 +163,27 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
     pending_reasoning: List[str] = []
     reasoning_handle: Optional[asyncio.TimerHandle] = None
 
-    async def _set_status(emoji: str, content: str) -> None:
-        nonlocal status_msg
-        text = format_status(emoji, content)
-        if status_msg is None:
-            status_msg = await thread.send(text)
+    async def _set_reasoning(content: str) -> None:
+        nonlocal reasoning_msg
+        text = format_status("🤔", content)
+        if reasoning_msg is None:
+            reasoning_msg = await thread.send(text)
         else:
             try:
-                await status_msg.edit(content=text)
+                await reasoning_msg.edit(content=text)
             except discord.HTTPException:
-                status_msg = await thread.send(text)
+                reasoning_msg = await thread.send(text)
+
+    async def _set_tool(emoji: str, content: str) -> None:
+        nonlocal tool_msg
+        text = format_status(emoji, content)
+        if tool_msg is None:
+            tool_msg = await thread.send(text)
+        else:
+            try:
+                await tool_msg.edit(content=text)
+            except discord.HTTPException:
+                tool_msg = await thread.send(text)
 
     def _cancel_reasoning() -> None:
         nonlocal reasoning_handle
@@ -187,7 +199,7 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
             return
         full = "".join(pending_reasoning)
         pending_reasoning.clear()
-        await _set_status("🤔", full)
+        await _set_reasoning(full)
 
     def _schedule_reasoning() -> None:
         nonlocal reasoning_handle
@@ -196,7 +208,7 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
             reasoning_handle = loop.call_later(0.5, lambda: asyncio.create_task(_flush_reasoning()))
 
     async def _update_final_text() -> None:
-        nonlocal final_text, status_msg
+        nonlocal final_text
         if not final_text:
             return
         chunks = chunk_text(final_text, MAX_MSG_LEN)
@@ -204,12 +216,9 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
             prefix = "✅ " if idx == 0 else ""
             content = prefix + chunk
             if idx == 0:
-                if status_msg is None:
-                    status_msg = await thread.send(content)
-                else:
-                    await status_msg.edit(content=content)
+                msg = await thread.send(content)
                 if not text_messages:
-                    text_messages.append(status_msg)
+                    text_messages.append(msg)
             elif idx < len(text_messages):
                 await text_messages[idx].edit(content=chunk)
             else:
@@ -289,7 +298,7 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
                     if k in name.lower():
                         emoji = v
                         break
-                await _set_status(emoji, display)
+                await _set_tool(emoji, display)
 
             elif etype == "file":
                 _cancel_reasoning()
@@ -300,7 +309,7 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
                     or part.get("file")
                     or "output"
                 )
-                await _set_status("📦", str(path))
+                await _set_tool("📦", str(path))
 
             elif etype == "error":
                 _cancel_reasoning()
@@ -312,7 +321,7 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
                     or data.get("message")
                     or json.dumps(data, ensure_ascii=False)
                 )
-                await _set_status("❌", str(err))
+                await _set_tool("❌", str(err))
 
     # Background typing heartbeat (Discord typing expires after ~10s).
     async def _typing_heartbeat() -> None:
@@ -357,7 +366,7 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
 
     # If nothing useful happened, let the user know.
     if not final_text and not error_seen:
-        await _set_status("⏳", "no response")
+        await _set_tool("⏳", "no response")
 
 
 # ---------------------------------------------------------------------------

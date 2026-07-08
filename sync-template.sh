@@ -12,15 +12,15 @@ echo -e "${BLUE}╔════════════════════�
 echo -e "${BLUE}║  opencode-drewgent → Template Sync          ║${NC}"
 echo -e "${BLUE}╚══════════════════════════════════════════════╝${NC}"
 
-# ── Template-safe source paths ──
+# ── Tooling paths (sync from ~/.drewgent/ to template) ──
+# Blueprint docs (AGENTS.md, README, @identity/, @action/) are maintained
+# directly in the template repo — NOT synced.
 PATHS=(
-  AGENTS.md README.md README.ko.md CHANGELOG.md CONTRIBUTING.md LICENSE
-  .env.example .gitignore .github
   .opencode opencode.jsonc
-  .well-known
+  .env.example .gitignore .github
   launchd cron harness
-  @identity @action
   skills
+  .well-known
 )
 
 # ── Copy from SOURCE_DIR → TEMPLATE_DIR ──
@@ -29,7 +29,7 @@ for p in "${PATHS[@]}"; do
   src="$SOURCE_DIR/$p"
   dst="$TEMPLATE_DIR/$p"
   if [[ -e "$src" ]]; then
-    rsync -a --delete "$src" "$dst" 2>/dev/null || cp -Rf "$src" "$dst"
+    rsync -a --delete "${src}/" "${dst}/" 2>/dev/null || (cp -Rf "$src" "$dst" && echo "  ⚠ fallback cp used")
     echo -e "  ${GREEN}✓${NC} $p"
   else
     echo -e "  ${YELLOW}⚠${NC} $p (not found)"

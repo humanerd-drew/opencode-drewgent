@@ -244,3 +244,9 @@ agent-dashboard-state.json
 /Dockerfile.simple
 /drewgent
 /tinker-atropos
+
+# User-specific runtime data
+.opencode/knowledge.json
+.opencode/opencode.json
+.opencode/plugins/
+
