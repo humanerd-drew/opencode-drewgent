@@ -1,6 +1,6 @@
-# opencode-drewgent
+# opencode-loragent
 
-Drewgent configuration for [opencode](https://opencode.ai) — agent profiles, skills, kanban task pipeline, and automation tooling designed for autonomous software engineering.
+Loragent configuration for [opencode](https://opencode.ai) — agent profiles, skills, kanban task pipeline, and automation tooling designed for autonomous software engineering.
 
 This is **not** a standalone agent framework. It's the configuration and extension layer that sits on top of opencode, providing:
 
@@ -17,15 +17,15 @@ This is **not** a standalone agent framework. It's the configuration and extensi
 # 1. Install opencode
 curl -fsSL https://opencode.ai/install | sh
 
-# 2. Clone this repo as your Drewgent directory
-git clone git@github.com:humanerd-drew/opencode-drewgent.git ~/.drewgent
+# 2. Clone this repo as your Loragent directory
+git clone git@github.com:humanerd-drew/opencode-loragent.git ~/.loragent
 
 # 3. Configure API keys
-cd ~/.drewgent
+cd ~/.loragent
 cp .env.example .env
 # Edit .env with your LLM provider API keys
 
-# 4. Start using opencode with Drewgent configuration
+# 4. Start using opencode with Loragent configuration
 opencode
 ```
 
@@ -50,14 +50,14 @@ opencode CLI session
   └── cron/jobs.json          (scheduled background jobs)
         └── scripts/
               ├── run_kanban_worker.py    (kanban task executor)
-              ├── drewgent_cron.py        (60s cron dispatcher via launchd)
+              ├── loragent_cron.py        (60s cron dispatcher via launchd)
               ├── discord_bot.py          (Discord ↔ opencode gateway)
               └── ...
 ```
 
 ### Multi-Agent Pipeline
 
-Drewgent's core workflow is a kanban-backed pipeline where each stage is handled by a specialized agent profile. The pipeline automatically manages dependencies, context handoff, and failure recovery:
+Loragent's core workflow is a kanban-backed pipeline where each stage is handled by a specialized agent profile. The pipeline automatically manages dependencies, context handoff, and failure recovery:
 
 ```python
 kanban_create(
@@ -163,7 +163,7 @@ All fields are optional. If the result is not valid JSON, the system falls back 
 ## Directory Structure
 
 ```
-~/.drewgent/
+~/.loragent/
 ├── opencode.jsonc           # opencode configuration (model, MCP, skill paths)
 ├── AGENTS.md                # System instructions loaded by opencode
 ├── agents/                  # 14 subagent profile definitions
@@ -185,7 +185,7 @@ All fields are optional. If the result is not valid JSON, the system falls back 
 │   └── ...
 ├── scripts/                 # Runtime automation scripts
 │   ├── run_kanban_worker.py # Kanban task executor
-│   ├── drewgent_cron.py     # Cron dispatcher (60s interval)
+│   ├── loragent_cron.py     # Cron dispatcher (60s interval)
 │   ├── discord_bot.py       # Discord ↔ opencode gateway
 │   ├── discord_send.py      # Discord message chunk sender
 │   ├── n8n_trigger_runner.py# LLM-generated cron triggers
@@ -233,7 +233,7 @@ The main configuration file for opencode. Key sections:
   // Skill directories (loaded in order)
   "skills": {
     "paths": [
-      "~/.drewgent/skills",           // Drewgent custom skills
+      "~/.loragent/skills",           // Loragent custom skills
       "~/.config/opencode/skills"     // opencode built-in skills
     ]
   },
@@ -263,7 +263,7 @@ The main configuration file for opencode. Key sections:
 
 ## Cron Jobs
 
-Drewgent uses a launchd-driven 60-second tick that dispatches `drewgent_cron.py`. The scheduler in `cron/jobs.json` defines the job roster:
+Loragent uses a launchd-driven 60-second tick that dispatches `loragent_cron.py`. The scheduler in `cron/jobs.json` defines the job roster:
 
 | Interval | Job | Script |
 |----------|-----|--------|
@@ -281,7 +281,7 @@ Drewgent uses a launchd-driven 60-second tick that dispatches `drewgent_cron.py`
 
 ## Skills
 
-Skills are Markdown files with YAML frontmatter that provide specialized instructions for specific tasks. Drewgent includes 100+ skills organized by category:
+Skills are Markdown files with YAML frontmatter that provide specialized instructions for specific tasks. Loragent includes 100+ skills organized by category:
 
 | Category | Description |
 |----------|-------------|
@@ -296,7 +296,7 @@ Skills are Markdown files with YAML frontmatter that provide specialized instruc
 
 ## Discord Integration
 
-Drewgent includes a Discord bot gateway (`scripts/discord_bot.py`) that bridges Discord channels to opencode:
+Loragent includes a Discord bot gateway (`scripts/discord_bot.py`) that bridges Discord channels to opencode:
 
 - Connects to the opencode daemon via `--attach` mode
 - Creates threads for each conversation
@@ -305,7 +305,7 @@ Drewgent includes a Discord bot gateway (`scripts/discord_bot.py`) that bridges 
 
 ## Related
 
-- [opencode](https://opencode.ai) — The CLI agent platform Drewgent runs on
+- [opencode](https://opencode.ai) — The CLI agent platform Loragent runs on
 - [gbrain](https://github.com/anomalyco/gbrain) — Local brain server for hybrid search
 - [lazyweb](https://lazyweb.com) — UI design reference search
 

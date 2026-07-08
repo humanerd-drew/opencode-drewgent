@@ -66,8 +66,8 @@ def _load_config_passthrough() -> frozenset[str]:
 
     result: set[str] = set()
     try:
-        drewgent_home = Path(os.environ.get("DREW_HOME", Path.home() / ".drewgent"))
-        config_path = drewgent_home / "config.yaml"
+        loragent_home = Path(os.environ.get("DREW_HOME", Path.home() / ".loragent"))
+        config_path = loragent_home / "config.yaml"
         if config_path.exists():
             import yaml
 

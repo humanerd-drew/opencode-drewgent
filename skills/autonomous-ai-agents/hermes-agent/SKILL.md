@@ -852,20 +852,20 @@ export HULY_KEY
 exec node myscript.js 2>&1
 ```
 
-### PYTHONPATH trailing colon shadows Hermes modules (Drewgent customize layer)
+### PYTHONPATH trailing colon shadows Hermes modules (Loragent customize layer)
 
 If `PYTHONPATH` in `.zshrc` has a trailing colon — e.g.
 ```bash
-export PYTHONPATH="$HOME/.drewgent/customize:${PYTHONPATH:-}"
+export PYTHONPATH="$HOME/.loragent/customize:${PYTHONPATH:-}"
 ```
-— the empty trailing-colon entry resolves to the current working directory (usually `~/.drewgent`), which adds `~/.drewgent/` to `sys.path` before Hermes' own paths. This causes `import utils` to resolve to `~/.drewgent/utils.py` instead of the Hermes-agent's `utils.py`, breaking `hermes kanban diagnostics` and similar CLI commands with:
+— the empty trailing-colon entry resolves to the current working directory (usually `~/.loragent`), which adds `~/.loragent/` to `sys.path` before Hermes' own paths. This causes `import utils` to resolve to `~/.loragent/utils.py` instead of the Hermes-agent's `utils.py`, breaking `hermes kanban diagnostics` and similar CLI commands with:
 ```
 ImportError: cannot import name 'atomic_replace' from 'utils'
 ```
 
 **Fix:** Remove the trailing colon — use `${PYTHONPATH:+:$PYTHONPATH}` instead of `:${PYTHONPATH:-}`:
 ```bash
-export PYTHONPATH="$HOME/.drewgent/customize${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH="$HOME/.loragent/customize${PYTHONPATH:+:$PYTHONPATH}"
 ```
 This only adds the separator when PYTHONPATH is non-empty, and never appends an empty-string entry.
 

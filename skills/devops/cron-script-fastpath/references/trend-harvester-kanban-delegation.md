@@ -15,7 +15,7 @@ LLM call at the end took >600s to start streaming (OpenRouter queue). The cron
 scheduler's 600s idle limit killed the job.
 
 **Mid-session model routing change (2026-06-14):** User switched all model routing
-to `opencode-go/deepseek-v4-flash` — both Hermes and Drewgent configs now use
+to `opencode-go/deepseek-v4-flash` — both Hermes and Loragent configs now use
 `provider: opencode-go` as the sole provider. The old `anthropic/claude-opus-4.6`
 and OpenRouter routes are retired. See `references/opencode-go-models.md` for the
 verified model catalog.

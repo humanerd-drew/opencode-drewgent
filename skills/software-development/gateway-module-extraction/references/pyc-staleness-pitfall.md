@@ -34,7 +34,7 @@ find gateway/__pycache__/ -name "*.pyc" -delete
 touch gateway/session.py gateway/run.py
 
 # Restart gateway
-launchctl kickstart -k gui/$(id -u)/ai.drewgent.gateway
+launchctl kickstart -k gui/$(id -u)/ai.loragent.gateway
 ```
 
 ## Prevention

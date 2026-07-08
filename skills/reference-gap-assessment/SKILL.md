@@ -52,7 +52,7 @@ Output of this phase: A clear list of assessment dimensions with definitions and
 For each dimension:
 
 1. **Search for evidence in the user's system**:
-   - Code/config files in `~/.drewgent/` and `~/.hermes/`
+   - Code/config files in `~/.loragent/` and `~/.hermes/`
    - Memory entries (signal patterns, past decisions)
    - Skill library (what skills exist, what conventions are encoded)
    - Architecture decisions (P0-P6 layers, customize layer, kanban board)
@@ -65,7 +65,7 @@ For each dimension:
    - **Not applicable** — the dimension doesn't apply to the user's context
 
 3. **Collect concrete evidence** for each classification:
-   - Strong match: `"customize layer at ~/.drewgent/customize/ proxies hermes_cli — compass taste"`
+   - Strong match: `"customize layer at ~/.loragent/customize/ proxies hermes_cli — compass taste"`
    - Partial match: `"3-phase QA exists but no PR-prompt coupling — partial zone 3"`
    - Gap: `"no AGENTS.md equivalent — gap in zone 5"`
 

@@ -17,7 +17,7 @@ WordPress + Docker + Blocksy + MCP integration for humanerd.kr.
 ## Docker Setup
 
 ```yaml
-# ~/.drewgent/wordpress/docker-compose.yml
+# ~/.loragent/wordpress/docker-compose.yml
 services:
   db:
     image: mysql:8.0
@@ -32,11 +32,11 @@ services:
     ports: ["8080:80"]
     volumes:
       - /Volumes/humanerd/docker/wordpress/wp-content:/var/www/html/wp-content
-      - /Users/drew/.drewgent/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
-      - /Users/drew/.drewgent/wordpress/wp-content/themes:/var/www/html/wp-content/themes
+      - ~/.loragent/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
+      - ~/.loragent/wordpress/wp-content/themes:/var/www/html/wp-content/themes
 ```
 
-**pw 저장:** `~/.drewgent/wordpress/.wp-env` (chmod 600)
+**pw 저장:** `~/.loragent/wordpress/.wp-env` (chmod 600)
 
 ## Blocksy Theme
 
@@ -106,7 +106,7 @@ RewriteRule . /index.php [L]
 
 Custom MCP server for autonomous agent→WordPress interaction.
 
-**Path:** `/Users/drew/.drewgent/scripts/wordpress-mcp-server.js`
+**Path:** `~/.loragent/scripts/wordpress-mcp-server.js`
 **Config:** `mcp_servers.wordpress` in `~/.hermes/config.yaml`
 **Backend:** Node.js wrapping `docker exec humanerd-wp wp --allow-root` via STDIO JSON-RPC 2.0
 
@@ -125,7 +125,7 @@ Custom MCP server for autonomous agent→WordPress interaction.
 ### Test
 
 ```bash
-printf '{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n' | node /Users/drew/.drewgent/scripts/wordpress-mcp-server.js
+printf '{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n' | node ~/.loragent/scripts/wordpress-mcp-server.js
 ```
 
 ## Huly MCP Integration

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check Drewgent Obsidian graph integrity for generated brain notes."""
+"""Check Loragent Obsidian graph integrity for generated brain notes."""
 
 from __future__ import annotations
 

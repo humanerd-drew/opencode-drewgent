@@ -108,8 +108,8 @@ export const DraftFilter = (opts?: {
 
 - insights 7 (NEURONFS_RULES, OPENCRAB_ONTOLOGY, garry-tan-architecture, garry-tan-complexity-ratchet, garry-tan-building-with-ai, vault-site-principle, prd-template)
 - monthly log 2 (2026-05, 2026-06)
-- index + about + services 3 (drewgent, notion2web, seo-harvester)
-- portfolio 3 (drewgent, quartz-publishing, seo-article-harvester)
+- index + about + services 3 (loragent, notion2web, seo-harvester)
+- portfolio 3 (loragent, quartz-publishing, seo-article-harvester)
 - Insights.md (blog index)
 
 ### Fix 3: Homepage Blog 섹션 wikilink 정리

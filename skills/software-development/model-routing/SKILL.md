@@ -49,7 +49,7 @@ auxiliary:
     model: "deepseek-v4-flash"
 ```
 
-### Agent Profiles (`~/.drewgent/agents/*.md`)
+### Agent Profiles (`~/.loragent/agents/*.md`)
 
 8 pre-defined roles, each with model/provider/toolsets/instructions. Loaded via `delegate_task(agent_profile="reviewer", goal="...")`. The `agent_profile` parameter is built into the `delegate_task` tool schema — every agent sees it.
 

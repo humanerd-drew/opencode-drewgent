@@ -57,10 +57,10 @@ cron: taste-review-trigger (fast LLM, 화/금 10:00)
 다섯 가지 질문에 답변:
 
 1. **One-Liner**: 이 툴을 한 문장으로 설명하면?
-2. **훔칠 Taste 결정 (1-3개)**: 이 툴의 제작자가 내린 결정 중, Drewgent에 적용할 가치가 있는 것은?
+2. **훔칠 Taste 결정 (1-3개)**: 이 툴의 제작자가 내린 결정 중, Loragent에 적용할 가치가 있는 것은?
 3. **아키텍처 인사이트**: 구조적으로 배울 점은?
-4. **Drewgent 적용 가능성**: 이 아이디어를 Drewgent에 적용할 수 있는가? 어떻게?
-5. **Leverage Score (1-5)**: 이 인사이트가 Drewgent에 미칠 영향은?
+4. **Loragent 적용 가능성**: 이 아이디어를 Loragent에 적용할 수 있는가? 어떻게?
+5. **Leverage Score (1-5)**: 이 인사이트가 Loragent에 미칠 영향은?
 
 ### Vault 저장
 
@@ -98,14 +98,14 @@ provenance:
 ### 1. [결정 제목]
 - **무슨 결정인가:** ...
 - **왜 taste가 필요한 결정인가:** ...
-- **Drewgent에 적용:** ...
+- **Loragent에 적용:** ...
 
 ### 2. ...
 
 ## 아키텍처 인사이트
 ...
 
-## Drewgent 적용 가능성
+## Loragent 적용 가능성
 [Yes/No + 구체적 방법]
 
 ## Leverage Score: N/5

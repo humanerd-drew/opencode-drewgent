@@ -4,8 +4,8 @@
 import subprocess, sys, os
 from pathlib import Path
 
-HOME = Path(os.environ.get("DREW_HOME", str(Path.home() / ".drewgent")))
-VENV_PYTHON = str(HOME / "source" / "drewgent-agent" / ".venv" / "bin" / "python3")
+HOME = Path(os.environ.get("DREW_HOME", str(Path.home() / ".loragent")))
+VENV_PYTHON = str(HOME / "source" / "loragent-agent" / ".venv" / "bin" / "python3")
 
 script = str(HOME / "scripts" / "brain_signal_report.py")
 result = subprocess.run(

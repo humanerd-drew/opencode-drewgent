@@ -62,7 +62,7 @@ These are never on the chopping block:
 
 Non-trivial logic leaves ONE runnable check behind: the smallest thing that fails if the logic breaks (an assert-based demo/self-check or one small test file; no frameworks, no fixtures). Trivial one-liners need no test.
 
-## Application to Drewgent Coding Tasks
+## Application to Loragent Coding Tasks
 
 When writing code in this workspace (Python, TypeScript/JS, Shell, config):
 
@@ -108,7 +108,7 @@ This skill is loaded automatically when the task involves:
 - Fixing bugs (check if the fix is minimal)
 - Dependency management
 
-## Related Drewgent Skills & Rules
+## Related Loragent Skills & Rules
 
 - **TDD skill** — ponytail reduces code, TDD ensures correctness. Complementary.
 - **Simplify code skill** — ponytail prevents bloat in the first place, simplify-code cleans existing bloat.

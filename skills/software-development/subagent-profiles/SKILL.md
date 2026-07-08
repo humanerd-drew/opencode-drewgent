@@ -7,7 +7,7 @@ description: >-
   by delegate_task(agent_profile='reviewer').
 trigger: >-
   Loop engineering (addyo.substack.com/p/loop-engineering) — split maker from
-  checker, assign different models per role. Drewgent config from 2026-06-13
+  checker, assign different models per role. Loragent config from 2026-06-13
   added OpenCode Go routing and built the agent profile loader into
   delegate_tool.py.
 domain: software-development

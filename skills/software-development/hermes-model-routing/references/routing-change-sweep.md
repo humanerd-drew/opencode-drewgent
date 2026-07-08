@@ -24,12 +24,12 @@ Include regex for common case/separator variations.
 
 Checklist of file categories (grep each):
 
-- **Config files**: `~/.hermes/config.yaml`, `~/.drewgent/config.yaml`,
-  `~/.drewgent/P5-ego/config/config.yaml`
-- **Agent guidance**: `~/.drewgent/AGENTS.md`, `~/.drewgent/skills/*/SKILL.md`
+- **Config files**: `~/.hermes/config.yaml`, `~/.loragent/config.yaml`,
+  `~/.loragent/P5-ego/config/config.yaml`
+- **Agent guidance**: `~/.loragent/AGENTS.md`, `~/.loragent/skills/*/SKILL.md`
 - **Reference docs**: under `skills/*/references/`
 - **Skill frontmatter and body**: any skill that mentions models
-- **Cron jobs**: `~/.drewgent/cron/jobs.json` — check `model` field
+- **Cron jobs**: `~/.loragent/cron/jobs.json` — check `model` field
 
 Do NOT sweep (these are not active guidance):
 

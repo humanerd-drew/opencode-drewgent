@@ -36,10 +36,10 @@ A native Hermes MCP server is configured at `~/.hermes/config.yaml` → `mcp_ser
 # ~/.hermes/config.yaml — already configured
 mcp_servers:
   huly:
-    command: /Users/drew/.drewgent/scripts/huly-mcp-wrapper.sh
+    command: ~/.loragent/scripts/huly-mcp-wrapper.sh
 ```
 
-The wrapper script (`~/.drewgent/scripts/huly-mcp-wrapper.sh`) reads `HULY_KEY` from `~/.hermes/.env` at runtime and bridges it as `HULY_TOKEN`. This keeps the JWT out of config.yaml — no credential exposure in version control.
+The wrapper script (`~/.loragent/scripts/huly-mcp-wrapper.sh`) reads `HULY_KEY` from `~/.hermes/.env` at runtime and bridges it as `HULY_TOKEN`. This keeps the JWT out of config.yaml — no credential exposure in version control.
 
 **Auth:** No extra setup — the existing `HULY_KEY` (JWT from Settings → Integrations → API Access) is used directly.
 
@@ -181,7 +181,7 @@ sudo docker compose ps
 sudo docker compose logs account --tail 10
 ```
 
-Note: The NAS requires a sudo password. Use `expect` scripts or interactive SSH — `sudo -n` (non-interactive) does NOT work because the SSH session doesn't cache sudo credentials. See `~/.drewgent/scripts/` for reusable expect wrappers or pipe via `ssh -tt`. For the canonical expect + NAS pattern, see `devops/nas-synology-ssh-automation`.
+Note: The NAS requires a sudo password. Use `expect` scripts or interactive SSH — `sudo -n` (non-interactive) does NOT work because the SSH session doesn't cache sudo credentials. See `~/.loragent/scripts/` for reusable expect wrappers or pipe via `ssh -tt`. For the canonical expect + NAS pattern, see `devops/nas-synology-ssh-automation`.
 
 > **For expect + Synology sudo patterns** (the `sleep 2` + `send -- "$password\n"` + `exp_continue` sequence that actually works, plus anti-patterns that don't), see `references/nas-ssh-expect-patterns.md`.
 
@@ -668,14 +668,14 @@ rawConn.pushHandler((...txArr) => {
 
 ### Bridge Daemon (Production)
 
-Deployed as a launchd daemon at `ai.drewgent.huly-bridge` (PID verified running):
+Deployed as a launchd daemon at `ai.loragent.huly-bridge` (PID verified running):
 
 | File | Path |
 |------|------|
-| Node.js script | `~/.drewgent/scripts/huly_bridge.js` |
-| Bash wrapper | `~/.drewgent/scripts/huly_bridge.sh` |
-| launchd plist | `~/Library/LaunchAgents/ai.drewgent.huly-bridge.plist` |
-| Log | `~/.drewgent/logs/huly-bridge.log` |
+| Node.js script | `~/.loragent/scripts/huly_bridge.js` |
+| Bash wrapper | `~/.loragent/scripts/huly_bridge.sh` |
+| launchd plist | `~/Library/LaunchAgents/ai.loragent.huly-bridge.plist` |
+| Log | `~/.loragent/logs/huly-bridge.log` |
 
 **Behavior:**
 - Connects to Huly, registers pushHandler
@@ -685,10 +685,10 @@ Deployed as a launchd daemon at `ai.drewgent.huly-bridge` (PID verified running)
 
 **Commands:**
 ```bash
-launchctl load ~/Library/LaunchAgents/ai.drewgent.huly-bridge.plist   # start
-launchctl stop ai.drewgent.huly-bridge                                  # stop
-launchctl list ai.drewgent.huly-bridge                                  # status
-tail -f ~/.drewgent/logs/huly-bridge.log                                # log
+launchctl load ~/Library/LaunchAgents/ai.loragent.huly-bridge.plist   # start
+launchctl stop ai.loragent.huly-bridge                                  # stop
+launchctl list ai.loragent.huly-bridge                                  # status
+tail -f ~/.loragent/logs/huly-bridge.log                                # log
 ```
 
 ### Architecture Without Webhooks
@@ -716,7 +716,7 @@ Huly Server ──WebSocket──→ client.client.client.conn
 Pushes recently completed Hermes kanban tasks to Huly as new Issues.
 
 ```bash
-# Script: ~/.drewgent/scripts/huly_sync.sh → huly_sync.js
+# Script: ~/.loragent/scripts/huly_sync.sh → huly_sync.js
 # Cron: hermes cron job fc33f33c8b47
 # Token: HULY_KEY from ~/.hermes/.env
 # Duplicate check: by title
@@ -727,7 +727,7 @@ Pushes recently completed Hermes kanban tasks to Huly as new Issues.
 Polls Huly for recent changes, posts to Discord #agent-chat when there are updates.
 
 ```bash
-# Script: ~/.drewgent/scripts/huly_check.sh → huly_check.js
+# Script: ~/.loragent/scripts/huly_check.sh → huly_check.js
 # Cron: hermes cron job e38860f7e162
 # Silent when no changes (empty stdout = no delivery)
 ```
@@ -748,7 +748,7 @@ Discord #agent-chat                                          huly_sync.js (120mi
 
 ## Kanban → Huly Sync Architecture
 
-See `scripts/huly_sync.js` in `~/.drewgent/scripts/` for the production sync script.
+See `scripts/huly_sync.js` in `~/.loragent/scripts/` for the production sync script.
 
 ```
 Hermes kanban (done tasks)

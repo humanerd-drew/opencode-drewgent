@@ -1,6 +1,6 @@
 # Huly Self-Host on Synology NAS — Recipie
 
-Reference notes from the 2026-06-14/15 sessions where Drewgent self-hosted `hcengineering/huly-selfhost` on a Synology DS920+ (20 GB RAM, 16 TB free) accessed via `drew@192.168.1.53:8528` with key `~/.ssh/id_ed25519_dr2w247`. Captures the **hcengineering-standard procedure** and the gotchas that almost derailed the install.
+Reference notes from the 2026-06-14/15 sessions where Loragent self-hosted `hcengineering/huly-selfhost` on a Synology DS920+ (20 GB RAM, 16 TB free) accessed via `drew@192.168.1.53:8528` with key `~/.ssh/id_ed25519_dr2w247`. Captures the **hcengineering-standard procedure** and the gotchas that almost derailed the install.
 
 ## The standard procedure (in order)
 

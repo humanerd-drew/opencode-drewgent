@@ -11,7 +11,7 @@ links:
 
 # Cron Script Fast-Path — LLM Bypass for Simple Shell Jobs
 
-Drewgent cron jobs run their `prompt` through `AIAgent` (LLM) by default.
+Loragent cron jobs run their `prompt` through `AIAgent` (LLM) by default.
 For jobs whose prompt is just a shell command ("Run: python3 xxx.py"),
 this is wasteful — LLM parses the prompt, runs the script, and forwards
 stdout to delivery. Each run costs a full LLM round-trip.
@@ -25,8 +25,8 @@ directly via `subprocess.run()` and skips the LLM entirely.
 ## 1. When to Use
 
 Apply when a cron job's prompt is **structurally a single shell command**:
-- "Run: python3 ~/.drewgent/scripts/foo.py"
-- "Run: bash ~/.drewgent/scripts/bar.sh"
+- "Run: python3 ~/.loragent/scripts/foo.py"
+- "Run: bash ~/.loragent/scripts/bar.sh"
 - Any job where the prompt's only value-add over `subprocess.run` is
   "Report: ..." or "If silent, [SILENT]" — both of which the script
   already produces in stdout.
@@ -149,11 +149,11 @@ def _run_script_subprocess(
         return False, "", "", error_msg
 
     try:
-        env = {**os.environ, "DREW_HOME": str(_drewgent_home)}
+        env = {**os.environ, "DREW_HOME": str(_loragent_home)}
         result = subprocess.run(
             [sys.executable, expanded_script],
             capture_output=True, text=True, timeout=300,
-            env=env, cwd=str(_drewgent_home),
+            env=env, cwd=str(_loragent_home),
         )
         output = result.stdout.strip()
         error_output = result.stderr.strip()
@@ -182,7 +182,7 @@ For each target job, change:
 ```
 to:
 ```json
-"script": "~/.drewgent/scripts/<name>.py",
+"script": "~/.loragent/scripts/<name>.py",
 ```
 
 Keep the existing `prompt` field untouched — it's now unused but stays
@@ -239,12 +239,12 @@ After patching, verify with a direct call to `run_job()` from
 
 ```python
 import sys, os, json
-sys.path.insert(0, '/Users/drew/.drewgent/source/drewgent-agent')
-os.chdir('/Users/drew/.drewgent/source/drewgent-agent')
+sys.path.insert(0, '~/.loragent/source/loragent-agent')
+os.chdir('~/.loragent/source/loragent-agent')
 
 from cron.scheduler import run_job
 
-with open('/Users/drew/.drewgent/cron/jobs.json') as f:
+with open('~/.loragent/cron/jobs.json') as f:
     jobs = json.load(f)['jobs']
 
 # Pick one of the patched jobs
@@ -305,9 +305,9 @@ of a 50-line Python script is essentially free.
    it (but prefer making the script faster — cron has its own
    `DREW_CRON_TIMEOUT` for LLM path).
 5. **The script is invoked with `sys.executable`**, not the user's
-   python. If the script depends on the drewgent venv (most do),
+   python. If the script depends on the loragent venv (most do),
    ensure `shebang` or interpreter path is correct, OR rely on the
-   env `VIRTUAL_ENV` being set in `_drewgent_home` invocation.
+   env `VIRTUAL_ENV` being set in `_loragent_home` invocation.
 6. **"Done ✅" claims in review docs can be stale.** KANBAN-REVIEW-
    20260520.md had "Worker mode: KANBAN_WORKER_MODE implemented ✅"
    but the actual code path runs AIAgent. Always grep the actual
@@ -443,12 +443,12 @@ provider mapping, don't increase timeouts.
 
 - `cron/scheduler.py:run_job` — branch insertion point (line ~493)
 - `cron/scheduler.py:tick` — caller, no changes needed
-- `~/.drewgent/P4-cortex/growth/kanban-maintenance-guide.md` — recipe
+- `~/.loragent/P4-cortex/growth/kanban-maintenance-guide.md` — recipe
   used to write `scripts/kanban_maintenance.py`
-- `~/.drewgent/P6-prefrontal/incidents/cron-jobs-stalled-20260601` —
+- `~/.loragent/P6-prefrontal/incidents/cron-jobs-stalled-20260601` —
   related to cron-runner lifecycle, separate concern
-- `skills/software-development/yaml-config-patch-drewgent` — sister
-  skill for `~/.drewgent/config.yaml` + `P5-ego/config/config.yaml`
+- `skills/software-development/yaml-config-patch-loragent` — sister
+  skill for `~/.loragent/config.yaml` + `P5-ego/config/config.yaml`
   dual-patch pattern
 - `references/launchd-service-watchdog.md` — launchd watchdog pattern
   for service health monitoring + auto-recovery (independent of the

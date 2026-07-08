@@ -6,7 +6,7 @@ sounddevice or system audio players.
 
 Dependencies (optional):
     pip install sounddevice numpy
-    or: pip install drewgent-agent[voice]
+    or: pip install loragent-agent[voice]
 """
 
 import logging
@@ -127,7 +127,7 @@ SILENCE_RMS_THRESHOLD = 200  # RMS below this = silence (int16 range 0-32767)
 SILENCE_DURATION_SECONDS = 3.0  # Seconds of continuous silence before auto-stop
 
 # Temp directory for voice recordings
-_TEMP_DIR = os.path.join(tempfile.gettempdir(), "drewgent_voice")
+_TEMP_DIR = os.path.join(tempfile.gettempdir(), "loragent_voice")
 
 
 # ============================================================================
@@ -388,7 +388,7 @@ class AudioRecorder:
             raise RuntimeError(
                 "Voice mode requires sounddevice and numpy.\n"
                 "Install with: pip install sounddevice numpy\n"
-                "Or: pip install drewgent-agent[voice]"
+                "Or: pip install loragent-agent[voice]"
             ) from e
 
         with self._lock:

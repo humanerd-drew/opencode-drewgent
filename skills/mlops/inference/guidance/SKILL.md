@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [guidance, transformers]
 metadata:
-  drewgent:
+  loragent:
     tags: [Prompt Engineering, Guidance, Constrained Generation, Structured Output, JSON Validation, Grammar, Microsoft Research, Format Enforcement, Multi-Step Workflows]
 
 

@@ -31,7 +31,7 @@ import re
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
-from drewgent_constants import get_drewgent_home
+from loragent_constants import get_loragent_home
 from typing import Dict, Any, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 # happened after the first import.
 def get_memory_dir() -> Path:
     """Return the profile-scoped memories directory."""
-    return get_drewgent_home() / "memories"
+    return get_loragent_home() / "memories"
 
 # Backward-compatible alias — gateway/run.py imports this at runtime inside
 # a function body, so it gets the correct snapshot for that process.  New code
@@ -72,7 +72,7 @@ _MEMORY_THREAT_PATTERNS = [
     # Persistence via shell rc
     (r'authorized_keys', "ssh_backdoor"),
     (r'\$HOME/\.ssh|\~/\.ssh', "ssh_access"),
-    (r'\$HOME/\.drewgent/\.env|\~/\.drewgent/\.env', "drewgent_env"),
+    (r'\$HOME/\.loragent/\.env|\~/\.loragent/\.env', "loragent_env"),
 ]
 
 # Subset of invisible chars for injection detection

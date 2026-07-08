@@ -110,7 +110,7 @@ When citing, use the page's canonical URL and the `updated` frontmatter field as
 
 ## humanerd.kr 적용 노트
 
-humanerd.kr에 직접 와닿는 항목 (Drewgent 추가 메모):
+humanerd.kr에 직접 와닿는 항목 (Loragent 추가 메모):
 
 - `required` 누락 위험: `<meta name="theme-color">`, `color-scheme`, `/robots.txt` (Quartz 기본 미생성), `/sitemap-index.xml`
 - `recommended` 큰 가치: `/llms.txt`, MCP 서버 노출, `/.well-known/agent-skills/`, `Accept: text/markdown` 미들웨어

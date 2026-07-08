@@ -20,16 +20,16 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-_DREWGENT_HOME = Path.home() / ".drewgent"
-sys.path.insert(0, str(_DREWGENT_HOME))
+_LORAGENT_HOME = Path.home() / ".loragent"
+sys.path.insert(0, str(_LORAGENT_HOME))
 
 from agent.obsidian_graph import ensure_backlink, ensure_related_section, wiki_link
 
-_P4_TREND_HARVESTER = _DREWGENT_HOME / "P4-cortex" / "growth" / "trend-harvester"
-_P2_INSIGHTS = _DREWGENT_HOME / "P2-hippocampus" / "memories" / "insights"
-_P2_CONCEPTS = _DREWGENT_HOME / "P2-hippocampus" / "memories" / "concepts"
-_P2_MEMORIES = _DREWGENT_HOME / "P2-hippocampus" / "memories"
-_P4_KNOWLEDGE = _DREWGENT_HOME / "P4-cortex" / "knowledge"
+_P4_TREND_HARVESTER = _LORAGENT_HOME / "P4-cortex" / "growth" / "trend-harvester"
+_P2_INSIGHTS = _LORAGENT_HOME / "P2-hippocampus" / "memories" / "insights"
+_P2_CONCEPTS = _LORAGENT_HOME / "P2-hippocampus" / "memories" / "concepts"
+_P2_MEMORIES = _LORAGENT_HOME / "P2-hippocampus" / "memories"
+_P4_KNOWLEDGE = _LORAGENT_HOME / "P4-cortex" / "knowledge"
 _STATE_FILE = _P4_KNOWLEDGE / "harvester_sync_state.json"
 _DRY_RUN = False
 
@@ -82,7 +82,7 @@ def ensure_graph_links(path: Path, links: list[str]) -> None:
         _P2_INSIGHTS / "index.md",
         trend_index,
     ):
-        ensure_backlink(parent, path, _DREWGENT_HOME)
+        ensure_backlink(parent, path, _LORAGENT_HOME)
 
 
 def insight_log_header(month: str) -> str:
@@ -358,7 +358,7 @@ def main() -> int:
 
     print(f"Harvester Memory Sync {'(DRY-RUN)' if _DRY_RUN else ''}")
     print(f"  Source: {_P4_TREND_HARVESTER}")
-    print(f"  Dest:   {_DREWGENT_HOME}/P2-hippocampus/memories/")
+    print(f"  Dest:   {_LORAGENT_HOME}/P2-hippocampus/memories/")
     print()
 
     r1 = sync_analyzed_keep(state)

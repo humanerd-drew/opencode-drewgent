@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-n8n Workflow Tool Module - Drewgent n8n REST API Integration
+n8n Workflow Tool Module - Loragent n8n REST API Integration
 
 Provides programmatic workflow authoring, editing, and management via n8n REST API.
 Tools: n8n_workflow_list, n8n_workflow_get, n8n_workflow_create,

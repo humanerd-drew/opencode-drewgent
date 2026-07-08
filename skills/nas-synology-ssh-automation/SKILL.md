@@ -17,7 +17,7 @@ links:
 
 # Synology NAS SSH Automation
 
-The Drewgent workspace has a Synology DS920+ (20GB RAM, 14TB HDD) that hosts self-hosted services (Huly, etc.) and stores shared data. From any LAN machine, you can SSH in to inspect or modify it. This skill is the canonical playbook for that workflow.
+The Loragent workspace has a Synology DS920+ (20GB RAM, 14TB HDD) that hosts self-hosted services (Huly, etc.) and stores shared data. From any LAN machine, you can SSH in to inspect or modify it. This skill is the canonical playbook for that workflow.
 
 ## Connection Configuration (canonical)
 

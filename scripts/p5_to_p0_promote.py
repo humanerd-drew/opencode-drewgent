@@ -21,11 +21,11 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-_DREWGENT_HOME = Path.home() / ".drewgent"
-_P5_EGO_DIR = _DREWGENT_HOME / "P5-ego"
-_P0_BRAIN_DIR = _DREWGENT_HOME / "P0-brainstem" / "brain"
-_P0_RULES_FILE = _P0_BRAIN_DIR / "Drewgent-brain" / "rules.json"
-_STATE_FILE = _DREWGENT_HOME / "P4-cortex" / "knowledge" / "p5_p0_state.json"
+_LORAGENT_HOME = Path.home() / ".loragent"
+_P5_EGO_DIR = _LORAGENT_HOME / "P5-ego"
+_P0_BRAIN_DIR = _LORAGENT_HOME / "P0-brainstem" / "brain"
+_P0_RULES_FILE = _P0_BRAIN_DIR / "Loragent-brain" / "rules.json"
+_STATE_FILE = _LORAGENT_HOME / "P4-cortex" / "knowledge" / "p5_p0_state.json"
 _DRY_RUN = False
 
 # Rules that should NEVER be promoted (stay in P5, never reach P0)
@@ -128,7 +128,7 @@ def scan_p5_for_rules() -> list[dict]:
         return rules
 
     for md_file in _P5_EGO_DIR.rglob("*.md"):
-        rel_path = md_file.relative_to(_DREWGENT_HOME)
+        rel_path = md_file.relative_to(_LORAGENT_HOME)
         try:
             content = md_file.read_text(encoding="utf-8")
         except Exception:

@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [modal>=0.64.0]
 metadata:
-  drewgent:
+  loragent:
     tags: [Infrastructure, Serverless, GPU, Cloud, Deployment, Modal]
 
 links:

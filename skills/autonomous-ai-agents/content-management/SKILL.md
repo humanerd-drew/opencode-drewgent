@@ -46,7 +46,7 @@ Per-run output:
 
 ## Agent Profile
 
-Defined at `~/.drewgent/agents/content-manager.md`. Full instructions include:
+Defined at `~/.loragent/agents/content-manager.md`. Full instructions include:
 
 1. **Load Knowledge Base** — Read brand-guide, glossary, content-inventory, narrative_arc
 2. **Gather Context** — session_search, git log, kanban completions
@@ -98,8 +98,8 @@ For complex architecture/flow diagrams. Two-step process:
 2. Convert to PNG via headless Chrome: `scripts/excalidraw-to-png.js`
 
 ```
-NODE_PATH=/Users/drew/.drewgent/scripts/node_modules \
-  node /Users/drew/.drewgent/scripts/excalidraw-to-png.js \
+NODE_PATH=~/.loragent/scripts/node_modules \
+  node ~/.loragent/scripts/excalidraw-to-png.js \
     input.excalidraw.json \
     output.png
 ```
@@ -109,13 +109,13 @@ NODE_PATH=/Users/drew/.drewgent/scripts/node_modules \
 | File | Path | Purpose |
 |------|------|---------|
 | **brand-guide** | `P4-cortex/content/brand-guide.md` | Voice, audience, platform strategy |
-| **glossary** | `P4-cortex/content/glossary.md` | Project terms (Drewgent, M-LOG, etc.) |
+| **glossary** | `P4-cortex/content/glossary.md` | Project terms (Loragent, M-LOG, etc.) |
 | **narrative_arc** | `P4-cortex/content/narrative_arc.md` | Published content continuity tracking |
 | **content-inventory** | `P4-cortex/content/content-inventory.md` | All drafts/published with dedup topics |
 
 ## Content Pillars (Editorial Judgment)
 
-1. **BUILD LOG** — Drewgent infra, architecture, troubleshooting
+1. **BUILD LOG** — Loragent infra, architecture, troubleshooting
 2. **AI & TOOLS** — Agent systems, tool reviews, pattern discovery
 3. **SYSTEMS** — Design philosophy, decision frameworks, taste
 4. **CREATIVE** — M-LOG, side projects, experiments
@@ -142,7 +142,7 @@ Content-manager can publish to the humanerd.kr WordPress site via a custom STDIO
 
 **Registered in Hermes config**: `mcp_servers.wordpress` at `~/.hermes/config.yaml`
 
-**WordPress setup**: Docker Compose at `~/.drewgent/wordpress/`, data on NAS `/Volumes/humanerd/docker/wordpress/`. Admin at `http://localhost:8080/wp-admin`.
+**WordPress setup**: Docker Compose at `~/.loragent/wordpress/`, data on NAS `/Volumes/humanerd/docker/wordpress/`. Admin at `http://localhost:8080/wp-admin`.
 
 **Theme**: Blocksy (free). Customized with:
 - Color palette (bronze accent #8b7355)

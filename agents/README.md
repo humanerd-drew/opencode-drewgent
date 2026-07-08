@@ -13,7 +13,7 @@ updated: 2026-06-18
 
 ```
 delegate_task(agent_profile="reviewer", goal="...")
-# → ~/.drewgent/agents/reviewer.md 로드
+# → ~/.loragent/agents/reviewer.md 로드
 # → model/provider/instructions/toolsets 적용
 ```
 

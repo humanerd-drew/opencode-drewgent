@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Playwright Browser Tool for Drewgent Agent (MiniMax M2.7 Compatible)
+Playwright Browser Tool for Loragent Agent (MiniMax M2.7 Compatible)
 
 Vision 없이 DOM/text 기반으로 UI 분석 및 조작이 가능합니다.
 

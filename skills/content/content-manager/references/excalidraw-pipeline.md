@@ -2,7 +2,7 @@
 
 Converts Excalidraw JSON diagrams to PNG images for blog embedding.
 
-## Script: `~/.drewgent/scripts/excalidraw-to-png.js`
+## Script: `~/.loragent/scripts/excalidraw-to-png.js`
 
 Node.js script that:
 1. Uploads `.excalidraw.json` to excalidraw.com for rendering
@@ -12,8 +12,8 @@ Node.js script that:
 
 ## Usage
 ```bash
-export NODE_PATH=/Users/drew/.drewgent/scripts/node_modules
-node /Users/drew/.drewgent/scripts/excalidraw-to-png.js \
+export NODE_PATH=~/.loragent/scripts/node_modules
+node ~/.loragent/scripts/excalidraw-to-png.js \
   input.excalidraw.json \
   output.png
 ```

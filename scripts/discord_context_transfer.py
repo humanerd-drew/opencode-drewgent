@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Discord Chat Context Transfer Script for Drewgent Agent
+Discord Chat Context Transfer Script for Loragent Agent
 
-이 스크립트는 Discord导出 채팅 로그를 읽고 Drewgent Agent가 이해할 수 있는
+이 스크립트는 Discord导出 채팅 로그를 읽고 Loragent Agent가 이해할 수 있는
 마크다운 형식으로 변환합니다.
 
 사용법:
@@ -131,8 +131,8 @@ def convert_to_markdown(messages: list[dict], channel_name: str = "discord") -> 
     return "\n".join(lines)
 
 
-def create_drewgent_context_file(markdown_content: str, output_path: Path) -> None:
-    """Drewgent 메모리 파일로 저장"""
+def create_loragent_context_file(markdown_content: str, output_path: Path) -> None:
+    """Loragent 메모리 파일로 저장"""
     header = f"""---
 title: Discord 채팅 맥락
 created: {datetime.now().isoformat()}
@@ -141,7 +141,7 @@ source: discord_export
 
 # Discord 채팅 맥락
 
-이 문서는 Drewgent Agent를 시작할 때 맥락 전달을 위해 사용됩니다.
+이 문서는 Loragent Agent를 시작할 때 맥락 전달을 위해 사용됩니다.
 아래 내용을 새 대화 시작 시 복사하여 붙여넣으세요.
 
 ---
@@ -191,7 +191,7 @@ def create_session_summary(messages: list[dict]) -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Discord 채팅을 Drewgent Agent 맥락 형식으로 변환"
+        description="Discord 채팅을 Loragent Agent 맥락 형식으로 변환"
     )
     parser.add_argument(
         "--input", "-i", required=True, help="Discord导出 JSON 파일 경로"
@@ -255,22 +255,22 @@ def main():
         return
 
     # 파일 저장
-    create_drewgent_context_file(markdown, output_path)
+    create_loragent_context_file(markdown, output_path)
 
     print(f"""
 📋 사용 방법:
 
-1. Drewgent Agent 시작
+1. Loragent Agent 시작
 2. /new 로 새 대화 시작
 3. 아래 명령어 중 하나 사용:
 
    방법 A: 파일 내용 복사
    - {output_path} 파일 내용을 복사
-   - Drewgent에 붙여넣기
+   - Loragent에 붙여넣기
 
    방법 B: 컨텍스트 파일 지정
-   - ~/.drewgent/context/ 디렉토리에 저장
-   - Drewgent가 자동 로드
+   - ~/.loragent/context/ 디렉토리에 저장
+   - Loragent가 자동 로드
 """)
 
 

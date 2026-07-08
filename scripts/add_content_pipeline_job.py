@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 import json
 
-with open('/Users/drew/.drewgent/cron/jobs.json') as f:
+with open('~/.loragent/cron/jobs.json') as f:
     data = json.load(f)
 
 prompt_text = """Content Pipeline — gather content from Activity Logger, Trend Harvester, and SEO results; create content board kanban tasks for draft writing.
 
 Steps:
 1. Check recent Activity Logger outputs (~last 3h sessions)
-2. Check Trend Harvester results: ls -t ~/.drewgent/P4-cortex/growth/trend-harvester/analyzed/keep/ | head -3
-3. Check SEO Harvester report: cat ~/.drewgent/P2-hippocampus/knowledge/seo-articles/report.json 2>/dev/null | python3 -c "import json,sys; d=json.load(sys.stdin); [print(f'- {i[\"title\"]} ({i[\"keyword\"]}) score={i.get(\"score\",0):.2f}') for i in d.get('articles',[])]"
+2. Check Trend Harvester results: ls -t ~/.loragent/P4-cortex/growth/trend-harvester/analyzed/keep/ | head -3
+3. Check SEO Harvester report: cat ~/.loragent/P2-hippocampus/knowledge/seo-articles/report.json 2>/dev/null | python3 -c "import json,sys; d=json.load(sys.stdin); [print(f'- {i[\"title\"]} ({i[\"keyword\"]}) score={i.get(\"score\",0):.2f}') for i in d.get('articles',[])]"
 4. Select up to 3 topics (1 from each source if available)
 5. For each topic: kanban_create(title=f"[draft-{type}] {topic_title}", body=context, board="content", trigger_source="content_pipeline", priority=1, idempotency_key=f"{YYYY-MM-DD}-{slug}")
 6. Report: topics_selected=N tasks_created=N
@@ -27,7 +27,7 @@ Topics selected: N (task created)
 | 2 | seo | {title} | {id} | pending |
 | 3 | conversation | {title} | {id} | pending |
 
-Draft files are written to: ~/.drewgent/P2-hippocampus/memories/insights/
+Draft files are written to: ~/.loragent/P2-hippocampus/memories/insights/
 Worker will deliver the file path via kanban_complete result when draft is ready.
 
 ---
@@ -35,7 +35,7 @@ Worker will deliver the file path via kanban_complete result when draft is ready
 Phase 5: Periodic Delivery (completed drafts in last 72h)
 
 import sqlite3, os, re
-DB = os.path.expanduser("~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db")
+DB = os.path.expanduser("~/.loragent/P2-hippocampus/kanban/state/loragent_tasks.db")
 conn = sqlite3.connect(DB)
 rows = conn.execute("""
 SELECT id, title, result, completed_at
@@ -52,7 +52,7 @@ drafts = []
 for task_id, title, result, completed_at in rows:
     match = re.search(r'memories/insights/(20\d{2}-\d{2}-[^.]+\.md)', result or '')
     if match:
-        draft_path = os.path.expanduser(f"~/.drewgent/P2-hippocampus/memories/insights/{match.group(1)}")
+        draft_path = os.path.expanduser(f"~/.loragent/P2-hippocampus/memories/insights/{match.group(1)}")
         drafts.append((title, task_id, draft_path))
 
 if drafts:
@@ -73,7 +73,7 @@ Draft files ready for review:
 
 | # | Topic | Task ID | Draft File |
 |---|-------|---------|------------|
-| 1 | {title} | {id} | ~/.drewgent/P2-hippocampus/memories/insights/{filename}.md |
+| 1 | {title} | {id} | ~/.loragent/P2-hippocampus/memories/insights/{filename}.md |
 
 Review at: Obsidian -> P2-hippocampus/memories/insights/
 
@@ -97,11 +97,11 @@ job = {
 
 data['jobs'].append(job)
 
-with open('/Users/drew/.drewgent/cron/jobs.json', 'w') as f:
+with open('~/.loragent/cron/jobs.json', 'w') as f:
     json.dump(data, f, indent=2, ensure_ascii=False)
 
 # Verify
-with open('/Users/drew/.drewgent/cron/jobs.json') as f:
+with open('~/.loragent/cron/jobs.json') as f:
     d2 = json.load(f)
 job2 = next(j for j in d2['jobs'] if j['name'] == 'content-pipeline')
 print("SUCCESS! deliver:", job2['deliver'])

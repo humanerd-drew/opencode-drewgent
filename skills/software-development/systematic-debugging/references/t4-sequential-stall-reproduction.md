@@ -14,19 +14,19 @@ gateway process: alive (PID in launchctl)
 
 ```bash
 # 1. Gateway alive?
-launchctl print gui/$(id -u)/ai.drewgent.gateway | grep pid
+launchctl print gui/$(id -u)/ai.loragent.gateway | grep pid
 
 # 2. Last cron-runner fire?
-ls -lt ~/.drewgent/logs/cron-runner/*.log
-grep -E '=== 2026-' ~/.drewgent/logs/cron-runner/YYYY-MM-DD.log | tail -3
+ls -lt ~/.loragent/logs/cron-runner/*.log
+grep -E '=== 2026-' ~/.loragent/logs/cron-runner/YYYY-MM-DD.log | tail -3
 
 # 3. Last gateway cron job?
-grep "Running job" ~/.drewgent/P6-prefrontal/logs/gateway.log | tail -5
+grep "Running job" ~/.loragent/P6-prefrontal/logs/gateway.log | tail -5
 
 # 4. What jobs are due?
 python3 -c "
 import json
-d = json.load(open('/Users/drew/.drewgent/cron/jobs.json'))
+d = json.load(open('~/.loragent/cron/jobs.json'))
 for j in d.get('jobs', []):
     if j.get('enabled'):
         print(f'{j[\"id\"]:40} script={bool(j.get(\"script\"))} next={j.get(\"next_run_at\",\"?\"):25}')
@@ -60,25 +60,25 @@ for job in _script_jobs + _llm_jobs:
 
 ```bash
 # Kickstart gateway to clear blocked state
-launchctl kickstart -k gui/$(id -u)/ai.drewgent.gateway
+launchctl kickstart -k gui/$(id -u)/ai.loragent.gateway
 
 # Clear stale file lock (if tick can't acquire)
-rm -v ~/.drewgent/cron/.tick.lock
+rm -v ~/.loragent/cron/.tick.lock
 ```
 
 ### Prevention
 
 1. **Layer 3.5b** in harmony check counts `=== ISO ===` blocks in cron-runner log (5-min window). 0 = stall alert. ≥12 = abnormal frequency.
-2. **`drewgent_cron_watchdog.sh`** auto-kickstarts if 0 fires in 5 min.
+2. **`loragent_cron_watchdog.sh`** auto-kickstarts if 0 fires in 5 min.
 3. **Disable redundant LLM jobs** — if a script-based job already does the same work (e.g. `cron_runner.py` handles all 3 boards), disable the LLM version.
 
 ### Verification
 
 ```bash
 # After fix: only script-based jobs run
-grep "Running job" ~/.drewgent/P6-prefrontal/logs/gateway.log | tail -5
+grep "Running job" ~/.loragent/P6-prefrontal/logs/gateway.log | tail -5
 # Expected:
-#   ... Running job 'kanban-dispatcher (all boards, consolidated)' (ID: drewgent-cron-runner-001)
+#   ... Running job 'kanban-dispatcher (all boards, consolidated)' (ID: loragent-cron-runner-001)
 # NOT expected:
 #   ... Running job 'kanban-dispatcher' (ID: d1ef68ced116)
 ```

@@ -2,7 +2,7 @@
 name: incremental-refactoring
 description: "Safe, incremental codebase refactoring with dependency graph analysis and live dev server verification."
 version: 1.0.0
-author: Drewgent
+author: Loragent
 tags: [refactoring, codebase-archaeology, dead-code, cleanup, cloudflare-workers, wrangler]
 related_skills: [requesting-code-review, simplify-code, systematic-debugging]
 links:

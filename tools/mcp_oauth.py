@@ -11,7 +11,7 @@ which handles discovery, dynamic client registration, PKCE, token exchange,
 refresh, and step-up authorization automatically.
 
 This module provides the glue:
-    - ``DrewgentTokenStorage``: persists tokens/client-info to disk so they
+    - ``LoragentTokenStorage``: persists tokens/client-info to disk so they
       survive across process restarts.
     - Callback server: ephemeral localhost HTTP server to capture the OAuth
       redirect with the authorization code.
@@ -29,7 +29,7 @@ Configuration in config.yaml::
           client_secret: "secret"               # confidential clients only
           scope: "read write"                   # default: server-provided
           redirect_port: 0                      # 0 = auto-pick free port
-          client_name: "My Custom Client"       # default: "Drewgent Agent"
+          client_name: "My Custom Client"       # default: "Loragent Agent"
 """
 
 import asyncio
@@ -97,10 +97,10 @@ def _get_token_dir() -> Path:
     Layout: ``DREW_HOME/mcp-tokens/``
     """
     try:
-        from drewgent_constants import get_drewgent_home
-        base = Path(get_drewgent_home())
+        from loragent_constants import get_loragent_home
+        base = Path(get_loragent_home())
     except ImportError:
-        base = Path(os.environ.get("DREW_HOME", str(Path.home() / ".drewgent")))
+        base = Path(os.environ.get("DREW_HOME", str(Path.home() / ".loragent")))
     return base / "mcp-tokens"
 
 
@@ -168,11 +168,11 @@ def _write_json(path: Path, data: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
-# DrewgentTokenStorage -- persistent token/client-info on disk
+# LoragentTokenStorage -- persistent token/client-info on disk
 # ---------------------------------------------------------------------------
 
 
-class DrewgentTokenStorage:
+class LoragentTokenStorage:
     """Persist OAuth tokens and client registration to JSON files.
 
     File layout::
@@ -262,7 +262,7 @@ def _make_callback_handler() -> tuple[type, dict]:
 
             body = (
                 "<html><body><h2>Authorization Successful</h2>"
-                "<p>You can close this tab and return to Drewgent.</p></body></html>"
+                "<p>You can close this tab and return to Loragent.</p></body></html>"
             ) if code else (
                 "<html><body><h2>Authorization Failed</h2>"
                 f"<p>Error: {error or 'unknown'}</p></body></html>"
@@ -370,7 +370,7 @@ async def _wait_for_callback() -> tuple[str, str | None]:
 
 def remove_oauth_tokens(server_name: str) -> None:
     """Delete stored OAuth tokens and client info for a server."""
-    storage = DrewgentTokenStorage(server_name)
+    storage = LoragentTokenStorage(server_name)
     storage.remove()
     logger.info("OAuth tokens removed for '%s'", server_name)
 
@@ -406,7 +406,7 @@ def build_oauth_auth(
     cfg = oauth_config or {}
 
     # --- Storage ---
-    storage = DrewgentTokenStorage(server_name)
+    storage = LoragentTokenStorage(server_name)
 
     # --- Non-interactive warning ---
     if not _is_interactive() and not storage.has_cached_tokens():
@@ -424,7 +424,7 @@ def build_oauth_auth(
     _oauth_port = redirect_port
 
     # --- Client metadata ---
-    client_name = cfg.get("client_name", "Drewgent Agent")
+    client_name = cfg.get("client_name", "Loragent Agent")
     scope = cfg.get("scope")
     redirect_uri = f"http://127.0.0.1:{redirect_port}/callback"
 

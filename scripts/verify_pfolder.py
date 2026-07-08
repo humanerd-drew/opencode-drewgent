@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """P-folder structure verification — Phase 1-5 completion check.
 
-Run from: ~/source/drewgent-agent/
+Run from: ~/source/loragent-agent/
 Usage: python scripts/verify_pfolder.py
 """
 import sys, os
@@ -121,7 +121,7 @@ def test_run_agent_integration():
     import inspect
     import os
 
-    # Find run_agent.py relative to this script's parent (drewgent-agent root)
+    # Find run_agent.py relative to this script's parent (loragent-agent root)
     agent_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     agent_path = os.path.join(agent_root, "run_agent.py")
     with open(agent_path) as f:

@@ -8,28 +8,28 @@ updated: 2026-05-20
 links:
   - "[[P4-cortex/growth/INTEGRATION_PROTOCOL]]"
   - "[[P4-cortex/knowledge/obsidian-vault-site-principle]]"
-  - "[[P6-prefrontal/migrations/drewgent-root-consolidation-20260506]]"
+  - "[[P6-prefrontal/migrations/loragent-root-consolidation-20260506]]"
   - "[[P6-prefrontal/plans/growth-2026]]"
 ---
 
 
 
-# Drewgent Path Integrity Report - 2026-05-17
+# Loragent Path Integrity Report - 2026-05-17
 
-Scope: `/Users/drew/.drewgent` runtime layout, active NeuronFS/Obsidian layers, and `source/drewgent-agent` path references. This report intentionally excludes broad archive/session-log cleanup from automatic fixes.
+Scope: `~/.loragent` runtime layout, active NeuronFS/Obsidian layers, and `source/loragent-agent` path references. This report intentionally excludes broad archive/session-log cleanup from automatic fixes.
 
 ## Summary
 
 - Core runtime data flow is connected:
-  - `/Users/drew/.drewgent/brain` -> `P0-brainstem/brain`
-  - `/Users/drew/.drewgent/memories` -> `P2-hippocampus/memories`
-  - `/Users/drew/.drewgent/sessions` -> `P2-hippocampus/sessions`
-  - `/Users/drew/.drewgent/logs` -> `P6-prefrontal/logs`
-- Active brain is `Drewgent-brain`.
+  - `~/.loragent/brain` -> `P0-brainstem/brain`
+  - `~/.loragent/memories` -> `P2-hippocampus/memories`
+  - `~/.loragent/sessions` -> `P2-hippocampus/sessions`
+  - `~/.loragent/logs` -> `P6-prefrontal/logs`
+- Active brain is `Loragent-brain`.
 - `brain_load()` returns governance content and includes `禁task_qa_gate` and `禁karpathy_coding_principles`.
 - Gateway logs show the gateway started successfully with 3 platforms after the last restart.
 - One broken symlink was found:
-  - `/Users/drew/.drewgent/humanerd-site/content/scripts` -> `/Users/drew/.drewgent/P4-cortex/scripts/`
+  - `~/.loragent/humanerd-site/content/scripts` -> `~/.loragent/P4-cortex/scripts/`
 
 ## Runtime Path Findings
 
@@ -39,25 +39,25 @@ Scope: `/Users/drew/.drewgent` runtime layout, active NeuronFS/Obsidian layers, 
 - Logs are routed through the prefrontal layer.
 - Memory wiki is routed through the hippocampus layer.
 - Active brain symlinks P1-P6 into the active brain tree.
-- QA evidence now resolves under `/Users/drew/.drewgent/P2-hippocampus/qa-evidence`.
+- QA evidence now resolves under `~/.loragent/P2-hippocampus/qa-evidence`.
 
 ### Needs Cleanup
 
 1. `humanerd-site/content/scripts` has a missing target.
    - Impact: site/content graph only; not core agent runtime.
-   - Low-risk fix: create `/Users/drew/.drewgent/P4-cortex/scripts`.
+   - Low-risk fix: create `~/.loragent/P4-cortex/scripts`.
 
-2. Some runtime helpers still compute default state paths with `Path.home() / ".drewgent"` instead of the shared `get_drewgent_home()`.
+2. Some runtime helpers still compute default state paths with `Path.home() / ".loragent"` instead of the shared `get_loragent_home()`.
    - Impact: default profile works, but named/custom profiles may write state to the wrong home.
    - Low-risk candidates:
-     - `source/drewgent-agent/model_tools.py`
-     - `source/drewgent-agent/agent/model_metadata.py`
-     - `source/drewgent-agent/agent/models_dev.py`
-     - `source/drewgent-agent/agent/auto_learn.py`
+     - `source/loragent-agent/model_tools.py`
+     - `source/loragent-agent/agent/model_metadata.py`
+     - `source/loragent-agent/agent/models_dev.py`
+     - `source/loragent-agent/agent/auto_learn.py`
 
 3. Config is duplicated as real files:
-   - `/Users/drew/.drewgent/config.yaml`
-   - `/Users/drew/.drewgent/P5-ego/config/config.yaml`
+   - `~/.loragent/config.yaml`
+   - `~/.loragent/P5-ego/config/config.yaml`
    - Impact: potential drift.
    - Recommendation: do not auto-fix yet. First determine whether P5 copy is intended as identity-layer snapshot or stale migration artifact.
 
@@ -81,8 +81,8 @@ Recommendation: wikilinks should be handled in a separate graph hygiene pass, no
 
 ## Safe Cleanup Plan
 
-1. Create missing `/Users/drew/.drewgent/P4-cortex/scripts` directory.
-2. Replace simple profile-unsafe state path defaults with `get_drewgent_home()`.
+1. Create missing `~/.loragent/P4-cortex/scripts` directory.
+2. Replace simple profile-unsafe state path defaults with `get_loragent_home()`.
 3. Re-run:
    - broken symlink scan
    - Python compile for touched files
@@ -91,7 +91,7 @@ Recommendation: wikilinks should be handled in a separate graph hygiene pass, no
 
 ## Related
 - [[P6-prefrontal/plans/growth-2026]]
-- [[P6-prefrontal/migrations/drewgent-root-consolidation-20260506]]
+- [[P6-prefrontal/migrations/loragent-root-consolidation-20260506]]
 - [[P4-cortex/knowledge/obsidian-vault-site-principle]]
 
 ## Links

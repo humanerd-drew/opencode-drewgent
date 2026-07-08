@@ -14,7 +14,7 @@ links:
   - "[[P0-brainstem/brain/rules]]"---
 
 
-# Manyfast 아키텍처 분석 — Drewgent 내재화
+# Manyfast 아키텍처 분석 — Loragent 내재화
 
 ## Manyfast 핵심 분석
 
@@ -31,7 +31,7 @@ PRD
 └── 속성 설정   — 카테고리, 사용자 역할, 서비스 환경
 ```
 
-**Drewgent 적용 시**: `memories/concepts/` 또는 `P4-cortex/knowledge/`에 PRD 스키마 정의. Drewgent kanban task의 metadata로 PRD 필드 표현 가능.
+**Loragent 적용 시**: `memories/concepts/` 또는 `P4-cortex/knowledge/`에 PRD 스키마 정의. Loragent kanban task의 metadata로 PRD 필드 표현 가능.
 
 ### 2. Features 3-tier Hierarchy (핵심)
 
@@ -56,7 +56,7 @@ Requirement (요구사항)
 **중요도**: 낮음/중간/높음
 **상태**: 시작 전/진행중/완료/중단
 
-**Drewgent 적용 시** — Drewgent kanban task tree로 동일 구조 구현:
+**Loragent 적용 시** — Loragent kanban task tree로 동일 구조 구현:
 ```
 parent task (Requirement)
   child task (Feature)
@@ -81,8 +81,8 @@ Manyfast AI는 두 가지 모드:
   — 빠른 결과물 생성
 ```
 
-**Drewgent 적용 시**:
-- Drewgent kanban에 `design_mode` 플래그 추가
+**Loragent 적용 시**:
+- Loragent kanban에 `design_mode` 플래그 추가
 - design mode: task를 분해만 하고 실행은 보류
 - execution mode: task 분해 후 바로 kanban-dispatcher로 실행 전달
 - `kanban_create(mode="design"|"execution")` 파라미터로 구분
@@ -99,7 +99,7 @@ AI가 수정 제안
 최종 반영
 ```
 
-**Drewgent 적용 시** — Drewgent의 QA gate와 유사:
+**Loragent 적용 시** — Loragent의 QA gate와 유사:
 - Agent가 task 결과를 제안
 - QA gate에서 `all_criteria_met` 확인
 - 사용자가 승인/거절 (Telegram/Discord reaction 또는明确的承認)
@@ -112,8 +112,8 @@ Manyfast MCP는:
                       → 코딩 결과 → 매니패스트에 반영
 ```
 
-**Drewgent의 현재 상태**:
-- Drewgent kanban이 자체 task queue를 관리
+**Loragent의 현재 상태**:
+- Loragent kanban이 자체 task queue를 관리
 - MCP client (`tools/mcp_tool.py`)로 외부 MCP 서버에 연결 가능
 - Manyfast MCP 대신 **직접 구현**이 목표
 
@@ -122,15 +122,15 @@ Manyfast MCP는:
 - Manyfast: 프로젝트 변동사항 → 연결된 AI agent에 실시간 전파
 - AI Credit: Claude(10-50 credit/대화), Gemini(5-10 credit/대화)
 
-**Drewgent 적용 시**:
-- Drewgent kanban event → Discord/Telegram notification (이미 구현됨)
+**Loragent 적용 시**:
+- Loragent kanban event → Discord/Telegram notification (이미 구현됨)
 - kanban task 완료 → Manyfast에 웹훅으로 피드백 (선택적)
 
 ---
 
-## Drewgent 내재화 — 구현 해야 할 것
+## Loragent 내재화 — 구현 해야 할 것
 
-### Phase 1: PRD Structure in Drewgent
+### Phase 1: PRD Structure in Loragent
 
 ```
 memories/concepts/prd-schema.md
@@ -155,7 +155,7 @@ P4-cortex/knowledge/prd-template.md
 
 ### Phase 2: 3-tier Task Decomposition
 
-Drewgent kanban-orchestrator skill이 이미 parent-child link를 지원:
+Loragent kanban-orchestrator skill이 이미 parent-child link를 지원:
 - Requirement → parent task
 - Feature → child task  
 - Specification → grandchild task
@@ -181,7 +181,7 @@ kanban_create(..., mode="execution")
 
 ### Phase 4: AI Review Workflow
 
-Manyfast의 "AI 수정 → 사용자 승인" 패턴을 Drewgent에 구현:
+Manyfast의 "AI 수정 → 사용자 승인" 패턴을 Loragent에 구현:
 
 ```
 Agent가 작업 결과 제안
@@ -196,14 +196,14 @@ QA gate 검증 (contract.json criteria check)
 
 ---
 
-## Manyfast Docs Query (Drewgent 자체적으로 가능)
+## Manyfast Docs Query (Loragent 자체적으로 가능)
 
 Manyfast docs는 `?ask=` 쿼리 파라미터로 RAG처럼 동작:
 ```
 GET https://docs.manyfast.io/{page}.md?ask={question}
 ```
 
-Drewgent는 자체 `memories/concepts/` + `P4-cortex/knowledge/`를 검색 인프라로 활용.
+Loragent는 자체 `memories/concepts/` + `P4-cortex/knowledge/`를 검색 인프라로 활용.
 외부 문서 대신 **자기 vault 안에서** 같은 패턴 구현.
 
 ---
@@ -216,7 +216,7 @@ Manyfast는 같은 데이터를 두 가지 뷰로 제공:
 - **Tree View**: 전체 구조一目了然
 - **Directory View**: 세부 내용 편집
 
-**Drewgent 적용**: Drewgent kanban HTML dashboard가 이미 비슷함. 추가로:
+**Loragent 적용**: Loragent kanban HTML dashboard가 이미 비슷함. 추가로:
 - Tree view: kanban 전체 dependency graph
 - Detail view: 특정 task의 metadata 편집
 
@@ -226,7 +226,7 @@ Manyfast는 같은 데이터를 두 가지 뷰로 제공:
 - 텍스트 선택 → AI 수정 요청 → 검토 → 승인/거절
 - 문서 전체 → AI 최적화 요청 → 검토 → 승인/거절
 
-**Drewgent 적용**: Drewgent의 QA gate가 이미 similar. `contract.json` criteria를 AI가 제안하고 사용자가 승인하는 구조로 발전 가능.
+**Loragent 적용**: Loragent의 QA gate가 이미 similar. `contract.json` criteria를 AI가 제안하고 사용자가 승인하는 구조로 발전 가능.
 
 ### 3. 역할 기반 Access
 
@@ -234,7 +234,7 @@ PRD에서 정의한 역할을 Features에 매핑:
 - 역할: 관리자, 고객, 기획자
 - Feature마다 수행 주체(역할) 지정
 
-**Drewgent 적용**: kanban task의 `assignee`를 역할 단위로 관리:
+**Loragent 적용**: kanban task의 `assignee`를 역할 단위로 관리:
 - `assignee="admin"`, `assignee="customer"`, `assignee="planner"`
 - kanban-dispatcher가 역할 기반으로 worker 배정
 
@@ -244,22 +244,22 @@ AI 사용량 추적:
 - 모델별 credit 소모량 상이
 - 작업 복잡도에 따라 credit 차등 부과
 
-**Drewgent 적용**: Drewgent가 사용하는 AI provider별 cost tracking:
+**Loragent 적용**: Loragent가 사용하는 AI provider별 cost tracking:
 - Anthropic API: cost per token 추적
 - OpenAI API: cost per token 추적
 - kanban task 완료 시 cost 기록 (`task_runs.cost`)
 
 ---
 
-## 정리: Manyfast의 것을 Drewgent에 내재화
+## 정리: Manyfast의 것을 Loragent에 내재화
 
-| Manyfast 기능 | Drewgent 구현 | 상태 |
+| Manyfast 기능 | Loragent 구현 | 상태 |
 |---------------|--------------|------|
 | PRD structure | memories/concepts/prd-schema.md | TODO |
 | 3-tier Features | kanban task tree (parent-child) | ✅ Done |
 | AI Design/Execution mode | kanban_create(mode=) | TODO |
 | AI Review workflow | QA gate + user approval | ✅ Done |
-| MCP integration | Drewgent MCP client | ✅ Done |
+| MCP integration | Loragent MCP client | ✅ Done |
 | Tree/Directory view | kanban HTML dashboard | ✅ Done |
 | Credit tracking | task_runs cost tracking | TODO |
 | Real-time sync | Discord/Telegram webhook | ✅ Done |
@@ -269,9 +269,9 @@ AI 사용량 추적:
 ## Files to Create
 
 ```
-~/.drewgent/memories/concepts/prd-schema.md      — PRD 스키마 정의
-~/.drewgent/P4-cortex/knowledge/prd-template.md — PRD 작성 템플릿
-~/.drewgent/P4-cortex/growth/manyfast-study.md  — 이 문서 (아키텍처 분석 결과)
+~/.loragent/memories/concepts/prd-schema.md      — PRD 스키마 정의
+~/.loragent/P4-cortex/knowledge/prd-template.md — PRD 작성 템플릿
+~/.loragent/P4-cortex/growth/manyfast-study.md  — 이 문서 (아키텍처 분석 결과)
 ---
 
 ## Files Created
@@ -287,6 +287,6 @@ AI 사용량 추적:
 - Manyfast Docs: https://docs.manyfast.io
 - PRD: https://docs.manyfast.io/plan/prd.md
 - Features: https://docs.manyfast.io/plan/features.md
-- Drewgent kanban: [[P2-hippocampus/kanban/KANBAN_INDEX]]
+- Loragent kanban: [[P2-hippocampus/kanban/KANBAN_INDEX]]
 - PRD Schema: [[memories/concepts/prd-schema]]
 - PRD Template: [[P4-cortex/knowledge/prd-template]]

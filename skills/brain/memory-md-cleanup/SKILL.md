@@ -1,6 +1,6 @@
 ---
 name: memory-md-cleanup
-description: Clean up Drewgent's persistent memory file (MEMORY.md) when it nears the 8K char cap. Identify resolved/one-time entries, preserve operational facts, verify after.
+description: Clean up Loragent's persistent memory file (MEMORY.md) when it nears the 8K char cap. Identify resolved/one-time entries, preserve operational facts, verify after.
 tags: []
 created: 2026-05-20
 updated: 2026-06-10
@@ -10,7 +10,7 @@ links:
 ---
 # MEMORY.md Cleanup
 
-`~/.drewgent/P2-hippocampus/memories/MEMORY.md` hits 8K char cap when auto-accumulated + user entries pile up. Manual cleanup needed — auto-cleanup is NOT implemented (`growth-2026.md` "분기별 메모리 정리 자동화" is TODO).
+`~/.loragent/P2-hippocampus/memories/MEMORY.md` hits 8K char cap when auto-accumulated + user entries pile up. Manual cleanup needed — auto-cleanup is NOT implemented (`growth-2026.md` "분기별 메모리 정리 자동화" is TODO).
 
 ## Trigger
 
@@ -21,7 +21,7 @@ links:
 
 ### 1. Read current state
 ```python
-content = open('~/.drewgent/P2-hippocampus/memories/MEMORY.md').read()
+content = open('~/.loragent/P2-hippocampus/memories/MEMORY.md').read()
 print(f'chars: {len(content)}, cap usage: {len(content)/8000*100:.1f}%, entries (§): {content.count(chr(167))}')
 ```
 
@@ -56,7 +56,7 @@ User timeout → best judgement = **H1**. 0 risk, 가장 많은 buffer, follow-u
 
 ### 7. Verify
 ```python
-content = open('~/.drewgent/P2-hippocampus/memories/MEMORY.md').read()
+content = open('~/.loragent/P2-hippocampus/memories/MEMORY.md').read()
 assert len(content) < 8000, f'still over cap: {len(content)}'
 print(f'OK: {len(content)} chars ({len(content)/8000*100:.1f}% of 8K cap)')
 ```
@@ -83,7 +83,7 @@ MEMORY_wiki.md  (9,570 chars — direct write by agent, read by agent)
 **Rules**:
 - `MEMORY.md` is the *canonical* file that the `memory` tool's `add`/`replace` actions recognize. It must be §-delimited, content that the tool has itself seen.
 - `MEMORY_wiki.md` is *agent's* private file. Contains procedures too large for the cap. Agent reads both on session start.
-- Both are in `~/.drewgent/P2-hippocampus/memories/`. Both are git-versioned wikilinked.
+- Both are in `~/.loragent/P2-hippocampus/memories/`. Both are git-versioned wikilinked.
 - Drift guard still applies to MEMORY.md — don't write large content there via `write_file`, or expect the next `memory` tool `add` to fail.
 
 **When to use this pattern**:
@@ -111,8 +111,8 @@ When cleanup still leaves memory at 7,000-8,000 chars (cut removes resolved entr
 **GBrain 4-pillar (locally adopted) — all 4 pillars ✓ as of 2026-06-10 19:30**:
 - **Pillar 1 (Repo)** ✓ — our vault = git-versioned wikilinked
 - **Pillar 2 (Synthesis)** ✓ — memory entries = compiled procedures (12 → 9 entries, 21% size reduction)
-- **Pillar 3 (Graph traversal)** ✓ via `~/.hermes/scripts/drewgent_graph_lookup.sh` (wikilink traversal across P2/P0/P4/P6) — `drewgent_graph_lookup.sh <topic>` returns direct hits + incoming/outgoing wikilinks
-- **Pillar 4 (Gap analysis)** ✓ via `~/.hermes/scripts/drewgent_graph_gap_analysis.sh` (dangling wikilinks + orphan vault files). Use `--dangling-only` or `--missing-links` to filter.
+- **Pillar 3 (Graph traversal)** ✓ via `~/.hermes/scripts/loragent_graph_lookup.sh` (wikilink traversal across P2/P0/P4/P6) — `loragent_graph_lookup.sh <topic>` returns direct hits + incoming/outgoing wikilinks
+- **Pillar 4 (Gap analysis)** ✓ via `~/.hermes/scripts/loragent_graph_gap_analysis.sh` (dangling wikilinks + orphan vault files). Use `--dangling-only` or `--missing-links` to filter.
 
 **All 4 pillars verified working on 2026-06-10 19:33: dangling = 0, 10 P0 neurons not referenced from memory (expected — not all neurons need cross-links, only relevant ones).**
 
@@ -130,7 +130,7 @@ When cleanup still leaves memory at 7,000-8,000 chars (cut removes resolved entr
 The `memory` tool's `add` action caps at 8,000 chars total (the entire `MEMORY.md` is counted). If H1 + H2 still leaves you over cap, **bypass with direct `write_file`**:
 
 1. Construct the new MEMORY.md content in your reasoning (don't use the `memory` tool to add it)
-2. Call `write_file` 직접 on `~/.drewgent/P2-hippocampus/memories/MEMORY.md`
+2. Call `write_file` 직접 on `~/.loragent/P2-hippocampus/memories/MEMORY.md`
 3. Next session: the file will be loaded as-is — `memory` tool's *own* tracking of entries is bypassed, but the file is read by the loader
 
 **When to use direct write**:
@@ -153,7 +153,7 @@ The `memory` tool implements a *drift guard* — after a `write_file` or `patch`
 Refusing to write MEMORY.md: file on disk has content that wouldn't round-trip
 through the memory tool (likely added by the patch tool, a shell append, a
 manual edit, or a concurrent session). A snapshot was saved to
-~/.drewgent/memories/MEMORY.md.bak.<timestamp>. Resolve the drift first —
+~/.loragent/memories/MEMORY.md.bak.<timestamp>. Resolve the drift first —
 either rewrite the file as a clean §-delimited list of entries, or move the
 extra content out — then retry. This guard exists to prevent silent data
 loss (issue #26045).
@@ -164,7 +164,7 @@ loss (issue #26045).
 - **Plan a clean §-delimited list of entries** when writing directly, or accept the drift and document changes elsewhere (incident doc, skill).
 - **Don't try to preserve round-trip** — the guard exists for safety. Bypassing it loses the guard.
 - **The `.bak.<timestamp>` file** is the safety net. If you need to recover, you can `cat` it. Don't delete it immediately.
-- **Verified 2026-06-10 21:00**: after memory split (MEMORY.md 5KB + MEMORY_wiki.md 9.5KB), `memory(action="add")` *still* rejected with drift error. Even §-delimited compact content in MEMORY.md was rejected because the *split itself* (two-file state) triggered drift detection. **Conclusion**: the `memory` tool's tracking is fundamentally broken for the Drewgent two-file pattern. **Bypass with `write_file` permanently.** Document the workaround in incident doc section 6.7.
+- **Verified 2026-06-10 21:00**: after memory split (MEMORY.md 5KB + MEMORY_wiki.md 9.5KB), `memory(action="add")` *still* rejected with drift error. Even §-delimited compact content in MEMORY.md was rejected because the *split itself* (two-file state) triggered drift detection. **Conclusion**: the `memory` tool's tracking is fundamentally broken for the Loragent two-file pattern. **Bypass with `write_file` permanently.** Document the workaround in incident doc section 6.7.
 
 **Workaround when direct write + memory add both needed in same session**:
 
@@ -201,7 +201,7 @@ After cleanup:
 
 ## Related
 
-- `~/.drewgent/P2-hippocampus/memories/SCHEMA.md` — memory schema
+- `~/.loragent/P2-hippocampus/memories/SCHEMA.md` — memory schema
 - `growth-2026.md` "분기별 메모리 정리 자동화" — auto-cleanup TODO (현재 manual only)
 - `cron-jobs-stalled` — pattern parallel (stalled state recovery via read+identify+fix)
 - `launchd-process-health-check` — reference for gateway cron stall root cause (Sub-pattern 10)

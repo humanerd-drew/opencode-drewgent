@@ -24,7 +24,7 @@ Tail agent.log for recent activity events, parse into structured event stream fo
 
 ```python
 def collect_live_activity():
-    log = os.path.join(DREWGENT, "logs", "agent.log")
+    log = os.path.join(LORAGENT, "logs", "agent.log")
     # Read last 150KB of log
     # Split into last 80 lines
     # Iterate reversed (newest first)

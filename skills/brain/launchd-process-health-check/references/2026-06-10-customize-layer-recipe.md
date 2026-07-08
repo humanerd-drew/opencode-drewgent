@@ -1,6 +1,6 @@
-# Customize Layer for Drewgent + Hermes (verified 2026-06-10 17:30)
+# Customize Layer for Loragent + Hermes (verified 2026-06-10 17:30)
 
-When you need to make `hermes-cli` work *for Drewgent's environment* (not the
+When you need to make `hermes-cli` work *for Loragent's environment* (not the
 upstream generic hermes) — e.g. override a hardcoded label, patch a parser
 that breaks on macOS Sonoma+ — use this customize layer pattern. **Do not
 edit `~/.hermes/hermes-agent/` files directly.** Upstream reinstalls will
@@ -9,7 +9,7 @@ overwrite your changes silently.
 ## Directory Layout
 
 ```
-~/.drewgent/customize/
+~/.loragent/customize/
 ├── README.md                    # Purpose + activation paths
 ├── sitecustomize.py             # Python startup hook (auto-load)
 ├── __init__.py                  # Package marker
@@ -26,8 +26,8 @@ configured. Missing any one and the layer is silently invisible.
 
 | Path | Where | What to set |
 |---|---|---|
-| **Gateway plist** | `~/Library/LaunchAgents/ai.drewgent.gateway.plist` | `<key>PYTHONPATH</key><string>/Users/drew/.drewgent/customize</string>` in `EnvironmentVariables` dict |
-| **Shell env** (for `hermes cron list` from terminal) | `~/.zshrc` | `export PYTHONPATH="$HOME/.drewgent/customize:${PYTHONPATH:-}"` |
+| **Gateway plist** | `~/Library/LaunchAgents/ai.loragent.gateway.plist` | `<key>PYTHONPATH</key><string>~/.loragent/customize</string>` in `EnvironmentVariables` dict |
+| **Shell env** (for `hermes cron list` from terminal) | `~/.zshrc` | `export PYTHONPATH="$HOME/.loragent/customize:${PYTHONPATH:-}"` |
 | **The `hermes` bash wrapper** | `~/.local/bin/hermes` | **Remove the `unset PYTHONPATH` line.** Original kept as `hermes.bak`. |
 
 ### Why the wrapper matters (verified 2026-06-10 17:30)
@@ -38,7 +38,7 @@ configured. Missing any one and the layer is silently invisible.
 #!/usr/bin/env bash
 unset PYTHONPATH          # ← THIS line defeats the customize layer
 unset PYTHONHOME
-exec "/Users/drew/.hermes/hermes-agent/venv/bin/hermes" "$@"
+exec "~/.hermes/hermes-agent/venv/bin/hermes" "$@"
 ```
 
 The `unset PYTHONPATH` is **deliberate** — hermes wants the venv hermes to
@@ -54,11 +54,11 @@ cp ~/.local/bin/hermes ~/.local/bin/hermes.bak
 # Replace with the customize-friendly version
 cat > ~/.local/bin/hermes <<'EOF'
 #!/usr/bin/env bash
-# Drewgent-customized hermes wrapper — preserves PYTHONPATH so the
+# Loragent-customized hermes wrapper — preserves PYTHONPATH so the
 # customize layer takes effect. Original wrapper (saved as hermes.bak)
 # explicitly unset PYTHONPATH, which broke our customize layer.
 unset PYTHONHOME
-exec "/Users/drew/.hermes/hermes-agent/venv/bin/hermes" "$@"
+exec "~/.hermes/hermes-agent/venv/bin/hermes" "$@"
 EOF
 chmod +x ~/.local/bin/hermes
 ```
@@ -71,26 +71,26 @@ line returns. See **Smoke Test Recipe** below.
 ## sitecustomize.py
 
 ```python
-"""Drewgent sitecustomize — auto-load customize layer at Python startup.
+"""Loragent sitecustomize — auto-load customize layer at Python startup.
 
-Insert ~/.drewgent/customize/ at sys.path[0] so 'from hermes_cli.gateway'
+Insert ~/.loragent/customize/ at sys.path[0] so 'from hermes_cli.gateway'
 loads OUR gateway.py first.
 """
 import os
 import sys
 from pathlib import Path
 
-CUSTOMIZE = Path.home() / ".drewgent" / "customize"
+CUSTOMIZE = Path.home() / ".loragent" / "customize"
 if CUSTOMIZE.exists() and str(CUSTOMIZE) not in sys.path:
     sys.path.insert(0, str(CUSTOMIZE))
 ```
 
 **Test**:
 ```bash
-PYTHONPATH=~/.drewgent/customize python3 -c "
+PYTHONPATH=~/.loragent/customize python3 -c "
 import sys
 from pathlib import Path
-expected = str(Path.home() / '.drewgent' / 'customize')
+expected = str(Path.home() / '.loragent' / 'customize')
 assert expected in sys.path
 print('OK: position', sys.path.index(expected))
 "
@@ -108,7 +108,7 @@ The right approach: **load the real package as a separate module, then
 register the override submodules explicitly**.
 
 ```python
-"""Drewgent customization of hermes_cli package.
+"""Loragent customization of hermes_cli package.
 
 The real hermes_cli/__init__.py defines __version__ and __release_date__.
 We proxy that file, then explicitly register our overrides for hermes_cli.gateway
@@ -183,17 +183,17 @@ for _name in dir(_real):
 
 # --- Override get_launchd_label ---
 def get_launchd_label() -> str:
-    """Drewgent uses ai.drewgent.gateway (not ai.hermes.gateway)."""
-    return "ai.drewgent.gateway"
+    """Loragent uses ai.loragent.gateway (not ai.hermes.gateway)."""
+    return "ai.loragent.gateway"
 
-# --- Override find_gateway_pids (Drewgent version) ---
+# --- Override find_gateway_pids (Loragent version) ---
 # Why: hermes's _get_service_pids() parses `launchctl list <label>` as
 # tab-separated text, but macOS Sonoma+ returns plist-format JSON.
 # We re-implement to handle both formats AND to look up our label.
 def find_gateway_pids(exclude_pids=None, all_profiles=False) -> list:
     excluded = set(exclude_pids or set())
     pids: list = []
-    for label in ("ai.drewgent.gateway", "ai.hermes.gateway"):
+    for label in ("ai.loragent.gateway", "ai.hermes.gateway"):
         try:
             result = subprocess.run(
                 ["launchctl", "list", label],
@@ -247,9 +247,9 @@ sys.modules["hermes_cli.gateway"] = _this
 tab-separated text but the actual output is plist-format JSON:
 
 ```
-$ launchctl list ai.drewgent.gateway
+$ launchctl list ai.loragent.gateway
 {
-    "StandardOutPath" = "/Users/drew/.drewgent/logs/gateway.log";
+    "StandardOutPath" = "~/.loragent/logs/gateway.log";
     ...
     "PID" = 91604;
     "Program" = "...";
@@ -268,9 +268,9 @@ code above). Use regex `'\"PID\"\s*=\s*(\d+)\s*;'` for the plist format.
 
 ```bash
 # 1. Verify the override is reachable
-PYTHONPATH=~/.drewgent/customize python3 -c "
+PYTHONPATH=~/.loragent/customize python3 -c "
 from hermes_cli.gateway import find_gateway_pids, get_launchd_label
-print('label:', get_launchd_label())             # → ai.drewgent.gateway
+print('label:', get_launchd_label())             # → ai.loragent.gateway
 print('pids:', find_gateway_pids())               # → [91604] (or empty if not running)
 "
 
@@ -278,7 +278,7 @@ print('pids:', find_gateway_pids())               # → [91604] (or empty if not
 hermes cron list 2>&1 | grep -c "Gateway is not running"   # → 0
 
 # 3. Verify the venv hermes also sees the override (gateway uses this path)
-PYTHONPATH=~/.drewgent/customize ~/.hermes/hermes-agent/venv/bin/hermes cron list 2>&1 | tail -3
+PYTHONPATH=~/.loragent/customize ~/.hermes/hermes-agent/venv/bin/hermes cron list 2>&1 | tail -3
 ```
 
 ## Smoke Test Recipe (recommended weekly cron)
@@ -294,16 +294,16 @@ if grep -q "unset PYTHONPATH" ~/.local/bin/hermes 2>/dev/null; then
 fi
 
 # Test 2: customize layer's gateway override is reachable
-if ! PYTHONPATH=~/.drewgent/customize python3 -c "
+if ! PYTHONPATH=~/.loragent/customize python3 -c "
 from hermes_cli.gateway import get_launchd_label
-assert get_launchd_label() == 'ai.drewgent.gateway', get_launchd_label()
+assert get_launchd_label() == 'ai.loragent.gateway', get_launchd_label()
 " 2>/dev/null; then
   echo "ALERT: customize layer override not reachable"
   exit 1
 fi
 
 # Test 3: gateway plist has PYTHONPATH
-if ! grep -q "PYTHONPATH" ~/Library/LaunchAgents/ai.drewgent.gateway.plist 2>/dev/null; then
+if ! grep -q "PYTHONPATH" ~/Library/LaunchAgents/ai.loragent.gateway.plist 2>/dev/null; then
   echo "ALERT: gateway plist missing PYTHONPATH"
   exit 1
 fi
@@ -312,7 +312,7 @@ fi
 exit 0
 ```
 
-Register with `cronjob(action="create", no_agent=True, schedule="0 9 * * 0", script="drewgent_customize_smoke_test.sh")` (weekly Sunday 09:00).
+Register with `cronjob(action="create", no_agent=True, schedule="0 9 * * 0", script="loragent_customize_smoke_test.sh")` (weekly Sunday 09:00).
 
 ## Pitfalls (verified 2026-06-10)
 
@@ -329,8 +329,8 @@ Register with `cronjob(action="create", no_agent=True, schedule="0 9 * * 0", scr
    fix: re-bind on the real module after exec.
 4. **Bare `declare -A` in bash 3.2** (macOS default) → `declare: -A: invalid option`.
    Use parallel indexed arrays indexed by position instead.
-5. **Set -u + dotted array keys** → `syntax error: invalid arithmetic operator (error token is ".drewgent.cron-runner")`. Use
-   underscored keys (`"ai_drewgent_cron-runner"`) or drop `set -u`.
+5. **Set -u + dotted array keys** → `syntax error: invalid arithmetic operator (error token is ".loragent.cron-runner")`. Use
+   underscored keys (`"ai_loragent_cron-runner"`) or drop `set -u`.
 6. **LSP errors about `cannot assign to attribute` are type-check warnings only** —
    runtime works fine. Don't try to fix them; ignore.
 7. **Customize layer fragility to upstream renames**: if hermes renames
@@ -344,18 +344,18 @@ Register with `cronjob(action="create", no_agent=True, schedule="0 9 * * 0", scr
 ## Files Created by This Pattern (verified 2026-06-10)
 
 ```
-~/.drewgent/customize/README.md
-~/.drewgent/customize/__init__.py                (empty marker)
-~/.drewgent/customize/sitecustomize.py
-~/.drewgent/customize/hermes_cli/__init__.py    (proxy)
-~/.drewgent/customize/hermes_cli/gateway.py     (override)
+~/.loragent/customize/README.md
+~/.loragent/customize/__init__.py                (empty marker)
+~/.loragent/customize/sitecustomize.py
+~/.loragent/customize/hermes_cli/__init__.py    (proxy)
+~/.loragent/customize/hermes_cli/gateway.py     (override)
 ```
 
 Plus edits to:
 
 ```
 ~/.zshrc                                                        (PYTHONPATH export)
-~/Library/LaunchAgents/ai.drewgent.gateway.plist               (PYTHONPATH env var)
+~/Library/LaunchAgents/ai.loragent.gateway.plist               (PYTHONPATH env var)
 ~/.local/bin/hermes                                             (unset PYTHONPATH removed)
 ~/.local/bin/hermes.bak                                         (original preserved)
 ```

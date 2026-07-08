@@ -46,7 +46,7 @@ def brain_record(
     """
     try:
         from agent.auto_learn import AutoLearner, Insight, INSIGHT_CATEGORIES
-        from drewgent_constants import get_drewgent_home
+        from loragent_constants import get_loragent_home
 
         # Validate itype against known categories
         valid_itypes = list(INSIGHT_CATEGORIES.keys())
@@ -54,7 +54,7 @@ def brain_record(
             # Default to "general" for unknown/empty itype to avoid ugly wiki entries
             itype = "general"
 
-        wiki_path = Path(os.getenv("HERMES_HOME", str(get_drewgent_home()))) / "memories"
+        wiki_path = Path(os.getenv("HERMES_HOME", str(get_loragent_home()))) / "memories"
         learner = AutoLearner(wiki_path=wiki_path, enabled=True)
         learner.enable(wiki_path)
 
@@ -120,9 +120,9 @@ def brain_query(
     """
     try:
         from agent.auto_learn import AutoLearner
-        from drewgent_constants import get_drewgent_home
+        from loragent_constants import get_loragent_home
 
-        wiki_path = Path(os.getenv("HERMES_HOME", str(get_drewgent_home()))) / "memories"
+        wiki_path = Path(os.getenv("HERMES_HOME", str(get_loragent_home()))) / "memories"
         learner = AutoLearner(wiki_path=wiki_path, enabled=True)
         learner.enable(wiki_path)
 
@@ -152,8 +152,8 @@ def brain_query(
 
 
 def check_requirements() -> bool:
-    """Brain tools require HERMES_HOME set (or default ~/.drewgent available)."""
-    return True  # get_drewgent_home() always returns a valid path
+    """Brain tools require HERMES_HOME set (or default ~/.loragent available)."""
+    return True  # get_loragent_home() always returns a valid path
 
 
 registry.register(

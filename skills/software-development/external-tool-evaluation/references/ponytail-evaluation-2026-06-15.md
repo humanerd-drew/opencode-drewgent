@@ -7,7 +7,7 @@ https://github.com/DietrichGebert/ponytail
 An AI agent ruleset that enforces YAGNI -> stdlib -> native feature -> existing dep -> one line -> minimum code dependency chain.
 
 ## Why evaluated
-User saw it trending (9k+ stars in 3 days) and asked to review for Drewgent adoption.
+User saw it trending (9k+ stars in 3 days) and asked to review for Loragent adoption.
 
 ## Maturity snapshot (2026-06-15)
 - Stars: 9,215 (created 3 days ago — explosive viral growth)
@@ -49,17 +49,17 @@ Shortcuts marked with `ponytail:` comments naming the ceiling and upgrade path. 
 - OpenCode plugin (ponytail.mjs)
 - Level system (lite = mild, ultra = aggressive)
 
-## Drewgent integration assessment
+## Loragent integration assessment
 
 ### Ruleset value
-High. Drewgent already has karpathy_coding_principles.neuron with DRY/YAGNI but lacks an injected per-turn checklist. The 6-step chain is concise, language-agnostic, and aligns with existing philosophy.
+High. Loragent already has karpathy_coding_principles.neuron with DRY/YAGNI but lacks an injected per-turn checklist. The 6-step chain is concise, language-agnostic, and aligns with existing philosophy.
 
 ### Plugin value
-Low for Drewgent. Plugin assumes Claude Code / Codex ecosystem. Drewgent uses Hermes Agent + opencode-go. Commands (/ponytail-review, /ponytail-debt) could be replicated as Hermes skills if ruleset proves useful.
+Low for Loragent. Plugin assumes Claude Code / Codex ecosystem. Loragent uses Hermes Agent + opencode-go. Commands (/ponytail-review, /ponytail-debt) could be replicated as Hermes skills if ruleset proves useful.
 
 ### Recommended approach
-H1 (POC): Copy ruleset only into Drewgent AGENTS.md or a skill. Zero code change, test-driven.
-H2 (skillize): If POC works, build /ponytail-review equivalent as a Drewgent skill.
+H1 (POC): Copy ruleset only into Loragent AGENTS.md or a skill. Zero code change, test-driven.
+H2 (skillize): If POC works, build /ponytail-review equivalent as a Loragent skill.
 H3 (plugin): Not recommended — platform mismatch and vendor lock-in risk.
 
 ### Key caution

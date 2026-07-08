@@ -34,7 +34,7 @@ function getToken() {
 /** Get kanban tasks completed in last N hours. */
 function getRecentKanbanTasks(hours = 4) {
   const home = process.env.HOME || '/Users/drew';
-  const dbPath = path.join(home, '.drewgent', 'kanban.db');
+  const dbPath = path.join(home, '.loragent', 'kanban.db');
   if (!fs.existsSync(dbPath)) return [];
   const cutoff = Math.floor(Date.now() / 1000) - hours * 3600;
   try {
@@ -90,7 +90,7 @@ async function main() {
         'issues',
         {
           title,
-          description: `Kanban task: ${task.id}\n\n${task.summary || 'Completed via Hermes kanban'}\n\n---\nAuto-synced from Drewgent kanban.`,
+          description: `Kanban task: ${task.id}\n\n${task.summary || 'Completed via Hermes kanban'}\n\n---\nAuto-synced from Loragent kanban.`,
         }
       );
       console.log(`  ✓ ${task.title}`);

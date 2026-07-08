@@ -15,7 +15,7 @@ links:
 **Date**: 2026-06-02 (initial), updated 2026-06-10 (memory link added)
 **Severity**: P3 (low — feature gap, not blocking)
 **Status**: Closed — DO NOT RETRY without explicit user override
-**Author**: Drewgent self-investigation
+**Author**: Loragent self-investigation
 
 ---
 

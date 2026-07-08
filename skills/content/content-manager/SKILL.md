@@ -74,7 +74,7 @@ Mono:      JetBrains Mono
 ## Key Components
 
 ### Agent Profile
-- `~/.drewgent/agents/content-manager.md` — role definition (deepseek-v4-pro, opencode-go)
+- `~/.loragent/agents/content-manager.md` — role definition (deepseek-v4-pro, opencode-go)
 - Toolsets: terminal, file, search, session_search, kanban, web
 - Fires daily at 12:00 KST via cron
 - Also triggerable via `delegate_task(agent_profile="content-manager", goal="...")`
@@ -82,7 +82,7 @@ Mono:      JetBrains Mono
 ### Knowledge Base
 at `P4-cortex/content/`:
 - `brand-guide.md` — positioning, audience, tone, content pillars (4: Build Log, AI & Tools, Systems, Creative)
-- `glossary.md` — project terms (Drewgent, Gateway, M-LOG, PDC, etc.)
+- `glossary.md` — project terms (Loragent, Gateway, M-LOG, PDC, etc.)
 - `content-inventory.md` — published/draft tracking + dedup topics
 - `narrative_arc.md` — serial continuity (current season, episodes, threads)
 
@@ -91,7 +91,7 @@ at `P4-cortex/content/`:
 - WordPress 6.7 + MySQL 8.0 (arm64)
 - Blocksy theme (free) with custom fonts
 - Data on Synology NAS mount (`/Volumes/humanerd/docker/wordpress/`)
-- Custom MCP server at `~/.drewgent/scripts/wordpress-mcp-server.js`
+- Custom MCP server at `~/.loragent/scripts/wordpress-mcp-server.js`
 - 7 MCP tools: create_post, upload_media, list_posts, get_post, create_category, set_site_option, set_theme_mod
 
 ### Huly Integration (planned)
@@ -138,7 +138,7 @@ The agent profile defines `model: deepseek-v4-pro`, but calling via `delegate_ta
 
 ## Related Skills & Files
 - `content-pipeline` — older content pipeline (external sources), cross-reference only
-- `~/.drewgent/scripts/wordpress-mcp-server.js` — WordPress MCP server
-- `~/.drewgent/scripts/excalidraw-to-png.js` — Excalidraw → PNG converter
-- `~/.drewgent/wordpress/docker-compose.yml` — WordPress Docker setup
-- `~/.drewgent/wordpress/.wp-env` — credentials (chmod 600)
+- `~/.loragent/scripts/wordpress-mcp-server.js` — WordPress MCP server
+- `~/.loragent/scripts/excalidraw-to-png.js` — Excalidraw → PNG converter
+- `~/.loragent/wordpress/docker-compose.yml` — WordPress Docker setup
+- `~/.loragent/wordpress/.wp-env` — credentials (chmod 600)

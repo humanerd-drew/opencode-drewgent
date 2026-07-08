@@ -8,7 +8,7 @@ links:
 
 # ACP Thinking Spinner — Tool-Card Pattern
 
-When an ACP server (Drewgent's `acp_adapter/`, Hermes, or any Agent Client Protocol implementation) needs to show a working indicator during the LLM API call phase, the standard approach is to **synthesize a virtual tool call** with `kind="think"`. This places a "Thinking..." card in the client's tool-call stack — the same place real tool calls appear, which is the most reliable UI surface.
+When an ACP server (Loragent's `acp_adapter/`, Hermes, or any Agent Client Protocol implementation) needs to show a working indicator during the LLM API call phase, the standard approach is to **synthesize a virtual tool call** with `kind="think"`. This places a "Thinking..." card in the client's tool-call stack — the same place real tool calls appear, which is the most reliable UI surface.
 
 ## Why this pattern (root-cause: ACP spec gap)
 
@@ -39,9 +39,9 @@ Hook sites in the LLM call lifecycle:
 
 If a real tool call is dispatched before the LLM finishes, the thinking card is implicitly replaced by the real tool's card (ACP client stack semantics). No need to manually close.
 
-## Drewgent reference implementation
+## Loragent reference implementation
 
-Files modified (Drewgent ACP server at `~/.drewgent/source/drewgent-agent/`):
+Files modified (Loragent ACP server at `~/.loragent/source/loragent-agent/`):
 
 ### `acp_adapter/tools.py` — three helpers
 - `build_thinking_start(tool_call_id) -> ToolCallStart`
@@ -115,7 +115,7 @@ After patching:
    hook_count = body_src.count('self.agent_progress_callback(')
    assert hook_count == 3, f"expected 3 hook sites, got {hook_count}"
    ```
-3. Restart the ACP server (e.g. exit the CLI process; new `drewgent` invocation picks up the patch)
+3. Restart the ACP server (e.g. exit the CLI process; new `loragent` invocation picks up the patch)
 4. Trigger a long-running LLM call and confirm the client shows the spinner card in the tool-call stack
 
 ## Pitfalls
@@ -132,4 +132,4 @@ After patching:
 - openCode ACP: https://opencode.ai/docs/acp/
 - Zed Agent Panel: https://zed.dev/docs/ai/agent-panel
 - JetBrains ACP client (stuck on "Thinking" issue): https://youtrack.jetbrains.com/projects/WI/issues/WI-83745
-- Drewgent's own ACP source: `acp_adapter/{server,events,tools,session}.py`
+- Loragent's own ACP source: `acp_adapter/{server,events,tools,session}.py`

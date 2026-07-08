@@ -1,6 +1,6 @@
 # Huly Self-Host on Synology NAS — Field Playbook
 
-> Drewgent's NAS instance. Drawn from a 2026-06-16 setup session that ended with 14/14 containers up but kvs-1 still restart-looping due to masked credentials. **Next session: pick up at "PICKUP" below.**
+> Loragent's NAS instance. Drawn from a 2026-06-16 setup session that ended with 14/14 containers up but kvs-1 still restart-looping due to masked credentials. **Next session: pick up at "PICKUP" below.**
 
 ## Target
 
@@ -153,4 +153,4 @@ curl -s -o /dev/null -w '%{http_code}' http://localhost:8087  # 200
 - **Don't try `cockroach sql --insecure` on v24.2** — silently does what you don't want. Always `--certs-dir`.
 - **Don't try `docker compose up` non-detached** — it backgrounds forever and the agent loses track. Always `-d` + tail /tmp/up.out + check `docker compose ps`.
 - **Don't trust setup.sh** to handle Synology. The `envsubst` step is a hard dependency that doesn't exist on Synology by default, and the failure mode (silent empty file) is bad. Skip setup.sh after step 2 (secret generation) and write huly_v7.conf by hand.
-- **The hcengineering/huly-selfhost canonical repo is the only blessed source** — earlier Drewgent sessions tried to invent cr_certs_init / cr_huly_user init containers on top of the compose, but the standard repo already does both via the cr_certs_init container + an envsubst step. Stick to the canonical repo and just patch around the Synology limitations.
+- **The hcengineering/huly-selfhost canonical repo is the only blessed source** — earlier Loragent sessions tried to invent cr_certs_init / cr_huly_user init containers on top of the compose, but the standard repo already does both via the cr_certs_init container + an envsubst step. Stick to the canonical repo and just patch around the Synology limitations.

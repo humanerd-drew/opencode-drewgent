@@ -156,7 +156,7 @@ async def _do_notify(task_id: str, event_kind: str, result_text: str, context: d
     Async send to subscribers. Looks up their platform/chat_id and sends
     the notification message via the live adapter.
     """
-    from tools.drewgent_kanban_db import notify_list
+    from tools.loragent_kanban_db import notify_list
 
     platform_name = context.get("platform", "discord")
     subscribers = notify_list(task_id)

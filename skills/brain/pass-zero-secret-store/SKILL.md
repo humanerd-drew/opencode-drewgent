@@ -16,13 +16,13 @@ links:
 
 # pass-zero — Secret Store Skill
 
-Drewgent manages credentials using pass-zero: a GPG-free encrypted store.
+Loragent manages credentials using pass-zero: a GPG-free encrypted store.
 
 ## Architecture
 
 ```
-~/.drewgent/.master_pass          ← Master key (NOT synced to cloud)
-SynologyDrive-drewgent/drewgent/secrets/  ← Encrypted .enc files (synced)
+~/.loragent/.master_pass          ← Master key (NOT synced to cloud)
+SynologyDrive-loragent/loragent/secrets/  ← Encrypted .enc files (synced)
   github/token.enc
   github/username.enc
   notion2web/notion-token.enc
@@ -34,16 +34,16 @@ SynologyDrive-drewgent/drewgent/secrets/  ← Encrypted .enc files (synced)
 
 ```bash
 # Get a secret (used by agent internally)
-python3 ~/Library/CloudStorage/SynologyDrive-drewgent/drewgent/secrets/pass-zero.py get <service> <key>
+python3 ~/Library/CloudStorage/SynologyDrive-loragent/loragent/secrets/pass-zero.py get <service> <key>
 
 # Store a secret
-python3 ~/Library/CloudStorage/SynologyDrive-drewgent/drewgent/secrets/pass-zero.py set <service> <key> "<value>"
+python3 ~/Library/CloudStorage/SynologyDrive-loragent/loragent/secrets/pass-zero.py set <service> <key> "<value>"
 
 # List services
-python3 ~/Library/CloudStorage/SynologyDrive-drewgent/drewgent/secrets/pass-zero.py services
+python3 ~/Library/CloudStorage/SynologyDrive-loragent/loragent/secrets/pass-zero.py services
 
 # List keys in a service
-python3 ~/Library/CloudStorage/SynologyDrive-drewgent/drewgent/secrets/pass-zero.py list <service>
+python3 ~/Library/CloudStorage/SynologyDrive-loragent/loragent/secrets/pass-zero.py list <service>
 ```
 
 ## Agent Behavior Rules
@@ -73,7 +73,7 @@ pass-zero set <service> <key> "<new_value>"
 ```
 
 ### Step 2 — Update config.yaml
-Replace the credential value in `~/.drewgent/config.yaml` at the relevant path.
+Replace the credential value in `~/.loragent/config.yaml` at the relevant path.
 
 ### Step 3 — Restart affected service
 Restart the gateway or relevant service to apply the new credential.

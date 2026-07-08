@@ -93,7 +93,7 @@ Obsidian Graph View는 wikilink 기반 시각화. 둘은 보완 관계:
 bash ~/.hermes/scripts/drewgent_graph_gap_analysis.sh
 
 # 특정 파일의 inbound link 확인 (GBrain)
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_backlinks","arguments":{"slug":"p2-hippocampus/memories/memory"}}}' | gbrain serve 2>/dev/null | python3 -m json.tool
+# gbrain removed — use obsidian CLI for backlink checks instead
 
 # Obsidian Graph View = vault를 Obsidian으로 열어서 확인
 open /Users/drew/.drewgent

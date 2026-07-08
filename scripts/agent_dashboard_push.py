@@ -4,7 +4,7 @@ agent_dashboard_push.py — Collect local agent status and push to Cloudflare da
 
 Runs every 5 minutes via cron. Gathers:
   - System stats (uptime, load, disk, memory)
-  - Launchd services (ai.drewgent.* + ai.hermes.*)
+  - Launchd services (ai.loragent.* + ai.hermes.*)
   - Kanban board
   - Cron jobs
   - Network services
@@ -24,7 +24,7 @@ import urllib.request
 import urllib.error
 
 HOME = os.path.expanduser("~")
-DREWGENT = os.path.join(HOME, ".drewgent")
+LORAGENT = os.path.join(HOME, ".loragent")
 HERMES = os.path.join(HOME, ".hermes")
 
 # Ensure hermes CLI is findable when run from cron (no-agent mode)
@@ -108,12 +108,12 @@ def collect_system():
 
 
 def collect_launchd():
-    """Collect ai.drewgent.* and ai.hermes.* launchd services."""
+    """Collect ai.loragent.* and ai.hermes.* launchd services."""
     out, _, _ = run("launchctl list 2>/dev/null")
     services = []
     for line in (out.split("\n") if out else []):
         parts = line.strip().split()
-        if len(parts) >= 3 and ("ai.drewgent." in parts[2] or "ai.hermes." in parts[2]):
+        if len(parts) >= 3 and ("ai.loragent." in parts[2] or "ai.hermes." in parts[2]):
             pid_str = parts[0]
             exit_str = parts[1]
             label = parts[2]
@@ -312,10 +312,10 @@ def collect_network():
 
 
 def collect_git_status():
-    """Check git status of the drewgent vault."""
-    out, _, _ = run("cd " + DREWGENT + " && git status --porcelain 2>/dev/null | wc -l", timeout=5)
+    """Check git status of the loragent vault."""
+    out, _, _ = run("cd " + LORAGENT + " && git status --porcelain 2>/dev/null | wc -l", timeout=5)
     uncommitted = out.strip()
-    out, _, _ = run("cd " + DREWGENT + " && git log @{u}..HEAD 2>/dev/null | wc -l", timeout=5)
+    out, _, _ = run("cd " + LORAGENT + " && git log @{u}..HEAD 2>/dev/null | wc -l", timeout=5)
     unpushed = out.strip()
     return {
         "uncommitted_files": int(uncommitted) if uncommitted and uncommitted.isdigit() else 0,
@@ -383,7 +383,7 @@ def collect_graph():
     MAX_FILE_SIZE = 100 * 1024  # 100KB
 
     for subdir, layer_tag in layers_to_scan:
-        scan_dir = os.path.join(DREWGENT, subdir) if subdir else DREWGENT
+        scan_dir = os.path.join(LORAGENT, subdir) if subdir else LORAGENT
         if not os.path.isdir(scan_dir):
             continue
 
@@ -397,7 +397,7 @@ def collect_graph():
         # Limit per layer to avoid explosion
         layer_count = 0
         for fpath in md_files:
-            rel = os.path.relpath(fpath, DREWGENT)
+            rel = os.path.relpath(fpath, LORAGENT)
             # Skip hidden dirs, node_modules, .trash, P2
             if any(p in rel for p in ("/.", "/node_modules/", ".trash", "P2-hippocampus",
                                        "__pycache__", ".git/", "venv/", ".venv/")):
@@ -504,8 +504,8 @@ def collect_recent_errors():
     """Parse last 24h of agent log for ERROR/WARNING lines.
     Returns grouped by error type with counts."""
     log_paths = [
-        os.path.join(DREWGENT, "logs", "errors.log"),
-        os.path.join(DREWGENT, "logs", "agent.log"),
+        os.path.join(LORAGENT, "logs", "errors.log"),
+        os.path.join(LORAGENT, "logs", "agent.log"),
     ]
     import re
     from collections import Counter
@@ -612,7 +612,7 @@ def collect_vault():
     total_human = "?"
     total_bytes = 0
     for dirname, desc in layers:
-        path = os.path.join(DREWGENT, dirname)
+        path = os.path.join(LORAGENT, dirname)
         if os.path.isdir(path):
             out, _, _ = run(f"du -sh '{path}' 2>/dev/null | cut -f1")
             size = out.strip() if out else "?"
@@ -707,7 +707,7 @@ def collect_daily_usage():
     month_ago = time.strftime("%Y-%m-%d", time.localtime(time.time() - 30 * 86400))
 
     # grep is expensive for month; use head/tail approach
-    log = os.path.join(DREWGENT, "logs", "agent.log")
+    log = os.path.join(LORAGENT, "logs", "agent.log")
     total = "?"
     try:
         out, _, _ = run("wc -l < " + log + " 2>/dev/null || echo 0", timeout=5)
@@ -775,7 +775,7 @@ def collect_daily_usage():
 
 def collect_model_usage():
     """Parse agent log for per-model usage stats."""
-    log = os.path.join(DREWGENT, "logs", "agent.log")
+    log = os.path.join(LORAGENT, "logs", "agent.log")
     if not os.path.isfile(log):
         return {"models": [], "total_calls": 0}
 
@@ -861,8 +861,8 @@ def collect_skill_categories():
     """Count skills per category (handles nested skill dirs)."""
     import glob
     cats = {}
-    for fpath in glob.glob(os.path.join(DREWGENT, "skills", "**", "SKILL.md"), recursive=True):
-        rel = os.path.relpath(fpath, os.path.join(DREWGENT, "skills"))
+    for fpath in glob.glob(os.path.join(LORAGENT, "skills", "**", "SKILL.md"), recursive=True):
+        rel = os.path.relpath(fpath, os.path.join(LORAGENT, "skills"))
         parts = rel.split(os.sep)
         # parts = [category, skill-name, SKILL.md]  or  [skill-name, SKILL.md]
         cat = parts[0] if len(parts) >= 2 else "other"
@@ -875,7 +875,7 @@ def collect_skill_categories():
 def collect_hourly_usage():
     """Count log lines per hour for today."""
     today = time.strftime("%Y-%m-%d")
-    log = os.path.join(DREWGENT, "logs", "agent.log")
+    log = os.path.join(LORAGENT, "logs", "agent.log")
     hours = []
     for h in range(24):
         pattern = today + " " + f"{h:02d}"
@@ -887,7 +887,7 @@ def collect_hourly_usage():
 
 def collect_session_details():
     """Count log lines per session from recent log."""
-    log = os.path.join(DREWGENT, "logs", "agent.log")
+    log = os.path.join(LORAGENT, "logs", "agent.log")
     import re
     sessions = {}
     try:
@@ -909,7 +909,7 @@ def collect_session_details():
 
 def collect_provider_usage():
     """Count provider distribution from log."""
-    log = os.path.join(DREWGENT, "logs", "agent.log")
+    log = os.path.join(LORAGENT, "logs", "agent.log")
     import re
     providers = {}
     try:
@@ -931,7 +931,7 @@ def collect_provider_usage():
 
 def collect_weekly_trend():
     """Log lines per day for last 7 days."""
-    log = os.path.join(DREWGENT, "logs", "agent.log")
+    log = os.path.join(LORAGENT, "logs", "agent.log")
     days = []
     import subprocess
     for i in range(7):
@@ -944,7 +944,7 @@ def collect_weekly_trend():
 
 def collect_live_activity():
     """Tail agent.log for recent activity events, return last 20 structured events."""
-    log = os.path.join(DREWGENT, "logs", "agent.log")
+    log = os.path.join(LORAGENT, "logs", "agent.log")
     if not os.path.isfile(log):
         return {"events": [], "active_session": "", "elapsed": 0}
 
@@ -1082,10 +1082,10 @@ def collect_live_activity():
 def collect_brain_health():
     """Count brain assets: skills, neuron rules, memory entries."""
     import glob
-    skills = len(glob.glob(os.path.join(DREWGENT, "skills", "**", "SKILL.md"), recursive=True))
-    neurons = len(glob.glob(os.path.join(DREWGENT, "**", "*.neuron"), recursive=True))
+    skills = len(glob.glob(os.path.join(LORAGENT, "skills", "**", "SKILL.md"), recursive=True))
+    neurons = len(glob.glob(os.path.join(LORAGENT, "**", "*.neuron"), recursive=True))
     memories = 0
-    mem_dir = os.path.join(DREWGENT, "P2-hippocampus", "memories")
+    mem_dir = os.path.join(LORAGENT, "P2-hippocampus", "memories")
     if os.path.isdir(mem_dir):
         memories = len([d for d in os.listdir(mem_dir) if os.path.isdir(os.path.join(mem_dir, d))])
     return {
@@ -1099,7 +1099,7 @@ def collect_brain_health():
 def collect_today_summary():
     """Count today's activity from the agent log."""
     today = time.strftime("%Y-%m-%d")
-    log = os.path.join(DREWGENT, "logs", "agent.log")
+    log = os.path.join(LORAGENT, "logs", "agent.log")
     if not os.path.isfile(log):
         return {"messages": 0, "sessions": 0, "tool_calls": 0}
 
@@ -1144,7 +1144,7 @@ def collect_alerts(system, services, cron_data):
 
     # Gateway watchdog — check the cron job, not the launchd service
     # launchd service is OnDemand (exits immediately), actual watchdog is
-    # the "Drewgent launchd watchdog" cron job running every 5m
+    # the "Loragent launchd watchdog" cron job running every 5m
     watchdog_cron = [j for j in cron_data.get("active", [])
                      if "launchd watchdog" in j.get("name", "").lower()]
     watchdog_errors = [j for j in cron_data.get("errors", [])

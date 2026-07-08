@@ -5,7 +5,7 @@ version: 1.0.0
 author: community
 license: MIT
 metadata:
-  drewgent:
+  loragent:
     tags: [MCP, Tools, API, Integrations, Interop]
     homepage: https://mcporter.dev
 prerequisites:
@@ -13,7 +13,7 @@ prerequisites:
 
 links:
   - "[[mcp/native-mcp]]"
-  - "[[mcp/gbrain-integration-drewgent]]"
+  - "[[mcp/gbrain-integration-loragent]]"
   - "[[P3-sensors/skills/SKILL-INDEX]]"
   - "[[P0-brainstem/brain/rules]]"
 ---
@@ -76,7 +76,7 @@ mcporter call --stdio "bun run ./server.ts" scrape url=https://example.com
 # JSON payload
 mcporter call <server.tool> --args '{"limit": 5}'
 
-# Machine-readable output (recommended for Drewgent)
+# Machine-readable output (recommended for Loragent)
 mcporter call <server.tool> key=value --output json
 ```
 

@@ -21,20 +21,20 @@ RUN git clone https://github.com/garrytan/gbrain.git /root/gbrain && \
 # Create gbrain data directory
 RUN mkdir -p /root/.gbrain
 
-COPY . /opt/drewgent
-WORKDIR /opt/drewgent
+COPY . /opt/loragent
+WORKDIR /opt/loragent
 
 # Install Python and Node dependencies in one layer, no cache
 RUN pip install --no-cache-dir -e ".[all]" --break-system-packages && \
     npm install --prefer-offline --no-audit && \
     npx playwright install --with-deps chromium --only-shell && \
-    cd /opt/drewgent/scripts/whatsapp-bridge && \
+    cd /opt/loragent/scripts/whatsapp-bridge && \
     npm install --prefer-offline --no-audit && \
     npm cache clean --force
 
-WORKDIR /opt/drewgent
-RUN chmod +x /opt/drewgent/docker/entrypoint.sh
+WORKDIR /opt/loragent
+RUN chmod +x /opt/loragent/docker/entrypoint.sh
 
 ENV HERMES_HOME=/opt/data
 VOLUME [ "/opt/data" ]
-ENTRYPOINT [ "/opt/drewgent/docker/entrypoint.sh" ]
+ENTRYPOINT [ "/opt/loragent/docker/entrypoint.sh" ]

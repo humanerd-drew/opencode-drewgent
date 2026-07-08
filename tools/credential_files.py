@@ -47,13 +47,13 @@ def _get_registered() -> Dict[str, str]:
 _config_files: List[Dict[str, str]] | None = None
 
 
-def _resolve_drewgent_home() -> Path:
-    return Path(os.environ.get("DREW_HOME", Path.home() / ".drewgent"))
+def _resolve_loragent_home() -> Path:
+    return Path(os.environ.get("DREW_HOME", Path.home() / ".loragent"))
 
 
 def register_credential_file(
     relative_path: str,
-    container_base: str = "/root/.drewgent",
+    container_base: str = "/root/.loragent",
 ) -> bool:
     """Register a credential file for mounting into remote sandboxes.
 
@@ -65,7 +65,7 @@ def register_credential_file(
     skill cannot declare ``required_credential_files: ['../../.ssh/id_rsa']``
     and exfiltrate sensitive host files into a container sandbox.
     """
-    drewgent_home = _resolve_drewgent_home()
+    loragent_home = _resolve_loragent_home()
 
     # Reject absolute paths — they bypass the DREW_HOME sandbox entirely.
     if os.path.isabs(relative_path):
@@ -75,21 +75,21 @@ def register_credential_file(
         )
         return False
 
-    host_path = drewgent_home / relative_path
+    host_path = loragent_home / relative_path
 
     # Resolve symlinks and normalise ``..`` before the containment check so
     # that traversal like ``../. ssh/id_rsa`` cannot escape DREW_HOME.
     try:
         resolved = host_path.resolve()
-        drewgent_home_resolved = drewgent_home.resolve()
-        resolved.relative_to(drewgent_home_resolved)  # raises ValueError if outside
+        loragent_home_resolved = loragent_home.resolve()
+        resolved.relative_to(loragent_home_resolved)  # raises ValueError if outside
     except ValueError:
         logger.warning(
             "credential_files: rejected path traversal %r "
             "(resolves to %s, outside DREW_HOME %s)",
             relative_path,
             resolved,
-            drewgent_home_resolved,
+            loragent_home_resolved,
         )
         return False
 
@@ -105,7 +105,7 @@ def register_credential_file(
 
 def register_credential_files(
     entries: list,
-    container_base: str = "/root/.drewgent",
+    container_base: str = "/root/.loragent",
 ) -> List[str]:
     """Register multiple credential files from skill frontmatter entries.
 
@@ -136,8 +136,8 @@ def _load_config_files() -> List[Dict[str, str]]:
 
     result: List[Dict[str, str]] = []
     try:
-        drewgent_home = _resolve_drewgent_home()
-        config_path = drewgent_home / "config.yaml"
+        loragent_home = _resolve_loragent_home()
+        config_path = loragent_home / "config.yaml"
         if config_path.exists():
             import yaml
 
@@ -145,7 +145,7 @@ def _load_config_files() -> List[Dict[str, str]]:
                 cfg = yaml.safe_load(f) or {}
             cred_files = cfg.get("terminal", {}).get("credential_files")
             if isinstance(cred_files, list):
-                drewgent_home_resolved = drewgent_home.resolve()
+                loragent_home_resolved = loragent_home.resolve()
                 for item in cred_files:
                     if isinstance(item, str) and item.strip():
                         rel = item.strip()
@@ -154,18 +154,18 @@ def _load_config_files() -> List[Dict[str, str]]:
                                 "credential_files: rejected absolute config path %r", rel,
                             )
                             continue
-                        host_path = (drewgent_home / rel).resolve()
+                        host_path = (loragent_home / rel).resolve()
                         try:
-                            host_path.relative_to(drewgent_home_resolved)
+                            host_path.relative_to(loragent_home_resolved)
                         except ValueError:
                             logger.warning(
                                 "credential_files: rejected config path traversal %r "
                                 "(resolves to %s, outside DREW_HOME %s)",
-                                rel, host_path, drewgent_home_resolved,
+                                rel, host_path, loragent_home_resolved,
                             )
                             continue
                         if host_path.is_file():
-                            container_path = f"/root/.drewgent/{rel}"
+                            container_path = f"/root/.loragent/{rel}"
                             result.append({
                                 "host_path": str(host_path),
                                 "container_path": container_path,
@@ -204,7 +204,7 @@ def get_credential_file_mounts() -> List[Dict[str, str]]:
 
 
 def get_skills_directory_mount(
-    container_base: str = "/root/.drewgent",
+    container_base: str = "/root/.loragent",
 ) -> list[Dict[str, str]]:
     """Return mount info for all skill directories (local + external).
 
@@ -223,8 +223,8 @@ def get_skills_directory_mount(
     at ``<container_base>/external_skills/<index>``.
     """
     mounts = []
-    drewgent_home = _resolve_drewgent_home()
-    skills_dir = drewgent_home / "skills"
+    loragent_home = _resolve_loragent_home()
+    skills_dir = loragent_home / "skills"
     if skills_dir.is_dir():
         host_path = _safe_skills_path(skills_dir)
         mounts.append({
@@ -271,7 +271,7 @@ def _safe_skills_path(skills_dir: Path) -> str:
     if _safe_skills_tempdir and _safe_skills_tempdir.is_dir():
         shutil.rmtree(_safe_skills_tempdir, ignore_errors=True)
 
-    safe_dir = Path(tempfile.mkdtemp(prefix="drewgent-skills-safe-"))
+    safe_dir = Path(tempfile.mkdtemp(prefix="loragent-skills-safe-"))
     _safe_skills_tempdir = safe_dir
 
     for item in skills_dir.rglob("*"):
@@ -295,7 +295,7 @@ def _safe_skills_path(skills_dir: Path) -> str:
 
 
 def iter_skills_files(
-    container_base: str = "/root/.drewgent",
+    container_base: str = "/root/.loragent",
 ) -> List[Dict[str, str]]:
     """Yield individual (host_path, container_path) entries for skills files.
 
@@ -306,8 +306,8 @@ def iter_skills_files(
     """
     result: List[Dict[str, str]] = []
 
-    drewgent_home = _resolve_drewgent_home()
-    skills_dir = drewgent_home / "skills"
+    loragent_home = _resolve_loragent_home()
+    skills_dir = loragent_home / "skills"
     if skills_dir.is_dir():
         container_root = f"{container_base.rstrip('/')}/skills"
         for item in skills_dir.rglob("*"):
@@ -345,7 +345,7 @@ def iter_skills_files(
 # ---------------------------------------------------------------------------
 
 # The four cache subdirectories that should be mirrored into remote backends.
-# Each tuple is (new_subpath, old_name) matching drewgent_constants.get_drewgent_dir().
+# Each tuple is (new_subpath, old_name) matching loragent_constants.get_loragent_dir().
 _CACHE_DIRS: list[tuple[str, str]] = [
     ("cache/documents", "document_cache"),
     ("cache/images", "image_cache"),
@@ -355,19 +355,19 @@ _CACHE_DIRS: list[tuple[str, str]] = [
 
 
 def get_cache_directory_mounts(
-    container_base: str = "/root/.drewgent",
+    container_base: str = "/root/.loragent",
 ) -> List[Dict[str, str]]:
     """Return mount entries for each cache directory that exists on disk.
 
     Used by Docker to create bind mounts.  Each entry has ``host_path`` and
     ``container_path`` keys.  The host path is resolved via
-    ``get_drewgent_dir()`` for backward compatibility with old directory layouts.
+    ``get_loragent_dir()`` for backward compatibility with old directory layouts.
     """
-    from drewgent_constants import get_drewgent_dir
+    from loragent_constants import get_loragent_dir
 
     mounts: List[Dict[str, str]] = []
     for new_subpath, old_name in _CACHE_DIRS:
-        host_dir = get_drewgent_dir(new_subpath, old_name)
+        host_dir = get_loragent_dir(new_subpath, old_name)
         if host_dir.is_dir():
             # Always map to the *new* container layout regardless of host layout.
             container_path = f"{container_base.rstrip('/')}/{new_subpath}"
@@ -379,18 +379,18 @@ def get_cache_directory_mounts(
 
 
 def iter_cache_files(
-    container_base: str = "/root/.drewgent",
+    container_base: str = "/root/.loragent",
 ) -> List[Dict[str, str]]:
     """Return individual (host_path, container_path) entries for cache files.
 
     Used by Modal to upload files individually and resync before each command.
     Skips symlinks.  The container paths use the new ``cache/<subdir>`` layout.
     """
-    from drewgent_constants import get_drewgent_dir
+    from loragent_constants import get_loragent_dir
 
     result: List[Dict[str, str]] = []
     for new_subpath, old_name in _CACHE_DIRS:
-        host_dir = get_drewgent_dir(new_subpath, old_name)
+        host_dir = get_loragent_dir(new_subpath, old_name)
         if not host_dir.is_dir():
             continue
         container_root = f"{container_base.rstrip('/')}/{new_subpath}"

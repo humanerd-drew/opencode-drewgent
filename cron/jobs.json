@@ -36,7 +36,7 @@
     {
       "id": "d1ef68ced116",
       "name": "kanban-dispatcher",
-      "prompt": "Kanban Dispatcher \u2014 assign ready tasks to workers via dispatch_once().\n\nSteps:\n1. from tools.drewgent_kanban_db import dispatch_once\n2. result = dispatch_once(board=\"default\", max_spawn=3, failure_limit=3)\n3. Report: reclaimed=N, claimed=N, spawned=N, skipped=N\n4. If reclaimed > 0 or claimed > 0: show details\n5. If all empty: respond with [SILENT]\n\nImportant: dispatcher runs in the same process. Do NOT spawn subprocess agents manually \u2014\ndispatch_once() handles reclaiming stale tasks, claiming ready tasks, and spawning worker processes internally.\n",
+      "prompt": "Kanban Dispatcher \u2014 assign ready tasks to workers via dispatch_once().\n\nSteps:\n1. from tools.loragent_kanban_db import dispatch_once\n2. result = dispatch_once(board=\"default\", max_spawn=3, failure_limit=3)\n3. Report: reclaimed=N, claimed=N, spawned=N, skipped=N\n4. If reclaimed > 0 or claimed > 0: show details\n5. If all empty: respond with [SILENT]\n\nImportant: dispatcher runs in the same process. Do NOT spawn subprocess agents manually \u2014\ndispatch_once() handles reclaiming stale tasks, claiming ready tasks, and spawning worker processes internally.\n",
       "skills": [
         "kanban-worker"
       ],
@@ -58,7 +58,7 @@
       "enabled": false,
       "state": "paused",
       "paused_at": "2026-06-10T14:48:56.567024+00:00",
-      "paused_reason": "T4 fix: redundant with drewgent-cron-runner-001. LLM job blocked tick loop causing gateway cron stall.",
+      "paused_reason": "T4 fix: redundant with loragent-cron-runner-001. LLM job blocked tick loop causing gateway cron stall.",
       "created_at": "2026-05-18T23:56:31.297016+09:00",
       "next_run_at": "2026-06-10T23:58:00+09:00",
       "last_run_at": "2026-06-10T23:57:56.927917+09:00",
@@ -70,7 +70,7 @@
     {
       "id": "e2f30aa1b444",
       "name": "linear-activity-logger",
-      "prompt": "Linear Activity Logger \u2014 monitor Discord sessions for work patterns and create kanban cards.\n\nSteps:\n1. cd ~/.drewgent/source/drewgent-agent\n2. python3 scripts/linear_activity_logger.py\n3. Report: sessions_scanned=N, messages_processed=N, cards_created=N\n4. If cards_created > 0: show card titles\n5. If all empty: respond with [SILENT]\n\nEnvironment:\n- LINEAR_API_KEY (optional): for Linear issue creation\n- LINEAR_TEAM_ID (optional): team for Linear issues\n\nThis job scans recent session files for work trigger patterns (\uc9c4\ud589\ud574\uc918, \ub05d\ub0ac\uc5b4, \ud574\uc918, etc.)\nand creates kanban cards in drewgent_tasks.db. Idempotent \u2014 same message never creates duplicate cards.\n",
+      "prompt": "Linear Activity Logger \u2014 monitor Discord sessions for work patterns and create kanban cards.\n\nSteps:\n1. cd ~/.loragent/source/loragent-agent\n2. python3 scripts/linear_activity_logger.py\n3. Report: sessions_scanned=N, messages_processed=N, cards_created=N\n4. If cards_created > 0: show card titles\n5. If all empty: respond with [SILENT]\n\nEnvironment:\n- LINEAR_API_KEY (optional): for Linear issue creation\n- LINEAR_TEAM_ID (optional): team for Linear issues\n\nThis job scans recent session files for work trigger patterns (\uc9c4\ud589\ud574\uc918, \ub05d\ub0ac\uc5b4, \ud574\uc918, etc.)\nand creates kanban cards in loragent_tasks.db. Idempotent \u2014 same message never creates duplicate cards.\n",
       "skills": [],
       "skill": null,
       "model": null,
@@ -101,14 +101,14 @@
     },
     {
       "id": "2d9a31f2b661",
-      "name": "Drewgent launchd watchdog",
+      "name": "Loragent launchd watchdog",
       "prompt": "",
       "skills": [],
       "skill": null,
       "model": null,
       "provider": null,
       "base_url": null,
-      "script": "drewgent_launchd_watchdog.sh",
+      "script": "loragent_launchd_watchdog.sh",
       "no_agent": true,
       "context_from": null,
       "schedule": {
@@ -139,14 +139,14 @@
     },
     {
       "id": "6596a0876cb9",
-      "name": "Drewgent log rotation",
+      "name": "Loragent log rotation",
       "prompt": "",
       "skills": [],
       "skill": null,
       "model": null,
       "provider": null,
       "base_url": null,
-      "script": "drewgent_log_rotate.sh",
+      "script": "loragent_log_rotate.sh",
       "no_agent": true,
       "context_from": null,
       "schedule": {
@@ -177,14 +177,14 @@
     },
     {
       "id": "80bda2815f40",
-      "name": "Drewgent harmony check (cross-layer diff)",
+      "name": "Loragent harmony check (cross-layer diff)",
       "prompt": "",
       "skills": [],
       "skill": null,
       "model": null,
       "provider": null,
       "base_url": null,
-      "script": "drewgent_harmony_check.sh",
+      "script": "loragent_harmony_check.sh",
       "no_agent": true,
       "context_from": null,
       "schedule": {
@@ -214,9 +214,9 @@
       "profile": null
     },
     {
-      "id": "drewgent-cron-runner-001",
+      "id": "loragent-cron-runner-001",
       "name": "kanban-dispatcher (all boards, consolidated)",
-      "script": "/Users/drew/.drewgent/scripts/cron_runner.py",
+      "script": "~/.loragent/scripts/cron_runner.py",
       "schedule": {
         "kind": "cron",
         "expr": "* * * * *",
@@ -232,7 +232,7 @@
     },
     {
       "id": "f0b39d211970",
-      "name": "Drewgent customize smoke test (weekly)",
+      "name": "Loragent customize smoke test (weekly)",
       "prompt": "",
       "skills": [],
       "skill": null,
@@ -260,7 +260,7 @@
       "next_run_at": "2026-06-21T10:00:00+09:00",
       "last_run_at": "2026-06-14T10:00:02.633130+09:00",
       "last_status": "error",
-      "last_error": "Script not found: /Users/drew/.drewgent/scripts/customize_smoke_test.sh",
+      "last_error": "Script not found: ~/.loragent/scripts/customize_smoke_test.sh",
       "last_delivery_error": null,
       "deliver": "local",
       "origin": null,
@@ -349,7 +349,7 @@
     {
       "id": "4093dbee0282",
       "name": "trend-evaluate-trigger",
-      "prompt": "Trend Harvester \ud3c9\uac00 \ud2b8\ub9ac\uac70.\n\n\ubaa9\ud45c: analyzed/keep\uc5d0 \uc0c8 \ud56d\ubaa9\uc774 \uc788\ub294\uc9c0 \ud655\uc778\ud558\uace0, \uc788\uc73c\uba74 kanban evaluation task\ub97c \uc0dd\uc131\ud558\ub77c.\n\nSteps:\n1. ~/.drewgent/P4-cortex/growth/trend-harvester/analyzed/keep/ \uc5d0 JSON \ud30c\uc77c \ub9ac\uc2a4\ud2b8 \ud655\uc778\n2. ~/.drewgent/P4-cortex/growth/trend-harvester/evaluated/ \uc5d0 \ud3c9\uac00 \uc644\ub8cc\ub41c \ud30c\uc77c \ub9ac\uc2a4\ud2b8 \ud655\uc778\n3. evaluated/\uc5d0 \uc5c6\ub294 keep \ud30c\uc77c\uc774 \uc0c8 \ud56d\ubaa9 (evaluation \ub300\uc0c1)\n4. \uc0c8 \ud56d\ubaa9\uc774 \uc788\uc73c\uba74:\n   - kanban_create\ub85c evaluation task \uc0dd\uc131 (title: \"trend-evaluate: YYYY-MM-DD\", assignee: \"default\")\n   - task body\uc5d0 \uc0c8 \ud56d\ubaa9 \uc218\uc640 \uccab 3\uac1c \ud56d\ubaa9 preview \ud3ec\ud568\n   - Reply: \"Created trend evaluation task for N new items\"\n5. \uc0c8 \ud56d\ubaa9\uc774 \uc5c6\uc73c\uba74: \"[SILENT]\"\n\nImportant: \ube60\ub974\uac8c \uc644\ub8cc\ud560 \uac83. kanban_create \ud55c \ubc88 \ud638\ucd9c\ud558\uace0 \ub05d\ub0b4\uba74 \ub41c\ub2e4.",
+      "prompt": "Trend Harvester \ud3c9\uac00 \ud2b8\ub9ac\uac70.\n\n\ubaa9\ud45c: analyzed/keep\uc5d0 \uc0c8 \ud56d\ubaa9\uc774 \uc788\ub294\uc9c0 \ud655\uc778\ud558\uace0, \uc788\uc73c\uba74 kanban evaluation task\ub97c \uc0dd\uc131\ud558\ub77c.\n\nSteps:\n1. ~/.loragent/P4-cortex/growth/trend-harvester/analyzed/keep/ \uc5d0 JSON \ud30c\uc77c \ub9ac\uc2a4\ud2b8 \ud655\uc778\n2. ~/.loragent/P4-cortex/growth/trend-harvester/evaluated/ \uc5d0 \ud3c9\uac00 \uc644\ub8cc\ub41c \ud30c\uc77c \ub9ac\uc2a4\ud2b8 \ud655\uc778\n3. evaluated/\uc5d0 \uc5c6\ub294 keep \ud30c\uc77c\uc774 \uc0c8 \ud56d\ubaa9 (evaluation \ub300\uc0c1)\n4. \uc0c8 \ud56d\ubaa9\uc774 \uc788\uc73c\uba74:\n   - kanban_create\ub85c evaluation task \uc0dd\uc131 (title: \"trend-evaluate: YYYY-MM-DD\", assignee: \"default\")\n   - task body\uc5d0 \uc0c8 \ud56d\ubaa9 \uc218\uc640 \uccab 3\uac1c \ud56d\ubaa9 preview \ud3ec\ud568\n   - Reply: \"Created trend evaluation task for N new items\"\n5. \uc0c8 \ud56d\ubaa9\uc774 \uc5c6\uc73c\uba74: \"[SILENT]\"\n\nImportant: \ube60\ub974\uac8c \uc644\ub8cc\ud560 \uac83. kanban_create \ud55c \ubc88 \ud638\ucd9c\ud558\uace0 \ub05d\ub0b4\uba74 \ub41c\ub2e4.",
       "skills": [
         "trend-harvester"
       ],
@@ -427,7 +427,7 @@
     {
       "id": "97890eb305a2",
       "name": "trend-retire-trigger",
-      "prompt": "Trend Harvester \ud3d0\uae30 \ud2b8\ub9ac\uac70.\n\n\ubaa9\ud45c: usage report\uc5d0\uc11c stale \ud56d\ubaa9\uc744 \ud655\uc778\ud558\uace0, \uc788\uc73c\uba74 kanban retire task\ub97c \uc0dd\uc131\ud558\ub77c.\n\nSteps:\n1. ~/.drewgent/P4-cortex/growth/trend-harvester/.usage_report.json \uc77d\uae30\n2. stale_count > 0 \uc774\uba74:\n   - kanban_create\ub85c retire task \uc0dd\uc131 (title: \"trend-retire: YYYY-MM-DD\", assignee: \"default\")\n   - task body\uc5d0 stale \ud56d\ubaa9 \uc218\uc640 \ubaa9\ub85d \ud3ec\ud568\n   - Reply: \"Created trend retire task for N stale items\"\n3. stale_count == 0 \uc774\uba74: \"[SILENT]\"\n\nImportant: \ube60\ub974\uac8c \uc644\ub8cc\ud560 \uac83.",
+      "prompt": "Trend Harvester \ud3d0\uae30 \ud2b8\ub9ac\uac70.\n\n\ubaa9\ud45c: usage report\uc5d0\uc11c stale \ud56d\ubaa9\uc744 \ud655\uc778\ud558\uace0, \uc788\uc73c\uba74 kanban retire task\ub97c \uc0dd\uc131\ud558\ub77c.\n\nSteps:\n1. ~/.loragent/P4-cortex/growth/trend-harvester/.usage_report.json \uc77d\uae30\n2. stale_count > 0 \uc774\uba74:\n   - kanban_create\ub85c retire task \uc0dd\uc131 (title: \"trend-retire: YYYY-MM-DD\", assignee: \"default\")\n   - task body\uc5d0 stale \ud56d\ubaa9 \uc218\uc640 \ubaa9\ub85d \ud3ec\ud568\n   - Reply: \"Created trend retire task for N stale items\"\n3. stale_count == 0 \uc774\uba74: \"[SILENT]\"\n\nImportant: \ube60\ub974\uac8c \uc644\ub8cc\ud560 \uac83.",
       "skills": [
         "trend-harvester"
       ],
@@ -467,7 +467,7 @@
     {
       "id": "66d907f7bce4",
       "name": "taste-review-trigger",
-      "prompt": "Taste Review \ud2b8\ub9ac\uac70.\n\n\ubaa9\ud45c: Trend Harvester keep \ub9ac\uc2a4\ud2b8\uc5d0\uc11c \uc544\uc9c1 taste review \uc548 \ub41c \ud56d\ubaa9\uc774 \uc788\ub294\uc9c0 \ud655\uc778\ud558\uace0, \uc788\uc73c\uba74 kanban taste-review task\ub97c \uc0dd\uc131\ud558\ub77c.\n\nSteps:\n1. ~/.drewgent/P4-cortex/growth/trend-harvester/analyzed/keep/ \uc5d0 JSON \ud30c\uc77c \ub9ac\uc2a4\ud2b8 \ud655\uc778\n2. ~/.drewgent/P4-cortex/growth/trend-harvester/applied/ \uc5d0 \uc774\ubbf8 \ucc98\ub9ac\ub41c \ud30c\uc77c \ud655\uc778\n3. keep\uc5d0 \uc788\uace0 applied\uc5d0 \uc5c6\ub294 \ud56d\ubaa9\uc774 review \ub300\uc0c1\n4. \ub300\uc0c1\uc774 \uc788\uc73c\uba74:\n   - kanban_create\ub85c task \uc0dd\uc131 (title: \"taste-review: YYYY-MM-DD\", assignee: \"default\")\n   - body\uc5d0 \uccab 1\uac1c \ud56d\ubaa9\uc758 name, description, url \ud3ec\ud568 (\ud55c \ubc88\uc5d0 1\uac1c\ub9cc \ub9ac\ubdf0)\n   - task body\uc5d0 taste-review skill\uc744 \ub530\ub974\ub77c\uace0 \uba85\uc2dc (5-\uc9c8\ubb38 \ubd84\uc11d \ud504\ub808\uc784\uc6cc\ud06c \ud3ec\ud568)\n   - Reply: \"Created taste review task for [tool-name]\"\n5. \ub300\uc0c1\uc774 \uc5c6\uc73c\uba74: \"[SILENT]\"\n\nImportant: \ube60\ub974\uac8c \uc644\ub8cc\ud560 \uac83. kanban_create \ud55c \ubc88 \ud638\ucd9c\ud558\uace0 \ub05d.",
+      "prompt": "Taste Review \ud2b8\ub9ac\uac70.\n\n\ubaa9\ud45c: Trend Harvester keep \ub9ac\uc2a4\ud2b8\uc5d0\uc11c \uc544\uc9c1 taste review \uc548 \ub41c \ud56d\ubaa9\uc774 \uc788\ub294\uc9c0 \ud655\uc778\ud558\uace0, \uc788\uc73c\uba74 kanban taste-review task\ub97c \uc0dd\uc131\ud558\ub77c.\n\nSteps:\n1. ~/.loragent/P4-cortex/growth/trend-harvester/analyzed/keep/ \uc5d0 JSON \ud30c\uc77c \ub9ac\uc2a4\ud2b8 \ud655\uc778\n2. ~/.loragent/P4-cortex/growth/trend-harvester/applied/ \uc5d0 \uc774\ubbf8 \ucc98\ub9ac\ub41c \ud30c\uc77c \ud655\uc778\n3. keep\uc5d0 \uc788\uace0 applied\uc5d0 \uc5c6\ub294 \ud56d\ubaa9\uc774 review \ub300\uc0c1\n4. \ub300\uc0c1\uc774 \uc788\uc73c\uba74:\n   - kanban_create\ub85c task \uc0dd\uc131 (title: \"taste-review: YYYY-MM-DD\", assignee: \"default\")\n   - body\uc5d0 \uccab 1\uac1c \ud56d\ubaa9\uc758 name, description, url \ud3ec\ud568 (\ud55c \ubc88\uc5d0 1\uac1c\ub9cc \ub9ac\ubdf0)\n   - task body\uc5d0 taste-review skill\uc744 \ub530\ub974\ub77c\uace0 \uba85\uc2dc (5-\uc9c8\ubb38 \ubd84\uc11d \ud504\ub808\uc784\uc6cc\ud06c \ud3ec\ud568)\n   - Reply: \"Created taste review task for [tool-name]\"\n5. \ub300\uc0c1\uc774 \uc5c6\uc73c\uba74: \"[SILENT]\"\n\nImportant: \ube60\ub974\uac8c \uc644\ub8cc\ud560 \uac83. kanban_create \ud55c \ubc88 \ud638\ucd9c\ud558\uace0 \ub05d.",
       "skills": [
         "taste-review"
       ],
@@ -545,7 +545,7 @@
     {
       "id": "064e11fcb2e8",
       "name": "seo-trend-trigger",
-      "prompt": "SEO \uc8fc\uac04 \ud2b8\ub80c\ub4dc \ub9ac\ud3ec\ud2b8 \ud2b8\ub9ac\uac70.\n\n\ubaa9\ud45c: \ucd5c\uadfc \ubd84\uc11d\ub41c SEO \uae30\uc0ac\uac00 \uc788\ub294\uc9c0 \ud655\uc778\ud558\uace0, \uc788\uc73c\uba74 kanban trend-report task\ub97c \uc0dd\uc131\ud558\ub77c.\n\nSteps:\n1. ~/.drewgent/P4-cortex/growth/seo/analyzed/ \ub514\ub809\ud1a0\ub9ac\uc5d0\uc11c \ucd5c\uadfc 7\uc77c \ub0b4 \ubd84\uc11d \uacb0\uacfc \ud655\uc778\n2. \ubd84\uc11d \uacb0\uacfc\uac00 \uc788\uc73c\uba74:\n   - kanban_create\ub85c trend report task \uc0dd\uc131 (title: \"seo-trend-report: YYYY-MM-DD\", assignee: \"default\")\n   - body\uc5d0 \ucd5c\uadfc \ubd84\uc11d\ub41c \uae30\uc0ac \uc218 \ud3ec\ud568\n   - Reply: \"Created seo trend report task for N analyzed articles\"\n3. \ubd84\uc11d \uacb0\uacfc\uac00 \uc5c6\uc73c\uba74: \"[SILENT]\"\n\nImportant: \ube60\ub974\uac8c \uc644\ub8cc\ud560 \uac83.",
+      "prompt": "SEO \uc8fc\uac04 \ud2b8\ub80c\ub4dc \ub9ac\ud3ec\ud2b8 \ud2b8\ub9ac\uac70.\n\n\ubaa9\ud45c: \ucd5c\uadfc \ubd84\uc11d\ub41c SEO \uae30\uc0ac\uac00 \uc788\ub294\uc9c0 \ud655\uc778\ud558\uace0, \uc788\uc73c\uba74 kanban trend-report task\ub97c \uc0dd\uc131\ud558\ub77c.\n\nSteps:\n1. ~/.loragent/P4-cortex/growth/seo/analyzed/ \ub514\ub809\ud1a0\ub9ac\uc5d0\uc11c \ucd5c\uadfc 7\uc77c \ub0b4 \ubd84\uc11d \uacb0\uacfc \ud655\uc778\n2. \ubd84\uc11d \uacb0\uacfc\uac00 \uc788\uc73c\uba74:\n   - kanban_create\ub85c trend report task \uc0dd\uc131 (title: \"seo-trend-report: YYYY-MM-DD\", assignee: \"default\")\n   - body\uc5d0 \ucd5c\uadfc \ubd84\uc11d\ub41c \uae30\uc0ac \uc218 \ud3ec\ud568\n   - Reply: \"Created seo trend report task for N analyzed articles\"\n3. \ubd84\uc11d \uacb0\uacfc\uac00 \uc5c6\uc73c\uba74: \"[SILENT]\"\n\nImportant: \ube60\ub974\uac8c \uc644\ub8cc\ud560 \uac83.",
       "skills": [
         "seo-article-harvester"
       ],
@@ -585,7 +585,7 @@
     {
       "id": "02e28cd0a6aa",
       "name": "kanban-linear-sync",
-      "prompt": "Run kanban-linear-sync cleanup and check for issues needing attention. Use the script at ~/.drewgent/scripts/kanban_linear_sync.py with --prune to archive old completed issues (older than 7 days), then check for feedback-labelled issues with --feedback. Report any issues needing human attention.",
+      "prompt": "Run kanban-linear-sync cleanup and check for issues needing attention. Use the script at ~/.loragent/scripts/kanban_linear_sync.py with --prune to archive old completed issues (older than 7 days), then check for feedback-labelled issues with --feedback. Report any issues needing human attention.",
       "skills": [],
       "skill": null,
       "model": null,
@@ -632,7 +632,7 @@
       "model": null,
       "provider": null,
       "base_url": null,
-      "script": "drewgent_gbrain_watchdog.sh",
+      "script": "loragent_gbrain_watchdog.sh",
       "no_agent": true,
       "context_from": null,
       "schedule": {
@@ -653,7 +653,7 @@
       "next_run_at": "2026-06-16T12:06:41.514883+09:00",
       "last_run_at": "2026-06-16T11:51:41.514883+09:00",
       "last_status": "error",
-      "last_error": "Script not found: /Users/drew/.drewgent/scripts/drewgent_gbrain_watchdog.sh",
+      "last_error": "Script not found: ~/.loragent/scripts/loragent_gbrain_watchdog.sh",
       "last_delivery_error": null,
       "deliver": "local",
       "origin": null,
@@ -664,7 +664,7 @@
     {
       "id": "d0d0b98c845b",
       "name": "content-manager-periodic",
-      "prompt": "You are Drew's content manager / CMO. Proceed SILENTLY \u2014 no greetings.\n\n## Workflow\n\n### 1. Load Knowledge Base + Web Research\nRead all 4 files in /Users/drew/.drewgent/P4-cortex/content/\nOptionally web search for: related projects, technical context, memes/cultural references\n\n### 2. Gather Activity\nsession_search() + git log (7 days) in /Users/drew/.drewgent and /Users/drew/m-log\n\n### 3. Check Material\nAt most ONE story. SILENT if nothing new.\n\n### 4. Produce Content + Rich Visuals\n\n**Blog post** \u2192 `memories/insights/YYYY-MM-DD-slug.md`\n\n**SVG cover** \u2192 `memories/insights/YYYY-MM-DD-slug-cover.svg` (1200x630, rich illustration)\n\n**SVG meme** (optional) \u2192 `memories/insights/YYYY-MM-DD-slug-meme.svg` \u2014 if the story has a natural meme angle. Templates: Drake reject/approve, \"this is fine\", galaxy brain, distracted boyfriend.\n\n**Mermaid diagrams** inline for architecture flows\n\n**Excalidraw + PNG** if there's an architecture angle\n\n**X thread** \u2192 `memories/insights/YYYY-MM-DD-slug-thread.txt`\n\n**Update** narrative_arc.md + content-inventory.md\n\n### 5. Report\nkanban_complete with summary + metadata + artifacts (absolute paths to ALL created files)\n\nUse kanban_heartbeat() for long ops.",
+      "prompt": "You are Drew's content manager / CMO. Proceed SILENTLY \u2014 no greetings.\n\n## Workflow\n\n### 1. Load Knowledge Base + Web Research\nRead all 4 files in ~/.loragent/P4-cortex/content/\nOptionally web search for: related projects, technical context, memes/cultural references\n\n### 2. Gather Activity\nsession_search() + git log (7 days) in ~/.loragent and ~/m-log\n\n### 3. Check Material\nAt most ONE story. SILENT if nothing new.\n\n### 4. Produce Content + Rich Visuals\n\n**Blog post** \u2192 `memories/insights/YYYY-MM-DD-slug.md`\n\n**SVG cover** \u2192 `memories/insights/YYYY-MM-DD-slug-cover.svg` (1200x630, rich illustration)\n\n**SVG meme** (optional) \u2192 `memories/insights/YYYY-MM-DD-slug-meme.svg` \u2014 if the story has a natural meme angle. Templates: Drake reject/approve, \"this is fine\", galaxy brain, distracted boyfriend.\n\n**Mermaid diagrams** inline for architecture flows\n\n**Excalidraw + PNG** if there's an architecture angle\n\n**X thread** \u2192 `memories/insights/YYYY-MM-DD-slug-thread.txt`\n\n**Update** narrative_arc.md + content-inventory.md\n\n### 5. Report\nkanban_complete with summary + metadata + artifacts (absolute paths to ALL created files)\n\nUse kanban_heartbeat() for long ops.",
       "skills": [],
       "skill": null,
       "model": "deepseek-v4-pro",
@@ -703,7 +703,7 @@
         "kanban",
         "web"
       ],
-      "workdir": "/Users/drew/.drewgent",
+      "workdir": "~/.loragent",
       "profile": null
     },
     {

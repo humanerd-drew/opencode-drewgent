@@ -5,7 +5,7 @@ from pathlib import Path
 from datetime import datetime, timedelta, timezone
 
 KST = timezone(timedelta(hours=9))
-CRON_OUTPUT = Path.home() / ".drewgent" / "cron" / "output"
+CRON_OUTPUT = Path.home() / ".loragent" / "cron" / "output"
 MAX_AGE_DAYS = 7
 DRY_RUN = "--dry-run" in sys.argv
 

@@ -2,7 +2,7 @@
 """
 brain_signal_report.py — Daily brain signal analysis report
 
-Reads ~/.drewgent/state/brain_signal_log.jsonl and prints a formatted
+Reads ~/.loragent/state/brain_signal_log.jsonl and prints a formatted
 awareness report to stdout. Designed to run as a cron job or on-demand.
 
 Usage:
@@ -18,8 +18,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-# Add drewgent source to path for imports
-SOURCE_PATH = Path.home() / ".drewgent" / "source" / "drewgent-agent"
+# Add loragent source to path for imports
+SOURCE_PATH = Path.home() / ".loragent" / "source" / "loragent-agent"
 if SOURCE_PATH.exists():
     sys.path.insert(0, str(SOURCE_PATH))
 
@@ -31,7 +31,7 @@ def main():
     parser.add_argument("--hours", type=int, default=24, help="Hours to look back (default: 24)")
     parser.add_argument(
         "--log-path",
-        default="~/.drewgent/state/brain_signal_log.jsonl",
+        default="~/.loragent/state/brain_signal_log.jsonl",
         help="Path to brain_signal_log.jsonl",
     )
     parser.add_argument(

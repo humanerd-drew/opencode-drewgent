@@ -1,5 +1,5 @@
 ---
-title: Drewgent 성장 계획 2026
+title: Loragent 성장 계획 2026
 type: plan
 space: claim
 tags: [claim]
@@ -13,7 +13,7 @@ links:
 ---
 
 
-# Drewgent 성장 계획 2026
+# Loragent 성장 계획 2026
 
 생성일: 2026-05-06
 상태: 진행중

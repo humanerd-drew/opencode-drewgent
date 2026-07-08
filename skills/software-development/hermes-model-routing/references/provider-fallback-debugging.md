@@ -10,14 +10,14 @@ errors. Total: 222 occurrences. Errors kept appearing every few minutes.
 ### Step 1 — Identify the failing calls
 
 ```bash
-grep 'HTTP 400\|not a valid model' ~/.drewgent/logs/errors.log | tail -5
+grep 'HTTP 400\|not a valid model' ~/.loragent/logs/errors.log | tail -5
 # → HTTP 400: opencode-go/deepseek-v4-flash is not a valid model ID
 ```
 
 ### Step 2 — Find the provider/model signature in agent.log
 
 ```bash
-grep 'HTTP 400' ~/.drewgent/logs/errors.log | head -1
+grep 'HTTP 400' ~/.loragent/logs/errors.log | head -1
 # → provider=openrouter model=opencode-go/deepseek-v4-flash summary=HTTP 400
 ```
 
@@ -39,8 +39,8 @@ Root cause: `_restore_primary_runtime()` uses session metadata, not current conf
 ### Step 4 — Find all provider keys
 
 ```bash
-grep -rn 'API_KEY\|api_key' ~/.drewgent/.env ~/.hermes/.env | grep -v '^#' | grep -v '^.*:#'
-# → ~/.drewgent/.env had OPENROUTER_API_KEY set (uncommented)
+grep -rn 'API_KEY\|api_key' ~/.loragent/.env ~/.hermes/.env | grep -v '^#' | grep -v '^.*:#'
+# → ~/.loragent/.env had OPENROUTER_API_KEY set (uncommented)
 # → ~/.hermes/.env had OPENROUTER_API_KEY commented out
 ```
 
@@ -49,13 +49,13 @@ grep -rn 'API_KEY\|api_key' ~/.drewgent/.env ~/.hermes/.env | grep -v '^#' | gre
 ```bash
 # Comment out the stale OpenRouter key
 python3 -c "
-with open('/Users/drew/.drewgent/.env') as f:
+with open('~/.loragent/.env') as f:
     lines = f.readlines()
 for i, line in enumerate(lines):
     if line.startswith('OPENROUTER_API_KEY=') and not line.startswith('#'):
         lines[i] = '#' + line
         break
-with open('/Users/drew/.drewgent/.env', 'w') as f:
+with open('~/.loragent/.env', 'w') as f:
     f.writelines(lines)
 "
 ```
@@ -63,7 +63,7 @@ with open('/Users/drew/.drewgent/.env', 'w') as f:
 ### Step 6 — Verify
 
 ```bash
-grep 'OPENROUTER' ~/.drewgent/.env
+grep 'OPENROUTER' ~/.loragent/.env
 # → #OPENROUTER_API_KEY=***
 ```
 
@@ -79,7 +79,7 @@ When `_restore_primary_runtime()` fired at the start of each turn:
 2. Created OpenAI client with `provider=openrouter`
 3. Called OpenCode Go model on OpenRouter → HTTP 400
 
-The `OPENROUTER_API_KEY` was still set in `~/.drewgent/.env` from the
+The `OPENROUTER_API_KEY` was still set in `~/.loragent/.env` from the
 pre-subscription era, so OpenRouter was technically usable — just not with
 the model name that worked on OpenCode Go.
 

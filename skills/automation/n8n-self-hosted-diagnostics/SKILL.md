@@ -24,9 +24,9 @@ npm으로 설치된 n8n 셀프호스트의 상태를 진단하고 launchd로 관
 - **DB**: `~/.n8n/database.sqlite` (SQLite)
 - **설정**: `~/.n8n/config` (JSON — encryptionKey 포함)
 - **포트**: 5678
-- **launchd plist**: `~/Library/LaunchAgents/ai.drewgent.n8n.plist`
+- **launchd plist**: `~/Library/LaunchAgents/ai.loragent.n8n.plist`
 - **로그**: `~/P6-prefrontal/logs/n8n.log`, `n8n.error.log`
-- **launchd label**: `ai.drewgent.n8n`
+- **launchd label**: `ai.loragent.n8n`
 - **업데이트**: `npm update -g n8n` (Homebrew formula 없음)
 
 ## launchd 관리
@@ -36,17 +36,17 @@ npm으로 설치된 n8n 셀프호스트의 상태를 진단하고 launchd로 관
 launchctl list | grep n8n
 
 # 수동 시작
-launchctl start ai.drewgent.n8n
+launchctl start ai.loragent.n8n
 
 # 수동 정지
-launchctl stop ai.drewgent.n8n
+launchctl stop ai.loragent.n8n
 
 # 재시작
-launchctl stop ai.drewgent.n8n && sleep 2 && launchctl start ai.drewgent.n8n
+launchctl stop ai.loragent.n8n && sleep 2 && launchctl start ai.loragent.n8n
 
 # plist reload
-launchctl unload ~/Library/LaunchAgents/ai.drewgent.n8n.plist
-launchctl load ~/Library/LaunchAgents/ai.drewgent.n8n.plist
+launchctl unload ~/Library/LaunchAgents/ai.loragent.n8n.plist
+launchctl load ~/Library/LaunchAgents/ai.loragent.n8n.plist
 ```
 
 재부팅 시 `RunAtLoad: true`로 자동 시작됩니다.
@@ -167,6 +167,6 @@ npm install -g n8n@latest
 kill $(ps aux | grep 'n8n' | grep -v grep | awk '{print $2}')
 
 # plist reload
-launchctl unload ~/Library/LaunchAgents/ai.drewgent.n8n.plist
-launchctl load ~/Library/LaunchAgents/ai.drewgent.n8n.plist
+launchctl unload ~/Library/LaunchAgents/ai.loragent.n8n.plist
+launchctl load ~/Library/LaunchAgents/ai.loragent.n8n.plist
 ```

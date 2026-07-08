@@ -28,8 +28,8 @@ Docker (colima) ──→ WordPress (localhost:8080)
 ## Quick Start
 
 ```bash
-cd ~/.drewgent/wordpress
-export DOCKER_HOST=unix:///Users/drew/.colima/default/docker.sock
+cd ~/.loragent/wordpress
+export DOCKER_HOST=unix://~/.colima/default/docker.sock
 docker-compose up -d
 ```
 
@@ -37,8 +37,8 @@ docker-compose up -d
 
 | File | Path |
 |------|------|
-| Docker Compose | `~/.drewgent/wordpress/docker-compose.yml` |
-| Credentials | `~/.drewgent/wordpress/.wp-env` (chmod 600) |
+| Docker Compose | `~/.loragent/wordpress/docker-compose.yml` |
+| Credentials | `~/.loragent/wordpress/.wp-env` (chmod 600) |
 | Uploads | `/Volumes/humanerd/docker/wordpress/wp-content/` (NAS) |
 
 ## Theme: Blocksy
@@ -67,7 +67,7 @@ docker-compose up -d
 
 ## MCP Server (Custom)
 
-A STDIO MCP server at `~/.drewgent/scripts/wordpress-mcp-server.js` wraps wp-cli and exposes 7 tools:
+A STDIO MCP server at `~/.loragent/scripts/wordpress-mcp-server.js` wraps wp-cli and exposes 7 tools:
 
 | Tool | Description |
 |------|-------------|
@@ -86,7 +86,7 @@ Registered in `~/.hermes/config.yaml`:
 mcp_servers:
   wordpress:
     command: node
-    args: ["/Users/drew/.drewgent/scripts/wordpress-mcp-server.js"]
+    args: ["~/.loragent/scripts/wordpress-mcp-server.js"]
 ```
 
 ## Content Pipeline Integration
@@ -120,7 +120,7 @@ docker exec humanerd-wp wp --allow-root plugin update --all
 
 ## Pitfalls
 
-- **Docker socket**: Must use `DOCKER_HOST=unix:///Users/drew/.colima/default/docker.sock` when running commands outside of colima context
+- **Docker socket**: Must use `DOCKER_HOST=unix://~/.colima/default/docker.sock` when running commands outside of colima context
 - **docker-compose vs docker compose**: This system uses standalone `docker-compose` v5.1.4, not the Docker plugin
 - **No wp-cli in container by default**: Installed via `curl -sO https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar`
 - **Permalink rewrite**: Apache's mod_rewrite is enabled but .htaccess must be manually populated with WordPress rewrite rules after permalink changes

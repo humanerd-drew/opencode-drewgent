@@ -50,9 +50,9 @@ def get_current_session_key(default: str = "default") -> str:
 # via shell expansions like $HOME or $DREW_HOME.
 _SSH_SENSITIVE_PATH = r'(?:~|\$home|\$\{home\})/\.ssh(?:/|$)'
 _HERMES_ENV_PATH = (
-    r'(?:~\/\.drewgent/|'
-    r'(?:\$home|\$\{home\})/\.drewgent/|'
-    r'(?:\$drewgent_home|\$\{drewgent_home\})/)'
+    r'(?:~\/\.loragent/|'
+    r'(?:\$home|\$\{home\})/\.loragent/|'
+    r'(?:\$loragent_home|\$\{loragent_home\})/)'
     r'\.env\b'
 )
 _SENSITIVE_WRITE_TARGET = (
@@ -95,8 +95,8 @@ DANGEROUS_PATTERNS = [
     (r'\bfind\b.*-exec\s+(/\S*/)?rm\b', "find -exec rm"),
     (r'\bfind\b.*-delete\b', "find -delete"),
     # Gateway protection: never start gateway outside systemd management
-    (r'gateway\s+run\b.*(&\s*$|&\s*;|\bdisown\b|\bsetsid\b)', "start gateway outside systemd (use 'systemctl --user restart drewgent-gateway')"),
-    (r'\bnohup\b.*gateway\s+run\b', "start gateway outside systemd (use 'systemctl --user restart drewgent-gateway')"),
+    (r'gateway\s+run\b.*(&\s*$|&\s*;|\bdisown\b|\bsetsid\b)', "start gateway outside systemd (use 'systemctl --user restart loragent-gateway')"),
+    (r'\bnohup\b.*gateway\s+run\b', "start gateway outside systemd (use 'systemctl --user restart loragent-gateway')"),
     # Self-termination protection: prevent agent from killing its own process
     (r'\b(pkill|killall)\b.*\b(hermes|gateway|cli\.py)\b', "kill hermes/gateway process (self-termination)"),
     # File copy/move/edit into sensitive system paths
@@ -336,7 +336,7 @@ def load_permanent_allowlist() -> set:
     patterns added via 'always' in a previous session.
     """
     try:
-        from drewgent_cli.config import load_config
+        from loragent_cli.config import load_config
         config = load_config()
         patterns = set(config.get("command_allowlist", []) or [])
         if patterns:
@@ -349,7 +349,7 @@ def load_permanent_allowlist() -> set:
 def save_permanent_allowlist(patterns: set):
     """Save permanently allowed command patterns to config."""
     try:
-        from drewgent_cli.config import load_config, save_config
+        from loragent_cli.config import load_config, save_config
         config = load_config()
         config["command_allowlist"] = list(patterns)
         save_config(config)
@@ -463,7 +463,7 @@ def _normalize_approval_mode(mode) -> str:
 def _get_approval_config() -> dict:
     """Read the approvals config block. Returns a dict with 'mode', 'timeout', etc."""
     try:
-        from drewgent_cli.config import load_config
+        from loragent_cli.config import load_config
         config = load_config()
         return config.get("approvals", {}) or {}
     except Exception:

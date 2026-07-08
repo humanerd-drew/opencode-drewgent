@@ -1,1 +1,1 @@
-Content migrated to canonical `agent-profiles` skill. See `~/.drewgent/skills/agent-profiles/SKILL.md`.
+Content migrated to canonical `agent-profiles` skill. See `~/.loragent/skills/agent-profiles/SKILL.md`.

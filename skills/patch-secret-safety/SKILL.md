@@ -10,8 +10,8 @@ updated: 2026-06-01
 links:
   - "[[skills/python-nested-import-nameerror]]"
   - "[[skills/filesystem-truth-audit]]"
-  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁secrets_in_code.neuron]]"
-  - "[[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁blind_write.neuron]]"
+  - "[[P0-brainstem/brain/Loragent-brain/P0-brainstem/禁/禁secrets_in_code.neuron]]"
+  - "[[P0-brainstem/brain/Loragent-brain/P0-brainstem/禁/禁blind_write.neuron]]"
   - "[[P0-brainstem/brain/rules]]"---
 
 
@@ -125,7 +125,7 @@ sed -i.bak 's|Bearer df90de...59a7|Bearer <new-secret>|' config.yaml
 ## 실전 예시 (2026-06-01 incident)
 
 ### 상황
-`~/.drewgent/config.yaml`에 MCP 서버 추가. `mcp_servers` 블록에 두 개의 secret이 있었음:
+`~/.loragent/config.yaml`에 MCP 서버 추가. `mcp_servers` 블록에 두 개의 secret이 있었음:
 - `lazyweb.Authorization: Bearer df90de21-b838-44c7-b653-d29c6f3759a7`
 - `minimax.env.MINIMAX_API_KEY: sk-cp-e-PhdzslOiYElDMAyjWyPr16yyVDDPzRPLYlMPSc03Oqp6ttyT0l-LDlMoAyrU1XpOsd4-c2U9NnJ9gdfGE8-GAt6gnCddanxF_oxBWt2WMovDjEoaitEAs`
 
@@ -178,7 +178,7 @@ patch가 secret을 건드렸다면:
 
 ## Related
 
-- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁secrets_in_code.neuron]] — 코드에 secret 박지 말라는 P0 규칙 (이 skill은 **편집 시**의 secret 보존)
-- [[P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁blind_write.neuron]] — 읽기 없이 쓰지 말라 (이 skill도 같은 원칙을 patch에 적용)
+- [[P0-brainstem/brain/Loragent-brain/P0-brainstem/禁/禁secrets_in_code.neuron]] — 코드에 secret 박지 말라는 P0 규칙 (이 skill은 **편집 시**의 secret 보존)
+- [[P0-brainstem/brain/Loragent-brain/P0-brainstem/禁/禁blind_write.neuron]] — 읽기 없이 쓰지 말라 (이 skill도 같은 원칙을 patch에 적용)
 - [[skills/python-nested-import-nameerror]] — Python lexical scoping 함정. 같은 "patch 전 읽기 + 정확한 byte 보존" 카테고리
 - [[skills/filesystem-truth-audit]] — memory/vault의 "Done" path가 실제 filesystem에 있는지 검증. 이 skill의 "patch 후 verify" 단계와 같은 정신

@@ -2,13 +2,13 @@
 """
 GBrain Tool Module - Knowledge Graph Brain Integration
 
-Provides Drewgent agent with access to the gbrain knowledge graph.
+Provides Loragent agent with access to the gbrain knowledge graph.
 gbrain is a hybrid search brain with:
   - Vector + keyword + RRF fusion search
   - Self-wiring typed links
   - Timeline tracking
 
-This tool allows Drewgent to query gbrain for:
+This tool allows Loragent to query gbrain for:
   - People, companies, projects
   - Relationships and connections
   - Historical context
@@ -165,7 +165,7 @@ def brain_stats() -> str:
     return json.dumps(result, ensure_ascii=False)
 
 
-# Register as Drewgent tool
+# Register as Loragent tool
 registry.register(
     name="brain_query",
     toolset="brain",

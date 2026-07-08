@@ -6,8 +6,8 @@ When a critical background process (gateway, cron-runner, etc.) needs automatic 
 
 ```
 launchd process manager
-  ├── ai.drewgent.gateway          (main service, KeepAlive on crash)
-  └── ai.drewgent.gateway-watchdog (runs every 5 min, checks health)
+  ├── ai.loragent.gateway          (main service, KeepAlive on crash)
+  └── ai.loragent.gateway-watchdog (runs every 5 min, checks health)
 ```
 
 The watchdog must be a **separate launchd job** because if the main process is dead, its internal cron ticker is also dead. A watchdog that runs inside the gateway cannot recover the gateway.
@@ -20,7 +20,7 @@ The watchdog must be a **separate launchd job** because if the main process is d
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>ai.drewgent.MYSERVICE-watchdog</string>
+    <string>ai.loragent.MYSERVICE-watchdog</string>
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
@@ -49,7 +49,7 @@ Key settings:
 #!/bin/bash
 # watchdog.sh — health check + auto-restart for a managed service
 
-PLIST_LABEL="ai.drewgent.myservice"
+PLIST_LABEL="ai.loragent.myservice"
 LOG="/path/to/logs/watchdog.log"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 
@@ -99,13 +99,13 @@ exit 0
 
 ```bash
 # Load the watchdog
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.drewgent.myservice-watchdog.plist
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.loragent.myservice-watchdog.plist
 
 # Or (older macOS):
-launchctl load ~/Library/LaunchAgents/ai.drewgent.myservice-watchdog.plist
+launchctl load ~/Library/LaunchAgents/ai.loragent.myservice-watchdog.plist
 
 # Verify
-launchctl list ai.drewgent.myservice-watchdog
+launchctl list ai.loragent.myservice-watchdog
 
 # Check its first run output
 cat /path/to/logs/watchdog.log
@@ -120,5 +120,5 @@ cat /path/to/logs/watchdog.log
 ## Log management
 
 Watchdog scripts generate log entries every check interval. Keep them bounded:
-- Use `~/.drewgent/logs/` directory which has rotated logging
+- Use `~/.loragent/logs/` directory which has rotated logging
 - Or log to a file that macOS rotates via `/etc/asl.conf` / `log rotate`

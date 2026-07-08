@@ -51,4 +51,4 @@ Projects: dev-humanerd, n8n, wordpress, nas-agent-browser
 
 ## Storage
 - 16TB total volume (`/volume1`)
-- Mounted via SMB on Mac Mini at `/Volumes/humanerd/` and `/Volumes/drewgent_storage/`
+- Mounted via SMB on Mac Mini at `/Volumes/humanerd/` and `/Volumes/loragent_storage/`

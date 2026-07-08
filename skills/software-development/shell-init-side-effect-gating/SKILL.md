@@ -45,7 +45,7 @@ Trigger when:
 
 6. **Verify**:
    ```bash
-   zsh -c 'source /Users/drew/.drewgent/.zshrc_aliases; sleep 0.3; jobs -l' 2>&1
+   zsh -c 'source ~/.loragent/.zshrc_aliases; sleep 0.3; jobs -l' 2>&1
    ```
    Should report no jobs (or only the ones you intended).
 
@@ -78,17 +78,17 @@ A closely related class of shell-init side effect: `PYTHONPATH` entries with a t
 # Check current PYTHONPATH for trailing separator
 echo "PYTHONPATH=$PYTHONPATH" | grep -E '[:;]$'
 # Check if CWD leaked into sys.path
-python3 -c "import sys; print([p for i,p in enumerate(sys.path) if 'drewgent' in p.lower() and 'customize' not in p])"
+python3 -c "import sys; print([p for i,p in enumerate(sys.path) if 'loragent' in p.lower() and 'customize' not in p])"
 ```
 
 ### Fix
 
 ```bash
 # WRONG — trailing colon leaks CWD when PYTHONPATH is empty
-export PYTHONPATH="$HOME/.drewgent/customize:${PYTHONPATH:-}"
+export PYTHONPATH="$HOME/.loragent/customize:${PYTHONPATH:-}"
 
 # CORRECT — no leak
-export PYTHONPATH="$HOME/.drewgent/customize${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH="$HOME/.loragent/customize${PYTHONPATH:+:$PYTHONPATH}"
 ```
 
 ## Subprocess Protection
@@ -99,7 +99,7 @@ When spawning Hermes CLI from cron/background runners, explicitly set `PYTHONPAT
 import subprocess
 subprocess.run(
     ["hermes", "kanban", "dispatch"],
-    env={**os.environ, "PYTHONPATH": "/Users/drew/.drewgent/customize"},
+    env={**os.environ, "PYTHONPATH": "~/.loragent/customize"},
 )
 ```
 

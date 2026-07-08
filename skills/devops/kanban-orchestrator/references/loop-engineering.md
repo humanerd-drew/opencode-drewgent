@@ -1,4 +1,4 @@
-# Loop Engineering — Drewgent Assessment
+# Loop Engineering — Loragent Assessment
 
 Source: [addyo's essay](https://addyo.substack.com/p/loop-engineering)  
 Assessed: 2026-06-13  
@@ -8,13 +8,13 @@ Framework: 5 building blocks + 1 memory store
 
 > "You shouldn't be prompting coding agents anymore. You should be designing loops that prompt your agents." — Peter Steinberger
 
-## Drewgent Assessment by Component
+## Loragent Assessment by Component
 
 ### 1. Automations (Heartbeat)
 
 **Score: ★★★★☆ Strong**
 
-| Requirement | Drewgent Status |
+| Requirement | Loragent Status |
 |-------------|----------------|
 | Scheduled auto-discovery | `cronjob` tool — cron expressions, intervals, ISO timestamps |
 | Background triage | Kanban dispatcher + cron-runner auto-publishes tasks |
@@ -22,13 +22,13 @@ Framework: 5 building blocks + 1 memory store
 | Silent runs (no findings = silent) | `no_agent=True` mode — empty stdout = no delivery |
 | In-session recurring loop | ❌ Missing. No `/goal` or `/loop` equivalent in main CLI session |
 
-**Key gap**: `/goal` (keep going until condition met, separate judge model) only exists in kanban `goal_mode` (for dispatched workers). Main CLI session lacks it. But for Drewgent's architecture, kanban `goal_mode` is the right place — detached background worker beats a blocking in-session loop.
+**Key gap**: `/goal` (keep going until condition met, separate judge model) only exists in kanban `goal_mode` (for dispatched workers). Main CLI session lacks it. But for Loragent's architecture, kanban `goal_mode` is the right place — detached background worker beats a blocking in-session loop.
 
 ### 2. Worktrees (Parallel Isolation)
 
 **Score: ★★★☆☆ Adequate**
 
-| Requirement | Drewgent Status |
+| Requirement | Loragent Status |
 |-------------|----------------|
 | Git worktree for parallel agents | `kanban_create(workspace_kind="worktree")` supported |
 | Config toggle | `config.yaml` has `worktree: true/false` (commented out) |
@@ -41,12 +41,12 @@ Framework: 5 building blocks + 1 memory store
 
 **Score: ★★★★★ Excellent**
 
-| Requirement | Drewgent Status |
+| Requirement | Loragent Status |
 |-------------|----------------|
 | SKILL.md format (frontmatter + body) | Fully supported. 100+ skills across categories |
 | Trigger conditions | `trigger:` frontmatter field (provenance convention) |
 | Skill auto-load via matching | Manual via `skill_view(name)`. Cron jobs accept `skills: [...]` |
-| Shared across repos | `skill_manage` tool + `~/.drewgent/skills/` |
+| Shared across repos | `skill_manage` tool + `~/.loragent/skills/` |
 | Intent capture | 禁 `.neuron` files, P0-P6 vault, provenance convention |
 
 **Key gap**: Auto-matching (task description triggers skill load) is weak. Currently needs explicit `skill_view()` call.
@@ -55,7 +55,7 @@ Framework: 5 building blocks + 1 memory store
 
 **Score: ★★★★☆ Strong**
 
-| Requirement | Drewgent Status |
+| Requirement | Loragent Status |
 |-------------|----------------|
 | MCP protocol | Native MCP client built-in + mcporter CLI |
 | Service connectors | MCP catalog (gbrain, specification-website) |
@@ -68,12 +68,12 @@ Framework: 5 building blocks + 1 memory store
 
 **Score: ★★★★☆ Strong**
 
-| Requirement | Drewgent Status |
+| Requirement | Loragent Status |
 |-------------|----------------|
 | Sub-agent spawning | `delegate_task` — single + batch (parallel up to max_concurrent) |
 | Per-subagent model override | `delegation.provider`/`model` in config ✅, now also via `agent_profile` |
 | Maker/Checker split | Supported via separate `agent_profile` assignments |
-| Agent definition files | ✅ **NEW**: `~/.drewgent/agents/*.md` — 8 profiles with frontmatter |
+| Agent definition files | ✅ **NEW**: `~/.loragent/agents/*.md` — 8 profiles with frontmatter |
 | Static profile format | Markdown + YAML frontmatter (same format as SKILL.md) |
 
 **Key improvement**: The agent profile system (built this session) adds static role definitions with model/provider/toolsets/instructions, integrated directly into `delegate_task(agent_profile="reviewer")`.
@@ -82,7 +82,7 @@ Framework: 5 building blocks + 1 memory store
 
 **Score: ★★★★★ Excellent**
 
-| Requirement | Drewgent Status |
+| Requirement | Loragent Status |
 |-------------|----------------|
 | Kanban board as durable state | `kanban_create`/`kanban_complete` — SQLite, survives restarts |
 | Cron context chaining | `context_from: [job_id]` — upstream output injection |
@@ -92,7 +92,7 @@ Framework: 5 building blocks + 1 memory store
 
 **Strongest component**. Triple redundancy: vault (long-term), memory (session-to-session), kanban (task-level).
 
-## Applying the Framework in Drewgent
+## Applying the Framework in Loragent
 
 ### The 3-Layer Loop Architecture
 
@@ -112,7 +112,7 @@ Framework: 5 building blocks + 1 memory store
 └─────────────────────────────────────────────────┘
 ```
 
-### Key Principles for Drewgent
+### Key Principles for Loragent
 
 1. **Maker/checker split.** The implementer and reviewer must be different agents with different models. Current implementation: implementer=flash, reviewer=pro.
 

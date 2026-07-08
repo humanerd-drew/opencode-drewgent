@@ -29,7 +29,7 @@ links:
 - kanban-dispatcher-content
 - cron-output-cleanup
 
-`jobs.json` (`~/.drewgent/cron/jobs.json`) 확인:
+`jobs.json` (`~/.loragent/cron/jobs.json`) 확인:
 
 | Job | enabled | last_run_at | next_run_at |
 |-----|---------|-------------|-------------|
@@ -102,10 +102,10 @@ if not next_run:
 
 ```python
 # Apply via:
-from cron.jobs import load_jobs, save_jobs, _drewgent_now
+from cron.jobs import load_jobs, save_jobs, _loragent_now
 from datetime import timedelta
 
-now = _drewgent_now()
+now = _loragent_now()
 jobs = load_jobs()
 for j in jobs:
     if j.get('enabled') and j.get('next_run_at') is None and j.get('schedule', {}).get('kind') in ('cron', 'interval'):
@@ -181,7 +181,7 @@ jobs.py의 `get_due_jobs()` recurring recovery branch는 이미 5/30 incident �
 **Trigger:** cron-runner process가 stop된 원인은 미확인. last_exit=0 (정상 종료) → KeepAlive: SuccessfulExit=false가 trigger 안 됨 → process가 stop된 채로 plist는 loaded 상태로 남음.
 
 **Fix applied (2026-06-01 18:21):**
-1. `launchctl start ai.drewgent.cron-runner` → exit 0 (이전 turn)
+1. `launchctl start ai.loragent.cron-runner` → exit 0 (이전 turn)
 2. SEO/Trend next_run_at을 (now-5s)로 patch → 다음 1분 tick에서 즉시 due
 3. jobs.py fix는 영구 — restart 후에도 자동 recovery branch 동작
 
@@ -232,7 +232,7 @@ cron 정지 판정 시 hard evidence:
 - **둘 중 하나라도 해당하면 진짜 정지**
 - **launchctl list PID=- 표기는 soft evidence** — launchd tracking 실패일 수 있음
 
-`launchctl start ai.drewgent.cron-runner` 명령은 정지 아닐 때 no-op.
+`launchctl start ai.loragent.cron-runner` 명령은 정지 아닐 때 no-op.
 
 ### Prevention (앞 incident Prevention과 통합)
 

@@ -16,13 +16,13 @@ links:
 **Date**: 2026-06-01 19:10 KST
 **Severity**: P3 (low — currently normal)
 **Status**: Analyzed, prevention options pending
-**Author**: Drewgent self-review
+**Author**: Loragent self-review
 
 ---
 
 ## 1. Symptom
 
-`launchctl list` shows `ai.drewgent.cron-runner` with PID=- (last_exit=0).
+`launchctl list` shows `ai.loragent.cron-runner` with PID=- (last_exit=0).
 5/30 → 6/1 18:08 KST about 1.5 days dormant. 6/1 18:08 plist mtime refreshed + user launchd manipulation(?) restored normal.
 
 ---
@@ -31,34 +31,34 @@ links:
 
 ### 2-1. plist content
 
-`~/Library/LaunchAgents/ai.drewgent.cron-runner.plist` (1,252 bytes, mtime 6/1 18:08):
+`~/Library/LaunchAgents/ai.loragent.cron-runner.plist` (1,252 bytes, mtime 6/1 18:08):
 
 ```xml
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>ai.drewgent.cron-runner</string>
+    <string>ai.loragent.cron-runner</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/drew/.drewgent/source/drewgent-agent/.venv/bin/python</string>
-        <string>/Users/drew/.drewgent/scripts/cron_runner.py</string>
+        <string>~/.loragent/source/loragent-agent/.venv/bin/python</string>
+        <string>~/.loragent/scripts/cron_runner.py</string>
     </array>
     <key>WorkingDirectory</key>
-    <string>/Users/drew/.drewgent/source/drewgent-agent</string>
+    <string>~/.loragent/source/loragent-agent</string>
     <key>EnvironmentVariables</key>
     <dict>
-        <key>PATH</key><string>.../drewgent-agent/.venv/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
-        <key>VIRTUAL_ENV</key><string>/Users/drew/.drewgent/source/drewgent-agent/.venv</string>
-        <key>DREW_HOME</key><string>/Users/drew/.drewgent</string>
+        <key>PATH</key><string>.../loragent-agent/.venv/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>VIRTUAL_ENV</key><string>~/.loragent/source/loragent-agent/.venv</string>
+        <key>DREW_HOME</key><string>~/.loragent</string>
     </dict>
     <key>StartInterval</key>
     <integer>60</integer>      — 60s spawn cycle
     <key>RunAtLoad</key>
     <true/>
     <key>StandardOutPath</key>
-    <string>/Users/drew/.drewgent/logs/cron-runner.log</string>
+    <string>~/.loragent/logs/cron-runner.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/drew/.drewgent/logs/cron-runner.error.log</string>
+    <string>~/.loragent/logs/cron-runner.error.log</string>
 </dict>
 </plist>
 ```
@@ -92,8 +92,8 @@ $ ps aux | grep cron-runner     → (none)
 $ ps -ef | grep cron-runner     → (none)
 $ pgrep -fl cron-runner         → (none)
 $ pgrep -P 1 -fl cron-runner    → (none — not a child of launchd)
-$ lsof /Users/drew/.drewgent/P6-prefrontal/logs/cron-runner.log  → (no process)
-$ lsof /Users/drew/.drewgent/cron/output/d1ef68ced116/  → (no process)
+$ lsof ~/.loragent/P6-prefrontal/logs/cron-runner.log  → (no process)
+$ lsof ~/.loragent/cron/output/d1ef68ced116/  → (no process)
 ```
 
 **What 0 processes means:** launchd spawns via StartInterval=60 every 60s → cron_runner.py runs → 3 dispatchers run → files written → process exits → 60s wait. **ps captured the empty gap in the spawn cycle.**
@@ -116,7 +116,7 @@ Evidence: cron output 4 dirs with 0.5-0.9 min old files, cron-runner.log new lin
 
 **Cause of plist missing/dormant (during 5/30 incident):**
 - 5/30 incident fix note mentioned "KeepAlive: SuccessfulExit=false" was the **planner's assumption**; the actual plist never had KeepAlive
-- During 5/30 21:55 - 6/1 18:08: `ai.drewgent.gateway.plist` Label conflict (ai.custom-agent.gateway rename) or launchd unload → plist unregistered (not directly verified)
+- During 5/30 21:55 - 6/1 18:08: `ai.loragent.gateway.plist` Label conflict (ai.custom-agent.gateway rename) or launchd unload → plist unregistered (not directly verified)
 
 ---
 
@@ -137,13 +137,13 @@ Evidence: cron output 4 dirs with 0.5-0.9 min old files, cron-runner.log new lin
 
 ### Option B: Resolve gateway Label conflict
 
-`ai.drewgent.gateway.plist` (5/17, 2,031 bytes) + `ai.custom-agent.gateway.plist` (5/6, 1,337 bytes) both in LaunchAgents/. 5/30 incident's "Label conflict → load fail" pattern.
+`ai.loragent.gateway.plist` (5/17, 2,031 bytes) + `ai.custom-agent.gateway.plist` (5/6, 1,337 bytes) both in LaunchAgents/. 5/30 incident's "Label conflict → load fail" pattern.
 
-→ verify Label of `ai.drewgent.gateway.plist`, then disable or rename. **Currently cron-runner normal, so follow-up.**
+→ verify Label of `ai.loragent.gateway.plist`, then disable or rename. **Currently cron-runner normal, so follow-up.**
 
 ### Option C: External watchdog (over-engineering risk)
 
-`cron-runner.log` mtime 5min+ stale → `launchctl kickstart -k ai.drewgent.cron-runner`. n8n or gateway health check.
+`cron-runner.log` mtime 5min+ stale → `launchctl kickstart -k ai.loragent.cron-runner`. n8n or gateway health check.
 
 But 5/30 fix's `get_due_jobs()` recovery branch auto-recovers jobs.json next_run_at null. **So jobs.json's 5 cron jobs are self-healing.** plist is not self-healing → separate fix needed, but **currently normal so watchdog is over-engineering risk.**
 
@@ -176,10 +176,10 @@ Hard evidence for cron stopped:
 - [[P6-prefrontal/incidents/cron-jobs-stalled-20260601]] — 5/30 / 6/1 incident (false alarm, corrected in Verification Update)
 - [[P4-cortex/growth/INTEGRATION_PROTOCOL]] — integration protocol
 - [[P0-brainstem/brain/rules]] — P0 brainstem governance
-- `~/Library/LaunchAgents/ai.drewgent.cron-runner.plist` — plist itself
-- `~/.drewgent/scripts/cron_runner.py` — wrapper script
-- `~/.drewgent/P6-prefrontal/logs/cron-runner.log` — execution log
-- `~/.drewgent/cron/output/` — cron output root
+- `~/Library/LaunchAgents/ai.loragent.cron-runner.plist` — plist itself
+- `~/.loragent/scripts/cron_runner.py` — wrapper script
+- `~/.loragent/P6-prefrontal/logs/cron-runner.log` — execution log
+- `~/.loragent/cron/output/` — cron output root
 
 
 ---
@@ -240,9 +240,9 @@ kanban-maintenance entry는 6/1 18:38 KST에 jobs.json에 patch됐지만, 그 pr
 
 ```bash
 # 6/7 03:00 KST 이후
-sqlite3 ~/.drewgent/state/drewgent_tasks.db "SELECT COUNT(*) FROM tasks WHERE trigger_source='kanban-maintenance';"
+sqlite3 ~/.loragent/state/loragent_tasks.db "SELECT COUNT(*) FROM tasks WHERE trigger_source='kanban-maintenance';"
 # 또는
-ls -lt ~/.drewgent/cron/output/kanban-maintenance/  # output dir
+ls -lt ~/.loragent/cron/output/kanban-maintenance/  # output dir
 ```
 
 만약 6/7에도 안 돌아가면:
@@ -260,7 +260,7 @@ ls -lt ~/.drewgent/cron/output/kanban-maintenance/  # output dir
 
 - 이 incident의 Section 2-3 (ps/pgrep/lsof 진단) — cron-runner의 board task 처리 cycle 분석
 - 5/30 incident fix (`get_due_jobs()` recurring recovery branch) — 이 fix도 (a) patch 후 안 트리거됨
-- jobs.json declarative vs in-memory state mismatch — Drewgent cron 인프라의 structural issue
+- jobs.json declarative vs in-memory state mismatch — Loragent cron 인프라의 structural issue
 
 ---
 

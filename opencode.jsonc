@@ -8,8 +8,8 @@
 
   "skills": {
     "paths": [
-      "~/.drewgent/skills",
-      "~/.drewgent/P3-sensors/skills",
+      "~/.loragent/skills",
+      "~/.loragent/P3-sensors/skills",
       "~/.config/opencode/skills"
     ]
   },

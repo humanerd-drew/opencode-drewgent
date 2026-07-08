@@ -18,17 +18,17 @@ links:
 **Date**: 2026-06-10 17:55–18:00 KST (detected during 6.6 D5 scheduler-unify sweep)
 **Severity**: P3 (low — idempotent workaround in place)
 **Status**: Analyzed, root cause unconfirmed, fix deferred
-**Author**: Drewgent self-investigation (6/10 incident follow-up)
+**Author**: Loragent self-investigation (6/10 incident follow-up)
 
 ---
 
 ## 1. Symptom
 
-While consolidating 3 board dispatchers into a single `drewgent-cron-runner-001` jobs.json
+While consolidating 3 board dispatchers into a single `loragent-cron-runner-001` jobs.json
 entry (kind=interval, minutes=1, script=`scripts/cron_runner.py`), observed:
 
 ```
-$ tail -10 ~/.drewgent/logs/cron-runner/2026-06-10.log
+$ tail -10 ~/.loragent/logs/cron-runner/2026-06-10.log
 === 2026-06-10T08:57:26.678679+00:00 ===
   [default] dispatch_once_default.py: exit=0 | [SILENT]
   [content] dispatch_once_content.py: exit=0 | [SILENT]
@@ -43,9 +43,9 @@ Two complete `=== ISO ===` blocks per minute, separated by ~0.15s. Pattern repea
 every minute observed. Each block contains 3 dispatcher executions (default, content, integrations).
 
 **Counter-evidence that it's not just 2 cron entries running**: `jobs.json` had exactly
-ONE `drewgent-cron-runner-001` entry. The original `d1ef68ced116` (`*/1 * * * *` cron
-expression kanban-dispatcher) was disabled. `ai.drewgent.cron-runner` plist was
-booted out. `launchctl list` shows only `ai.drewgent.gateway` as the active agent.
+ONE `loragent-cron-runner-001` entry. The original `d1ef68ced116` (`*/1 * * * *` cron
+expression kanban-dispatcher) was disabled. `ai.loragent.cron-runner` plist was
+booted out. `launchctl list` shows only `ai.loragent.gateway` as the active agent.
 
 **Conclusion**: the gateway's own internal cron scheduler is firing each interval job
 twice within ~150ms. Not a 2-source duplication — internal double-fire.
@@ -56,7 +56,7 @@ twice within ~150ms. Not a 2-source duplication — internal double-fire.
 
 ### 2-1. Confirmed facts
 
-- Single jobs.json entry (`drewgent-cron-runner-001`) with `kind=interval, minutes=1`
+- Single jobs.json entry (`loragent-cron-runner-001`) with `kind=interval, minutes=1`
 - Single launchd gateway process (PID 96080–98000 range, after 17:45 restart)
 - Zero other launchd/cron sources for the dispatcher script
 - Two `=== ISO ===` blocks per minute, ~0.15s apart, then 60s gap
@@ -80,7 +80,7 @@ do NOT show this pattern in their output dirs — but they ARE different code pa
 **H3: `script_only: true` flag confusion** — the new entry has `script_only: true`
 which may interact differently with the scheduler. Original kanban-dispatcher
 entry (which does NOT have `script_only`) shows a single tick per minute
-(observed in `~/.drewgent/cron/output/d1ef68ced116/`).
+(observed in `~/.loragent/cron/output/d1ef68ced116/`).
 
 ### 2-3. Reproduction recipe
 
@@ -104,7 +104,7 @@ To reproduce (low risk; cron_runner is idempotent):
 
 ## 4. Recommended fix (deferred)
 
-**Target file**: `~/.drewgent/source/drewgent-agent/cron/scheduler.py` (or `cron/jobs.py`)
+**Target file**: `~/.loragent/source/loragent-agent/cron/scheduler.py` (or `cron/jobs.py`)
 
 Steps when picked up:
 1. Add unit test: `test_interval_job_fires_once_per_minute` — fast-forward clock, fire

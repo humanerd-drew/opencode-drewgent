@@ -8,7 +8,7 @@ created: 2026-05-20
 updated: 2026-06-10
 links:
   - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P4-cortex/growth/drewgent-kanban-implementation-plan]]"
+  - "[[P4-cortex/growth/loragent-kanban-implementation-plan]]"
   - "[[kanban-dashboard]]"
   - "[[kanban-orchestrator]]"
   - "[[references/protocol.md]]"
@@ -20,7 +20,7 @@ links:
 
 # Kanban Worker Skill
 
-Task execution skill for kanban worker agents. A worker agent picks up tasks from the Drewgent kanban board, executes them, and reports results.
+Task execution skill for kanban worker agents. A worker agent picks up tasks from the Loragent kanban board, executes them, and reports results.
 
 ## Overview
 
@@ -147,17 +147,17 @@ See [[references/protocol.md]] for the full task lifecycle protocol, API schema,
 | `KANBAN_TASK_ID` | Task ID assigned by dispatcher (if dispatched) |
 | `KANBAN_WORKER_PID` | PID of the worker process |
 | `KANBAN_BOARD` | Board name (default: 'default') |
-| `DREWENT_HOME` | Drewgent home path (`~/.drewgent`) |
+| `DREWENT_HOME` | Loragent home path (`~/.loragent`) |
 
 ## Dispatcher Notes (for cron job agents)
 
-The kanban dispatcher is **not** invoked via `from tools.drewgent_kanban_db import dispatch_once` — that import path does not resolve in production. The actual dispatch mechanism uses standalone scripts:
+The kanban dispatcher is **not** invoked via `from tools.loragent_kanban_db import dispatch_once` — that import path does not resolve in production. The actual dispatch mechanism uses standalone scripts:
 
-**Scripts**: `~/.drewgent/scripts/dispatch_once_{board}.py` (one per board: `default`, `content`, `integrations`)
+**Scripts**: `~/.loragent/scripts/dispatch_once_{board}.py` (one per board: `default`, `content`, `integrations`)
 
 **Execution** (run directly, no import gymnastics):
 ```bash
-~/.drewgent/source/drewgent-agent/.venv/bin/python ~/.drewgent/scripts/dispatch_once_default.py
+~/.loragent/source/loragent-agent/.venv/bin/python ~/.loragent/scripts/dispatch_once_default.py
 ```
 
 Each script opens its own SQLite connection and runs 5 phases:
@@ -167,7 +167,7 @@ Each script opens its own SQLite connection and runs 5 phases:
 4. **Phase 2 (claim)**: Claims ready tasks with adaptive `MAX_CLAIM` (scales with queue depth)
 5. **Phase 3 (spawn)**: Spawns `run_kanban_worker.py` via `Popen` with logfile redirect (no PIPE deadlock)
 
-**Worker logs**: `~/.drewgent/P4-cortex/scripts/kanban/logs/workers/{task_id}.log`
+**Worker logs**: `~/.loragent/P4-cortex/scripts/kanban/logs/workers/{task_id}.log`
 
 **Output protocol**: `[SILENT]` if no work done; otherwise detailed breakdown with per-task details.
 
@@ -180,5 +180,5 @@ Each script opens its own SQLite connection and runs 5 phases:
 
 ## Related
 
-- [[P4-cortex/growth/drewgent-kanban-implementation-plan]]
+- [[P4-cortex/growth/loragent-kanban-implementation-plan]]
 - [[P3-sensors/skills/SKILL-INDEX]]

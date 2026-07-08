@@ -6,8 +6,8 @@ Reclaims stale tasks, claims ready tasks, spawns workers.
 import os, sqlite3, subprocess, datetime, signal, json
 from pathlib import Path
 
-DREW_HOME = Path(os.environ.get('DREW_HOME', str(Path.home() / '.drewgent')))
-DB = DREW_HOME / 'P2-hippocampus' / 'kanban' / 'state' / 'drewgent_tasks.db'
+DREW_HOME = Path(os.environ.get('DREW_HOME', str(Path.home() / '.loragent')))
+DB = DREW_HOME / 'P2-hippocampus' / 'kanban' / 'state' / 'loragent_tasks.db'
 
 result = {'reclaimed': 0, 'watchdog_reclaimed': 0, 'claimed': 0, 'spawned': 0, 'skipped': 0}
 reclaimed_details = []
@@ -155,8 +155,8 @@ for task_id, title in ready:
 conn.commit()
 
 # Phase 3: spawn workers for just-claimed tasks
-venv_python = str(DREW_HOME / 'source' / 'drewgent-agent' / '.venv' / 'bin' / 'python')
-src_agent = str(DREW_HOME / 'source' / 'drewgent-agent')
+venv_python = str(DREW_HOME / 'source' / 'loragent-agent' / '.venv' / 'bin' / 'python')
+src_agent = str(DREW_HOME / 'source' / 'loragent-agent')
 
 spawned_tasks = conn.execute('''
     SELECT id, title, body, workspace_kind, workspace_path FROM tasks

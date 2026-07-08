@@ -4,7 +4,7 @@ Custom MCP server for WordPress management via wp-cli.
 
 ## Server
 
-`/Users/drew/.drewgent/scripts/wordpress-mcp-server.js`
+`~/.loragent/scripts/wordpress-mcp-server.js`
 
 A Node.js STDIO MCP server that wraps `docker exec humanerd-wp wp --allow-root` commands as JSON-RPC 2.0 tools.
 
@@ -24,7 +24,7 @@ Registered in `~/.hermes/config.yaml` under `mcp_servers.wordpress`.
 
 ## WordPress Docker Setup
 
-- **Compose**: `~/.drewgent/wordpress/docker-compose.yml`
+- **Compose**: `~/.loragent/wordpress/docker-compose.yml`
 - **NAS data**: `/Volumes/humanerd/docker/wordpress/`
 - **Colima**: Docker runtime via colima (socket at `~/.colima/default/docker.sock`)
 - **URL**: `http://localhost:8080`

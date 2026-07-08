@@ -23,17 +23,17 @@ This is the recipe that was deployed on 6/10 after a 1.7GB `gateway.error.log` a
 
 ## 2. The script (verbatim)
 
-Path: `~/.hermes/scripts/drewgent_log_rotate.sh` (must be under `~/.hermes/scripts/` for Hermes `cronjob no_agent=True` — same constraint as the watchdog script).
+Path: `~/.hermes/scripts/loragent_log_rotate.sh` (must be under `~/.hermes/scripts/` for Hermes `cronjob no_agent=True` — same constraint as the watchdog script).
 
 ```bash
 #!/bin/bash
-# drewgent_log_rotate.sh — daily rotation for launchd service logs.
+# loragent_log_rotate.sh — daily rotation for launchd service logs.
 # Strategy: rename .gz archive + truncate live file + launchctl kickstart.
 # Cron: daily 04:00 KST, no_agent=True.
 
 set -euo pipefail
 
-DREW_LOGS="$HOME/.drewgent/logs"
+DREW_LOGS="$HOME/.loragent/logs"
 LIB_LOGS="$HOME/Library/Logs"
 MAX_SIZE_BYTES=$((100 * 1024 * 1024))   # 100MB
 MAX_AGE_DAYS=7
@@ -41,14 +41,14 @@ KEEP_DAYS=30
 
 # (label, current_log_path, restart_command)
 LOGS=(
-  "ai.drewgent.gateway|$DREW_LOGS/gateway.log|gateway"
-  "ai.drewgent.gateway|$DREW_LOGS/gateway.error.log|gateway"
-  "ai.drewgent.cron-runner|$DREW_LOGS/cron-runner.log|cron-runner"
-  "ai.drewgent.cron-runner|$DREW_LOGS/cron-runner.error.log|cron-runner"
-  "com.drewgent.quartz-fswatch|$LIB_LOGS/quartz-fswatch.log|quartz-fswatch"
-  "com.drewgent.quartz-deploy|$LIB_LOGS/quartz-deploy.log|quartz-deploy"
-  "ai.drewgent.n8n|$DREW_LOGS/n8n.log|n8n"
-  "ai.drewgent.n8n|$DREW_LOGS/n8n.error.log|n8n"
+  "ai.loragent.gateway|$DREW_LOGS/gateway.log|gateway"
+  "ai.loragent.gateway|$DREW_LOGS/gateway.error.log|gateway"
+  "ai.loragent.cron-runner|$DREW_LOGS/cron-runner.log|cron-runner"
+  "ai.loragent.cron-runner|$DREW_LOGS/cron-runner.error.log|cron-runner"
+  "com.loragent.quartz-fswatch|$LIB_LOGS/quartz-fswatch.log|quartz-fswatch"
+  "com.loragent.quartz-deploy|$LIB_LOGS/quartz-deploy.log|quartz-deploy"
+  "ai.loragent.n8n|$DREW_LOGS/n8n.log|n8n"
+  "ai.loragent.n8n|$DREW_LOGS/n8n.error.log|n8n"
 )
 
 UID_NUM=$(id -u)
@@ -87,7 +87,7 @@ if [ ${#rotated[@]} -eq 0 ] && [ "$deleted" -eq 0 ]; then
   exit 0   # silent when nothing to do
 fi
 
-echo "📦 **Drewgent log rotation** @ $(date '+%Y-%m-%d %H:%M:%S %Z')"
+echo "📦 **Loragent log rotation** @ $(date '+%Y-%m-%d %H:%M:%S %Z')"
 echo "Rotated: ${#rotated[@]} files"
 for r in "${rotated[@]}"; do echo "  - $r"; done
 echo "Deleted old archives: $deleted (kept last ${KEEP_DAYS} days)"
@@ -98,9 +98,9 @@ echo "Deleted old archives: $deleted (kept last ${KEEP_DAYS} days)"
 ## 3. Cron registration
 
 ```
-cronjob(action="create", name="Drewgent log rotation",
+cronjob(action="create", name="Loragent log rotation",
         no_agent=True, schedule="0 4 * * *",
-        script="drewgent_log_rotate.sh")
+        script="loragent_log_rotate.sh")
 ```
 
 Schedule: `0 4 * * *` = 04:00 KST daily. Avoids business hours, gives the system time to settle after any late-night cron jobs.
@@ -123,20 +123,20 @@ The `(label, path, service)` tuple list is the *operational inventory* — updat
 
 ```bash
 # 1. Confirm live file is truncated
-ls -lh ~/.drewgent/logs/gateway.error.log
+ls -lh ~/.loragent/logs/gateway.error.log
 # expect: size ~ 0B (or small, post-rotation)
 
 # 2. Confirm archive exists with sensible size
-ls -lh ~/.drewgent/logs/gateway.error.log.*.gz | tail -3
+ls -lh ~/.loragent/logs/gateway.error.log.*.gz | tail -3
 # expect: a .gz with name like gateway.error.log.2026-06-10.gz
 
 # 3. Confirm service is still alive (kickstart shouldn't have killed it permanently)
-ps aux | grep -E "drewgent_cli.main.*gateway" | grep -v grep
+ps aux | grep -E "loragent_cli.main.*gateway" | grep -v grep
 # expect: PID present
 
 # 4. Confirm new log entries appear in the live file
 sleep 5
-tail ~/.drewgent/logs/gateway.error.log
+tail ~/.loragent/logs/gateway.error.log
 # expect: new log lines
 ```
 

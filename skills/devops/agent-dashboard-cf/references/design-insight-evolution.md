@@ -20,7 +20,7 @@ When the user opens the dashboard, their brain asks in order:
 | Anti-Pattern | What was wrong | Fix |
 |---|---|---|
 | **Equal weighting** | macOS version had same visual weight as "3 cron errors" | Size/color hierarchy: problems get attention first |
-| **Copying without understanding** | AgentsRoom layout (multi-agent grid) forced onto single-agent system | Tab-based layout adapted to Drewgent's actual architecture |
+| **Copying without understanding** | AgentsRoom layout (multi-agent grid) forced onto single-agent system | Tab-based layout adapted to Loragent's actual architecture |
 | **Over-engineering** | 90s gentle refresh with DOM-preserving update → too complex, buggy | Simple 15s full fetch, tab-based pages load fast enough |
 | **Data dump** | All 15 sections shown at once on one page | Tab pages: Overview (summary) + System (detail) + Brain (models/vault) + Usage (activity) |
 | **Recurring errors as duplicates** | Same HTTP 400 shown 8 times in error list | Group by message prefix, show count badge |
@@ -34,9 +34,9 @@ Signal phrases that mean "this is not the right direction":
 - "그냥 insight 위주로 되돌리자" → over-engineering alert, simplify
 - "무리한 요구를 했다" → the implementation doesn't match the system's capability
 
-## AgentsRoom vs Drewgent: Honest Comparison
+## AgentsRoom vs Loragent: Honest Comparison
 
-| Capability | AgentsRoom | Drewgent | Why Drewgent Can't |
+| Capability | AgentsRoom | Loragent | Why Loragent Can't |
 |---|---|---|---|
 | Multi-agent grid | Native desktop, 1 card per agent | Single agent CLI+gateway | Architecture difference |
 | Real-time terminal output | WebSocket/proc attach | 12s log polling | Agent runs in terminal, not subprocess |
@@ -44,4 +44,4 @@ Signal phrases that mean "this is not the right direction":
 | Desktop app | Swift/SwiftUI | Web dashboard | Scope/resource |
 | Role-based agents | Agent per tab | Kanban + subagent | Different paradigm |
 
-The key: build what fits Drewgent's architecture, not what looks cool in another product.
+The key: build what fits Loragent's architecture, not what looks cool in another product.

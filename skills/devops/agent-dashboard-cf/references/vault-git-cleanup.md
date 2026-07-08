@@ -1,6 +1,6 @@
 # Git Vault Cleanup Workflow
 
-When the dashboard shows many dirty files in the Git section (e.g., 246 uncommitted), use this workflow to clean up the vault repo and push to `humanerd-drew/drewgent`.
+When the dashboard shows many dirty files in the Git section (e.g., 246 uncommitted), use this workflow to clean up the vault repo and push to `humanerd-drew/loragent`.
 
 ## Triggers
 - Dashboard Git section shows N > 0 uncommitted files
@@ -10,7 +10,7 @@ When the dashboard shows many dirty files in the Git section (e.g., 246 uncommit
 ## Step 0: Assessment
 
 ```bash
-cd ~/.drewgent
+cd ~/.loragent
 
 # Total changes
 git status --porcelain | wc -l
@@ -53,7 +53,7 @@ git commit -m "chore: vault sync — description of what changed"
 
 ## Step 3: Push (handling branch protection)
 
-`humanerd-drew/drewgent` has `main` branch protected (force push blocked).
+`humanerd-drew/loragent` has `main` branch protected (force push blocked).
 
 ### If repos haven't diverged:
 ```bash
@@ -63,16 +63,16 @@ git push humanerd-drew main
 ### If force push needed (local is the new source of truth):
 ```bash
 # 1. Check current protection
-gh api repos/humanerd-drew/drewgent/branches/main/protection
+gh api repos/humanerd-drew/loragent/branches/main/protection
 
 # 2. Disable protection (temporary)
-gh api -X DELETE repos/humanerd-drew/drewgent/branches/main/protection
+gh api -X DELETE repos/humanerd-drew/loragent/branches/main/protection
 
 # 3. Force push
 git push --force humanerd-drew main
 
 # 4. Re-enable protection
-gh api -X PUT repos/humanerd-drew/drewgent/branches/main/protection \
+gh api -X PUT repos/humanerd-drew/loragent/branches/main/protection \
   --input - <<'EOF'
 {
   "required_status_checks": null,

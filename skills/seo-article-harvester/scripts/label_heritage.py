@@ -18,7 +18,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-DREW_HOME = Path(os.environ.get("DREW_HOME", os.path.expanduser("~/.drewgent")))
+DREW_HOME = Path(os.environ.get("DREW_HOME", os.path.expanduser("~/.loragent")))
 sys.path.insert(0, str(DREW_HOME))
 
 from agent.obsidian_graph import ensure_backlink, ensure_related_section, wiki_link

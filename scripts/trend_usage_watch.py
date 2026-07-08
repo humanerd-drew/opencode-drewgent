@@ -19,22 +19,22 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-_DREWGENT_HOME = Path.home() / ".drewgent"
-_P4_TREND = _DREWGENT_HOME / "P4-cortex" / "growth" / "trend-harvester"
+_LORAGENT_HOME = Path.home() / ".loragent"
+_P4_TREND = _LORAGENT_HOME / "P4-cortex" / "growth" / "trend-harvester"
 _STALE_DAYS = 30  # No reference in N days = stale candidate
 
 # Search targets
 _SKILL_DIRS = [
-    _DREWGENT_HOME / "skills",
-    _DREWGENT_HOME / "P3-sensors" / "skills",
+    _LORAGENT_HOME / "skills",
+    _LORAGENT_HOME / "P3-sensors" / "skills",
 ]
 _CONFIG_FILES = [
     Path.home() / ".hermes" / "config.yaml",
-    _DREWGENT_HOME / "config.yaml",
-    _DREWGENT_HOME / "P5-ego" / "config" / "config.yaml",
+    _LORAGENT_HOME / "config.yaml",
+    _LORAGENT_HOME / "P5-ego" / "config" / "config.yaml",
 ]
-_NEURON_DIR = _DREWGENT_HOME / "P0-brainstem"
-_RULES_FILE = _DREWGENT_HOME / "P0-brainstem" / "brain" / "rules.md"
+_NEURON_DIR = _LORAGENT_HOME / "P0-brainstem"
+_RULES_FILE = _LORAGENT_HOME / "P0-brainstem" / "brain" / "rules.md"
 
 
 def slugify(name: str) -> str:

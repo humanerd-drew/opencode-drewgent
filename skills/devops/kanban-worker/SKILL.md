@@ -297,16 +297,16 @@ curl -s http://macmini:8765/kanban/api/board | python3 -m json.tool
 
 **Worker crash with "pid not alive" on spawn.** When the dispatcher reports `pid NNNNN not alive` repeatedly and the task moves to `gave_up`/blocked, the worker process died before doing any work. Causes:
 
-1. **Python import error at startup** — worker starts but immediately crashes on an `ImportError`. Fix: check the dispatcher log (`~/.drewgent/P4-cortex/scripts/kanban/logs/dispatcher.log` or `grep -r "task_id" ~/.drewgent/P4-cortex/scripts/kanban/logs/workers/`). Common causes: missing venv, broken PYTHONPATH (customize layer), missing cloudflare workers-types, or a dependency that's only available in `node_modules` (npm context missing).
+1. **Python import error at startup** — worker starts but immediately crashes on an `ImportError`. Fix: check the dispatcher log (`~/.loragent/P4-cortex/scripts/kanban/logs/dispatcher.log` or `grep -r "task_id" ~/.loragent/P4-cortex/scripts/kanban/logs/workers/`). Common causes: missing venv, broken PYTHONPATH (customize layer), missing cloudflare workers-types, or a dependency that's only available in `node_modules` (npm context missing).
 2. **Segfault in workerd/sqlite** — less common. Check system logs.
 3. **Dispatcher's spawn mechanism issue on macOS** — fork-exec of `run_kanban_worker.py` may fail if the shell environment has conflicting PYTHONPATH or if the venv's python binary is missing.
 
 **Diagnostic steps for "pid not alive":**
 ```bash
 # 1. Try spawning the worker manually
-cd ~/.drewgent
+cd ~/.loragent
 source .venv/bin/activate
-python ~/.drewgent/scripts/run_kanban_worker.py --task-id <TASK_ID> 2>&1 | head -50
+python ~/.loragent/scripts/run_kanban_worker.py --task-id <TASK_ID> 2>&1 | head -50
 
 # 2. Check if it's an import error
 python -c "from tools.kanban import kanban_show" 2>&1
@@ -359,7 +359,7 @@ When the user's original request is **Task A**, and during execution you discove
 
 **The same lesson applies in reverse**: when *you* (the agent) are chasing a fragile system (like NAS docker containers) and produce reams of guess-and-check debugging output, **stop after 2-3 attempts of the same pattern**. If the same `expect`/ssh race condition has bitten you three times in a row, the right move is to ask the user to either run the command themselves or give you a different transport. The user may be running the same fragile command in 2 minutes; you might still be debugging the race condition 30 minutes later.
 
-**Dispatcher reads wrong DB → tasks never dispatched.** When a custom cron runner dispatches kanban tasks (e.g. `drewgent-cron-runner-001` calling `dispatch_once_*.py`), verify it reads from the **same DB** that `kanban_create`/`kanban_list` use. The Hermes native kanban is at `$HERMES_HOME/kanban.db` (usually `~/.drewgent/kanban.db`). If the dispatcher reads a separate legacy DB (`~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db`), tasks created via the `kanban_*` toolset will never dispatch — they exist in a different database. Fix: point the dispatcher to the Hermes native DB, or switch to `hermes kanban dispatch` which reads the correct DB automatically.
+**Dispatcher reads wrong DB → tasks never dispatched.** When a custom cron runner dispatches kanban tasks (e.g. `loragent-cron-runner-001` calling `dispatch_once_*.py`), verify it reads from the **same DB** that `kanban_create`/`kanban_list` use. The Hermes native kanban is at `$HERMES_HOME/kanban.db` (usually `~/.loragent/kanban.db`). If the dispatcher reads a separate legacy DB (`~/.loragent/P2-hippocampus/kanban/state/loragent_tasks.db`), tasks created via the `kanban_*` toolset will never dispatch — they exist in a different database. Fix: point the dispatcher to the Hermes native DB, or switch to `hermes kanban dispatch` which reads the correct DB automatically.
 
 **Subprocess PYTHONPATH can shadow Hermes modules.** When spawning `hermes kanban dispatch` from a cron runner, explicitly set `PYTHONPATH` in the subprocess env to prevent leaked sys.path entries (e.g. from a trailing colon in `.zshrc`) from shadowing `utils`, `tools.registry`, and other Hermes modules. See `shell-init-side-effect-gating` skill for the fix pattern.
 

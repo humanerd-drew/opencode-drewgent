@@ -16,7 +16,7 @@ links:
 
 # humanerd.kr — Content Status Field Enforcement
 
-**When Drewgent creates or edits content destined for humanerd.kr, the `status` frontmatter field determines live visibility.** A missing or unrecognized status value → permanent 404 (default-draft, strict).
+**When Loragent creates or edits content destined for humanerd.kr, the `status` frontmatter field determines live visibility.** A missing or unrecognized status value → permanent 404 (default-draft, strict).
 
 ## When to Apply
 
@@ -160,7 +160,7 @@ def add_status_published(path: Path) -> str:
 
 ```bash
 # After editing/creating content, verify status field:
-cd ~/.drewgent/humanerd-site
+cd ~/.loragent/humanerd-site
 npx quartz build 2>&1 | grep "DraftFilter"
 
 # Expected:
@@ -198,7 +198,7 @@ If the file you intended to publish shows EXCLUDE, fix the `status` field.
 - **Internal process docs** (`growth/**`, `lab/**`) — ignorePatterns, never exposed
 - **Brain rules** (`.neuron` files) — different frontmatter convention
 - **P-layer memory** (`P2-hippocampus/memories/**`, `P5-ego/**`, etc.) — internal, not exposed
-- **Skills** (`~/.drewgent/skills/**`) — internal skill format, not exposed
+- **Skills** (`~/.loragent/skills/**`) — internal skill format, not exposed
 - **Quartz plugin source** (`humanerd-site/quartz/**`) — TypeScript, no frontmatter
 - **Build output** (`humanerd-site/public/**`) — auto-generated, don't edit
 

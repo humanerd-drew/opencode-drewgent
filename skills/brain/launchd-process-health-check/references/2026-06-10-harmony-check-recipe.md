@@ -18,9 +18,9 @@ This reference is the **cross-layer diff tool** for when launchd/process health 
 
 ## The script
 
-**Path**: `~/.hermes/scripts/drewgent_harmony_check.sh` (Hermes cron requirement)
+**Path**: `~/.hermes/scripts/loragent_harmony_check.sh` (Hermes cron requirement)
 
-**Symlink to**: `~/.drewgent/P4-cortex/scripts/drewgent_harmony_check.sh` (canonical source)
+**Symlink to**: `~/.loragent/P4-cortex/scripts/loragent_harmony_check.sh` (canonical source)
 
 **What it compares** — 4 layers that can drift apart:
 
@@ -29,23 +29,23 @@ This reference is the **cross-layer diff tool** for when launchd/process health 
 | 1. launchd view | What launchd *thinks* is running | `launchctl list` |
 | 2. ps aux view | What *actually* is running | `pgrep`/`ps` |
 | 3. jobs.json | What the *scheduler config* says is scheduled | filesystem |
-| 4. memory claims | What *prior agent* believed | `~/.drewgent/P2-hippocampus/memories/MEMORY.md` |
+| 4. memory claims | What *prior agent* believed | `~/.loragent/P2-hippocampus/memories/MEMORY.md` |
 
 **Output** (verified, 6/10 17:14 KST run):
 ```
-🔍 Drewgent harmony check @ 2026-06-10 17:14:50 KST
+🔍 Loragent harmony check @ 2026-06-10 17:14:50 KST
 
 ## Layer 1: launchd view (PID table)
-  ~ ai.drewgent.cron-runner: PID=- exit=0 (graceful stop, ok)
-  ✓ ai.drewgent.gateway: PID=82811
-  ✓ ai.drewgent.kanban-dashboard: PID=1543
-  ✓ ai.drewgent.n8n: PID=81753
-  ⚠ com.drewgent.quartz-fswatch: PID=- exit=254
-  ⚠ com.drewgent.quartz-deploy: PID=- exit=1
+  ~ ai.loragent.cron-runner: PID=- exit=0 (graceful stop, ok)
+  ✓ ai.loragent.gateway: PID=82811
+  ✓ ai.loragent.kanban-dashboard: PID=1543
+  ✓ ai.loragent.n8n: PID=81753
+  ⚠ com.loragent.quartz-fswatch: PID=- exit=254
+  ⚠ com.loragent.quartz-deploy: PID=- exit=1
 
 ## Layer 2: ps aux (ground truth)
-  ❌ ai.drewgent.cron-runner: no process found via ps (pattern: cron_runner.py)
-  ✓ ai.drewgent.gateway: ps matches launchd (PID=82811)
+  ❌ ai.loragent.cron-runner: no process found via ps (pattern: cron_runner.py)
+  ✓ ai.loragent.gateway: ps matches launchd (PID=82811)
   ...
 
 ## Layer 3: jobs.json (scheduler config)
@@ -54,7 +54,7 @@ This reference is the **cross-layer diff tool** for when launchd/process health 
 
 ## Layer 4: memory claims vs filesystem
   ✓ n8n plist: memory 6/1 claim matches filesystem
-  ✓ gateway plist: Label = ai.drewgent.gateway (matches filename)
+  ✓ gateway plist: Label = ai.loragent.gateway (matches filename)
 
 ⚠ Verdict: 5 drift signal(s) — see 6/10 incident doc for canonical fix
 ```
@@ -65,38 +65,38 @@ This reference is the **cross-layer diff tool** for when launchd/process health 
 
 ```bash
 #!/bin/bash
-# drewgent_harmony_check.sh
-# Cross-layer state diff for Drewgent infrastructure.
+# loragent_harmony_check.sh
+# Cross-layer state diff for Loragent infrastructure.
 
 set -o pipefail
 # NOTE: deliberately NOT set -u — bash 3.2 (macOS default) trips on
 # associative array key expansion with dotted labels.
 
-DREW_HOME="${DREW_HOME:-$HOME/.drewgent}"
+DREW_HOME="${DREW_HOME:-$HOME/.loragent}"
 JOBS_JSON="$DREW_HOME/cron/jobs.json"
 LIB_PLIST="$HOME/Library/LaunchAgents"
-# Memory is in P2-hippocampus (Drewgent's own), not ~/.claude/ (Codex's)
+# Memory is in P2-hippocampus (Loragent's own), not ~/.claude/ (Codex's)
 MEMORY_FILE="$DREW_HOME/P2-hippocampus/memories/MEMORY.md"
 
 LAUNCHD_LABELS=(
-  "ai.drewgent.cron-runner"
-  "ai.drewgent.gateway"
-  "ai.drewgent.kanban-dashboard"
-  "ai.drewgent.n8n"
-  "com.drewgent.quartz-fswatch"
-  "com.drewgent.quartz-deploy"
+  "ai.loragent.cron-runner"
+  "ai.loragent.gateway"
+  "ai.loragent.kanban-dashboard"
+  "ai.loragent.n8n"
+  "com.loragent.quartz-fswatch"
+  "com.loragent.quartz-deploy"
 )
 
 # Per-label process fingerprints (ps grep patterns).
 # bash 3.2 (macOS default) has no associative arrays, so use parallel
 # arrays indexed by position. Order MUST match LAUNCHD_LABELS above.
 PROC_PATTERNS=(
-  "cron_runner.py"                              # ai.drewgent.cron-runner
-  "drewgent_cli.main.*gateway"                  # ai.drewgent.gateway
-  "kanban_dashboard_server.py"                  # ai.drewgent.kanban-dashboard
-  "n8n start"                                   # ai.drewgent.n8n
-  "quartz-fswatch.sh"                           # com.drewgent.quartz-fswatch
-  "quartz-deploy.sh"                            # com.drewgent.quartz-deploy
+  "cron_runner.py"                              # ai.loragent.cron-runner
+  "loragent_cli.main.*gateway"                  # ai.loragent.gateway
+  "kanban_dashboard_server.py"                  # ai.loragent.kanban-dashboard
+  "n8n start"                                   # ai.loragent.n8n
+  "quartz-fswatch.sh"                           # com.loragent.quartz-fswatch
+  "quartz-deploy.sh"                            # com.loragent.quartz-deploy
 )
 
 drift=0
@@ -110,7 +110,7 @@ emit() {
   fi
 }
 
-emit "🔍 **Drewgent harmony check** @ $(date '+%Y-%m-%d %H:%M:%S %Z')"
+emit "🔍 **Loragent harmony check** @ $(date '+%Y-%m-%d %H:%M:%S %Z')"
 emit ""
 
 # --- Layer 1: launchd view ---
@@ -202,7 +202,7 @@ fi
 emit ""
 emit "## Layer 4: memory claims vs filesystem"
 if [ -f "$MEMORY_FILE" ] && grep -q "n8n 셀프호스트 launchd 등록 완료" "$MEMORY_FILE" 2>/dev/null; then
-  if [ -f "$LIB_PLIST/ai.drewgent.n8n.plist" ]; then
+  if [ -f "$LIB_PLIST/ai.loragent.n8n.plist" ]; then
     emit "  ✓ n8n plist: memory 6/1 claim matches filesystem"
   else
     emit "  ⚠ n8n plist: memory 6/1 says 'registered' but plist MISSING on disk"
@@ -210,9 +210,9 @@ if [ -f "$MEMORY_FILE" ] && grep -q "n8n 셀프호스트 launchd 등록 완료" 
 else
   emit "  ~ n8n plist claim: not found in memory (skip)"
 fi
-if [ -f "$LIB_PLIST/ai.drewgent.gateway.plist" ]; then
-  actual_label=$(plutil -extract Label raw "$LIB_PLIST/ai.drewgent.gateway.plist" 2>/dev/null)
-  expected_label="ai.drewgent.gateway"
+if [ -f "$LIB_PLIST/ai.loragent.gateway.plist" ]; then
+  actual_label=$(plutil -extract Label raw "$LIB_PLIST/ai.loragent.gateway.plist" 2>/dev/null)
+  expected_label="ai.loragent.gateway"
   if [ "$actual_label" = "$expected_label" ]; then
     emit "  ✓ gateway plist: Label = $actual_label (matches filename)"
   else
@@ -239,9 +239,9 @@ printf '%s\n' "${output_lines[@]}"
 ## Cron registration
 
 ```
-cronjob(action="create", name="Drewgent harmony check (cross-layer diff)",
+cronjob(action="create", name="Loragent harmony check (cross-layer diff)",
         no_agent=True, schedule="0 9 * * *",
-        script="drewgent_harmony_check.sh")
+        script="loragent_harmony_check.sh")
 ```
 
 **Schedule**: daily 09:00 KST. Not 5m — this is *follow-up*, not real-time. Runs once a day to catch drift that the 5-min watchdog missed (e.g. memory-vs-filesystem drift that doesn't show in launchd).
@@ -254,9 +254,9 @@ The script reports `❌` / `⚠` for these — they are KNOWN false positives, d
 
 | Service | Layer | Reason it's OK | Verification |
 |---|---|---|---|
-| `ai.drewgent.cron-runner` | Layer 2 (ps) | `StartInterval=60` means process is idle between ticks; ps grep misses it | Layer 1 exit=0 + cron output mtime < 5min |
-| `com.drewgent.quartz-deploy` | Layer 1 (launchd) | `spawn scheduled` — runs on fswatch trigger only, not continuously | Layer 2 shows no `quartz-deploy.sh` process — that's correct |
-| `com.drewgent.quartz-fswatch` | Layer 2 (ps) | Wrapper script exits after spawning `fswatch` binary; `fswatch` is the long-running process but doesn't match the wrapper pattern | `pgrep fswatch` should return a PID; if not, that's a real outage |
+| `ai.loragent.cron-runner` | Layer 2 (ps) | `StartInterval=60` means process is idle between ticks; ps grep misses it | Layer 1 exit=0 + cron output mtime < 5min |
+| `com.loragent.quartz-deploy` | Layer 1 (launchd) | `spawn scheduled` — runs on fswatch trigger only, not continuously | Layer 2 shows no `quartz-deploy.sh` process — that's correct |
+| `com.loragent.quartz-fswatch` | Layer 2 (ps) | Wrapper script exits after spawning `fswatch` binary; `fswatch` is the long-running process but doesn't match the wrapper pattern | `pgrep fswatch` should return a PID; if not, that's a real outage |
 
 If the script reports drift on these labels and the verification passes, suppress in the report. The script does NOT do this automatically — it's left to the human/agent to apply the whitelist.
 
@@ -269,7 +269,7 @@ These broke the script's first three attempts. If you're adapting this for your 
 1. **NO `declare -A`** — bash 3.2 (macOS default bash) has no associative arrays. The script uses parallel indexed arrays (`LAUNCHD_LABELS` + `PROC_PATTERNS`) with `i=$((i+1))` indexing. Migrating to bash 4+ via `brew install bash` and changing shebang to `#!/opt/homebrew/bin/bash` is also valid, but increases portability cost.
 2. **NO `set -u`** — combined with associative array keys, `set -u` trips on dotted label expansion. Use `set -o pipefail` only.
 3. **`${1//./_}` arithmetic quirk** — bash 3.2 sometimes interprets the dot in parameter substitution as arithmetic. Use explicit `local out="$1"; out="${out//./_}"; echo "$out"` instead.
-4. **Bash arithmetic on dotted variable names** — `drift_count=$((drift_count+1))` works, but `drift.ai.drewgent=$((...))` would trip. Don't use dots in arithmetic-context variable names.
+4. **Bash arithmetic on dotted variable names** — `drift_count=$((drift_count+1))` works, but `drift.ai.loragent=$((...))` would trip. Don't use dots in arithmetic-context variable names.
 5. **`heredoc` + python3** — works fine but use `<<'PYEOF'` (single-quoted) to prevent bash from interpolating `$` inside Python.
 
 ---
@@ -295,7 +295,7 @@ If harmony check shows everything green but the user still reports problems:
   - Network: gateway can't reach Discord
   - Database: kanban DB corrupted
   - Config: yaml changed but not loaded
-- These are *not* launchd-level problems. Use `drewgent-runtime-checkup` skill for those.
+- These are *not* launchd-level problems. Use `loragent-runtime-checkup` skill for those.
 
 ---
 

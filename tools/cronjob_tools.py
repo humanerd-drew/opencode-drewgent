@@ -1,5 +1,5 @@
 """
-Cron job management tools for Drewgent Agent.
+Cron job management tools for Loragent Agent.
 
 Expose a single compressed action-oriented tool to avoid schema/context bloat.
 Compatibility wrappers remain for direct Python callers and legacy tests.
@@ -108,7 +108,7 @@ def _resolve_model_override(model_obj: Optional[Dict[str, Any]]) -> tuple:
     """Resolve a model override object into (provider, model) for job storage.
 
     If provider is omitted, pins the current main provider from config so the
-    job doesn't drift when the user later changes their default via drewgent model.
+    job doesn't drift when the user later changes their default via loragent model.
 
     Returns (provider_str_or_none, model_str_or_none).
     """
@@ -119,7 +119,7 @@ def _resolve_model_override(model_obj: Optional[Dict[str, Any]]) -> tuple:
     if model_name and not provider_name:
         # Pin to the current main provider so the job is stable
         try:
-            from drewgent_cli.config import load_config
+            from loragent_cli.config import load_config
             cfg = load_config()
             model_cfg = cfg.get("model", {})
             if isinstance(model_cfg, dict):
@@ -151,21 +151,21 @@ def _validate_cron_script_path(script: Optional[str]) -> Optional[str]:
         return None  # empty/None = clearing the field, always OK
 
     from pathlib import Path
-    from drewgent_constants import get_drewgent_home
+    from loragent_constants import get_loragent_home
 
     raw = script.strip()
 
     # Reject absolute paths and ~ expansion at the API boundary.
-    # Only relative paths within ~/.drewgent/scripts/ are allowed.
+    # Only relative paths within ~/.loragent/scripts/ are allowed.
     if raw.startswith(("/", "~")) or (len(raw) >= 2 and raw[1] == ":"):
         return (
-            f"Script path must be relative to ~/.drewgent/scripts/. "
+            f"Script path must be relative to ~/.loragent/scripts/. "
             f"Got absolute or home-relative path: {raw!r}. "
-            f"Place scripts in ~/.drewgent/scripts/ and use just the filename."
+            f"Place scripts in ~/.loragent/scripts/ and use just the filename."
         )
 
     # Validate containment after resolution
-    scripts_dir = get_drewgent_home() / "scripts"
+    scripts_dir = get_loragent_home() / "scripts"
     scripts_dir.mkdir(parents=True, exist_ok=True)
     resolved = (scripts_dir / raw).resolve()
     try:
@@ -479,7 +479,7 @@ Important safety rule: cron-run sessions should not recursively schedule more cr
             },
             "script": {
                 "type": "string",
-                "description": "Optional path to a Python script that runs before each cron job execution. Its stdout is injected into the prompt as context. Use for data collection and change detection. Relative paths resolve under ~/.drewgent/scripts/. On update, pass empty string to clear."
+                "description": "Optional path to a Python script that runs before each cron job execution. Its stdout is injected into the prompt as context. Use for data collection and change detection. Relative paths resolve under ~/.loragent/scripts/. On update, pass empty string to clear."
             },
         },
         "required": ["action"]

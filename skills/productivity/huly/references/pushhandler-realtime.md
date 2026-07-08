@@ -71,7 +71,7 @@ Called whenever the server pushes transactions — typically immediately after a
 
 ## Architecture: Bridge Daemon
 
-Deployed as `ai.drewgent.huly-bridge` (launchd daemon):
+Deployed as `ai.loragent.huly-bridge` (launchd daemon):
 
 ```
 Huly Server ──WebSocket──→ client.client.client.conn
@@ -93,15 +93,15 @@ Huly Server ──WebSocket──→ client.client.client.conn
 
 | File | Purpose |
 |------|---------|
-| `~/.drewgent/scripts/huly_bridge.js` | Bridge daemon — connects, registers pushHandler, processes events |
-| `~/.drewgent/scripts/huly_bridge.sh` | Bash wrapper (reads key, launches node) |
-| `~/.drewgent/logs/huly-bridge.log` | Daemon stdout/stderr |
+| `~/.loragent/scripts/huly_bridge.js` | Bridge daemon — connects, registers pushHandler, processes events |
+| `~/.loragent/scripts/huly_bridge.sh` | Bash wrapper (reads key, launches node) |
+| `~/.loragent/logs/huly-bridge.log` | Daemon stdout/stderr |
 
 ## launchd plist
 
-Installed at `~/Library/LaunchAgents/ai.drewgent.huly-bridge.plist`:
+Installed at `~/Library/LaunchAgents/ai.loragent.huly-bridge.plist`:
 
-- Label: `ai.drewgent.huly-bridge`
+- Label: `ai.loragent.huly-bridge`
 - Uses `KeepAlive` with `SuccessfulExit: false` for auto-restart on crash
 - `ThrottleInterval: 10` seconds between restarts
 - `RunAtLoad: true`

@@ -1,0 +1,2 @@
+#!/bin/zsh
+exec python3 "$HOME/.loragent/scripts/vault_cli.py" "$@"

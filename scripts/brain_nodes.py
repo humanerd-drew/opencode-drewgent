@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Drewgent Brain — Biological Brain Visualization v3
+Loragent Brain — Biological Brain Visualization v3
 실제 뇌 해부학적 구조를 반영한 ASCII 아트
 """
 
@@ -9,10 +9,10 @@ from datetime import datetime
 from collections import defaultdict
 import json, os
 
-DREWGENT_HOME = Path.home() / ".drewgent"
-BRAIN_DIR  = DREWGENT_HOME / "brain" / "Drewgent-brain"
-SKILLS_DIR = DREWGENT_HOME / "skills"
-DATA_DIR   = DREWGENT_HOME
+LORAGENT_HOME = Path.home() / ".loragent"
+BRAIN_DIR  = LORAGENT_HOME / "brain" / "Loragent-brain"
+SKILLS_DIR = LORAGENT_HOME / "skills"
+DATA_DIR   = LORAGENT_HOME
 SNAPSHOT   = DATA_DIR / "brain_snapshot.json"
 
 # 해부학 레이어 순서 (뒤통수→앞이마 방향)
@@ -75,7 +75,7 @@ def scan_skills():
     return count, sorted(cats)
 
 def scan_knowledge():
-    for path in [DATA_DIR / "P4-cortex" / "drewgent_knowledge.json", DATA_DIR / "knowledge.json"]:
+    for path in [DATA_DIR / "P4-cortex" / "loragent_knowledge.json", DATA_DIR / "knowledge.json"]:
         if path.exists():
             with open(path) as f:
                 d = json.load(f)
@@ -134,7 +134,7 @@ def render():
 
     print()
     print(f"  {c('╔═══════════════════════════════════════════════════════════════════╗', DIM)}")
-    print(f"  {c('║          DREWGENT BRAIN — NEUROARCHITECTURE MAP  v3            ║', W)}")
+    print(f"  {c('║          LORAGENT BRAIN — NEUROARCHITECTURE MAP  v3            ║', W)}")
     print(f"  {c('║          Generated:', DIM)} {datetime.now().strftime('%Y-%m-%d %H:%M')}                              {c('║', DIM)}")
     print(f"  {c('╚═══════════════════════════════════════════════════════════════════╝', DIM)}")
     print()

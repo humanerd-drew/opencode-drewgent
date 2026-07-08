@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Drewgent Brain — HTML Dashboard Generator
-생성된 HTML을 ~/.drewgent/brain_dashboard.html로 저장
+Loragent Brain — HTML Dashboard Generator
+생성된 HTML을 ~/.loragent/brain_dashboard.html로 저장
 브라우저에서 열면 실시간 뇌 모니터링 대시보드 확인 가능
 """
 
@@ -10,10 +10,10 @@ from datetime import datetime
 from collections import defaultdict
 import json
 
-DREWGENT_HOME = Path.home() / ".drewgent"
-BRAIN_DIR  = DREWGENT_HOME / "brain" / "Drewgent-brain"
-SKILLS_DIR = DREWGENT_HOME / "skills"
-DATA_DIR   = DREWGENT_HOME
+LORAGENT_HOME = Path.home() / ".loragent"
+BRAIN_DIR  = LORAGENT_HOME / "brain" / "Loragent-brain"
+SKILLS_DIR = LORAGENT_HOME / "skills"
+DATA_DIR   = LORAGENT_HOME
 STATE_FILE = DATA_DIR / "brain_rule_state.json"
 OUT_HTML   = DATA_DIR / "brain_dashboard.html"
 SNAPSHOT   = DATA_DIR / "brain_snapshot.json"
@@ -52,7 +52,7 @@ def scan_skills():
     return count, sorted(cats)
 
 def scan_knowledge():
-    for path in [DATA_DIR / "P4-cortex" / "drewgent_knowledge.json", DATA_DIR / "knowledge.json"]:
+    for path in [DATA_DIR / "P4-cortex" / "loragent_knowledge.json", DATA_DIR / "knowledge.json"]:
         if path.exists():
             with open(path) as f:
                 d = json.load(f)
@@ -260,7 +260,7 @@ def generate():
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Drewgent Brain Dashboard — {now_str}</title>
+<title>Loragent Brain Dashboard — {now_str}</title>
 <style>
   :root {{
     --bg: #0d1117;
@@ -327,7 +327,7 @@ def generate():
 <body>
 
 <div class="header">
-  <h1>🧠 Drewgent <span>Brain Dashboard</span></h1>
+  <h1>🧠 Loragent <span>Brain Dashboard</span></h1>
   <div class="header-right">
     <span class="updated-at">Updated: {now_str}</span>
     <button class="refresh-btn" onclick="location.reload()">⟳ Refresh</button>
@@ -410,7 +410,7 @@ def generate():
 </div>
 
 <div class="footer">
-  <span>Drewgent Brain Dashboard v3 — Generated: {now_str}</span>
+  <span>Loragent Brain Dashboard v3 — Generated: {now_str}</span>
   <span>Auto-refresh: 5min · Brain Rules: {total_brain} · Growth: {f'+{growth}' if growth >= 0 else growth}</span>
 </div>
 

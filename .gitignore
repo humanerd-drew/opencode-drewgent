@@ -60,13 +60,48 @@ cron/jobs.json.bak
 /sandboxes/
 
 # Personal vault data
-/P0-brainstem/
-/P1-limbic/
-/P2-hippocampus/
-/P3-sensors/
-/P4-cortex/
-/P5-ego/
 /.obsidian/
+
+# P2-hippocampus — personal memory (README.md only in repo)
+P2-hippocampus/kanban/
+P2-hippocampus/knowledge/
+P2-hippocampus/memories/
+P2-hippocampus/qa-evidence/
+
+# P4-cortex — exclude runtime state, keep arch docs
+P4-cortex/content/
+P4-cortex/insights/
+P4-cortex/plans/
+P4-cortex/portfolio/
+P4-cortex/scripts/
+P4-cortex/taste-reviews/
+P4-cortex/knowledge/bus.py
+P4-cortex/knowledge/loragent_hidden_state.json
+P4-cortex/knowledge/loragent_knowledge.json
+P4-cortex/knowledge/growth_engine_sync.json
+P4-cortex/knowledge/harvester_sync_state.json
+
+# P-layer runtime artifacts (not architecture docs)
+P0-brainstem/brain/active_brain.txt
+P0-brainstem/brain/brain_dashboard.html
+P0-brainstem/brain/brain_rule_state.json
+P0-brainstem/brain/brain_snapshot.json
+P0-brainstem/brain/neuronfs.py
+P0-brainstem/_agent/
+P0-brainstem/agent/
+P0-brainstem/bin/
+P0-brainstem/verification/
+P1-limbic/verification/
+P3-sensors/cron/
+P3-sensors/gateway_state/
+P3-sensors/sandboxes/
+P3-sensors/tools/
+P3-sensors/resolver/
+P3-sensors/channel_directory.json
+P3-sensors/discord_threads.json
+P3-sensors/feishu_seen_message_ids.json
+P5-ego/config/
+P5-ego/state/
 
 # Secrets
 /secrets/

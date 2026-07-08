@@ -3,9 +3,9 @@
 Custom STDIO MCP server that wraps wp-cli to provide WordPress management tools to Hermes agents.
 
 ## Location
-- Script: `~/.drewgent/scripts/wordpress-mcp-server.js`
+- Script: `~/.loragent/scripts/wordpress-mcp-server.js`
 - Config: `~/.hermes/config.yaml` under `mcp_servers.wordpress`
-- WordPress Docker: `~/.drewgent/wordpress/docker-compose.yml`
+- WordPress Docker: `~/.loragent/wordpress/docker-compose.yml`
 
 ## Registered Tools (7)
 create_post, upload_media, list_posts, get_post, create_category, set_site_option, set_theme_mod
@@ -13,10 +13,10 @@ create_post, upload_media, list_posts, get_post, create_category, set_site_optio
 ## Usage
 ```bash
 # List tools
-echo '{"jsonrpc":"2.0","id":1,"method":"list_tools"}' | timeout 5 node /Users/drew/.drewgent/scripts/wordpress-mcp-server.js
+echo '{"jsonrpc":"2.0","id":1,"method":"list_tools"}' | timeout 5 node ~/.loragent/scripts/wordpress-mcp-server.js
 
 # Create a post
-echo '{"jsonrpc":"2.0","id":2,"method":"call_tool","params":{"name":"create_post","arguments":{"title":"Test","content":"Hello","category":"systems","status":"draft"}}}' | timeout 10 node /Users/drew/.drewgent/scripts/wordpress-mcp-server.js
+echo '{"jsonrpc":"2.0","id":2,"method":"call_tool","params":{"name":"create_post","arguments":{"title":"Test","content":"Hello","category":"systems","status":"draft"}}}' | timeout 10 node ~/.loragent/scripts/wordpress-mcp-server.js
 ```
 
 ## Architecture
@@ -26,7 +26,7 @@ echo '{"jsonrpc":"2.0","id":2,"method":"call_tool","params":{"name":"create_post
 - Blocksy theme activated with custom fonts (Noto Sans KR, Noto Serif KR, JetBrains Mono)
 
 ## Credentials
-Stored at: `~/.drewgent/wordpress/.wp-env` (chmod 600)
+Stored at: `~/.loragent/wordpress/.wp-env` (chmod 600)
 WP Admin: `humanerd` / `QAq&#q8Zrt(Fxy0vNO`
 URL: http://localhost:8080
 
@@ -36,6 +36,6 @@ URL: http://localhost:8080
 docker exec humanerd-wp wp --allow-root <command>
 
 # Container management
-export DOCKER_HOST=unix:///Users/drew/.colima/default/docker.sock
-docker-compose -f ~/.drewgent/wordpress/docker-compose.yml up -d
+export DOCKER_HOST=unix://~/.colima/default/docker.sock
+docker-compose -f ~/.loragent/wordpress/docker-compose.yml up -d
 ```

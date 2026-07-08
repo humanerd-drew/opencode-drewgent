@@ -4,8 +4,8 @@
 import subprocess, json, os, sys
 from pathlib import Path
 
-HOME = Path(os.environ.get("DREW_HOME", str(Path.home() / ".drewgent")))
-VENV_PYTHON = str(HOME / "source" / "drewgent-agent" / ".venv" / "bin" / "python3")
+HOME = Path(os.environ.get("DREW_HOME", str(Path.home() / ".loragent")))
+VENV_PYTHON = str(HOME / "source" / "loragent-agent" / ".venv" / "bin" / "python3")
 
 def run(script: str, *args, timeout=300):
     full = script if script.startswith("/") else str(HOME / script)

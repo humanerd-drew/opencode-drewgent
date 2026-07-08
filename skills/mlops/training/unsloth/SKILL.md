@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [unsloth, torch, transformers, trl, datasets, peft]
 metadata:
-  drewgent:
+  loragent:
     tags: [Fine-Tuning, Unsloth, Fast Training, LoRA, QLoRA, Memory-Efficient, Optimization, Llama, Mistral, Gemma, Qwen]
 tags: [Fine-Tuning, Unsloth, Fast Training, LoRA, QLoRA, Memory-Efficient, Optimization, Llama, Mistral, Gemma, Qwen]
 links:

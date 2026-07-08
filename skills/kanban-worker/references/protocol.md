@@ -8,7 +8,7 @@ updated: 2026-05-20
 links:
   - "[[../SKILL]]"
   - "[[P3-sensors/skills/SKILL-INDEX]]"
-  - "[[P4-cortex/growth/drewgent-kanban-implementation-plan]]"
+  - "[[P4-cortex/growth/loragent-kanban-implementation-plan]]"
 ---
 
 
@@ -307,9 +307,9 @@ Heartbeats are the exception — any worker can send a heartbeat for any claimed
 
 ```python
 import os
-from drewgent_kanban_db import DrewgentTaskStore
+from loragent_kanban_db import LoragentTaskStore
 
-task_store = DrewgentTaskStore()
+task_store = LoragentTaskStore()
 
 task_id = os.getenv("KANBAN_TASK_ID")
 if task_id:
@@ -348,4 +348,4 @@ python3 worker_script.py
 ## Related
 
 - [[../SKILL]] — Kanban Worker skill overview
-- [[P4-cortex/growth/drewgent-kanban-implementation-plan]] — Full implementation plan
+- [[P4-cortex/growth/loragent-kanban-implementation-plan]] — Full implementation plan

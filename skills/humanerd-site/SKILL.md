@@ -9,7 +9,7 @@ created: 2026-05-20
 updated: 2026-06-02
 links:
   - "[[P4-cortex/growth/humanerd-site-url-mapping]]"
-  - "[[P4-cortex/portfolio/drewgent]]"
+  - "[[P4-cortex/portfolio/loragent]]"
   - "[[P4-cortex/portfolio/quartz-publishing]]"
   - "[[P2-hippocampus/kanban/KANBAN_INDEX]]"
   - "[[P3-sensors/skills/SKILL-INDEX]]"
@@ -22,7 +22,7 @@ links:
 # humanerd.kr — Site Management Skill (3-pillar model, 2026-06-01)
 
 Site is a Quartz 4 static site generated from Obsidian vault markdown files.
-All source content lives in `~/.drewgent/` (Obsidian vault).
+All source content lives in `~/.loragent/` (Obsidian vault).
 Build output deploys to Cloudflare Pages.
 
 ## 3-Pillar URL Model (2026-06-01)
@@ -43,22 +43,22 @@ humanerd.kr is structured around 3 content pillars + 2 utility sections:
 
 ```bash
 # Build site
-cd ~/.drewgent/humanerd-site && npx quartz build
+cd ~/.loragent/humanerd-site && npx quartz build
 
 # Build + filter stats (should show "Filtered out N files")
-cd ~/.drewgent/humanerd-site && npx quartz build 2>&1 | tail -8
+cd ~/.loragent/humanerd-site && npx quartz build 2>&1 | tail -8
 
 # Local preview
-cd ~/.drewgent/humanerd-site && npx wrangler pages dev public/
+cd ~/.loragent/humanerd-site && npx wrangler pages dev public/
 
 # Manual deploy (requires valid wrangler auth — see Troubleshooting)
-cd ~/.drewgent/humanerd-site && npx wrangler pages deploy public/ --project-name=humanerd-site
+cd ~/.loragent/humanerd-site && npx wrangler pages deploy public/ --project-name=humanerd-site
 ```
 
 ## Site Architecture (3-pillar reorg, 2026-06-01)
 
 ```
-~/.drewgent/
+~/.loragent/
 ├── humanerd-site/                    ← Quartz repo (build tool)
 │   ├── content/                      ← Symlinks to Obsidian vault
 │   │   ├── index.md                  ← Site home (3-column layout)
@@ -66,7 +66,7 @@ cd ~/.drewgent/humanerd-site && npx wrangler pages deploy public/ --project-name
 │   │   ├── insights/   → ../../P4-cortex/knowledge/    (영구 essay)
 │   │   ├── portfolio/  → ../../P4-cortex/portfolio/   (project writeup)
 │   │   ├── blog/       → ../../memories/insights/     (reviewed field notes)
-│   │   ├── services/   (native — Drewgent, notion2web, SEO Harvester)
+│   │   ├── services/   (native — Loragent, notion2web, SEO Harvester)
 │   │   ├── landingpage/→ ../../landingpage/           (legacy)
 │   │   ├── persona/    → ../../P1-limbic/persona/
 │   │   ├── plans/      → ../../P4-cortex/plans/
@@ -95,14 +95,14 @@ content/
 │   └── *.md              → e.g. garry-tan-architecture, neurorfs-rules, opencrab-ontology
 ├── portfolio/            → 구체적 산출물
 │   ├── index.md
-│   └── *.md              → e.g. drewgent, quartz-publishing, seo-article-harvester
+│   └── *.md              → e.g. loragent, quartz-publishing, seo-article-harvester
 ├── blog/                 → reviewed field note / article
 │   ├── 2026/
 │   │   └── {slug}.md     ← reviewed field note / article
 │   └── index.md
 ├── services/             → 제품 detail page
 │   ├── index.md
-│   └── drewgent.md, notion2web.md, seo-harvester.md
+│   └── loragent.md, notion2web.md, seo-harvester.md
 └── ... (other legacy symlinks)
 ```
 
@@ -165,7 +165,7 @@ ignorePatterns: [
   "growth/P0-brainstem-pilot-plan.md",
   "growth/stabilization_report.md",
   // ... (총 24개 — P-layer + lab/* internals)
-  "lab/drewgent-architecture.md", "lab/qa-gate.md", "lab/index.md",
+  "lab/loragent-architecture.md", "lab/qa-gate.md", "lab/index.md",
   
   // 2. glob patterns (symlink reorg 후 path resolution 대응)
   "**/laws-of-ux-wiki/**",         // 110+ 외부 wiki article
@@ -173,8 +173,8 @@ ignorePatterns: [
   
   // 3. runtime state files (vault root에 우연히 들어간 .py, .json)
   "**/bus.py",
-  "**/drewgent_hidden_state.json",
-  "**/drewgent_knowledge.json",
+  "**/loragent_hidden_state.json",
+  "**/loragent_knowledge.json",
   "**/growth_engine_sync.json",
   "**/harvester_sync_state.json",
 ]
@@ -188,7 +188,7 @@ ignorePatterns: [
 
 ### Creating a new page
 
-1. Create `.md` file in appropriate section under `~/.drewgent/`
+1. Create `.md` file in appropriate section under `~/.loragent/`
 2. Add proper frontmatter:
    ```yaml
    ---
@@ -199,7 +199,7 @@ ignorePatterns: [
    updated: 2026-05-15
    ---
    ```
-3. Run build: `cd ~/.drewgent/humanerd-site && npx quartz build`
+3. Run build: `cd ~/.loragent/humanerd-site && npx quartz build`
 
 ### Content pipeline (trend → post)
 
@@ -210,7 +210,7 @@ ignorePatterns: [
 
 ## Review Pipeline (Status State Machine)
 
-Drewgent가 draft를 vault에 작성하면 humanerd가 Obsidian에서 검토 후 status 변경:
+Loragent가 draft를 vault에 작성하면 humanerd가 Obsidian에서 검토 후 status 변경:
 
 ```
 draft (작성)            →  plugin EXCLUDE (404)
@@ -255,7 +255,7 @@ archived (보관)         →  plugin EXCLUDE (404)
 
 ### Build
 ```bash
-cd ~/.drewgent/humanerd-site
+cd ~/.loragent/humanerd-site
 npx quartz build
 # Output: public/ directory (~50MB, 2400+ files)
 ```
@@ -265,7 +265,7 @@ npx quartz build
 **Option A: Direct upload**
 1. Go to https://dash.cloudflare.com → Pages
 2. Create project or select existing
-3. Drag `~/.drewgent/humanerd-site/public/` folder
+3. Drag `~/.loragent/humanerd-site/public/` folder
 
 **Option B: GitHub integration**
 - Push `humanerd-site/` to GitHub
@@ -283,7 +283,7 @@ curl -s https://humanerd.kr/robots.txt
 
 ## Quartz Config Notes
 
-Config: `~/.drewgent/humanerd-site/quartz.config.ts`
+Config: `~/.loragent/humanerd-site/quartz.config.ts`
 
 Key settings:
 ```typescript
@@ -320,7 +320,7 @@ This ensures the site cluster appears in Obsidian graph view as a connected grou
 - **해결**: `content/knowledge` symlink 삭제 (한쪽만 유지)
 
 ### Runtime state files (.py, .json) 가 public/에 나옴
-- vault root에 우연히 들어간 `bus.py`, `drewgent_*.json` 등 → ignorePatterns에 `"**/bus.py"`, `"**/drewgent_*.json"` 추가
+- vault root에 우연히 들어간 `bus.py`, `loragent_*.json` 등 → ignorePatterns에 `"**/bus.py"`, `"**/loragent_*.json"` 추가
 - 또는 vault root에서 다른 위치 (P3-sensors/state/) 로 이동
 
 ### wrangler OAuth token 403 (Authentication error)
@@ -333,8 +333,8 @@ This ensures the site cluster appears in Obsidian graph view as a connected grou
 
 ### fswatch가 trigger 안 됨
 - LaunchAgent 상태: `launchctl list | grep quartz-fswatch` (PID가 숫자면 정상, `-`면 stopped)
-- 수동 restart: `launchctl unload ~/Library/LaunchAgents/com.drewgent.quartz-fswatch.plist && sleep 1 && launchctl load -w ~/Library/LaunchAgents/com.drewgent.quartz-fswatch.plist`
-- vault 변경 후 5초 안에 deploy 안 됨 → `tail /Users/drew/Library/Logs/quartz-fswatch.log`
+- 수동 restart: `launchctl unload ~/Library/LaunchAgents/com.loragent.quartz-fswatch.plist && sleep 1 && launchctl load -w ~/Library/LaunchAgents/com.loragent.quartz-fswatch.plist`
+- vault 변경 후 5초 안에 deploy 안 됨 → `tail ~/Library/Logs/quartz-fswatch.log`
 
 ### Cloudflare Pages 안 업데이트
 - Dashboard에서 deploy 상태 확인
@@ -346,9 +346,9 @@ This ensures the site cluster appears in Obsidian graph view as a connected grou
 ```bash
 # 4개 URL 패턴 검증
 curl -sI https://humanerd.kr/insights/garry-tan-architecture | head -1   # 200
-curl -sI https://humanerd.kr/portfolio/drewgent | head -1              # 200
+curl -sI https://humanerd.kr/portfolio/loragent | head -1              # 200
 curl -sI https://humanerd.kr/blog/2026-05 | head -1                     # 200
-curl -sI https://humanerd.kr/services/drewgent | head -1                # 200
+curl -sI https://humanerd.kr/services/loragent | head -1                # 200
 
 # draft가 404로 filter되었는지
 curl -sI https://humanerd.kr/insights/2026-05-cc-switch-cli | head -1   # 404 (정상)

@@ -19,7 +19,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-DREW_HOME = Path(os.getenv("DREW_HOME", Path.home() / ".drewgent"))
+DREW_HOME = Path(os.getenv("DREW_HOME", Path.home() / ".loragent"))
 ENV_FILE = DREW_HOME / ".env"
 
 OK = "\033[92m\u2713\033[0m"
@@ -232,7 +232,7 @@ def check_env_vars():
 
 
 def check_config(groq_key, eleven_key):
-    """Check drewgent config.yaml."""
+    """Check loragent config.yaml."""
     section("Configuration")
 
     config_path = DREW_HOME / "config.yaml"

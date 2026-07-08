@@ -59,9 +59,9 @@ provenance:
 
 ---
 
-## Application to Drewgent
+## Application to Loragent
 
-Drewgent에서 taste를 어떻게 측정하고 개선할지:
+Loragent에서 taste를 어떻게 측정하고 개선할지:
 
 1. **Kanban Leverage Score** (1-5): 이 작업이 몇 개의 문제를 해결하는가?
 2. **Provenance Tracking**: 모든 결정에 trigger/context 기록 → taste decision의 궤적을 추적 가능

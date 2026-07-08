@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Drewgent 상태 보고서 생성기
+Loragent 상태 보고서 생성기
   python report_generator.py daily|weekly|monthly|quarterly|semi|annual
 
 각 보고서는 stderr에 요약을 출력하고 stdout에 Discord 메시지를 출력.
@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 
 # ─── 경로 설정 ────────────────────────────────────────────
-DREW_HOME = Path.home() / ".drewgent"
+DREW_HOME = Path.home() / ".loragent"
 MEMORIES  = DREW_HOME / "memories"
 SESSIONS  = DREW_HOME / "sessions.db"
 SKILLS_DIR= DREW_HOME / "skills"

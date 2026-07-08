@@ -2,7 +2,7 @@
 """
 growth_engine_sync_check.py
 ============================
-Check whether source/drewgent-agent/modules/growth_engine.py (canonical)
+Check whether source/loragent-agent/modules/growth_engine.py (canonical)
 and P4-cortex/growth/engine.py (shadow) are in sync.
 
 Usage:
@@ -12,9 +12,9 @@ Usage:
 
 This script is the source-of-truth guardian: it ensures that modifications
 to the canonical source/modules/growth_engine.py are reflected in the
-P4-cortex shadow (used by drewgent_hooks.py when P4 is the runtime context).
+P4-cortex shadow (used by loragent_hooks.py when P4 is the runtime context).
 
-Canonical:  source/drewgent-agent/modules/growth_engine.py
+Canonical:  source/loragent-agent/modules/growth_engine.py
 Shadow:      P4-cortex/growth/engine.py
 """
 
@@ -25,8 +25,8 @@ import json
 import sys
 from pathlib import Path
 
-_DREW_HOME = Path.home() / ".drewgent"
-CANONICAL = _DREW_HOME / "source" / "drewgent-agent" / "modules" / "growth_engine.py"
+_DREW_HOME = Path.home() / ".loragent"
+CANONICAL = _DREW_HOME / "source" / "loragent-agent" / "modules" / "growth_engine.py"
 SHADOW = _DREW_HOME / "P4-cortex" / "growth" / "engine.py"
 STATE_FILE = _DREW_HOME / "P4-cortex" / "knowledge" / "growth_engine_sync.json"
 

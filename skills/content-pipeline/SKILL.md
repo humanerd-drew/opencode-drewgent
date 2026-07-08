@@ -1,7 +1,7 @@
 ---
 title: Content Pipeline
 name: content-pipeline
-description: Drewgent content pipeline - editorial topic selection, draft writing, Korean humanization, review-ready publishing
+description: Loragent content pipeline - editorial topic selection, draft writing, Korean humanization, review-ready publishing
 type: document
 space: concept
 tags: [concept]
@@ -39,7 +39,7 @@ Suitable for: trend posts, SEO-optimized evergreen, tool roundups.
 Single autonomous agent profile (`content-manager`) observes Drew's recent work and produces multi-format content. Runs daily at 12:00 KST via cron.
 
 **Trigger:** Cron (`0 12 * * *`), deliver to Discord #content-channel.
-**Profile:** `~/.drewgent/agents/content-manager.md` (deepseek-v4-pro, tools: terminal, file, search, session_search, web)
+**Profile:** `~/.loragent/agents/content-manager.md` (deepseek-v4-pro, tools: terminal, file, search, session_search, web)
 **Skill prerequisites:** `content-pipeline` (this skill), SVG knowledge, Excalidraw, Mermaid.
 Suitable for: build logs, troubleshooting deep-dives, architecture decisions, project retrospectives.
 
@@ -47,7 +47,7 @@ See `references/cmo-agent-mode.md` for the full implementation guide.
 
 Mode B requires these knowledge base files (in `P4-cortex/content/`):
 - `brand-guide.md` — brand positioning, voice, audience
-- `glossary.md` — project terms (Drewgent, M-LOG, PDC...)
+- `glossary.md` — project terms (Loragent, M-LOG, PDC...)
 - `content-inventory.md` — published/drafted content for dedup
 - `narrative_arc.md` — episode tracking, season structure, continuity
 
@@ -143,7 +143,7 @@ When updating or extending skills, follow these conventions:
 ### 1. Trend Harvester → analyzed/keep
 
 ```
-위치: ~/.drewgent/P4-cortex/growth/trend-harvester/analyzed/keep/
+위치: ~/.loragent/P4-cortex/growth/trend-harvester/analyzed/keep/
 형식: JSON (item{name,description,url,source}, total_score, decision)
 필터: decision == "keep", scored_at 최근 48시간
 선별: 상위 5개 → topic 후보
@@ -151,14 +151,14 @@ When updating or extending skills, follow these conventions:
 
 ```bash
 # 실행
-ls -t ~/.drewgent/P4-cortex/growth/trend-harvester/analyzed/keep/*.json | head -10
+ls -t ~/.loragent/P4-cortex/growth/trend-harvester/analyzed/keep/*.json | head -10
 # → 상위 10개 JSON 파일 경로
 ```
 
 JSON 파싱:
 ```python
 import json, pathlib
-keep_dir = pathlib.Path("~/.drewgent/P4-cortex/growth/trend-harvester/analyzed/keep")
+keep_dir = pathlib.Path("~/.loragent/P4-cortex/growth/trend-harvester/analyzed/keep")
 files = sorted(keep_dir.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)[:10]
 for f in files:
     d = json.load(open(f))
@@ -169,13 +169,13 @@ for f in files:
 ### 2. SEO Harvester → report.json
 
 ```
-위치: ~/.drewgent/P2-hippocampus/knowledge/seo-articles/report.json
+위치: ~/.loragent/P2-hippocampus/knowledge/seo-articles/report.json
 형식: JSON (articles[{title,url,keyword,score}])
 선별: score ≥ 0.7, keyword 명확한 것 상위 3개
 ```
 
 ```bash
-cat ~/.drewgent/P2-hippocampus/knowledge/seo-articles/report.json | python3 -c "
+cat ~/.loragent/P2-hippocampus/knowledge/seo-articles/report.json | python3 -c "
 import json, sys
 d = json.load(sys.stdin)
 articles = d.get('articles', [])
@@ -188,7 +188,7 @@ for a, s in sorted(scored, key=lambda x: -x[1])[:5]:
 ### 3. Activity Logger → kanban tasks (last 24h)
 
 ```
-위치: drewgent_tasks.db (board=default, trigger_source=activity_logger)
+위치: loragent_tasks.db (board=default, trigger_source=activity_logger)
 쿼리: SELECT title, body FROM tasks
       WHERE trigger_source = 'activity_logger'
       AND status = 'completed'
@@ -198,7 +198,7 @@ for a, s in sorted(scored, key=lambda x: -x[1])[:5]:
 
 ```python
 import sqlite3, pathlib
-db = pathlib.Path.home() / ".drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db"
+db = pathlib.Path.home() / ".loragent/P2-hippocampus/kanban/state/loragent_tasks.db"
 conn = sqlite3.connect(str(db))
 rows = conn.execute("""
     SELECT title, body FROM tasks
@@ -246,7 +246,7 @@ conn.close()
 
 **source별 우선순위:**
 1. `[draft-conversation]`: Drew의 작업에서 나온 insight면 우선.
-2. `[draft-trend]`: Drewgent, humanerd-site, agent tooling, creative coding, publishing system과 연결될 때만.
+2. `[draft-trend]`: Loragent, humanerd-site, agent tooling, creative coding, publishing system과 연결될 때만.
 3. `[draft-seo]`: 검색 유입보다 사이트 정체성에 맞는 evergreen 주제일 때만.
 
 **최대 3개.** 품질 > 수량.
@@ -317,13 +317,13 @@ links:
 
 **Draft 파일 위치:** `memories/insights/YYYY-MM-{slug}.md`
 - 예: `memories/insights/2026-05-gemini-cli-shutdown.md`
-- Obsidian에서 직접 확인 가능: `~/.drewgent/P2-hippocampus/memories/insights/`
+- Obsidian에서 직접 확인 가능: `~/.loragent/P2-hippocampus/memories/insights/`
 - Kanban 대시보드 연동: body에 `## Draft 파일 위치` 절대경로가 있으면 대시보드 카드에 📄 Obsidian 링크가 자동 생성됨. 카드 클릭 → Description 탭 하단 "📄 Open in Obsidian" 버튼 클릭 → Obsidian에서 draft 파일 열림.
 - humanerd-site의 `/blog/{slug}` 또는 `/blog/YYYY/{slug}` 경로로 Quartz에 의해 공개됨. Raw monthly log는 공개하지 않음.
 
 ---
 
-## Phase 4: Draft Writing (Drewgent Worker)
+## Phase 4: Draft Writing (Loragent Worker)
 
 kanban-dispatcher가 ready task를 worker에 배분.
 
@@ -480,7 +480,7 @@ Uploads to excalidraw.com, returns a shareable URL. Requires internet access.
 #### Step 4: Screenshot to PNG
 
 ```bash
-node /Users/drew/.drewgent/scripts/excalidraw-to-png.js \
+node ~/.loragent/scripts/excalidraw-to-png.js \
   /path/to/diagram.excalidraw.json \
   /path/to/diagram.png
 ```
@@ -490,11 +490,11 @@ This runs Puppeteer (headless Chrome) to open the URL in `?embed=1` mode and scr
 **Setup:**
 ```bash
 npm install -g excalidraw-cli              # CLI for upload/export (Step 2-3)
-cd /Users/drew/.drewgent/scripts           # local install for puppeteer (Step 4)
+cd ~/.loragent/scripts           # local install for puppeteer (Step 4)
 npm install puppeteer
 ```
 
-**Runtime requirements:** Node.js, internet access to excalidraw.com, puppeteer in `~/.drewgent/scripts/node_modules/`.
+**Runtime requirements:** Node.js, internet access to excalidraw.com, puppeteer in `~/.loragent/scripts/node_modules/`.
 
 **Shortcut** — the `excalidraw-to-png.js` script combines Steps 3+4 (export + screenshot). You still need Step 2 (`excalidraw create`) separately.
 
@@ -621,7 +621,7 @@ AI 티 제거 + 한글 교정을 DeepSeek로 윤문. CMO Agent mode에서는 ski
 **Vault에서 API 키 조회:**
 ```python
 import sys, os
-sys.path.insert(0, os.path.expanduser("~/.drewgent"))
+sys.path.insert(0, os.path.expanduser("~/.loragent"))
 from modules.secrets_vault import SecretsVault
 vault = SecretsVault()
 api_key = vault.resolve("vault_9fa1b5bb")  # DEEPSEEK_API_KEY
@@ -630,12 +630,12 @@ api_key = vault.resolve("vault_9fa1b5bb")  # DEEPSEEK_API_KEY
 **실행:**
 ```bash
 DEEPSEEK_API_KEY="<vault에서 조회한 키>" \
-python3 ~/.drewgent/P4-cortex/scripts/humanize_korean.py \
-    ~/.drewgent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md \
-    ~/.drewgent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}_polished.md
+python3 ~/.loragent/P4-cortex/scripts/humanize_korean.py \
+    ~/.loragent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md \
+    ~/.loragent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}_polished.md
 ```
 
-**스크립트:** `~/.drewgent/P4-cortex/scripts/humanize_korean.py`
+**스크립트:** `~/.loragent/P4-cortex/scripts/humanize_korean.py`
 - DeepSeek API (deepseek-chat) 호출
 - AI 패턴 제거: ~에 대해, ~라고 생각한다, 입니다/습니다 ending 과잉, "//" 스타일
 - Markdown formatting 보존
@@ -689,7 +689,7 @@ DeepSeek 윤문을 사용할 경우 이 단계는 **skip** — DeepSeek가 처�
 
 ### 4-6. Kanban Complete (Aggregator Mode Only)
 ```python
-draft_file = f"/Users/drew/.drewgent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md"
+draft_file = f"~/.loragent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md"
 kanban_complete(
     task_id,
     result=f"Draft file: {draft_file}",
@@ -698,8 +698,8 @@ kanban_complete(
 )
 ```
 
-**result에는 반드시 절대경로 포함** — Phase 5 Periodic Delivery의 SQLite regex가 `~` 또는 `/Users/drew/`로 시작하는 경로를 추출함.
-Phase 5 regex: `r'memories/insights/(20\d{2}-\d{2}-[^.]+\.md)'` 또는 `r'/Users/drew/.drewgent/P2-hippocampus/memories/insights/(20\d{2}-\d{2}-[^.]+\.md)'`
+**result에는 반드시 절대경로 포함** — Phase 5 Periodic Delivery의 SQLite regex가 `~` 또는 `~/`로 시작하는 경로를 추출함.
+Phase 5 regex: `r'memories/insights/(20\d{2}-\d{2}-[^.]+\.md)'` 또는 `r'~/.loragent/P2-hippocampus/memories/insights/(20\d{2}-\d{2}-[^.]+\.md)'`
 
 ---
 
@@ -778,8 +778,8 @@ Topics selected: N
 
 | # | Source | Topic | Task ID | Draft File |
 |---|--------|-------|---------|------------|
-| 1 | trend | {title} | {id} | /Users/drew/.drewgent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md |
-| 2 | seo | {title} | {id} | /Users/drew/.drewgent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md |
+| 1 | trend | {title} | {id} | ~/.loragent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md |
+| 2 | seo | {title} | {id} | ~/.loragent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md |
 | 3 | conversation | {title} | {id} | — (in progress) |
 
 Worker 배분: kanban-dispatcher-content가 5분마다 ready task를 worker에 배분
@@ -795,8 +795,8 @@ Topics selected: N (task created)
 
 | # | Source | Topic | Task ID | Draft File |
 |---|--------|-------|---------|------------|
-| 1 | trend | {title} | {id} | /Users/drew/.drewgent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md |
-| 2 | seo | {title} | {id} | /Users/drew/.drewgent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md |
+| 1 | trend | {title} | {id} | ~/.loragent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md |
+| 2 | seo | {title} | {id} | ~/.loragent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md |
 | 3 | conversation | {title} | {id} | — (in progress) |
 
 Worker 배분: kanban-dispatcher-content가 5분마다 ready task를 worker에 배분
@@ -814,8 +814,8 @@ content-pipeline cron job이 매 실행마다 content board의 **completed task*
 ```python
 import sqlite3, os, re, pathlib, glob
 
-DB = os.path.expanduser("~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db")
-INSIGHTS = os.path.expanduser("~/.drewgent/P2-hippocampus/memories/insights/")
+DB = os.path.expanduser("~/.loragent/P2-hippocampus/kanban/state/loragent_tasks.db")
+INSIGHTS = os.path.expanduser("~/.loragent/P2-hippocampus/memories/insights/")
 conn = sqlite3.connect(DB)
 rows = conn.execute("""
     SELECT id, title, body, completed_at
@@ -832,14 +832,14 @@ drafts = []
 for task_id, title, body, completed_at in rows:
     draft_path = "— (path not recorded)"
     if body:
-        # body: "Draft file: ~/.drewgent/P2-hippocampus/memories/insights/2026-05-{slug}.md"
+        # body: "Draft file: ~/.loragent/P2-hippocampus/memories/insights/2026-05-{slug}.md"
         m = re.search(r'P2-hippocampus/memories/insights/(\d{4}-\d{2}-[^/]+\.md)', body)
         if m:
             draft_path = os.path.join(INSIGHTS, m.group(1))
             if not os.path.exists(draft_path):
                 date_prefix = m.group(1)[:7]
                 matches = glob.glob(os.path.join(INSIGHTS, f"{date_prefix}-*.md"))
-                draft_path = max(matches, key=os.path.getmtime) if matches else f"~/.drewgent/P2-hippocampus/memories/insights/{m.group(1)}"
+                draft_path = max(matches, key=os.path.getmtime) if matches else f"~/.loragent/P2-hippocampus/memories/insights/{m.group(1)}"
     drafts.append((title, task_id, draft_path))
 ```
 
@@ -852,8 +852,8 @@ Draft files ready for review:
 
 | # | Topic | Task ID | Draft File |
 |---|-------|---------|------------|
-| 1 | {title} | {id} | /Users/drew/.drewgent/P2-hippocampus/memories/insights/{filename}.md |
-| 2 | {title} | {id} | /Users/drew/.drewgent/P2-hippocampus/memories/insights/{filename}.md |
+| 1 | {title} | {id} | ~/.loragent/P2-hippocampus/memories/insights/{filename}.md |
+| 2 | {title} | {id} | ~/.loragent/P2-hippocampus/memories/insights/{filename}.md |
 
 Review at: Obsidian → P2-hippocampus → memories → insights
 ```
@@ -867,8 +867,8 @@ Topics selected: N
 
 | # | Source | Topic | Task ID | Draft File |
 |---|--------|-------|---------|------------|
-| 1 | trend | {title} | {task_id} | /Users/drew/.drewgent/P2-hippocampus/memories/insights/{filename}.md |
-| 2 | seo | {title} | {task_id} | /Users/drew/.drewgent/P2-hippocampus/memories/insights/{filename}.md |
+| 1 | trend | {title} | {task_id} | ~/.loragent/P2-hippocampus/memories/insights/{filename}.md |
+| 2 | seo | {title} | {task_id} | ~/.loragent/P2-hippocampus/memories/insights/{filename}.md |
 | 3 | conversation | {title} | {task_id} | — (in progress) |
 
 Review at: Obsidian → P2-hippocampus → memories → insights
@@ -901,13 +901,13 @@ git repo 아니어도 동작, git commit 불필요.
 
 | Component | Details |
 |-----------|---------|
-| fswatch LaunchAgent | `com.drewgent.quartz-fswatch` (PID 5247 ✅) |
-| fswatch script | `~/.drewgent/P4-cortex/scripts/quartz-fswatch.sh` |
+| fswatch LaunchAgent | `com.loragent.quartz-fswatch` (PID 5247 ✅) |
+| fswatch script | `~/.loragent/P4-cortex/scripts/quartz-fswatch.sh` |
 | Watched dirs | `memories/insights`, `P4-cortex/growth`, `P4-cortex/knowledge`, `humanerd-site/content` |
 | Debounce | 5초 (변경 후 5초内有 추가 변경이면 다시 5초 대기) |
 | Build | `cd humanerd-site && npx quartz build --concurrency=4` |
 | Deploy | `wrangler pages deploy public/ --project-name=humanerd-site` (git 불필요) |
-| Deploy LaunchAgent | `com.drewgent.quartz-deploy` (runs on-demand via wrapper script) |
+| Deploy LaunchAgent | `com.loragent.quartz-deploy` (runs on-demand via wrapper script) |
 | CF Account ID | `dc0199b6b6c27bc9bb2f3201d47cb643` |
 | CF Project | `humanerd-site` |
 | Site URL | `https://humanerd.kr` |
@@ -916,8 +916,8 @@ git repo 아니어도 동작, git commit 불필요.
 
 ```
 fswatch:
-  5247  running  com.drewgent.quartz-fswatch   ← vault 변경 감지
-  63582 running  com.drewgent.quartz-deploy    ← (KeepAlive, 필요시 실행)
+  5247  running  com.loragent.quartz-fswatch   ← vault 변경 감지
+  63582 running  com.loragent.quartz-deploy    ← (KeepAlive, 필요시 실행)
 
 humanerd.kr 실시간 게시 상태:
   vault 파일 변경 → fswatch 감지 → 5초 debounce → quartz build → wrangler deploy → ~3초 후 게시
@@ -930,8 +930,8 @@ humanerd.kr 실시간 게시 상태:
 launchctl list | grep quartz
 
 # fswatch 재시작
-launchctl unload ~/Library/LaunchAgents/com.drewgent.quartz-fswatch.plist
-launchctl load -w ~/Library/LaunchAgents/com.drewgent.quartz-fswatch.plist
+launchctl unload ~/Library/LaunchAgents/com.loragent.quartz-fswatch.plist
+launchctl load -w ~/Library/LaunchAgents/com.loragent.quartz-fswatch.plist
 
 # 로그 확인
 tail -f ~/Library/Logs/quartz-fswatch.log
@@ -940,7 +940,7 @@ tail -f ~/Library/Logs/quartz-deploy.log
 
 ### Content → Site Mapping
 
-Content-manager drafts live at `/Users/drew/.drewgent/P2-hippocampus/memories/insights/`. The Quartz site maps this directory into its content tree via symlink:
+Content-manager drafts live at `~/.loragent/P2-hippocampus/memories/insights/`. The Quartz site maps this directory into its content tree via symlink:
 
 ```bash
 # Current mapping (June 2026):
@@ -949,8 +949,8 @@ humanerd-site/content/insights → P2-hippocampus/memories/insights/  # drafts +
 
 ⚠️ **Pitfall: The symlink was previously pointing to `P4-cortex/knowledge`** (wrong dir). If drafts aren't appearing in the build, check:
 ```bash
-readlink /Users/drew/.drewgent/humanerd-site/content/insights
-# Should point to: /Users/drew/.drewgent/P2-hippocampus/memories/insights
+readlink ~/.loragent/humanerd-site/content/insights
+# Should point to: ~/.loragent/P2-hippocampus/memories/insights
 ```
 
 ### Deploy Loop Prevention
@@ -982,10 +982,10 @@ rm -f "$LOCKFILE"
 
 ```bash
 # 수동 빌드 + 배포 (fswatch 통하지 않고)
-bash ~/.drewgent/P4-cortex/scripts/quartz-deploy.sh
+bash ~/.loragent/P4-cortex/scripts/quartz-deploy.sh
 
 # 또는 wrangler 직접
-cd ~/.drewgent/humanerd-site
+cd ~/.loragent/humanerd-site
 npx quartz build
 wrangler pages deploy public/ --project-name=humanerd-site
 ```
@@ -993,11 +993,11 @@ wrangler pages deploy public/ --project-name=humanerd-site
 ### Configuration Files
 
 ```
-~/.drewgent/humanerd-site/
+~/.loragent/humanerd-site/
 ├── wrangler.toml              ← project_name = "humanerd-site"
 └── .wrangler.jsonv2          ← account_id, CF Pages project 설정
 
-~/.drewgent/P4-cortex/scripts/
+~/.loragent/P4-cortex/scripts/
 ├── quartz-deploy.sh          ← build + wrangler deploy 스크립트
 └── quartz-fswatch.sh         ← fswatch 파일 변경 감지 → debounce → deploy
 ```
@@ -1098,10 +1098,10 @@ See `references/wordpress-publish-workflow.md` for the full implementation guide
 
 ## ⚠️ Path Pitfalls (all modes)
 
-Draft paths in agent profiles, cron prompts, and workflow documents must be **absolute paths** (`/Users/drew/.drewgent/P2-hippocampus/memories/insights/`). Do NOT use:
+Draft paths in agent profiles, cron prompts, and workflow documents must be **absolute paths** (`~/.loragent/P2-hippocampus/memories/insights/`). Do NOT use:
 - Relative paths like `memories/insights/` — the agent's cwd may not resolve correctly
-- `~` expansion like `~/.drewgent/...` — some contexts (cron, subagent spawned by dispatcher) don't expand tilde
+- `~` expansion like `~/.loragent/...` — some contexts (cron, subagent spawned by dispatcher) don't expand tilde
 
-✅ Safe: `/Users/drew/.drewgent/P2-hippocampus/memories/insights/filename.md`
+✅ Safe: `~/.loragent/P2-hippocampus/memories/insights/filename.md`
 ❌ Unsafe: `memories/insights/filename.md`
-❌ Unsafe: `~/.drewgent/P2-hippocampus/memories/insights/filename.md`
+❌ Unsafe: `~/.loragent/P2-hippocampus/memories/insights/filename.md`

@@ -18,13 +18,13 @@ links:
 
 ## Audit Finding (2026-05-31)
 
-Drewgent의 `search_files` tool은 757자짜리 line을 500자 (ripgrep MAX_CONTENT cap)까지 매번 그대로 LLM context에 push했음. 단일 검색 결과 한 match에 500자 × 50 matches = **25,000 chars/검색**. 99.2%의 검색 call은 path:line만 필요하고, full content는 LLM이 `read_file()`로 follow-up할 일 — 첫 search response의 full content는 **낭비**.
+Loragent의 `search_files` tool은 757자짜리 line을 500자 (ripgrep MAX_CONTENT cap)까지 매번 그대로 LLM context에 push했음. 단일 검색 결과 한 match에 500자 × 50 matches = **25,000 chars/검색**. 99.2%의 검색 call은 path:line만 필요하고, full content는 LLM이 `read_file()`로 follow-up할 일 — 첫 search response의 full content는 **낭비**.
 
 원인: ripgrep의 MAX_CONTENT=500이 1차 cap. search_tool은 그 이상 truncate 안 함. LLM은 매번 500 chars/line을 받음.
 
 ## Fix (shipped 2026-05-31)
 
-`/Users/drew/.drewgent/source/drewgent-agent/tools/file_tools.py` 의 `search_tool`에 2개 파라미터 추가:
+`~/.loragent/source/loragent-agent/tools/file_tools.py` 의 `search_tool`에 2개 파라미터 추가:
 
 | param | type | default | 의미 |
 |---|---|---|---|
@@ -61,7 +61,7 @@ Drewgent의 `search_files` tool은 757자짜리 line을 500자 (ripgrep MAX_CONT
 3. **Tunable**: `preview_chars` 같은 numeric param으로 user가 명시적으로 trade-off 조절
 4. **Schema에 명시**: LLM이 schema description 읽고 알아서 적절히 선택하도록 guide
 
-Drewgent의 다른 tool 후보:
+Loragent의 다른 tool 후보:
 - `read_file` — 이미 offset/limit cap 존재. 더 잘게 잘라 default 줄일 여지.
 - `terminal` — output이 가장 큰 토큰 누수. last few lines만 default + on-demand 전체.
 - `web_search` — 결과 snippet이 적당. 큰 문제 없음.

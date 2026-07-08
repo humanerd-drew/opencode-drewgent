@@ -319,7 +319,7 @@ Compare the resolved provider between CLI and gateway:
 
 ```bash
 # CLI: what provider does the CLI resolve?
-grep "^model:" ~/.drewgent/config.yaml
+grep "^model:" ~/.loragent/config.yaml
 # → "opencode-go/deepseek-v4-flash"  → provider = "opencode-go"
 
 # Gateway: what does _resolve_runtime_agent_kwargs return?
@@ -477,7 +477,7 @@ if missing: print('Missing:', missing)
 "
 ```
 
-## Real example (Drewgent Gateway, 2026-06-11~12)
+## Real example (Loragent Gateway, 2026-06-11~12)
 
 The `GatewayRunner` class had 30+ `_handle_*` methods and the `_run_agent` method extracted to separate files. The extraction left behind ALL of the following issues, which were found and fixed over ~10 hours of iterative debugging:
 

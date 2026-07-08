@@ -12,7 +12,7 @@ content-manager → memories/insights/(slug).md + SVG + Excalidraw + PNG
 
 ## WordPress MCP Server
 
-**Script:** `~/.drewgent/scripts/wordpress-mcp-server.js`
+**Script:** `~/.loragent/scripts/wordpress-mcp-server.js`
 **Registration:** `config.yaml` → `mcp_servers.wordpress`
 **Communication:** STDIO JSON-RPC 2.0 (not standard MCP tools/list — uses `list_tools` and `call_tool`)
 **Auth:** Docker socket access (runs as root via `docker exec`)
@@ -33,10 +33,10 @@ content-manager → memories/insights/(slug).md + SVG + Excalidraw + PNG
 
 ```bash
 # List tools
-echo '{"jsonrpc":"2.0","id":1,"method":"list_tools"}' | node ~/.drewgent/scripts/wordpress-mcp-server.js
+echo '{"jsonrpc":"2.0","id":1,"method":"list_tools"}' | node ~/.loragent/scripts/wordpress-mcp-server.js
 
 # Create test post
-echo '{"jsonrpc":"2.0","id":2,"method":"call_tool","params":{"name":"create_post","arguments":{"title":"Test","content":"Hello","status":"draft"}}}' | node ~/.drewgent/scripts/wordpress-mcp-server.js
+echo '{"jsonrpc":"2.0","id":2,"method":"call_tool","params":{"name":"create_post","arguments":{"title":"Test","content":"Hello","status":"draft"}}}' | node ~/.loragent/scripts/wordpress-mcp-server.js
 ```
 
 ## WordPress Local Docker Setup
@@ -52,7 +52,7 @@ echo '{"jsonrpc":"2.0","id":2,"method":"call_tool","params":{"name":"create_post
 
 - WP uploads: `/Volumes/humanerd/docker/wordpress/wp-content/` (NAS SMB mount)
 - MySQL data: `/Volumes/humanerd/docker/wordpress/db/` (NAS SMB mount)
-- Config: `/Users/drew/.drewgent/wordpress/`
+- Config: `~/.loragent/wordpress/`
 
 ### Theme: Blocksy (Free)
 
@@ -126,8 +126,8 @@ EOF"
 docker exec humanerd-wp wp --allow-root <command>
 
 # Docker compose
-export DOCKER_HOST=unix:///Users/drew/.colima/default/docker.sock
-cd /Users/drew/.drewgent/wordpress && docker-compose up -d
+export DOCKER_HOST=unix://~/.colima/default/docker.sock
+cd ~/.loragent/wordpress && docker-compose up -d
 
 # Colima (Docker runtime)
 colima status
@@ -136,7 +136,7 @@ colima start --cpu 4 --memory 8 --disk 50
 # Access WordPress
 open http://localhost:8080/wp-admin
 # User: humanerd
-# Password: stored in ~/.drewgent/wordpress/.wp-env (chmod 600)
+# Password: stored in ~/.loragent/wordpress/.wp-env (chmod 600)
 ```
 
 ## Publish Pipeline (Future)

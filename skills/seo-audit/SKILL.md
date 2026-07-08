@@ -20,20 +20,20 @@ GEO-first SEO 최적화 — AI 검색 (ChatGPT, Claude, Perplexity, Gemini) 대�
 ## 감사 도구 실행
 
 ```bash
-python3 ~/.drewgent/P4-cortex/scripts/seo_audit.py
+python3 ~/.loragent/P4-cortex/scripts/seo_audit.py
 ```
 
 ### 옵션
 
 ```bash
 # GEO 모듈만 (빠름)
-python3 ~/.drewgent/P4-cortex/scripts/seo_audit.py --modules ai_crawlers,llms,citability,brand
+python3 ~/.loragent/P4-cortex/scripts/seo_audit.py --modules ai_crawlers,llms,citability,brand
 
 # 전통 SEO만
-python3 ~/.drewgent/P4-cortex/scripts/seo_audit.py --modules sitemap,meta,content,links
+python3 ~/.loragent/P4-cortex/scripts/seo_audit.py --modules sitemap,meta,content,links
 
 # JSON 출력
-python3 ~/.drewgent/P4-cortex/scripts/seo_audit.py --output seo-20260522.json
+python3 ~/.loragent/P4-cortex/scripts/seo_audit.py --output seo-20260522.json
 ```
 
 ## 감사 모듈 (13개)
@@ -117,8 +117,8 @@ description: "페이지 설명 — 검색 결과에 표시"
 
 ```bash
 # 주 1회 감사 (매주 월요일 오전 9시)
-python3 ~/.drewgent/P4-cortex/scripts/seo_audit.py \
-  --output ~/.drewgent/P6-prefrontal/logs/seo-geo-audit-$(date +%Y%m%d).json
+python3 ~/.loragent/P4-cortex/scripts/seo_audit.py \
+  --output ~/.loragent/P6-prefrontal/logs/seo-geo-audit-$(date +%Y%m%d).json
 ```
 
 ## 점수 기준

@@ -37,7 +37,7 @@ from utils import is_truthy_value
 from tools.managed_tool_gateway import resolve_managed_tool_gateway
 from tools.tool_backend_helpers import managed_nous_tools_enabled, resolve_openai_audio_api_key
 
-from drewgent_constants import get_drewgent_home
+from loragent_constants import get_loragent_home
 
 logger = logging.getLogger(__name__)
 
@@ -92,14 +92,14 @@ _local_model_name: Optional[str] = None
 
 
 def get_stt_model_from_config() -> Optional[str]:
-    """Read the STT model name from ~/.drewgent/config.yaml.
+    """Read the STT model name from ~/.loragent/config.yaml.
 
     Returns the value of ``stt.model`` if present, otherwise ``None``.
     Silently returns ``None`` on any error (missing file, bad YAML, etc.).
     """
     try:
         import yaml
-        cfg_path = get_drewgent_home() / "config.yaml"
+        cfg_path = get_loragent_home() / "config.yaml"
         if cfg_path.exists():
             with open(cfg_path) as f:
                 data = yaml.safe_load(f) or {}
@@ -112,7 +112,7 @@ def get_stt_model_from_config() -> Optional[str]:
 def _load_stt_config() -> dict:
     """Load the ``stt`` section from user config, falling back to defaults."""
     try:
-        from drewgent_cli.config import load_config
+        from loragent_cli.config import load_config
         return load_config().get("stt", {})
     except Exception:
         return {}
@@ -352,7 +352,7 @@ def _transcribe_local_command(file_path: str, model_name: str) -> Dict[str, Any]
     normalized_model = _normalize_local_command_model(model_name)
 
     try:
-        with tempfile.TemporaryDirectory(prefix="drewgent-local-stt-") as output_dir:
+        with tempfile.TemporaryDirectory(prefix="loragent-local-stt-") as output_dir:
             prepared_input, prep_error = _prepare_local_audio(file_path, output_dir)
             if prep_error:
                 return {"success": False, "transcript": "", "error": prep_error}

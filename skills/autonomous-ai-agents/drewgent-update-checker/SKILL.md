@@ -3,7 +3,7 @@ name: drewgent-update-checker
 description: "Auto-check Drewgent GitHub updates and notify via Discord or file. Sets up scheduled cron job."
 version: 1.0.0
 links:
-  - "[[P0-brainstem/brain/rules]]"
+  - "[[@identity/brain/rules]]"
 ---
 
 # Drewgent Update Checker

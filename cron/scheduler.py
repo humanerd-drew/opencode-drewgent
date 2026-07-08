@@ -4,7 +4,7 @@ Cron job scheduler - executes due jobs.
 Provides tick() which checks for due jobs and runs them. The gateway
 calls this every 60 seconds from a background thread.
 
-Uses a file-based lock (~/.drewgent/cron/.tick.lock) so only one tick
+Uses a file-based lock (~/.loragent/cron/.tick.lock) so only one tick
 runs at a time if multiple processes overlap.
 """
 
@@ -36,16 +36,16 @@ from typing import Optional
 # but if that Python lacks openai, run_job() will dispatch to cron_runner.py
 # via subprocess.run([sys.executable, ...]) and cron_runner.py will in turn
 # use the venv python to guarantee openai is importable.
-_venv_python = str(Path(__file__).parent.parent / "source" / "drewgent-agent" / ".venv" / "bin" / "python")
+_venv_python = str(Path(__file__).parent.parent / "source" / "loragent-agent" / ".venv" / "bin" / "python")
 
 # Add parent directory to path for imports BEFORE repo-level imports.
-# Without this, standalone invocations (e.g. after `drewgent update` reloads
-# the module) fail with ModuleNotFoundError for drewgent_time et al.
+# Without this, standalone invocations (e.g. after `loragent update` reloads
+# the module) fail with ModuleNotFoundError for loragent_time et al.
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from drewgent_constants import get_drewgent_home
-from drewgent_cli.config import load_config
-from drewgent_time import now as _drewgent_now
+from loragent_constants import get_loragent_home
+from loragent_cli.config import load_config
+from loragent_time import now as _loragent_now
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +59,7 @@ _KNOWN_DELIVERY_PLATFORMS = frozenset({
 
 from cron.jobs import get_due_jobs, mark_job_run, save_job_output, advance_next_run, OUTPUT_DIR
 
-# Path to the drewgent-agent source root (parent of cron/)
+# Path to the loragent-agent source root (parent of cron/)
 _AGENT_ROOT = Path(__file__).parent.parent.resolve()
 
 # Sentinel: when a cron agent has nothing new to report, it can start its
@@ -67,11 +67,11 @@ _AGENT_ROOT = Path(__file__).parent.parent.resolve()
 # locally for audit.
 SILENT_MARKER = "[SILENT]"
 
-# Resolve Drewgent home directory (respects DREW_HOME override)
-_drewgent_home = get_drewgent_home()
+# Resolve Loragent home directory (respects DREW_HOME override)
+_loragent_home = get_loragent_home()
 
 # File-based lock prevents concurrent ticks from gateway + daemon + systemd timer
-_LOCK_DIR = _drewgent_home / "cron"
+_LOCK_DIR = _loragent_home / "cron"
 _LOCK_FILE = _LOCK_DIR / ".tick.lock"
 
 
@@ -323,9 +323,9 @@ def _run_job_script(script_path: str) -> tuple[bool, str]:
         (success, output) — on failure *output* contains the error message so the
         LLM can report the problem to the user.
     """
-    from drewgent_constants import get_drewgent_home
+    from loragent_constants import get_loragent_home
 
-    scripts_dir = get_drewgent_home() / "scripts"
+    scripts_dir = get_loragent_home() / "scripts"
     scripts_dir.mkdir(parents=True, exist_ok=True)
     scripts_dir_resolved = scripts_dir.resolve()
 
@@ -534,7 +534,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
     """
     _session_db = None
     try:
-        from drewgent_state import SessionDB
+        from loragent_state import SessionDB
         _session_db = SessionDB()
     except Exception as e:
         logger.debug("Job '%s': SQLite session store not available: %s", job.get("id", "?"), e)
@@ -543,7 +543,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
     job_name = job["name"]
     prompt = _build_job_prompt(job)
     origin = _resolve_origin(job)
-    _cron_session_id = f"cron_{job_id}_{_drewgent_now().strftime('%Y%m%d_%H%M%S')}"
+    _cron_session_id = f"cron_{job_id}_{_loragent_now().strftime('%Y%m%d_%H%M%S')}"
 
     logger.info("Running job '%s' (ID: %s) via subprocess", job_name, job_id)
     logger.info("Prompt: %s", prompt[:100])
@@ -556,9 +556,9 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
                 os.environ["DREW_SESSION_CHAT_NAME"] = origin["chat_name"]
         from dotenv import load_dotenv
         try:
-            load_dotenv(str(_drewgent_home / ".env"), override=True, encoding="utf-8")
+            load_dotenv(str(_loragent_home / ".env"), override=True, encoding="utf-8")
         except UnicodeDecodeError:
-            load_dotenv(str(_drewgent_home / ".env"), override=True, encoding="latin-1")
+            load_dotenv(str(_loragent_home / ".env"), override=True, encoding="latin-1")
 
         delivery_target = _resolve_delivery_target(job)
         if delivery_target:
@@ -572,7 +572,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
         _cfg = {}
         try:
             import yaml
-            _cfg_path = str(_drewgent_home / "config.yaml")
+            _cfg_path = str(_loragent_home / "config.yaml")
             if os.path.exists(_cfg_path):
                 with open(_cfg_path) as _f:
                     _cfg = yaml.safe_load(_f) or {}
@@ -592,7 +592,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
         if _cron_model_cfg.get("model") and not job.get("model"):
             model = _cron_model_cfg["model"]
 
-        from drewgent_constants import parse_reasoning_effort
+        from loragent_constants import parse_reasoning_effort
         effort = os.getenv("DREW_REASONING_EFFORT", "")
         if not effort:
             effort = str(_cfg.get("agent", {}).get("reasoning_effort", "")).strip()
@@ -604,7 +604,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
             import json as _json
             pfpath = Path(prefill_file).expanduser()
             if not pfpath.is_absolute():
-                pfpath = _drewgent_home / pfpath
+                pfpath = _loragent_home / pfpath
             if pfpath.exists():
                 try:
                     with open(pfpath, "r", encoding="utf-8") as _pf:
@@ -620,7 +620,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
         pr = _cfg.get("provider_routing", {})
         smart_routing = _cfg.get("smart_model_routing", {}) or {}
 
-        from drewgent_cli.runtime_provider import (
+        from loragent_cli.runtime_provider import (
             resolve_runtime_provider,
             format_runtime_provider_error,
         )
@@ -634,7 +634,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
             # Fix api_mode: runtime provider uses global model config (minimax-m3)
             # for api_mode resolution, but cron jobs may use a different model.
             if runtime.get("provider") in ("opencode-go", "opencode-zen") and model:
-                from drewgent_cli.models import opencode_model_api_mode
+                from loragent_cli.models import opencode_model_api_mode
                 corrected = opencode_model_api_mode(runtime["provider"], model)
                 if corrected:
                     runtime["api_mode"] = corrected
@@ -684,7 +684,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
                 timeout=None,  # Timeout is handled by cron_runner.py internally
             )
             # Read output file written by cron_runner.py
-            # Output dir: ~/.drewgent/cron/output/{job_id}/
+            # Output dir: ~/.loragent/cron/output/{job_id}/
             output_dir = _OUTPUT_DIR / job_id
             if output_dir.exists():
                 # Get most recent output file
@@ -727,7 +727,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
         output = f"""# Cron Job: {job_name} (FAILED)
 
 **Job ID:** {job_id}
-**Run Time:** {_drewgent_now().strftime('%Y-%m-%d %H:%M:%S')}
+**Run Time:** {_loragent_now().strftime('%Y-%m-%d %H:%M:%S')}
 **Schedule:** {job.get('schedule_display', 'N/A')}
 
 ## Prompt
@@ -776,7 +776,7 @@ def _execute_script_only_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
     job_id = job["id"]
     job_name = job.get("name", job_id)
     script_path = job.get("script")
-    now = _drewgent_now()
+    now = _loragent_now()
 
     if not script_path:
         error_msg = "script_only job has no script path"
@@ -792,9 +792,9 @@ def _execute_script_only_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
     try:
         from dotenv import load_dotenv
         try:
-            load_dotenv(str(_drewgent_home / ".env"), override=True, encoding="utf-8")
+            load_dotenv(str(_loragent_home / ".env"), override=True, encoding="utf-8")
         except UnicodeDecodeError:
-            load_dotenv(str(_drewgent_home / ".env"), override=True, encoding="latin-1")
+            load_dotenv(str(_loragent_home / ".env"), override=True, encoding="latin-1")
     except Exception:
         pass
 
@@ -902,11 +902,11 @@ def tick(verbose: bool = True, adapters=None, loop=None) -> int:
         due_jobs = get_due_jobs()
 
         if verbose and not due_jobs:
-            logger.info("%s - No jobs due", _drewgent_now().strftime('%H:%M:%S'))
+            logger.info("%s - No jobs due", _loragent_now().strftime('%H:%M:%S'))
             return 0
 
         if verbose:
-            logger.info("%s - %s job(s) due (running concurrently)", _drewgent_now().strftime('%H:%M:%S'), len(due_jobs))
+            logger.info("%s - %s job(s) due (running concurrently)", _loragent_now().strftime('%H:%M:%S'), len(due_jobs))
 
         if len(due_jobs) <= 1:
             for job in due_jobs:

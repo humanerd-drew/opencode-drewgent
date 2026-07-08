@@ -9,7 +9,7 @@ and a trust-aware install policy that determines whether a skill is allowed
 based on both the scan verdict and the source's trust level.
 
 Trust levels:
-  - builtin:   Ships with Drewgent. Never scanned, always trusted.
+  - builtin:   Ships with Loragent. Never scanned, always trusted.
   - trusted:   openai/skills and anthropics/skills only. Caution verdicts allowed.
   - community: Everything else. Any findings = blocked unless --force.
 
@@ -116,9 +116,9 @@ THREAT_PATTERNS = [
     (r'\$HOME/\.docker|\~/\.docker',
      "docker_dir_access", "high", "exfiltration",
      "references Docker config (may contain registry creds)"),
-    (r'\$HOME/\.drewgent/\.env|\~/\.drewgent/\.env',
-     "drewgent_env_access", "critical", "exfiltration",
-     "directly references Drewgent secrets file"),
+    (r'\$HOME/\.loragent/\.env|\~/\.loragent/\.env',
+     "loragent_env_access", "critical", "exfiltration",
+     "directly references Loragent secrets file"),
     (r'cat\s+[^\n]*(\.env|credentials|\.netrc|\.pgpass|\.npmrc|\.pypirc)',
      "read_secrets_file", "critical", "exfiltration",
      "reads known secrets file"),
@@ -424,9 +424,9 @@ THREAT_PATTERNS = [
     (r'AGENTS\.md|CLAUDE\.md|\.cursorrules|\.clinerules',
      "agent_config_mod", "critical", "persistence",
      "references agent config files (could persist malicious instructions across sessions)"),
-    (r'\.drewgent/config\.yaml|\.drewgent/SOUL\.md',
-     "drewgent_config_mod", "critical", "persistence",
-     "references Drewgent configuration files directly"),
+    (r'\.loragent/config\.yaml|\.loragent/SOUL\.md',
+     "loragent_config_mod", "critical", "persistence",
+     "references Loragent configuration files directly"),
     (r'\.claude/settings|\.codex/config',
      "other_agent_config", "high", "persistence",
      "references other agent configuration files"),
@@ -1041,9 +1041,9 @@ def _parse_llm_response(text: str, skill_name: str) -> List[Finding]:
 
 
 def _get_configured_model() -> str:
-    """Load the user's configured model from ~/.drewgent/config.yaml."""
+    """Load the user's configured model from ~/.loragent/config.yaml."""
     try:
-        from drewgent_cli.config import load_config
+        from loragent_cli.config import load_config
         config = load_config()
         return config.get("model", "")
     except Exception:

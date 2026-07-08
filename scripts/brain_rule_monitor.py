@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Drewgent — Brain Rule Growth Monitor
+Loragent — Brain Rule Growth Monitor
 새로운 .neuron 규칙 파일이 추가되면 감지하여 Discord로 알림
 매 crontab 실행마다 상태를 brain_rule_state.json에 저장
 """
@@ -10,9 +10,9 @@ from datetime import datetime
 from collections import defaultdict
 import json, subprocess, sys, urllib.request
 
-DATA_DIR   = Path.home() / ".drewgent"
+DATA_DIR   = Path.home() / ".loragent"
 SCRIPT_DIR = DATA_DIR / "scripts"
-BRAIN_DIR  = DATA_DIR / "brain" / "Drewgent-brain"
+BRAIN_DIR  = DATA_DIR / "brain" / "Loragent-brain"
 STATE_FILE = DATA_DIR / "brain_rule_state.json"
 DISCORD_CFG = DATA_DIR / "config" / "discord.json"
 
@@ -93,7 +93,7 @@ def notify_discord(new_rules, layer_stats, total_brain):
                     "inline": False
                 }
             ],
-            "footer": {"text": "Drewgent Brain Growth Monitor"}
+            "footer": {"text": "Loragent Brain Growth Monitor"}
         }]
     }
 
@@ -110,7 +110,7 @@ def notify_discord(new_rules, layer_stats, total_brain):
             "title": f"🧬 +{total_rules} New Neuron Rule(s)",
             "color": 3447003,
             "fields": embed_fields,
-            "footer": {"text": "Drewgent Brain Growth Monitor"}
+            "footer": {"text": "Loragent Brain Growth Monitor"}
         }]
     }
 

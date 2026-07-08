@@ -1,0 +1,145 @@
+---
+title: 禁rebac_integration
+type: policy
+space: policy
+rule_token: 禁rebac_integration
+rule_priority: P0 (HIGHEST)
+rule_source: OpenCrab ReBAC — Loragent Phase 2-C Implementation
+created: 2026-05-21
+updated: 2026-05-21
+promotion_status: draft
+links:
+  - "[[P0-brainstem/brain/rules]]"
+  - "[[P5-ego/SELF_MODEL]]"
+  - "[[P0-brainstem/brain/Loragent-brain/P0-brainstem/禁/禁brain_obsidian_graph]]"
+  - "[[P4-cortex/growth/INTEGRATION_PROTOCOL]]"
+---
+
+# Rule: 禁rebac_integration
+# Token: 禁rebac_integration
+# Priority: P0 (HIGHEST)
+# Source: OpenCrab ReBAC — Loragent Phase 2-C Implementation
+
+禁rebac_integration 必rebac
+
+FORBIDDEN: Tool/skill integration without referencing INTEGRATION_PROTOCOL
+REASON: Without ReBAC relationship check, any tool can be added without following the integration protocol
+
+## ReBAC Enforcement Pattern
+
+OpenCrab의 Relationship-Based Access Control 패턴:
+"A operation X를 수행하려면, actor와 target 사이에 relationship path가 존재해야 한다."
+
+Loragent 적용:
+- **Actor**: Loragent agent (또는 human operator)
+- **Target**: tools/<name>_tool.py 또는 skills/<name>/
+- **Relationship required**: INTEGRATION_PROTOCOL.md를 참조한 이력이 존재
+
+## Enforcement Flow
+
+```
+Integration workflow 감지 (tools/*_tool.py 또는 skills/*/ 생성)
+    │
+    ▼
+signal_processor._on_tool_integration_detected()
+    │
+    ├─ recent_references에 INTEGRATION_PROTOCOL가 있는가?
+    │   ├─ YES → awareness.integrity(relationship_confirmed) — 통과
+    │   └─ NO → awareness.integrity(relationship_missing, severity=medium)
+    │
+    └─ IntegrationWorkflow 추적 시작
+           → workflow.completed → rebac_relationship 검증 완료
+```
+
+## Implementation in signal_processor.py
+
+ArchitectureModel이 integration workflow를 추적한다.
+ReBAC는 integration_workflow가 "시작"될 때 적용된다:
+
+```python
+def _on_integration_workflow_started(self, event: BrainEvent) -> None:
+    """Check ReBAC: was INTEGRATION_PROTOCOL referenced before this workflow?"""
+    payload = event.payload
+    workflow_id = payload.get("workflow_id")
+    files = payload.get("files", [])
+
+    # Check: is INTEGRATION_PROTOCOL referenced in recent session context?
+    protocol_referenced = self._check_recent_reference("INTEGRATION_PROTOCOL")
+
+    if not protocol_referenced:
+        # ReBAC violation — integration started without protocol reference
+        violation = {
+            "rule": "禁rebac_integration",
+            "workflow_id": workflow_id,
+            "missing_relationship": "INTEGRATION_PROTOCOL",
+            "files": files,
+            "severity": "medium",
+        }
+        self._violation_history.append(violation)
+        self._bus.emit("awareness.integrity", {
+            "type": "rebac_violation",
+            "violation": violation,
+            "message": (
+                "Tool/skill integration started without INTEGRATION_PROTOCOL reference. "
+                "Ensure you follow the 3-file integration protocol before adding tools."
+            ),
+        })
+```
+
+## ReBAC Relationship Check
+
+```python
+def _check_recent_reference(self, doc_name: str) -> bool:
+    """Check if doc_name was referenced in recent conversation turns.
+
+    Scans last N turns of conversation history for wikilink or
+    path reference to the target document.
+    """
+    recent_turns = self._get_recent_turns(n=5)
+    for turn in recent_turns:
+        content = str(turn.get("content", ""))
+        if doc_name in content or f"[[{doc_name}]]" in content:
+            return True
+    return False
+```
+
+## Awareness Signal
+
+On ReBAC violation:
+- Event: `awareness.integrity(type=rebac_violation)`
+- Severity: medium (not blocking — integration can proceed after the fact)
+- Message: Integrator에게 INTEGRATION_PROTOCOL 참조 필요를 알림
+
+## Relationship Graph
+
+```
+INTEGRATION_PROTOCOL.md
+    │ (relationship: governs)
+    ▼
+tool/skill integration operations
+    │ (requires: relationship to INTEGRATION_PROTOCOL)
+    ▼
+禁rebac_integration (enforcement rule)
+```
+
+## EXCEPTION
+
+Integration via Loragent cron job or automated workflow — these are pre-authorized because they go through kanban task creation which implicitly references INTEGRATION_PROTOCOL via the workflow ID.
+
+## EXAMPLE VIOLATION
+
+Developer creates `tools/my_tool.py` without referencing INTEGRATION_PROTOCOL:
+- No mention of the protocol in conversation
+- No mention of 3-file pattern
+- → awareness.integrity fired with rebac_violation
+
+CORRECT:
+1. Read INTEGRATION_PROTOCOL.md first
+2. Follow 3-file pattern: tools/<name>_tool.py + model_tools.py + toolsets.py
+3. Integration workflow tracks the relationship path
+
+## Links
+- [[P0-brainstem/brain/rules]]
+- [[P5-ego/SELF_MODEL]]
+- [[P0-brainstem/brain/Loragent-brain/P0-brainstem/禁/禁brain_obsidian_graph]]
+- [[P4-cortex/growth/INTEGRATION_PROTOCOL]]

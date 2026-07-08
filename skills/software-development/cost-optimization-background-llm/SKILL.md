@@ -1,7 +1,7 @@
 ---
 name: cost-optimization-background-llm
 current_routing: "opencode-go/deepseek-v4-flash (2026-06-14+ — all tasks use same model via $10/mo subscription, no per-call cost to optimize)"
-title: Cost Optimization — Background LLM Calls in Drewgent
+title: Cost Optimization — Background LLM Calls in Loragent
 description: Reduce LLM token spend on cron + background + kanban-worker without touching interactive (CLI/ACP/Discord) paths. Inventory → classify → apply config/scheduler/worker patches → verify with hard evidence.
 domain: software-development
 space: growth
@@ -12,13 +12,13 @@ updated: 2026-06-02
 links:
   - "[[P4-cortex/growth/KANBAN-REVIEW-20260520]]"
   - "[[P5-ego/SELF_MODEL]]"
-  - "[[P3-sensors/gateway/drewgent-architecture-dataflow]]"
+  - "[[P3-sensors/gateway/loragent-architecture-dataflow]]"
   - "[[P0-brainstem/brain/rules]]"
 ---
 
 # Cost Optimization — Background LLM Calls
 
-Reduce LLM token spend on background/scheduled work in Drewgent **without
+Reduce LLM token spend on background/scheduled work in Loragent **without
 touching the user-facing interactive path** (CLI / ACP / Discord messages).
 Terminal-direct calls are off-scope by user preference.
 
@@ -71,23 +71,23 @@ Background LLM call site discovered
 ```bash
 # 1a) Cron jobs: list all jobs
 jq '.jobs[] | {id, name, enabled, schedule, last_status, last_run_at}' \
-   ~/.drewgent/cron/jobs.json
+   ~/.loragent/cron/jobs.json
 
 # 1b) Find scheduler entry point
 grep -n "run_job\|run_conversation\|AIAgent" \
-   ~/.drewgent/source/drewgent-agent/cron/scheduler.py
+   ~/.loragent/source/loragent-agent/cron/scheduler.py
 
 # 1c) Background threads / fire-and-forget
 grep -rn "threading.Thread\|daemon=True" \
-   ~/.drewgent/source/drewgent-agent/ | grep -v test_
+   ~/.loragent/source/loragent-agent/ | grep -v test_
 
 # 1d) Kanban worker LLM path
 grep -n "AIAgent\|agent.chat\|run_conversation" \
-   ~/.drewgent/scripts/run_kanban_worker.py
+   ~/.loragent/scripts/run_kanban_worker.py
 
 # 1e) Auxiliary task consumers
 grep -rn "call_llm\|async_call_llm" \
-   ~/.drewgent/source/drewgent-agent/agent/ | grep -v test_
+   ~/.loragent/source/loragent-agent/agent/ | grep -v test_
 ```
 
 ### Phase 2 — Classify
@@ -120,7 +120,7 @@ For 2026-06-02 inventory, the labels were:
 # The cost optimization below was for a per-call era and no longer applies.
 # See current_routing in this skill's frontmatter and hermes-model-routing skill.
 
-Apply to BOTH `~/.drewgent/config.yaml` and `~/.drewgent/P5-ego/config/config.yaml`
+Apply to BOTH `~/.loragent/config.yaml` and `~/.loragent/P5-ego/config/config.yaml`
 (they're duplicated; see Pitfall #1).
 
 **3b) Script-based cron fast path** (medium effort, 0 risk):
@@ -130,7 +130,7 @@ In `jobs.json`, add `script:` field for jobs whose prompt is just a shell comman
 {
   "id": "a130ff5768c1",
   "name": "cron-output-cleanup",
-  "script": "~/.drewgent/scripts/cron_output_cleanup.py",
+  "script": "~/.loragent/scripts/cron_output_cleanup.py",
   ...
 }
 ```
@@ -173,11 +173,11 @@ python3 -c "import yaml; yaml.safe_load(open('<modified>.yaml'))"
 **4b) Dry-run** (deterministic paths):
 ```python
 import sys, json, os
-sys.path.insert(0, '/Users/drew/.drewgent/source/drewgent-agent')
-os.chdir('/Users/drew/.drewgent/source/drewgent-agent')
+sys.path.insert(0, '~/.loragent/source/loragent-agent')
+os.chdir('~/.loragent/source/loragent-agent')
 from cron.scheduler import run_job
 
-with open('/Users/drew/.drewgent/cron/jobs.json') as f:
+with open('~/.loragent/cron/jobs.json') as f:
     jobs = json.load(f)['jobs']
 
 job = next(j for j in jobs if j['id'] == '<target_id>')
@@ -188,8 +188,8 @@ print(f"success={success} final[:200]={final[:200]!r}")
 **4c) Integration test** (kanban worker):
 ```python
 import sqlite3, subprocess, os, time
-DB = '/Users/drew/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
-# NOT ~/.drewgent/state/drewgent_tasks.db — see Pitfall #2
+DB = '~/.loragent/P2-hippocampus/kanban/state/loragent_tasks.db'
+# NOT ~/.loragent/state/loragent_tasks.db — see Pitfall #2
 
 # Insert shell task
 conn = sqlite3.connect(DB)
@@ -197,27 +197,27 @@ task_id = f't_test_{int(time.time())}'
 conn.execute("""
     INSERT INTO tasks (id, title, body, status, board, trigger_source, created_at, workspace_path)
     VALUES (?, ?, ?, 'ready', 'default', 'manual', datetime('now'), ?)
-""", (task_id, 'shell test', 'python3 -c "print(\'ok\')"', '/Users/drew/.drewgent'))
+""", (task_id, 'shell test', 'python3 -c "print(\'ok\')"', '~/.loragent'))
 conn.commit()
 conn.close()
 
 # Run dispatcher
 subprocess.run(
-    [VENV, '/Users/drew/.drewgent/scripts/dispatch_once_default.py'],
-    env={**os.environ, 'DREW_HOME': '/Users/drew/.drewgent'},
+    [VENV, '~/.loragent/scripts/dispatch_once_default.py'],
+    env={**os.environ, 'DREW_HOME': '~/.loragent'},
     timeout=60,
 )
 
 # Wait for worker log
-log = Path(f'~/.drewgent/P4-cortex/scripts/kanban/logs/workers/{task_id}.log')
+log = Path(f'~/.loragent/P4-cortex/scripts/kanban/logs/workers/{task_id}.log')
 # Look for: [worker] Shell-only task (no LLM): ...
 ```
 
 **4d) Hard evidence** (cron tick):
 ```bash
 # After next cron tick:
-grep "Script-based job\|Shell-only" ~/.drewgent/logs/cron-runner.log
-ls -lt ~/.drewgent/cron/output/<board>/ | head -5
+grep "Script-based job\|Shell-only" ~/.loragent/logs/cron-runner.log
+ls -lt ~/.loragent/cron/output/<board>/ | head -5
 ```
 
 ### Phase 5 — Doc honesty check
@@ -232,7 +232,7 @@ was inaccurate until 2026-06-02's task body classifier was added.
 
 ### 1. Two config.yaml files
 
-`~/.drewgent/config.yaml` and `~/.drewgent/P5-ego/config/config.yaml`
+`~/.loragent/config.yaml` and `~/.loragent/P5-ego/config/config.yaml`
 are duplicated. Path-integrity-report-2026-05-17 already noted
 "potential drift". Both must be patched in sync.
 
@@ -253,14 +253,14 @@ have a bug — restore by replacing both blocks in one patch.
 
 ### 2. Two kanban DB files
 
-`~/.drewgent/state/drewgent_tasks.db` (top-level, stale, 32KB)
-`~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db` (canonical)
+`~/.loragent/state/loragent_tasks.db` (top-level, stale, 32KB)
+`~/.loragent/P2-hippocampus/kanban/state/loragent_tasks.db` (canonical)
 
 The dispatcher / worker / scheduler all use the P2 path. If you
 `INSERT` into the top-level path, dispatcher won't see it (silent
 failure — claim=0, spawned=0). Always use:
 ```python
-DB = '/Users/drew/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
+DB = '~/.loragent/P2-hippocampus/kanban/state/loragent_tasks.db'
 ```
 
 ### 3. smart_routing.cheap_model = main model = no effect
@@ -304,14 +304,14 @@ This skill is retained for reference when working with the legacy per-call path 
 
 - `P4-cortex/growth/KANBAN-REVIEW-20260520.md` — Leak 1 / Missing 10 cell
   corrected (✅ Done → ⚠ Partial); 6/2 follow-up section added
-- `~/.drewgent/config.yaml` — `auxiliary.compression.{provider,model}`
-- `~/.drewgent/P5-ego/config/config.yaml` — same
-- `~/.drewgent/cron/jobs.json` — cron-output-cleanup + kanban-maintenance
+- `~/.loragent/config.yaml` — `auxiliary.compression.{provider,model}`
+- `~/.loragent/P5-ego/config/config.yaml` — same
+- `~/.loragent/cron/jobs.json` — cron-output-cleanup + kanban-maintenance
   have `script:` field
-- `~/.drewgent/source/drewgent-agent/cron/scheduler.py` — `run_job()`
+- `~/.loragent/source/loragent-agent/cron/scheduler.py` — `run_job()`
   has script-based fast path
-- `~/.drewgent/scripts/kanban_maintenance.py` — newly written
-- `~/.drewgent/scripts/run_kanban_worker.py` — `_is_shell_only_task()`
+- `~/.loragent/scripts/kanban_maintenance.py` — newly written
+- `~/.loragent/scripts/run_kanban_worker.py` — `_is_shell_only_task()`
   + `_run_shell_only_task()`
 
 ## Follow-up checklist (not in scope, but tracked)

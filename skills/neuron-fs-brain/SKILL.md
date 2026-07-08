@@ -1,11 +1,11 @@
 ---
 name: neuron-fs-brain
-description: NeuronFS-style brain governance for Drewgent. Manages filesystem-based AI constraints via folder structure and special tokens (vorq, 禁).
+description: NeuronFS-style brain governance for Loragent. Manages filesystem-based AI constraints via folder structure and special tokens (vorq, 禁).
 version: 1.0.0
-author: drewgent-core
+author: loragent-core
 license: MIT
 metadata:
-  drewgent:
+  loragent:
     tags: [neuronfs, brain, governance, constraints, filesystem, vorq, brain-management]
     category: brain
 links:
@@ -19,7 +19,7 @@ links:
 
 # NeuronFS Brain Governance
 
-This skill implements NeuronFS-style brain governance for Drewgent, treating the filesystem as a constraint engine where folder structure and special tokens force AI behavior.
+This skill implements NeuronFS-style brain governance for Loragent, treating the filesystem as a constraint engine where folder structure and special tokens force AI behavior.
 
 ## Overview
 
@@ -68,7 +68,7 @@ The brain is organized in 7 layers with strict priority:
 ## Brain Structure
 
 ```
-~/.drewgent/brain/<name>/
+~/.loragent/brain/<name>/
 ├── P0-brainstem/           # CRITICAL: never-do rules
 │   ├── 禁/                # Forbidden pattern subdirectories
 │   │   ├── secrets_in_code/
@@ -198,7 +198,7 @@ TOKEN: 禁my_pattern
 TYPE: vorq
 CONDITION: Before any action matching "my_pattern"
 ACTION: 
-1. Check ~/.drewgent/brain/active/禁/my_pattern/
+1. Check ~/.loragent/brain/active/禁/my_pattern/
 2. Load rule.neuron content
 3. Verify conditions are met
 4. Proceed only if rules pass
@@ -246,7 +246,7 @@ short name(`[[rules]]`, `[[SOUL]]`)은 layer 정보를 소멸시킨다 — `[[SO
 
 ### 원칙 2: 이름 충돌 회피
 
-Drewgent vault에는 중복 파일명이 존재한다:
+Loragent vault에는 중복 파일명이 존재한다:
 
 | Short name | 중복 수 | Canonical path (올바른 링크) |
 |------------|---------|------------------------------|
@@ -298,7 +298,7 @@ User asks: "Write a function that logs to console"
 2. Result: Block console.log, suggest logging library
 ```
 
-## Integration with Drewgent
+## Integration with Loragent
 
 The brain is loaded into the system prompt via:
 
@@ -317,9 +317,9 @@ The brain is loaded into the system prompt via:
 ### Step 2: Add Rules
 Create files in the appropriate layers:
 ```
-~/.drewgent/brain/myproject/P0-brainstem/禁secrets_in_code.neuron
-~/.drewgent/brain/myproject/P1-limbic/professional_tone.neuron
-~/.drewgent/brain/myproject/P4-cortex/python_patterns.neuron
+~/.loragent/brain/myproject/P0-brainstem/禁secrets_in_code.neuron
+~/.loragent/brain/myproject/P1-limbic/professional_tone.neuron
+~/.loragent/brain/myproject/P4-cortex/python_patterns.neuron
 ```
 
 ### Step 3: Activate
@@ -345,7 +345,7 @@ Create files in the appropriate layers:
 ### Brain not loading?
 - Check `/brain list` shows the brain
 - Run `/brain activate <name>`
-- Verify `~/.drewgent/brain/active_brain.txt` exists
+- Verify `~/.loragent/brain/active_brain.txt` exists
 
 ### Rules not enforced?
 - Rules must be in `.neuron`, `.md`, or `.rule` files
@@ -366,11 +366,11 @@ To re-enable:
 
 ## Agent Navigation & Provenance
 
-NeuronFS brain governance 외에도, Drewgent의 **에이전트 내비게이션과 결정 맥락 기록**은 `AGENTS.md`에 통합되어 있다.
+NeuronFS brain governance 외에도, Loragent의 **에이전트 내비게이션과 결정 맥락 기록**은 `AGENTS.md`에 통합되어 있다.
 
 ### AGENTS.md
 
-`~/.drewgent/AGENTS.md`는 현재 아키텍처, 파일 구조, 에이전트가 참조해야 할 문서들을 정의한 **agent-first navigation guide**다. 이 파일은 세션 시작 시 컨텍스트에 자동 로드된다.
+`~/.loragent/AGENTS.md`는 현재 아키텍처, 파일 구조, 에이전트가 참조해야 할 문서들을 정의한 **agent-first navigation guide**다. 이 파일은 세션 시작 시 컨텍스트에 자동 로드된다.
 
 핵심 내용:
 - Current architecture (customize layer, NOT fork)
@@ -397,7 +397,7 @@ provenance:
 
 ### Taste Framework Reference
 
-`references/taste-framework.md`는 Pratik Bhavsar의 "How to Be a 30x AI Engineer with a Taste"를 요약한 참고 자료다. Recognition/Compass/Vision taste의 세 가지 형태와 5가지 가치 창출 영역을 정의하며, Drewgent의 아키텍처 결정을 평가하는 프레임워크로 사용할 수 있다.
+`references/taste-framework.md`는 Pratik Bhavsar의 "How to Be a 30x AI Engineer with a Taste"를 요약한 참고 자료다. Recognition/Compass/Vision taste의 세 가지 형태와 5가지 가치 창출 영역을 정의하며, Loragent의 아키텍처 결정을 평가하는 프레임워크로 사용할 수 있다.
 
 ---
 

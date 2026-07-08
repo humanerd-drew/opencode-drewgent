@@ -16,7 +16,7 @@ Mode B of the content pipeline: a single autonomous agent profile (`content-mana
 
 ## Agent Profile
 
-File: `~/.drewgent/agents/content-manager.md`
+File: `~/.loragent/agents/content-manager.md`
 Model: `deepseek-v4-pro` (opencode-go)
 Toolsets: `terminal, file, search, session_search, kanban, web`
 
@@ -30,7 +30,7 @@ The profile includes:
 - Narrative arc tracking and content inventory updates
 - Quality gates (SILENT if nothing new, one story per cycle)
 
-Full content: see `~/.drewgent/agents/content-manager.md`.
+Full content: see `~/.loragent/agents/content-manager.md`.
 
 ## Cron Job
 
@@ -41,7 +41,7 @@ Full content: see `~/.drewgent/agents/content-manager.md`.
 | Schedule | `0 12 * * *` (daily at 12:00 KST) |
 | Model | `deepseek-v4-pro` (opencode-go) |
 | Delivery | Discord channel `1492883985473208522` (#content) |
-| Workdir | `/Users/drew/.drewgent` |
+| Workdir | `~/.loragent` |
 | Toolsets | `terminal, file, search, session_search, kanban, web` |
 
 The cron prompt is self-contained with the full workflow. It references the agent profile file for full detail.
@@ -51,7 +51,7 @@ The cron prompt is self-contained with the full workflow. It references the agen
 | File | Path | Purpose |
 |------|------|---------|
 | Brand guide | `P4-cortex/content/brand-guide.md` | Voice, audience, positioning |
-| Glossary | `P4-cortex/content/glossary.md` | Project terms (Drewgent, M-LOG, etc.) |
+| Glossary | `P4-cortex/content/glossary.md` | Project terms (Loragent, M-LOG, etc.) |
 | Content inventory | `P4-cortex/content/content-inventory.md` | Published/drafted dedup |
 | Narrative arc | `P4-cortex/content/narrative_arc.md` | Episode tracking, season continuity |
 
@@ -101,7 +101,7 @@ Tested via `delegate_task(agent_profile="content-manager", goal="...")` (since c
 
 ## Pitfalls
 
-- **Paths must be absolute.** Use `/Users/drew/.drewgent/P2-hippocampus/memories/insights/`, not relative paths.
+- **Paths must be absolute.** Use `~/.loragent/P2-hippocampus/memories/insights/`, not relative paths.
 - **Do NOT reference existing drafts** from before the current session. Explicitly exclude them.
 - **SILENT is correct** — if nothing worth publishing, report "no new material" and stop.
 - **SVG validation**: ensure XML is well-formed. Run `python3 -c "import xml.etree.ElementTree as ET; ET.parse('file.svg')"` if unsure.

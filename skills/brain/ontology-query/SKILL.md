@@ -6,7 +6,7 @@ tags: [concept]
 created: 2026-05-21
 updated: 2026-05-20
 links:
-  - "[[P4-cortex/growth/open-crab-ontology-drewgent-implementation]]"
+  - "[[P4-cortex/growth/open-crab-ontology-loragent-implementation]]"
   - "[[P4-cortex/knowledge/NEURONFS_RULES]]"
   - "[[P4-cortex/knowledge/OPENCRAB_ONTOLOGY]]"
   - "[[P4-cortex/scripts/ontology_frontmatter_sync.py]]"
@@ -20,7 +20,7 @@ Query the P0-brainstem ontology graph exported as JSONL.
 
 ## Script Location
 ```
-~/.drewgent/P4-cortex/scripts/ontology_query.py
+~/.loragent/P4-cortex/scripts/ontology_query.py
 ```
 
 ## Commands
@@ -66,7 +66,7 @@ Total: 13 nodes
 ### links <rule_id>
 ```
 Links FROM 禁karpathy_coding_principles:
-  → P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/禁brain_obsidian_graph
+  → P0-brainstem/brain/Loragent-brain/P0-brainstem/禁/禁brain_obsidian_graph
   → P0-brainstem/brain/rules
   → P5-ego/SELF_MODEL
 
@@ -81,11 +81,11 @@ No orphan nodes found. All nodes have at least one connection.
 
 ## Ontology File
 ```
-~/.drewgent/P0-brainstem/p0-brain-ontology.jsonl
+~/.loragent/P0-brainstem/p0-brain-ontology.jsonl
 ```
 13 nodes exported as JSONL. Updated manually when new .neuron files are created.
 
 ## Related
-- [[P4-cortex/growth/open-crab-ontology-drewgent-implementation]] — Phase 1+2 implementation report
-- [[P4-cortex/knowledge/OPENCRAB_ONTOLOGY]] — 9-Space mapping to Drewgent P-layers
+- [[P4-cortex/growth/open-crab-ontology-loragent-implementation]] — Phase 1+2 implementation report
+- [[P4-cortex/knowledge/OPENCRAB_ONTOLOGY]] — 9-Space mapping to Loragent P-layers
 - [[P4-cortex/scripts/ontology_frontmatter_sync.py]] — Auto frontmatter sync (cron)

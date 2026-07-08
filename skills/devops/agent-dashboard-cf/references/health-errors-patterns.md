@@ -27,8 +27,8 @@ Top 3 issues as short strings: `["disk 76%", "3 cron errors"]`
 Parses error logs for last N unique errors.
 
 ### Input files
-- `~/.drewgent/logs/errors.log` (primary)
-- `~/.drewgent/logs/agent.log` (fallback)
+- `~/.loragent/logs/errors.log` (primary)
+- `~/.loragent/logs/agent.log` (fallback)
 
 ### Method
 1. Seek to last 200KB of each file
@@ -62,9 +62,9 @@ Generates user-facing alert items (separate from health status).
 |-------|-----------|----------|
 | Disk >80% | disk_used_pct > 80 | error |
 | Disk >65% | disk_used_pct > 65 | warn |
-| Watchdog cron error | cron job "Drewgent launchd watchdog" in errors | error |
+| Watchdog cron error | cron job "Loragent launchd watchdog" in errors | error |
 | Watchdog missing | no watchdog cron job active and not in errors | warn |
 | Other cron errors | len(other_errors) > 0 | warn |
 
 ### Gateway watchdog special case
-The `ai.drewgent.gateway-watchdog` launchd service is `OnDemand=true` — it does NOT stay running (no PID). The actual watchdog is the **cron job** "Drewgent launchd watchdog" running every 5 minutes. Alert logic checks the cron job status, NOT the launchd service PID.
+The `ai.loragent.gateway-watchdog` launchd service is `OnDemand=true` — it does NOT stay running (no PID). The actual watchdog is the **cron job** "Loragent launchd watchdog" running every 5 minutes. Alert logic checks the cron job status, NOT the launchd service PID.

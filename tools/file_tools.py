@@ -39,7 +39,7 @@ def _get_max_read_chars() -> int:
     if _max_read_chars_cached is not None:
         return _max_read_chars_cached
     try:
-        from drewgent_cli.config import load_config
+        from loragent_cli.config import load_config
         cfg = load_config()
         val = cfg.get("file_read_max_chars")
         if isinstance(val, (int, float)) and val > 0:
@@ -290,22 +290,22 @@ def read_file_tool(path: str, offset: int = 1, limit: int = 500, task_id: str = 
                 ),
             })
 
-        # ── Drewgent internal path guard ────────────────────────────────
+        # ── Loragent internal path guard ────────────────────────────────
         # Prevent prompt injection via catalog or hub metadata files.
         import pathlib as _pathlib
-        from drewgent_constants import get_drewgent_home as _get_hh
+        from loragent_constants import get_loragent_home as _get_hh
         _resolved = _pathlib.Path(path).expanduser().resolve()
-        _drewgent_home = _get_hh().resolve()
+        _loragent_home = _get_hh().resolve()
         _blocked_dirs = [
-            _drewgent_home / "skills" / ".hub" / "index-cache",
-            _drewgent_home / "skills" / ".hub",
+            _loragent_home / "skills" / ".hub" / "index-cache",
+            _loragent_home / "skills" / ".hub",
         ]
         for _blocked in _blocked_dirs:
             try:
                 _resolved.relative_to(_blocked)
                 return json.dumps({
                     "error": (
-                        f"Access denied: {path} is an internal Drewgent cache file "
+                        f"Access denied: {path} is an internal Loragent cache file "
                         "and cannot be read directly to prevent prompt injection. "
                         "Use the skills_list or skill_view tools instead."
                     )

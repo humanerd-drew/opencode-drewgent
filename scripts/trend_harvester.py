@@ -3,7 +3,7 @@
 Trend Harvester — P4-cortex AI Trend Collection & 5-Axis Filtering
 
 Collects AI tools/techniques from GitHub trending and GeekNews RSS,
-scores through Drewgent's 5-axis philosophy filter.
+scores through Loragent's 5-axis philosophy filter.
 Only trends that pass the filter get to analyzed/keep.
 
 Usage:
@@ -25,8 +25,8 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 # ---- config ----
-_DREWGENT_HOME = Path.home() / ".drewgent"
-_P4_TREND = _DREWGENT_HOME / "P4-cortex" / "growth" / "trend-harvester"
+_LORAGENT_HOME = Path.home() / ".loragent"
+_P4_TREND = _LORAGENT_HOME / "P4-cortex" / "growth" / "trend-harvester"
 _STATE_FILE = _P4_TREND / ".harvester_state.json"
 _PID_FILE = _P4_TREND / ".harvester.lock"
 _DRY_RUN = False
@@ -91,7 +91,7 @@ def release_lock() -> None:
 def _fetch_url(url: str, timeout: int = 15) -> str | None:
     """Generic URL fetch with error handling."""
     import urllib.request
-    headers = {"User-Agent": "Mozilla/5.0 (compatible; Drewgent-Harvester/1.0)"}
+    headers = {"User-Agent": "Mozilla/5.0 (compatible; Loragent-Harvester/1.0)"}
     try:
         req = urllib.request.Request(url, headers=headers)
         with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -374,8 +374,8 @@ def _extract_main_content(html: str, url: str) -> str:
 # ---- 5-axis scoring ----
 
 # ---- Knowledge-base scoring axes ----
-# Purpose: "Is this worth Drewgent recording in its wiki knowledge base?"
-# Drewgent reads analyzed/keep and records to wiki to stay current.
+# Purpose: "Is this worth Loragent recording in its wiki knowledge base?"
+# Loragent reads analyzed/keep and records to wiki to stay current.
 #
 # Source-specific behavior:
 #   GitHub  — scored on stars + keywords (tool-technique quality signal)
@@ -395,7 +395,7 @@ KB_AXES = {
             "cli", "terminal", "tool", "api", "sdk", "framework", "library",
             "github", "open-source", "oss", "repo", "commit", "pull request",
             "coding", "programming", "developer", "devtools", "ide",
-            # AI coding agents (directly relevant to Drewgent)
+            # AI coding agents (directly relevant to Loragent)
             "claude code", "/goal", "/memory", "/skill",
             "copilot", "cursor", "windsurf", "continue",
             "code agent", "coding agent", "auto coding",
@@ -419,11 +419,11 @@ KB_AXES = {
         ],
     },
     "direct_impact": {
-        # Does this affect Drewgent's own capabilities or development?
+        # Does this affect Loragent's own capabilities or development?
         "weight": 1.5,
         "keywords_boost": [
             "claude code", "/goal", "/memory", "/skill",
-            "hermes-agent", "drewgent",
+            "hermes-agent", "loragent",
             "ai agent", "coding agent", "terminal agent",
             "agent protocol", "mcp", "model context protocol",
             "claude api", "anthropic api",
@@ -507,7 +507,7 @@ KB_AXIS_ORDER = ["relevance", "direct_impact", "actionability", "novelty", "cred
 def score_trend(item: dict) -> dict:
     """
     Score a trend item for knowledge-base worthiness.
-    Purpose: Is this worth Drewgent recording in its wiki knowledge base?
+    Purpose: Is this worth Loragent recording in its wiki knowledge base?
     """
     source = item.get("source", "unknown")
     is_geeknews = source == "geeknews"
@@ -666,7 +666,7 @@ def write_collected(item: dict, base_dir: Path) -> None:
 def main() -> int:
     global _DRY_RUN, _SOURCE
 
-    parser = argparse.ArgumentParser(description="Drewgent Trend Harvester")
+    parser = argparse.ArgumentParser(description="Loragent Trend Harvester")
     parser.add_argument("--dry-run", action="store_true", help="Collect and score, don't write files")
     parser.add_argument("--source", choices=["all", "github", "geeknews"], default="all",
                         help="Source to collect from (default: all)")

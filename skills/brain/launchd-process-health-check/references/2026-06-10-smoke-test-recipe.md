@@ -5,7 +5,7 @@ cron `f0b39d211970` (Sun 10:00 KST). All 4 checks pass as of 2026-06-10 19:36.
 
 ## Why this exists
 
-The customize layer (`~/.drewgent/customize/`) is fragile in 3 ways:
+The customize layer (`~/.loragent/customize/`) is fragile in 3 ways:
 
 1. **`~/.local/bin/hermes` wrapper** can be reinstalled by `hermes` upgrade,
    which would re-add `unset PYTHONPATH` and silently kill the layer.
@@ -34,15 +34,15 @@ The anchored regex is critical. Naive `grep "PYTHONPATH"` matches
 
 ### T6: customize layer importable
 ```bash
-PYTHONPATH=~/.drewgent/customize \
+PYTHONPATH=~/.loragent/customize \
   ~/.hermes/hermes-agent/venv/bin/python -c "
 from hermes_cli.gateway import get_launchd_label
-assert get_launchd_label() == 'ai.drewgent.gateway'
+assert get_launchd_label() == 'ai.loragent.gateway'
 "
 # If assertions pass: ✓
 ```
 
-This exercises the full proxy chain: `~/.drewgent/customize/hermes_cli/gateway.py`
+This exercises the full proxy chain: `~/.loragent/customize/hermes_cli/gateway.py`
 loads the real hermes module, mirrors its symbols, then patches the
 two we override. If any step in the proxy breaks (e.g. upstream renames
 `find_gateway_pids` to `find_gateway_processes`), the import fails or
@@ -55,7 +55,7 @@ list (gateway must be alive for the smoke test to be meaningful).
 ```bash
 ~/.hermes/hermes-agent/venv/bin/python -c "
 from pathlib import Path
-text = Path.home().joinpath('.drewgent/logs/gateway.log').read_text(errors='ignore')
+text = Path.home().joinpath('.loragent/logs/gateway.log').read_text(errors='ignore')
 print(text.count('api_start_time is not defined'))
 "
 # Output must be 0
@@ -68,11 +68,11 @@ in case the error re-emerges under stress. If a future session sees
 this counter > 0, that's a real signal — investigate.
 
 ### T8: memory wikilink integrity
-Delegates to `drewgent_graph_gap_analysis.sh --dangling-only` and counts
+Delegates to `loragent_graph_gap_analysis.sh --dangling-only` and counts
 the actual `⚠ dangling:` alert lines (not the section header).
 
 ```bash
-DANGLES=$($HOME/.hermes/scripts/drewgent_graph_gap_analysis.sh --dangling-only 2>/dev/null | grep -c "⚠ dangling:" 2>/dev/null)
+DANGLES=$($HOME/.hermes/scripts/loragent_graph_gap_analysis.sh --dangling-only 2>/dev/null | grep -c "⚠ dangling:" 2>/dev/null)
 DANGLES=${DANGLES:-0}
 # 0 = ✓, >0 = ✗ (with count)
 ```
@@ -85,7 +85,7 @@ giving a constant false-positive count. Use the alert line marker (verified
 
 ```bash
 hermes cronjob create \
-  --name "Drewgent customize smoke test (weekly)" \
+  --name "Loragent customize smoke test (weekly)" \
   --schedule "0 10 * * 0" \
   --no-agent true \
   --script "customize_smoke_test.sh"
@@ -99,14 +99,14 @@ copy is fine.
 ## Output format
 
 ```
-🔍 **Drewgent customize smoke test** @ 2026-06-10 19:36:04 KST
+🔍 **Loragent customize smoke test** @ 2026-06-10 19:36:04 KST
 
 ## T5: hermes wrapper
-  ✓ /Users/drew/.local/bin/hermes does not unset PYTHONPATH (customize layer safe)
-  ✓ /Users/drew/.local/bin/hermes.bak exists (original, for rollback)
+  ✓ ~/.local/bin/hermes does not unset PYTHONPATH (customize layer safe)
+  ✓ ~/.local/bin/hermes.bak exists (original, for rollback)
 
 ## T6: customize layer
-  ✓ get_launchd_label() = ai.drewgent.gateway
+  ✓ get_launchd_label() = ai.loragent.gateway
   ✓ find_gateway_pids() found 1 gateway process(es)
 
 ## T7: regression check (NameError api_start_time)

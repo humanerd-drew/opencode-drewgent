@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-Kanban Tool Module - Drewgent Task Queue Management
+Kanban Tool Module - Loragent Task Queue Management
 
 Provides persistent task queue with dependency tracking, hallucination detection,
-and worker ownership enforcement via drewgent_tasks.db.
+and worker ownership enforcement via loragent_tasks.db.
 
 Tools:
     kanban_create, kanban_complete, kanban_block, kanban_unblock,
     kanban_claim, kanban_heartbeat, kanban_list, kanban_get,
     kanban_link, kanban_add_comment, kanban_get_events
 
-DB: ~/.drewgent/state/drewgent_tasks.db
+DB: ~/.loragent/state/loragent_tasks.db
 """
 
 import json
@@ -25,8 +25,8 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
-_DREW_HOME = Path(os.environ.get("DREW_HOME", Path.home() / ".drewgent"))
-_DB_PATH = _DREW_HOME / "P2-hippocampus" / "kanban" / "state" / "drewgent_tasks.db"
+_DREW_HOME = Path(os.environ.get("DREW_HOME", Path.home() / ".loragent"))
+_DB_PATH = _DREW_HOME / "P2-hippocampus" / "kanban" / "state" / "loragent_tasks.db"
 
 _lock = threading.Lock()
 
@@ -77,12 +77,12 @@ def kanban_create(
     board: str = "default",
 ) -> str:
     """
-    Create a new task in Drewgent's task store.
+    Create a new task in Loragent's task store.
 
     Args:
         title: Task title (required)
         body: Task description/body
-        assignee: Assignee name (default: "drewgent")
+        assignee: Assignee name (default: "loragent")
         workspace_kind: "cli" | "gateway" | None
         workspace_path: Working directory path
         priority: 0=low, 1=medium, 2=high
@@ -133,7 +133,7 @@ def kanban_create(
                     task_id,
                     title,
                     body or "",
-                    assignee or "drewgent",
+                    assignee or "loragent",
                     initial_status,
                     priority,
                     board,
@@ -592,13 +592,13 @@ KANBAN_TOOLS_SCHEMA = {
         "type": "function",
         "function": {
             "name": "kanban_create",
-            "description": "Create a new task in Drewgent's persistent task queue. Use this to track work items, sub-tasks, and integration workflow steps. Parent-child dependencies are supported — a task with incomplete parents goes to 'todo' status until parents are completed.",
+            "description": "Create a new task in Loragent's persistent task queue. Use this to track work items, sub-tasks, and integration workflow steps. Parent-child dependencies are supported — a task with incomplete parents goes to 'todo' status until parents are completed.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "title": {"type": "string", "description": "Task title (required)"},
                     "body": {"type": "string", "description": "Task description"},
-                    "assignee": {"type": "string", "description": "Assignee name (default: 'drewgent')"},
+                    "assignee": {"type": "string", "description": "Assignee name (default: 'loragent')"},
                     "workspace_kind": {"type": "string", "description": "cli|gateway|None"},
                     "workspace_path": {"type": "string", "description": "Working directory"},
                     "priority": {"type": "integer", "description": "0=low, 1=medium, 2=high"},
@@ -694,7 +694,7 @@ KANBAN_TOOLS_SCHEMA = {
         "type": "function",
         "function": {
             "name": "kanban_list",
-            "description": "List tasks from Drewgent's task store with optional filters.",
+            "description": "List tasks from Loragent's task store with optional filters.",
             "parameters": {
                 "type": "object",
                 "properties": {

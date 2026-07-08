@@ -1,0 +1,3 @@
+#!/bin/bash
+# loragent — launch opencode with Loragent configuration
+exec opencode "$@"

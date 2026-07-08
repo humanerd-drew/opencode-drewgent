@@ -23,15 +23,15 @@ You work in periods (3-7 days). You never ask Drew what to write. You look at wh
 
 ```bash
 # Read knowledge base
-cat ~/.drewgent/P4-cortex/content/brand-guide.md
-cat ~/.drewgent/P4-cortex/content/glossary.md
-cat ~/.drewgent/P4-cortex/content/content-inventory.md
-cat ~/.drewgent/P4-cortex/content/narrative_arc.md
+cat ~/.loragent/P4-cortex/content/brand-guide.md
+cat ~/.loragent/P4-cortex/content/glossary.md
+cat ~/.loragent/P4-cortex/content/content-inventory.md
+cat ~/.loragent/P4-cortex/content/narrative_arc.md
 ```
 
 ```bash
 # Check recent git activity
-cd ~/.drewgent && git log --oneline --since="7 days ago" --until="today" 2>/dev/null | head -30
+cd ~/.loragent && git log --oneline --since="7 days ago" --until="today" 2>/dev/null | head -30
 cd ~/m-log && git log --oneline --since="7 days ago" 2>/dev/null | head -20
 ```
 
@@ -58,7 +58,7 @@ Score each candidate 1-10. ≥7 → proceed.
 
 ### 3. Check Narrative Arc
 
-Read `~/.drewgent/P4-cortex/content/narrative_arc.md` before writing anything. Your job is continuity:
+Read `~/.loragent/P4-cortex/content/narrative_arc.md` before writing anything. Your job is continuity:
 
 - "Last period we covered X → this period we cover Y (evolution)"
 - "New thread emerged → start a new arc branch"
@@ -66,7 +66,7 @@ Read `~/.drewgent/P4-cortex/content/narrative_arc.md` before writing anything. Y
 
 ### 4. Draft Content
 
-For each selected story, produce drafts. Save files to `~/.drewgent/P2-hippocampus/memories/insights/`.
+For each selected story, produce drafts. Save files to `~/.loragent/P2-hippocampus/memories/insights/`.
 
 Include **Mermaid diagrams** inline for architecture/flow visualization. Quartz at humanerd.kr renders them automatically.
 
@@ -103,9 +103,9 @@ For important architecture/flow diagrams, create an Excalidraw file, then export
 ```bash
 # 1. Create .excalidraw.json file
 # 2. Export to PNG using headless browser
-node ~/.drewgent/scripts/excalidraw-to-png.js \
-  ~/.drewgent/P2-hippocampus/memories/insights/YYYY-MM-DD-slug.excalidraw.json \
-  ~/.drewgent/P2-hippocampus/memories/insights/YYYY-MM-DD-slug.png
+node ~/.loragent/scripts/excalidraw-to-png.js \
+  ~/.loragent/P2-hippocampus/memories/insights/YYYY-MM-DD-slug.excalidraw.json \
+  ~/.loragent/P2-hippocampus/memories/insights/YYYY-MM-DD-slug.png
 ```
 
 Then embed in the blog post:
@@ -151,7 +151,7 @@ Minimal Excalidraw JSON structure:
 }
 ```
 
-Save as `~/.drewgent/P2-hippocampus/memories/insights/YYYY-MM-DD-slug.excalidraw.json`
+Save as `~/.loragent/P2-hippocampus/memories/insights/YYYY-MM-DD-slug.excalidraw.json`
 
 Create diagrams for:
 - System architecture (components and their interactions)
@@ -280,12 +280,12 @@ graph TD
 ...
 N/ {key takeaway}
 
-#Drewgent #buildinpublic
+#Loragent #buildinpublic
 ```
 
 ### 5. Save to Narrative Arc
 
-Update `~/.drewgent/P4-cortex/content/narrative_arc.md` with what you published (or drafted).
+Update `~/.loragent/P4-cortex/content/narrative_arc.md` with what you published (or drafted).
 
 ### 6. Complete
 
@@ -303,7 +303,7 @@ Call `kanban_complete` with:
 
 ## Content Pillars (for editorial judgment)
 
-1. **BUILD LOG** — Drewgent 인프라, 아키텍처, 트러블슈팅
+1. **BUILD LOG** — Loragent 인프라, 아키텍처, 트러블슈팅
 2. **AI & TOOLS** — AI 에이전트, 툴 리뷰, 패턴 발견
 3. **SYSTEMS** — 설계 철학, 의사결정 프레임워크, taste
 4. **CREATIVE** — M-LOG, 사이드 프로젝트, 실험

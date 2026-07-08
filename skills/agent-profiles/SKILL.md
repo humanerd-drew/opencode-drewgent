@@ -20,7 +20,7 @@ Agent profiles are pre-defined subagent roles loaded by `delegate_task(agent_pro
 
 ## Location
 
-Profiles live at `$HERMES_HOME/agents/*.md`. For Drewgent: `~/.drewgent/agents/`.
+Profiles live at `$HERMES_HOME/agents/*.md`. For Loragent: `~/.loragent/agents/`.
 
 ## Format
 

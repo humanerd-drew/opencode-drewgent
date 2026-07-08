@@ -17,7 +17,7 @@ links:
 
 # Vault Naming Convention
 
-Every file in the Drewgent vault is a node in the knowledge graph. **Filename uniqueness** ensures wikilinks resolve deterministically. **P-layer prefix** preserves priority identity. **Exclusion boundaries** keep operational noise out of the graph.
+Every file in the Loragent vault is a node in the knowledge graph. **Filename uniqueness** ensures wikilinks resolve deterministically. **P-layer prefix** preserves priority identity. **Exclusion boundaries** keep operational noise out of the graph.
 
 ## Why This Matters (The SEO of Knowledge)
 
@@ -37,7 +37,7 @@ From NeuronFS: the P-layer prefix (P0-P6) is structural IDENTITY, not just a fol
 - `humanerd-site/`
 
 **Non-structural zones** (excluded from Obsidian, can have duplicates):
-- `source/` — drewgent-agent upstream code
+- `source/` — loragent-agent upstream code
 - `cron/output/` — operational logs
 - `.trash/` — recovery staging
 - `_agent/` — runtime state
@@ -48,7 +48,7 @@ From NeuronFS: the P-layer prefix (P0-P6) is structural IDENTITY, not just a fol
 Every `.md` file in structural zones must have a unique basename (case-sensitive):
 
 ```bash
-find ~/.drewgent -name '*.md' \
+find ~/.loragent -name '*.md' \
   -not -path '*/cron/*' -not -path '*/.trash/*' \
   -not -path '*/source/*' -not -path '*/_agent/*' \
   -not -path '*/node_modules/*' -not -path '*/archive/*' \
@@ -67,7 +67,7 @@ find ~/.drewgent -name '*.md' \
 
 ## Obsidian Exclusion Configuration
 
-`~/.drewgent/.obsidian/app.json` controls what Obsidian indexes:
+`~/.loragent/.obsidian/app.json` controls what Obsidian indexes:
 
 ```json
 {
@@ -85,7 +85,7 @@ find ~/.drewgent -name '*.md' \
 
 A directory should be excluded from Obsidian when it contains:
 - **Operational logs** (cron outputs, telemetry) — write-only by design, create fake graph edges
-- **Source code** (drewgent-agent upstream) — not vault content, 725MB of noise
+- **Source code** (loragent-agent upstream) — not vault content, 725MB of noise
 - **Recovery staging** (.trash) — temporary, should not be in the graph
 - **Runtime state** (_agent) — ephemeral, changes every session
 
@@ -120,7 +120,7 @@ obsidian backlinks path="P5-ego/SELF_MODEL.md" total
 
 # Check if generic 'Skill' title makes node anonymous
 # Any SKILL.md with `title: Skill` in frontmatter renders as "SKILL" in graph view
-grep -rl '^title: Skill$' ~/.drewgent/skills --include='SKILL.md' \
+grep -rl '^title: Skill$' ~/.loragent/skills --include='SKILL.md' \
   --exclude-dir=optional-skills --exclude-dir=plugins
 
 # Fix: replace with directory-derived name
@@ -133,11 +133,11 @@ grep -rl '^title: Skill$' ~/.drewgent/skills --include='SKILL.md' \
 
 ```bash
 # Inbound link distribution (identify star hubs)
-grep -roh '\[\[[^]]*\]\]' ~/.drewgent --include='*.md' \
+grep -roh '\[\[[^]]*\]\]' ~/.loragent --include='*.md' \
   | sed 's/\[\[//;s/\]\]//' | sort | uniq -c | sort -rn | head -20
 
 # Files with N=1 outbound link (daisy chain)
-grep -c '\[\[[^]]*\]\]' ~/.drewgent/P0-brainstem/**/*.md 2>/dev/null
+grep -c '\[\[[^]]*\]\]' ~/.loragent/P0-brainstem/**/*.md 2>/dev/null
 
 # Orphan files (0 inbound, 0 outbound)
 # Use gbrain find_orphans or scan manually
@@ -170,16 +170,16 @@ This applies to every vault-hygiene task: prefer structural fixes (rename, exclu
 
 ### Dual-Namespace Reality
 
-`~/.drewgent/` is shared by two systems:
+`~/.loragent/` is shared by two systems:
 
 | Namespace | Owner | Convention | Example files |
 |-----------|-------|-----------|--------------|
 | Root level | **Hermes Agent** runtime | No vault wikilinks to root files | `SOUL.md`, `config.yaml`, `.env`, `CHANGELOG.md` |
-| P-layer dirs | **Drewgent vault** knowledge | Always use full-path wikilinks | `P1-limbic/persona/SOUL.md`, `P0-brainstem/brain/rules.md` |
+| P-layer dirs | **Loragent vault** knowledge | Always use full-path wikilinks | `P1-limbic/persona/SOUL.md`, `P0-brainstem/brain/rules.md` |
 
-Hermes Agent's `_ensure_default_soul_md()` in `hermes_cli/config.py` seeds `~/SOUL.md` if missing — this is correct behavior. The root `SOUL.md` is the **Hermes system prompt**, not Drewgent's identity document. Drewgent's identity lives at `P1-limbic/persona/SOUL.md`.
+Hermes Agent's `_ensure_default_soul_md()` in `hermes_cli/config.py` seeds `~/SOUL.md` if missing — this is correct behavior. The root `SOUL.md` is the **Hermes system prompt**, not Loragent's identity document. Loragent's identity lives at `P1-limbic/persona/SOUL.md`.
 
-**Rule**: Never create a vault wikilink to a root-level file. Root = Hermes runtime. P-layers = Drewgent knowledge.
+**Rule**: Never create a vault wikilink to a root-level file. Root = Hermes runtime. P-layers = Loragent knowledge.
 
 ## Organic Mesh Connectivity
 
@@ -213,7 +213,7 @@ When auditing vault wikilinks, **most "broken" links found by naive grep are fal
 ```python
 import re, os
 
-vault_root = "/Users/drew/.drewgent"
+vault_root = "~/.loragent"
 all_md = []
 for root, dirs, files in os.walk(vault_root):
     dirs[:] = [d for d in dirs if d not in EXCLUDED]
@@ -416,7 +416,7 @@ When adding cross-links to a cluster (P-layer, skill category, etc.), use this 4
 ```bash
 # Step 1: Identify the cluster
 # Scan all files in a category/directory for current link counts
-for f in ~/.drewgent/path/to/cluster/*/SKILL.md; do
+for f in ~/.loragent/path/to/cluster/*/SKILL.md; do
   name=$(basename "$(dirname "$f")")
   count=$(sed -n '/^links:/,/^---/p' "$f" | grep -c '\[\[\|')
   echo "$count $name"
@@ -424,7 +424,7 @@ done | sort -rn
 
 # Step 2: Identify natural relationships
 # Check for `related_skills` in metadata.hermes that are NOT yet in `links:`
-grep -A2 'related_skills:' ~/.drewgent/path/to/cluster/*/SKILL.md
+grep -A2 'related_skills:' ~/.loragent/path/to/cluster/*/SKILL.md
 
 # Step 3: For each skill with related_skills in metadata,
 # add those as actual `links:` wikilinks (metadata doesn't create graph edges)
@@ -432,7 +432,7 @@ grep -A2 'related_skills:' ~/.drewgent/path/to/cluster/*/SKILL.md
 
 # Step 4: Verify all new wikilinks resolve
 for link in "list/of/newly/added/links"; do
-  find ~/.drewgent -path "*/${link}.md" | grep -q . && echo "OK" || echo "BROKEN"
+  find ~/.loragent -path "*/${link}.md" | grep -q . && echo "OK" || echo "BROKEN"
 done
 ```
 
@@ -464,7 +464,7 @@ title: Kanban Worker
 
 Script to find offenders:
 ```bash
-grep -rl '^title: Skill$' ~/.drewgent/skills --include='SKILL.md' \
+grep -rl '^title: Skill$' ~/.loragent/skills --include='SKILL.md' \
   --exclude-dir=optional-skills --exclude-dir=plugins
 ```
 

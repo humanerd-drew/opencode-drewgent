@@ -8,13 +8,13 @@ Mac Mini (colima Docker)
 │   └── Volume: /Volumes/humanerd/docker/wordpress/db  (NAS mount)
 └── humanerd-wp (WordPress 6.7 + Apache, port 80 → host 8080)
     ├── wp-content: /Volumes/humanerd/docker/wordpress/wp-content  (NAS mount)
-    ├── plugins:   ~/.drewgent/wordpress/wp-content/plugins
-    └── themes:    ~/.drewgent/wordpress/wp-content/themes
+    ├── plugins:   ~/.loragent/wordpress/wp-content/plugins
+    └── themes:    ~/.loragent/wordpress/wp-content/themes
 ```
 
 ## Docker Compose
 
-File: `/Users/drew/.drewgent/wordpress/docker-compose.yml`
+File: `~/.loragent/wordpress/docker-compose.yml`
 
 ```yaml
 services:
@@ -47,15 +47,15 @@ services:
       WORDPRESS_TABLE_PREFIX: hnr_
     volumes:
       - /Volumes/humanerd/docker/wordpress/wp-content:/var/www/html/wp-content
-      - /Users/drew/.drewgent/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
-      - /Users/drew/.drewgent/wordpress/wp-content/themes:/var/www/html/wp-content/themes
+      - ~/.loragent/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
+      - ~/.loragent/wordpress/wp-content/themes:/var/www/html/wp-content/themes
     ports:
       - "8080:80"
 ```
 
 ## Credentials
 
-Stored in: `/Users/drew/.drewgent/wordpress/.wp-env` (chmod 600)
+Stored in: `~/.loragent/wordpress/.wp-env` (chmod 600)
 
 | Field | Value |
 |-------|-------|
@@ -70,7 +70,7 @@ Stored in: `/Users/drew/.drewgent/wordpress/.wp-env` (chmod 600)
 ## Startup / Shutdown
 
 ```bash
-cd ~/.drewgent/wordpress
+cd ~/.loragent/wordpress
 docker compose up -d      # start
 docker compose down       # stop (preserves volumes)
 docker compose logs -f    # follow logs
@@ -126,7 +126,7 @@ docker exec -it humanerd-db mysql -u humanerd -p
 
 ## Content-Manager → WordPress Integration (Future)
 
-The content-manager produces drafts in `/Users/drew/.drewgent/P2-hippocampus/memories/insights/`. To publish to WordPress:
+The content-manager produces drafts in `~/.loragent/P2-hippocampus/memories/insights/`. To publish to WordPress:
 
 1. Create Application Password in WP Admin → Users → humanerd → Application Passwords
 2. Use WordPress REST API (`/wp-json/wp/v2/posts`) with Basic Auth (username + app password)

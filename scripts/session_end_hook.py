@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Drewgent Session End Hook
+Loragent Session End Hook
 - Checks if session_checkpoint.json was modified more than 5 minutes ago
 - If session end detected → runs brain_nodes.py dashboard
-- Saves output to ~/.drewgent/logs/brain_YYYYMMDD_HHMMSS.log
+- Saves output to ~/.loragent/logs/brain_YYYYMMDD_HHMMSS.log
 - Updates .last_hook_run timestamp
 """
 
@@ -11,7 +11,7 @@ import os, sys, json, subprocess, time
 from pathlib import Path
 from datetime import datetime
 
-DREW_DIR      = Path.home() / ".drewgent"
+DREW_DIR      = Path.home() / ".loragent"
 CHECKPOINT    = DREW_DIR / "session_checkpoint.json"
 LAST_HOOK     = DREW_DIR / ".last_hook_run"
 LOGS_DIR      = DREW_DIR / "logs"

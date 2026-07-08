@@ -1,8 +1,8 @@
 """
 Cron job storage and management.
 
-Jobs are stored in ~/.drewgent/cron/jobs.json
-Output is saved to ~/.drewgent/cron/output/{job_id}/{timestamp}.md
+Jobs are stored in ~/.loragent/cron/jobs.json
+Output is saved to ~/.loragent/cron/output/{job_id}/{timestamp}.md
 """
 
 import copy
@@ -16,7 +16,7 @@ import uuid
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 from pathlib import Path
-from drewgent_constants import get_drewgent_home
+from loragent_constants import get_loragent_home
 from typing import Optional, Dict, List, Any, Iterator
 
 try:
@@ -34,7 +34,7 @@ _jobs_lock_local = threading.local()
 
 logger = logging.getLogger(__name__)
 
-from drewgent_time import now as _drewgent_now
+from loragent_time import now as _loragent_now
 
 try:
     from croniter import croniter
@@ -46,7 +46,7 @@ except ImportError:
 # Configuration
 # =============================================================================
 
-HERMES_DIR = get_drewgent_home()
+HERMES_DIR = get_loragent_home()
 CRON_DIR = HERMES_DIR / "cron"
 JOBS_FILE = CRON_DIR / "jobs.json"
 OUTPUT_DIR = CRON_DIR / "output"
@@ -235,7 +235,7 @@ def parse_schedule(schedule: str) -> Dict[str, Any]:
     # Duration like "30m", "2h", "1d" → one-shot from now
     try:
         minutes = parse_duration(schedule)
-        run_at = _drewgent_now() + timedelta(minutes=minutes)
+        run_at = _loragent_now() + timedelta(minutes=minutes)
         return {
             "kind": "once",
             "run_at": run_at.isoformat(),
@@ -254,18 +254,18 @@ def parse_schedule(schedule: str) -> Dict[str, Any]:
 
 
 def _ensure_aware(dt: datetime) -> datetime:
-    """Return a timezone-aware datetime in Drewgent configured timezone.
+    """Return a timezone-aware datetime in Loragent configured timezone.
 
     Backward compatibility:
     - Older stored timestamps may be naive.
     - Naive values are interpreted as *system-local wall time* (the timezone
       `datetime.now()` used when they were created), then converted to the
-      configured Drewgent timezone.
+      configured Loragent timezone.
 
     This preserves relative ordering for legacy naive timestamps across
     timezone changes and avoids false not-due results.
     """
-    target_tz = _drewgent_now().tzinfo
+    target_tz = _loragent_now().tzinfo
     if dt.tzinfo is None:
         local_tz = datetime.now().astimezone().tzinfo
         return dt.replace(tzinfo=local_tz).astimezone(target_tz)
@@ -318,7 +318,7 @@ def _compute_grace_seconds(schedule: dict) -> int:
 
     if kind == "cron" and HAS_CRONITER:
         try:
-            now = _drewgent_now()
+            now = _loragent_now()
             cron = croniter(schedule["expr"], now)
             first = cron.get_next(datetime)
             second = cron.get_next(datetime)
@@ -337,7 +337,7 @@ def compute_next_run(schedule: Dict[str, Any], last_run_at: Optional[str] = None
 
     Returns ISO timestamp string, or None if no more runs.
     """
-    now = _drewgent_now()
+    now = _loragent_now()
 
     if schedule["kind"] == "once":
         return _recoverable_oneshot_run_at(schedule, now, last_run_at=last_run_at)
@@ -399,7 +399,7 @@ def save_jobs(jobs: List[Dict[str, Any]]):
         fd, tmp_path = tempfile.mkstemp(dir=str(JOBS_FILE.parent), suffix='.tmp', prefix='.jobs_')
         try:
             with os.fdopen(fd, 'w', encoding='utf-8') as f:
-                json.dump({"jobs": jobs, "updated_at": _drewgent_now().isoformat()}, f, indent=2)
+                json.dump({"jobs": jobs, "updated_at": _loragent_now().isoformat()}, f, indent=2)
                 f.flush()
                 os.fsync(f.fileno())
             os.replace(tmp_path, JOBS_FILE)
@@ -466,7 +466,7 @@ def create_job(
         deliver = "origin" if origin else "local"
 
     job_id = uuid.uuid4().hex[:12]
-    now = _drewgent_now().isoformat()
+    now = _loragent_now().isoformat()
 
     normalized_skills = _normalize_skill_list(skill, skills)
     normalized_model = str(model).strip() if isinstance(model, str) else None
@@ -574,7 +574,7 @@ def pause_job(job_id: str, reason: Optional[str] = None) -> Optional[Dict[str, A
         {
             "enabled": False,
             "state": "paused",
-            "paused_at": _drewgent_now().isoformat(),
+            "paused_at": _loragent_now().isoformat(),
             "paused_reason": reason,
         },
     )
@@ -611,7 +611,7 @@ def trigger_job(job_id: str) -> Optional[Dict[str, Any]]:
             "state": "scheduled",
             "paused_at": None,
             "paused_reason": None,
-            "next_run_at": _drewgent_now().isoformat(),
+            "next_run_at": _loragent_now().isoformat(),
         },
     )
 
@@ -637,7 +637,7 @@ def mark_job_run(job_id: str, success: bool, error: Optional[str] = None):
     jobs = load_jobs()
     for i, job in enumerate(jobs):
         if job["id"] == job_id:
-            now = _drewgent_now().isoformat()
+            now = _loragent_now().isoformat()
             job["last_run_at"] = now
             job["last_status"] = "ok" if success else "error"
             job["last_error"] = error if not success else None
@@ -689,7 +689,7 @@ def advance_next_run(job_id: str) -> bool:
             kind = job.get("schedule", {}).get("kind")
             if kind not in ("cron", "interval"):
                 return False
-            now = _drewgent_now().isoformat()
+            now = _loragent_now().isoformat()
             new_next = compute_next_run(job["schedule"], now)
             if new_next and new_next != job.get("next_run_at"):
                 job["next_run_at"] = new_next
@@ -707,7 +707,7 @@ def get_due_jobs() -> List[Dict[str, Any]]:
     the job is fast-forwarded to the next future run instead of firing
     immediately.  This prevents a burst of missed jobs on gateway restart.
     """
-    now = _drewgent_now()
+    now = _loragent_now()
     raw_jobs = load_jobs()
     jobs = [_apply_skill_fields(j) for j in copy.deepcopy(raw_jobs)]
     due = []
@@ -790,7 +790,7 @@ def save_job_output(job_id: str, output: str):
     job_output_dir.mkdir(parents=True, exist_ok=True)
     _secure_dir(job_output_dir)
     
-    timestamp = _drewgent_now().strftime("%Y-%m-%d_%H-%M-%S")
+    timestamp = _loragent_now().strftime("%Y-%m-%d_%H-%M-%S")
     output_file = job_output_dir / f"{timestamp}.md"
     
     fd, tmp_path = tempfile.mkstemp(dir=str(job_output_dir), suffix='.tmp', prefix='.output_')

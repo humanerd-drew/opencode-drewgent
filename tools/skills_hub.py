@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Skills Hub — Source adapters and hub state management for the Drewgent Skills Hub.
+Skills Hub — Source adapters and hub state management for the Loragent Skills Hub.
 
 This is a library module (not an agent tool). It provides:
   - GitHubAuth: Shared GitHub API authentication (PAT, gh CLI, GitHub App)
@@ -10,7 +10,7 @@ This is a library module (not an agent tool). It provides:
   - HubLockFile: Track provenance of installed hub skills
   - Hub state directory management (quarantine, audit log, taps, index cache)
 
-Used by drewgent_cli/skills_hub.py for CLI commands and the /skills slash command.
+Used by loragent_cli/skills_hub.py for CLI commands and the /skills slash command.
 """
 
 import hashlib
@@ -25,7 +25,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
-from drewgent_constants import get_drewgent_home
+from loragent_constants import get_loragent_home
 from typing import Any, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlparse, urlunparse
 
@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 # Paths
 # ---------------------------------------------------------------------------
 
-DREW_HOME = get_drewgent_home()
+DREW_HOME = get_loragent_home()
 SKILLS_DIR = DREW_HOME / "skills"
 HUB_DIR = SKILLS_DIR / ".hub"
 LOCK_FILE = HUB_DIR / "lock.json"
@@ -385,9 +385,9 @@ class GitHubSource(SkillSource):
         tags = []
         metadata = fm.get("metadata", {})
         if isinstance(metadata, dict):
-            drewgent_meta = metadata.get("drewgent", {})
-            if isinstance(drewgent_meta, dict):
-                tags = drewgent_meta.get("tags", [])
+            loragent_meta = metadata.get("loragent", {})
+            if isinstance(loragent_meta, dict):
+                tags = loragent_meta.get("tags", [])
         if not tags:
             raw_tags = fm.get("tags", [])
             tags = raw_tags if isinstance(raw_tags, list) else []
@@ -2110,12 +2110,12 @@ class OptionalSkillSource(SkillSource):
 
     These skills are official (maintained by Nous Research) but not activated
     by default — they don't appear in the system prompt and aren't copied to
-    ~/.drewgent/skills/ during setup.  They are discoverable via the Skills Hub
+    ~/.loragent/skills/ during setup.  They are discoverable via the Skills Hub
     (search / install / inspect) and labelled "official" with "builtin" trust.
     """
 
     def __init__(self):
-        from drewgent_constants import get_optional_skills_dir
+        from loragent_constants import get_optional_skills_dir
 
         self._optional_dir = get_optional_skills_dir(
             Path(__file__).parent.parent / "optional-skills"
@@ -2239,9 +2239,9 @@ class OptionalSkillSource(SkillSource):
             tags = []
             meta_block = fm.get("metadata", {})
             if isinstance(meta_block, dict):
-                drewgent_meta = meta_block.get("drewgent", {})
-                if isinstance(drewgent_meta, dict):
-                    tags = drewgent_meta.get("tags", [])
+                loragent_meta = meta_block.get("loragent", {})
+                if isinstance(loragent_meta, dict):
+                    tags = loragent_meta.get("tags", [])
 
             rel_path = str(parent.relative_to(self._optional_dir))
 

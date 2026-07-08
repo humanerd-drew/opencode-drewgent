@@ -18,17 +18,17 @@ links:
 **Date**: 2026-06-10 15:35 KST (detected), actual failure 2026-06-04 16:41 (n8n SIGTERM) and 2026-06-06 13:10 (gateway cron ticker stopped)
 **Severity**: P1 (high — entire automation surface offline, undetected for 4–6 days)
 **Status**: Resolved 2026-06-10 16:32 KST
-**Author**: Drewgent self-checkup (user request: "에이전트 상태 점검 및 보고")
+**Author**: Loragent self-checkup (user request: "에이전트 상태 점검 및 보고")
 
 ---
 
 ## 1. Symptoms (detected 2026-06-10 15:35 KST)
 
-User ran a routine checkup. Drewgent self-inspection revealed:
+User ran a routine checkup. Loragent self-inspection revealed:
 
 1. `hermes cron list` → "Gateway is not running" warning
-2. `launchctl list | grep -i drewgent` → 5/6 services in `not running` or `PID=-` state
-3. `~/.drewgent/cron/jobs.json` → all 4 enabled jobs have `last_run_at = 2026-05-19` (22 days stale)
+2. `launchctl list | grep -i loragent` → 5/6 services in `not running` or `PID=-` state
+3. `~/.loragent/cron/jobs.json` → all 4 enabled jobs have `last_run_at = 2026-05-19` (22 days stale)
 4. n8n.log last entry → "Received SIGTERM. Shutting down..." (2026-06-04 16:41)
 5. quartz-fswatch not running, public/ stale
 6. kanban dashboard server (PID 1543) running but port 5555 unresponsive
@@ -41,7 +41,7 @@ User ran a routine checkup. Drewgent self-inspection revealed:
 
 ### 2-1. Gateway — graceful SIGTERM, KeepAlive did not save it
 
-`~/Library/LaunchAgents/ai.drewgent.gateway.plist` had:
+`~/Library/LaunchAgents/ai.loragent.gateway.plist` had:
 ```xml
 <key>KeepAlive</key>
 <dict>
@@ -61,7 +61,7 @@ This *should* have restarted on non-zero exit. But the process exited 0 (clean).
 
 `n8n.log` ended at `2026-06-04 16:41` with "Received SIGTERM. Shutting down..." — `n8n` (Node.js) is the canonical case for `SuccessfulExit: false` trap: Node catches SIGTERM, runs cleanup, exits 0 → launchd sees successful exit → does not restart.
 
-(Note: the 6/1 n8n plist registration recorded in memory is partially correct — the plist *was* registered but is no longer present at `~/Library/LaunchAgents/ai.drewgent.n8n.plist`. Either the plist was deleted manually, or the `com.user.drewgent.keepAlive` config that triggered its first registration got reset. Memory vs reality gap.)
+(Note: the 6/1 n8n plist registration recorded in memory is partially correct — the plist *was* registered but is no longer present at `~/Library/LaunchAgents/ai.loragent.n8n.plist`. Either the plist was deleted manually, or the `com.user.loragent.keepAlive` config that triggered its first registration got reset. Memory vs reality gap.)
 
 ### 2-3. quartz-fswatch — `KeepAlive: false`
 
@@ -86,7 +86,7 @@ memory incident 2026-06-01 section 8 noted: "in-memory state 기반" — patchin
 
 ### 2-7. Label mismatch (gateway plist)
 
-`ai.drewgent.gateway.plist` registered as `ai.custom-agent.gateway` in plist's `<Label>` key. This meant `launchctl bootout/load ai.drewgent.gateway` was a no-op — only `ai.custom-agent.gateway` worked. Watchdog scripts written against the filename would have silently failed to query the right label. (Now fixed: Label renamed to `ai.drewgent.gateway` to match filename.)
+`ai.loragent.gateway.plist` registered as `ai.custom-agent.gateway` in plist's `<Label>` key. This meant `launchctl bootout/load ai.loragent.gateway` was a no-op — only `ai.custom-agent.gateway` worked. Watchdog scripts written against the filename would have silently failed to query the right label. (Now fixed: Label renamed to `ai.loragent.gateway` to match filename.)
 
 ### 2-8. Memory ↔ reality drift
 
@@ -102,21 +102,21 @@ Memory presents these as resolved. Actual state 6/10: gateway dead 4 days, n8n d
 ## 3. Resolution (2026-06-10 16:00–16:35 KST)
 
 ### 3-1. Watchdog cron (P0-1)
-- Wrote `/Users/drew/.drewgent/P4-cortex/scripts/drewgent_launchd_watchdog.sh`
-- 6 watched labels: `ai.drewgent.{cron-runner,gateway,kanban-dashboard,n8n}` + `com.drewgent.quartz-{fswatch,deploy}`
-- Symlink: `~/.hermes/scripts/drewgent_launchd_watchdog.sh` (no_agent=True cron requires `~/.hermes/scripts/`)
+- Wrote `~/.loragent/P4-cortex/scripts/loragent_launchd_watchdog.sh`
+- 6 watched labels: `ai.loragent.{cron-runner,gateway,kanban-dashboard,n8n}` + `com.loragent.quartz-{fswatch,deploy}`
+- Symlink: `~/.hermes/scripts/loragent_launchd_watchdog.sh` (no_agent=True cron requires `~/.hermes/scripts/`)
 - Cron job id: `2d9a31f2b661`, every 5 min, no_agent=True (zero LLM tokens, pure bash)
 - Output: silent when all ok; Discord webhook post + stdout if any service is down (via `HERMES_DISCORD_WEBHOOK` env)
 
 ### 3-2. Gateway restart (P0-2)
 - `launchctl kickstart -k gui/501/ai.custom-agent.gateway` → PID 79410, log "Cron ticker started"
 - jobs.json fast-forward applied: 4 jobs got new `next_run_at` (SEO 18:00, Trend 18:00, kanban-dispatcher 16:32/16:34, linear-activity-logger 16:35)
-- gateway label renamed from `ai.custom-agent.gateway` → `ai.drewgent.gateway` (file plist patched, then unload+bootstrap+restart)
+- gateway label renamed from `ai.custom-agent.gateway` → `ai.loragent.gateway` (file plist patched, then unload+bootstrap+restart)
 
 ### 3-3. Quartz fswatch restart (P0-3)
-- `launchctl kickstart -k gui/501/com.drewgent.quartz-fswatch` → PID 79654
-- Verified watching 4 dirs: `~/.drewgent/{memories/insights, P4-cortex/growth, P4-cortex/knowledge, humanerd-site/content}`
-- Vault source confirmed: `~/.drewgent/humanerd-site` (10 .md files, last edit 6/2 13:26). `~/Sites/quartz` is the Quartz template clone, not a site source — left untouched.
+- `launchctl kickstart -k gui/501/com.loragent.quartz-fswatch` → PID 79654
+- Verified watching 4 dirs: `~/.loragent/{memories/insights, P4-cortex/growth, P4-cortex/knowledge, humanerd-site/content}`
+- Vault source confirmed: `~/.loragent/humanerd-site` (10 .md files, last edit 6/2 13:26). `~/Sites/quartz` is the Quartz template clone, not a site source — left untouched.
 
 ### 3-4. plist patches (P1-4, P1-5)
 - 5 plists patched: `cron-runner`, `gateway`, `kanban-dashboard`, `quartz-deploy`, `quartz-fswatch`
@@ -127,7 +127,7 @@ Memory presents these as resolved. Actual state 6/10: gateway dead 4 days, n8n d
 - `quartz-fswatch.plist`: `KeepAlive: <false/>` → `KeepAlive: { SuccessfulExit: false, ThrottleInterval: 10 }` (was deliberately disabled!)
 
 ### 3-5. n8n — not patched (no plist on disk)
-- `~/Library/LaunchAgents/ai.drewgent.n8n.plist` is **missing** (memory 6/1 said it was registered). Re-registration deferred to a follow-up — was not the cause of today's incident, just a victim of the same SIGTERM pattern.
+- `~/Library/LaunchAgents/ai.loragent.n8n.plist` is **missing** (memory 6/1 said it was registered). Re-registration deferred to a follow-up — was not the cause of today's incident, just a victim of the same SIGTERM pattern.
 
 ---
 
@@ -135,12 +135,12 @@ Memory presents these as resolved. Actual state 6/10: gateway dead 4 days, n8n d
 
 | Component | State | Evidence |
 |---|---|---|
-| `ai.drewgent.gateway` | running PID 80001 | `launchctl list`, `ps aux`, `gateway.log` shows Cron ticker + agent + brain monitor up |
-| `ai.drewgent.cron-runner` | running | `ps aux \| grep cron_runner.py` |
-| `ai.drewgent.kanban-dashboard` | running PID 1543 | (port 5555 still unresponsive — separate issue, port binding? flask debug?) |
-| `com.drewgent.quartz-fswatch` | running PID 79654 | `ps aux`, log shows "watching 4 dirs" |
-| `com.drewgent.quartz-deploy` | not running (spawn scheduled) | intended — deploy runs only when fswatch triggers it |
-| `ai.drewgent.n8n` | not running, no plist | watchdog alert will trigger — follow-up |
+| `ai.loragent.gateway` | running PID 80001 | `launchctl list`, `ps aux`, `gateway.log` shows Cron ticker + agent + brain monitor up |
+| `ai.loragent.cron-runner` | running | `ps aux \| grep cron_runner.py` |
+| `ai.loragent.kanban-dashboard` | running PID 1543 | (port 5555 still unresponsive — separate issue, port binding? flask debug?) |
+| `com.loragent.quartz-fswatch` | running PID 79654 | `ps aux`, log shows "watching 4 dirs" |
+| `com.loragent.quartz-deploy` | not running (spawn scheduled) | intended — deploy runs only when fswatch triggers it |
+| `ai.loragent.n8n` | not running, no plist | watchdog alert will trigger — follow-up |
 | jobs.json `next_run_at` | all future-dated | gateway fast-forward applied |
 | Watchdog | scheduled, no_agent, every 5m | cronjob id `2d9a31f2b661` |
 
@@ -157,25 +157,25 @@ Memory presents these as resolved. Actual state 6/10: gateway dead 4 days, n8n d
 
 ## 6. Follow-ups (resolved in 6/10 follow-up sweep)
 
-- ~~Re-register n8n plist + verify KeepAlive config (memory says 6/1 done; reality says missing)~~ — **Resolved 6/10 16:42**: rewrote `ai.drewgent.n8n.plist` with `KeepAlive { SuccessfulExit: false, ThrottleInterval: 10 }`, bootstrap+start succeeded (PID 81753, port 5678 LISTEN, JS Task Runner registered).
+- ~~Re-register n8n plist + verify KeepAlive config (memory says 6/1 done; reality says missing)~~ — **Resolved 6/10 16:42**: rewrote `ai.loragent.n8n.plist` with `KeepAlive { SuccessfulExit: false, ThrottleInterval: 10 }`, bootstrap+start succeeded (PID 81753, port 5678 LISTEN, JS Task Runner registered).
 - ~~Diagnose why kanban dashboard (PID 1543 alive) is not responding on port 5555~~ — **False alarm**: kanban-dashboard listens on port **8765** (`ultraseek-http`), not 5555. `curl http://localhost:8765/kanban` returns HTTP 200 in 124ms. The 6/10 checkup used the wrong port number. No action needed.
 - ~~Investigate run_agent.py line 6790 `NameError: api_start_time`~~ — **False alarm**: `grep -c 'api_start_time is not defined' gateway.error.log` returns **0**. The error appeared in a 9.6M-line error log dump at 6/10 15:35 but was either a single transient event in the past or visual confusion in the long error log. No reproduction path; not blocking.
-- **Log rotation infrastructure** (1.7GB `gateway.error.log` was a real risk) — **Resolved 6/10 16:47**: wrote `~/.hermes/scripts/drewgent_log_rotate.sh`, runs daily 04:00 KST via cron `6596a0876cb9` (no_agent). Strategy: rename `.gz` archive + truncate live file + `launchctl kickstart` to reopen FD. 30-day retention. After first run: gateway.error.log 1.7GB → 0B (9.6MB .gz), cron-runner.error.log 8d → 0B (42B .gz).
+- **Log rotation infrastructure** (1.7GB `gateway.error.log` was a real risk) — **Resolved 6/10 16:47**: wrote `~/.hermes/scripts/loragent_log_rotate.sh`, runs daily 04:00 KST via cron `6596a0876cb9` (no_agent). Strategy: rename `.gz` archive + truncate live file + `launchctl kickstart` to reopen FD. 30-day retention. After first run: gateway.error.log 1.7GB → 0B (9.6MB .gz), cron-runner.error.log 8d → 0B (42B .gz).
 
 ## 6.5. Open (deferred — not strictly part of 6/10 incident)
 
 - Investigate gateway SIGTERM *cause* (likely opencode-go endpoint 404 HTML → unhandled exception → silent exit 0). Pattern visible in `gateway.error.log` (now rotated) as recurring `Failed to deserialize the JSON body into the target type: tools[0].function: missing field 'name'`. Needs error handling / retry / fallback. Not blocked by 6/10 — gateway is back up, fix can land later as a reliability improvement.
 - Brain_monitor `DeliveryRouter unavailable, writing to local fallback: 'dict' object has no attribute 'always_log_local'` (9.19M occurrences in old log) — log spam, not data loss (fallback works). Fix is in agent code; not part of 6/10 incident follow-ups.
 
-## 6.6. Harmony Resolved (6/10 17:30 sweep — Drewgent ↔ Hermes integration)
+## 6.6. Harmony Resolved (6/10 17:30 sweep — Loragent ↔ Hermes integration)
 
-**대전제 (user-given)**: .drewgent의 내부 구조를 유지하면서 hermes-agent의 기능을 사용한다. 나만의 맥락에 맞춰 작동하는 hermes-agent를 되길 바란다.
+**대전제 (user-given)**: .loragent의 내부 구조를 유지하면서 hermes-agent의 기능을 사용한다. 나만의 맥락에 맞춰 작동하는 hermes-agent를 되길 바란다.
 
 5 architectural drift points identified in the 6/10 plan were addressed:
 
 ### D1: Gateway label mismatch — RESOLVED
-- **Customize layer** at `~/.drewgent/customize/` (new). `hermes_cli/gateway.py` proxy
-  overrides `get_launchd_label()` to return `ai.drewgent.gateway` and
+- **Customize layer** at `~/.loragent/customize/` (new). `hermes_cli/gateway.py` proxy
+  overrides `get_launchd_label()` to return `ai.loragent.gateway` and
   `find_gateway_pids()` (with plist-format launchctl output handler).
 - `hermes_cli/__init__.py` proxy re-exports the real `hermes_cli` package so
   downstream `from hermes_cli.X import Y` resolves correctly.
@@ -183,15 +183,15 @@ Memory presents these as resolved. Actual state 6/10: gateway dead 4 days, n8n d
   for cron.py's lazy import path. **Both proxies wrap real imports in
   try/except** for resilience against Python 3.11 forward-ref bug in
   hermes code (MessageEvent undefined in session.py).
-- `~/.zshrc` adds `PYTHONPATH=~/.drewgent/customize`.
+- `~/.zshrc` adds `PYTHONPATH=~/.loragent/customize`.
 - `~/.local/bin/hermes` wrapper patched: removed `unset PYTHONPATH` (which
   intentionally defeated the customize layer). Original kept as `hermes.bak`.
-- `ai.drewgent.gateway.plist` adds `PYTHONPATH=/Users/drew/.drewgent/customize`.
+- `ai.loragent.gateway.plist` adds `PYTHONPATH=~/.loragent/customize`.
 - **Verified**: `hermes cron list 2>&1 | grep -c "Gateway is not running"` = `0`.
 - **Smoke test cron** `f0b39d211970` (Sun 10:00 KST) verifies all 4 checks pass.
 
 ### D2: jobs.json mtime drift — RESOLVED
-- `drewgent_harmony_check.sh` Layer 3.5 added. Compares jobs.json mtime against
+- `loragent_harmony_check.sh` Layer 3.5 added. Compares jobs.json mtime against
   last dispatcher tick across 3 sources (`cron-runner/<date>.log`, `cron-runner.log`,
   `gateway.log`).
 - **Verified**: touching jobs.json produces "⚠ jobs.json modified Ns after
@@ -202,15 +202,15 @@ Memory presents these as resolved. Actual state 6/10: gateway dead 4 days, n8n d
   Harmony check uses Python for ISO 8601 parse (TZ-aware) to avoid 9h drift.
 
 ### D3: Memory single source — RESOLVED (policy)
-- **Decision**: `~/.drewgent/P2-hippocampus/memories/MEMORY.md` ONLY.
+- **Decision**: `~/.loragent/P2-hippocampus/memories/MEMORY.md` ONLY.
   `~/.codex/memories/MEMORY.md` is intentionally separate (Codex CLI artifact).
-- `drewgent_harmony_check.sh` Layer 4.5 added. Surfaces divergence as warning,
+- `loragent_harmony_check.sh` Layer 4.5 added. Surfaces divergence as warning,
   not as error (informational only).
 - **GBrain 3-pillar adopted locally** (T1):
   1. **Repo**: vault = git-versioned wikilinked (already)
   2. **Synthesis**: memory entries = compiled procedures (H2 6/10)
-  3. **Graph traversal**: `drewgent_graph_lookup.sh` (wikilink walk)
-  4. **Gap analysis**: `drewgent_graph_gap_analysis.sh` (dangling + missing)
+  3. **Graph traversal**: `loragent_graph_lookup.sh` (wikilink walk)
+  4. **Gap analysis**: `loragent_graph_gap_analysis.sh` (dangling + missing)
 - **Memory split** (C.1, 6/10 21:00): MEMORY.md (5KB compact, 16 entries) +
   MEMORY_wiki.md (9.5KB procedures) for direct agent read. Memory tool's
   drift guard limitation noted — direct write_file remains the workaround.
@@ -223,10 +223,10 @@ Memory presents these as resolved. Actual state 6/10: gateway dead 4 days, n8n d
   invalidate cache. The harmony check cron is the *practical* trigger.
 
 ### D5: Scheduler unify — RESOLVED (root cause found and fixed)
-- Added `drewgent-cron-runner-001` to `~/.drewgent/cron/jobs.json` with
-  `script: ~/.drewgent/scripts/cron_runner.py` and `schedule.kind=cron,
+- Added `loragent-cron-runner-001` to `~/.loragent/cron/jobs.json` with
+  `script: ~/.loragent/scripts/cron_runner.py` and `schedule.kind=cron,
   expr="* * * * *"`.
-- `ai.drewgent.cron-runner.plist` bootout (still on disk for rollback).
+- `ai.loragent.cron-runner.plist` bootout (still on disk for rollback).
 - **ROOT CAUSE OF CRON STALL FOUND** (A.2, 6/10 20:55):
   `gateway/run.py:3260-3290` housekeeping block (wiki maintenance / image
   cache cleanup / document cache cleanup) had broken nested try/except.
@@ -263,7 +263,7 @@ Memory presents these as resolved. Actual state 6/10: gateway dead 4 days, n8n d
   **Root cause**: `d1ef68ced116` (kanban-dispatcher LLM agent job) blocked  
   `tick()`'s sequential job loop. `run_job()` hit `task_qa_gate` neuron's  
   contract phase fail and never returned, stalling the entire tick for 15-26  
-  minutes. `drewgent-cron-runner-001` (script-based) could not fire behind it.  
+  minutes. `loragent-cron-runner-001` (script-based) could not fire behind it.  
   **Fix**: `d1ef68ced116` disabled (`enabled: false, state: paused`). It was  
   redundant — `cron_runner.py` already dispatches all 3 boards (default,  
   content, integrations) via deterministic subprocess scripts.  
@@ -271,7 +271,7 @@ Memory presents these as resolved. Actual state 6/10: gateway dead 4 days, n8n d
   jobs (dispatchers) run BEFORE LLM agent jobs, so they never get blocked.  
   **Applied**: A.2 housekeeping try/except + T4.3 tick watchdog  
   (`tick_elapsed > 5× interval` → warning) + T4.4 Layer 3.5b (cron-runner  
-  fire frequency detection in harmony check) + T4.6 `drewgent_cron_watchdog.sh`  
+  fire frequency detection in harmony check) + T4.6 `loragent_cron_watchdog.sh`  
   (auto kickstart on 0 fires in 5 min).  
   **Double-fire pattern** (0.15s, 2 fires/min) remains as known benign  
   behaviour — cron_runner.py is idempotent via SQLite UPSERT.

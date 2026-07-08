@@ -34,7 +34,7 @@ humanerd.kr (or any URL) 을 The Website Specification으로 감사하는 스킬
 
 이 스킬은 두 가지를 조합한다:
 
-1. **MCP 서버** `specification-website` — `~/.drewgent/config.yaml`의 `mcp_servers.specification-website`에 등록됨
+1. **MCP 서버** `specification-website` — `~/.loragent/config.yaml`의 `mcp_servers.specification-website`에 등록됨
 2. **HTTP fallback** — `https://specification.website/.well-known/agent-skills/specification-website/SKILL.md`의 워크플로우대로 직접 fetch
 
 MCP 도구 우선. MCP가 안 되면 llms.txt / 직접 fetch로 fallback.

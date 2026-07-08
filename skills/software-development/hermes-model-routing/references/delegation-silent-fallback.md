@@ -68,12 +68,12 @@ hermes doctor     # effective config 덤프에서 delegation.model 확인
 
 ### B. `delegate_task(agent_profile="<name>")`로 per-call override
 
-`~/.drewgent/agents/<name>.md` 또는 `~/.hermes/agents/<name>.md` profile에 model 박혀있으면 config보다 우선. 역할별 세분화 가능.
+`~/.loragent/agents/<name>.md` 또는 `~/.hermes/agents/<name>.md` profile에 model 박혀있으면 config보다 우선. 역할별 세분화 가능.
 
 ```python
 delegate_task(
     goal="Review this PR for security issues",
-    agent_profile="reviewer",   # ~/.drewgent/agents/reviewer.md 사용
+    agent_profile="reviewer",   # ~/.loragent/agents/reviewer.md 사용
     context="..."
 )
 ```

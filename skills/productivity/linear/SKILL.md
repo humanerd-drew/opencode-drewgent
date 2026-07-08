@@ -2,7 +2,7 @@
 name: linear
 description: Manage Linear issues, projects, and teams via the GraphQL API. Create, update, search, and organize issues. Uses API key auth (no OAuth needed). All operations via curl — no dependencies.
 version: 1.0.0
-author: Drewgent Agent
+author: Loragent Agent
 license: MIT
 status: deprecated
 superseded_by: huly
@@ -14,7 +14,7 @@ prerequisites:
   env_vars: [LINEAR_API_KEY]
   commands: [curl]
 metadata:
-  drewgent:
+  loragent:
     tags: [Linear, Project Management, Issues, GraphQL, API, Productivity]
 links:
   - "[[P3-sensors/skills/SKILL-INDEX]]"
@@ -28,7 +28,7 @@ Manage Linear issues, projects, and teams directly via the GraphQL API using `cu
 ## Setup
 
 1. Get a personal API key from **Linear Settings > API > Personal API keys**
-2. Set `LINEAR_API_KEY` in your environment (via `drewgent setup` or your env config)
+2. Set `LINEAR_API_KEY` in your environment (via `loragent setup` or your env config)
 
 ## API Basics
 

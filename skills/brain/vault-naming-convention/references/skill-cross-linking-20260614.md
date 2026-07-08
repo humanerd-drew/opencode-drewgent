@@ -9,7 +9,7 @@ Many skills had `related_skills` arrays in their `metadata.hermes` section but n
 **Detection**:
 ```bash
 # Find skills with related_skills but no links section
-grep -l 'related_skills' ~/.drewgent/skills/software-development/*/SKILL.md | while read f; do
+grep -l 'related_skills' ~/.loragent/skills/software-development/*/SKILL.md | while read f; do
   has_links=$(grep -c '^links:' "$f")
   related=$(grep -A1 'related_skills:' "$f" | tail -1)
   [ "$has_links" -eq 0 ] && echo "$(basename $(dirname $f)): $related"
@@ -29,7 +29,7 @@ done
 | mlops training | axolotl, unsloth, peft, trl-fine-tuning, grpo-rl-training, pytorch-fsdp | 0 → 3.3 |
 | creative | architecture-diagram, baoyu-infographic, claude-design, comfyui, design-md, humanizer, pretext, sketch, touchdesigner-mcp | 0 → 5.0 |
 | mlops/inference | gguf, guidance, obliteratus, outlines, vllm | 0 → 5.0 |
-| mcp | mcporter, native-mcp, gbrain-integration-drewgent | 0 → 5.0 |
+| mcp | mcporter, native-mcp, gbrain-integration-loragent | 0 → 5.0 |
 | social-media | xitter, xurl | 0 → 5.0 |
 | apple | macos-computer-use | 0 → 4.0 |
 

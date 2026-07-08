@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Drewgent — Brain Health Monitor & Self-Healer
+Loragent — Brain Health Monitor & Self-Healer
 ================================================
  memecached monitoring + automatic repair + Discord alerts for unresolvable issues.
 
@@ -25,7 +25,7 @@ from collections import defaultdict
 import json, re, sys
 
 # ─── Paths ────────────────────────────────────────────────────────────────
-DREW_HOME   = Path.home() / ".drewgent"
+DREW_HOME   = Path.home() / ".loragent"
 MEMORIES    = DREW_HOME / "memories"
 INSIGHTS    = MEMORIES / "insights"
 ENTITIES    = MEMORIES / "entities"
@@ -86,7 +86,7 @@ def notify_discord(alerts: list):
             "color": {"critical": 15158332, "warning": 15105570, "info": 3447003}.get(
                 alerts[0].get("severity", "info"), 3447003),
             "fields": [{"name": "Issue", "value": "\n".join(lines), "inline": False}],
-            "footer": {"text": "Drewgent Brain Health Monitor"}
+            "footer": {"text": "Loragent Brain Health Monitor"}
         }]
     }
 
@@ -371,11 +371,11 @@ ISSUE_FIX_PROMPTS = {
         "이 파일의 [[broken-link]] 를 찾아서 유효한 링크로 수정하거나 제거해주세요."
     ),
     "missing_critical": (
-        "brain의 핵심 파일이 없습니다. `~/.drewgent/memories/`에 {files} 파일을 생성하거나 복원해주세요."
+        "brain의 핵심 파일이 없습니다. `~/.loragent/memories/`에 {files} 파일을 생성하거나 복원해주세요."
     ),
     "empty_brain": (
         "brain에 entries가 없습니다. brain 상태를 확인하고 복원하세요:\n"
-        "python3 ~/.drewgent/scripts/brain_nodes.py"
+        "python3 ~/.loragent/scripts/brain_nodes.py"
     ),
     "malformed_entry": (
         "entries/frontmatter 손상: 해당 파일을 수동으로 확인하고 복원해주세요."
@@ -424,7 +424,7 @@ def escalate_unresolvable(issues: list):
             "title": "🩺 Brain Health — 해결 필요",
             "color": 15105570,
             "fields": fields,
-            "footer": {"text": "Drewgent Brain Self-Healer — 복사 후 바로 실행 가능"}
+            "footer": {"text": "Loragent Brain Self-Healer — 복사 후 바로 실행 가능"}
         }]
     }
 

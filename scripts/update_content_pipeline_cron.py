@@ -2,7 +2,7 @@ import json
 import os
 from pathlib import Path
 
-DREW_HOME = Path(os.environ.get("DREW_HOME", Path.home() / ".drewgent"))
+DREW_HOME = Path(os.environ.get("DREW_HOME", Path.home() / ".loragent"))
 jobs_path = DREW_HOME / "cron" / "jobs.json"
 
 with jobs_path.open() as f:
@@ -21,14 +21,14 @@ public-worthy content = 기록 + 해석 + 재사용 가능한 통찰
 Default outcome is 0 topics. If candidates are weak, respond with [SILENT].
 
 Steps:
-1. Check Trend Harvester: ls -t ~/.drewgent/P4-cortex/growth/trend-harvester/analyzed/keep/*.json | head -10
+1. Check Trend Harvester: ls -t ~/.loragent/P4-cortex/growth/trend-harvester/analyzed/keep/*.json | head -10
    Parse JSON: item{name,description,url,source}, total_score, decision
    Filter: decision == "keep", scored_at 최근 48시간, 상위 5개
 
-2. Check SEO Harvester: cat ~/.drewgent/P2-hippocampus/knowledge/seo-articles/report.json
+2. Check SEO Harvester: cat ~/.loragent/P2-hippocampus/knowledge/seo-articles/report.json
    Filter: score >= 0.7, keyword 명확한 것 상위 3개
 
-3. Check Activity Logger (kanban): query drewgent_tasks.db
+3. Check Activity Logger (kanban): query loragent_tasks.db
    SELECT title, body FROM tasks WHERE trigger_source='activity_logger' AND status='completed' AND created_at > datetime('now','-24 hours') ORDER BY created_at DESC LIMIT 10
 
 4. Select up to 3 topics (1 from each source if available)
@@ -49,7 +49,7 @@ Steps:
    - duplicated claims from the last 30 days
    - generic "AI is powerful/risky" commentary
 
-   Priority: conversation insight > Drewgent/humanerd-related trend > evergreen SEO.
+   Priority: conversation insight > Loragent/humanerd-related trend > evergreen SEO.
 
 5. For each topic: kanban_create(
    title=f"[draft-{type}] {topic_title}",
@@ -114,8 +114,8 @@ Topics selected: N (task created)
 
 | # | Source | Topic | Task ID | Draft File |
 |---|--------|-------|---------|------------|
-| 1 | trend | {title} | {id} | /Users/drew/.drewgent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md |
-| 2 | seo | {title} | {id} | /Users/drew/.drewgent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md |
+| 1 | trend | {title} | {id} | ~/.loragent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md |
+| 2 | seo | {title} | {id} | ~/.loragent/P2-hippocampus/memories/insights/{YYYY-MM}-{slug}.md |
 | 3 | conversation | {title} | {id} | — (in progress) |
 
 Worker 배분: kanban-dispatcher-content가 5분마다 ready task를 worker에 배분
@@ -130,8 +130,8 @@ Periodic Delivery — completed drafts in last 72h:
 python3 -c "
 import sqlite3, os, re, glob
 
-DB = os.path.expanduser('~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db')
-INSIGHTS = os.path.expanduser('~/.drewgent/P2-hippocampus/memories/insights/')
+DB = os.path.expanduser('~/.loragent/P2-hippocampus/kanban/state/loragent_tasks.db')
+INSIGHTS = os.path.expanduser('~/.loragent/P2-hippocampus/memories/insights/')
 conn = sqlite3.connect(DB)
 rows = conn.execute("""
     SELECT id, title, body, completed_at
@@ -154,7 +154,7 @@ for task_id, title, body, completed_at in rows:
             if not os.path.exists(draft_path):
                 date_prefix = m.group(1)[:7]
                 matches = glob.glob(os.path.join(INSIGHTS, f'{date_prefix}-*.md'))
-                draft_path = max(matches, key=os.path.getmtime) if matches else f'~/.drewgent/P2-hippocampus/memories/insights/{m.group(1)}'
+                draft_path = max(matches, key=os.path.getmtime) if matches else f'~/.loragent/P2-hippocampus/memories/insights/{m.group(1)}'
     drafts.append((title, task_id, draft_path))
 
 if drafts:
@@ -175,7 +175,7 @@ Draft files ready for review:
 
 | # | Topic | Task ID | Draft File |
 |---|-------|---------|------------|
-| 1 | {title} | {id} | /Users/drew/.drewgent/P2-hippocampus/memories/insights/{filename}.md |
+| 1 | {title} | {id} | ~/.loragent/P2-hippocampus/memories/insights/{filename}.md |
 
 Review at: Obsidian -> P2-hippocampus -> memories -> insights
 
@@ -193,6 +193,6 @@ with jobs_path.open() as f:
 job2 = next(j for j in data2['jobs'] if j['name'] == 'content-pipeline')
 print("Updated prompt length:", len(job2['prompt']))
 print("Phase 3 delivery format present:", "— (in progress)" in job2['prompt'])
-print("Absolute path present:", "/Users/drew/.drewgent/P2-hippocampus/memories/insights/" in job2['prompt'])
+print("Absolute path present:", "~/.loragent/P2-hippocampus/memories/insights/" in job2['prompt'])
 print("body-based regex present:", "P2-hippocampus/memories/insights/" in job2['prompt'])
 print("Review at format present:", "Obsidian -> P2-hippocampus -> memories -> insights" in job2['prompt'])

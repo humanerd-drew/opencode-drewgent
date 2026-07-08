@@ -30,7 +30,7 @@ Schedule: */5 * * * *
 ```
 Node name: Query Tasks
 Operation: executeQuery
-Database path: ~/.drewgent/state/drewgent_tasks.db
+Database path: ~/.loragent/state/loragent_tasks.db
 
 Query:
 SELECT
@@ -106,7 +106,7 @@ for (const [status, tasks] of Object.entries(groups)) {
 }
 
 const embed = {
-  title: '📋 Drewgent Kanban Board',
+  title: '📋 Loragent Kanban Board',
   description,
   color: 3447003,
   footer: {
@@ -189,15 +189,15 @@ VALUES (?, 'notification', '{"action": "discord_reaction", "emoji": "✅"}', dat
 
 ---
 
-## DrewgentTasks DB Path
+## LoragentTasks DB Path
 
 ```
-~/.drewgent/state/drewgent_tasks.db
+~/.loragent/state/loragent_tasks.db
 ```
 
 Absolute path (for n8n SQLite node):
 ```
-/Users/drew/.drewgent/state/drewgent_tasks.db
+~/.loragent/state/loragent_tasks.db
 ```
 
 ---
@@ -205,9 +205,9 @@ Absolute path (for n8n SQLite node):
 ## Environment Variables (.env)
 
 ```bash
-# Drewgent
-DREWAGENT_HOME=/Users/drew/.drewgent
-DREWAGENT_DB=/Users/drew/.drewgent/state/drewgent_tasks.db
+# Loragent
+DREWAGENT_HOME=~/.loragent
+DREWAGENT_DB=~/.loragent/state/loragent_tasks.db
 
 # Discord
 DISCORD_BOT_TOKEN=your_bot_token_here
@@ -267,7 +267,7 @@ VALUES ('t_abc123', 'discord', '1492883985473208522', 'user_123', datetime('now'
 # 4. Verify task status changes in DB
 
 # Query DB to verify
-sqlite3 ~/.drewgent/state/drewgent_tasks.db "
+sqlite3 ~/.loragent/state/loragent_tasks.db "
 SELECT id, status, last_failure_error
 FROM tasks
 WHERE board='default'

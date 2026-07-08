@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [cloudflare, workers, refactoring, architecture]
-    related_skills: [plan, systematic-debugging, simplify-code, python-large-file-patch-drewgent]
+    related_skills: [plan, systematic-debugging, simplify-code, python-large-file-patch-loragent]
 links:
   - "[[P3-sensors/skills/SKILL-INDEX]]"
   - "[[P0-brainstem/brain/rules]]"
@@ -466,7 +466,7 @@ done
 
 10. **Legacy key references in code.** When consolidating LLM callers (Step 7), verify that every key name referenced in code has a corresponding entry in either `.dev.vars` or `wrangler secret`. A reference like `env.NVIDIA_API_KEY` (singular, not `_1`/`_2`/`_3`) with no matching secret anywhere will silently fail (`.filter(Boolean)` removes it), reducing your fallback chain.
 
-11. **Wrong project copy (Synology Drive dual-sync).** When the project is synced via Synology Drive, macOS creates separate mount points per sync task (e.g., `SynologyDrive-drewgent/` and `SynologyDrive-Log-Project/`). A project may exist in MULTIPLE directories with different versions and package.json. Always confirm which copy the user is running from before editing files. Use `pwd`, `git log --oneline -1`, or check `package.json` version field.
+11. **Wrong project copy (Synology Drive dual-sync).** When the project is synced via Synology Drive, macOS creates separate mount points per sync task (e.g., `SynologyDrive-loragent/` and `SynologyDrive-Log-Project/`). A project may exist in MULTIPLE directories with different versions and package.json. Always confirm which copy the user is running from before editing files. Use `pwd`, `git log --oneline -1`, or check `package.json` version field.
 
 12. **Tool output masking of secrets.** When testing API keys, the tool replaces actual secret values with `***` in displayed output. This is display-only — the actual command has the real value. **Never** copy a `***`-masked value into a subsequent command. If you see `curl -H "Authorization: Bearer *** the `***` was only in what you saw. Read keys fresh from source files when re-testing, not from terminal output.
 

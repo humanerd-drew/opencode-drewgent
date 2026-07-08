@@ -182,9 +182,9 @@ Tell them what you created in plain prose, naming the actual profiles you used:
 
 **Tenant inheritance.** If `HERMES_TENANT` is set in your env, pass `tenant=os.environ.get("HERMES_TENANT")` on every `kanban_create` call so child tasks stay in the same namespace.
 
-**Dual-kanban-DB mismatch (Drewgent-specific).** On Drewgent's setup there are TWO separate kanban databases:
-- **Hermes native kanban** at `HERMES_HOME/kanban.db` (~/.drewgent/kanban.db) — used by the `kanban_*` tools.
-- **Drewgent legacy kanban** at `~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db` — used by the old `dispatch_once_*` scripts in `cron_runner.py`.
+**Dual-kanban-DB mismatch (Loragent-specific).** On Loragent's setup there are TWO separate kanban databases:
+- **Hermes native kanban** at `HERMES_HOME/kanban.db` (~/.loragent/kanban.db) — used by the `kanban_*` tools.
+- **Loragent legacy kanban** at `~/.loragent/P2-hippocampus/kanban/state/loragent_tasks.db` — used by the old `dispatch_once_*` scripts in `cron_runner.py`.
 
 Tasks created via `kanban_create` go into the Hermes native DB. The legacy `dispatch_once_*` scripts check the legacy DB. This means tasks can sit in "ready" forever — the dispatcher is checking the wrong database.
 
@@ -262,7 +262,7 @@ kanban_complete(
 
 ## Agent Profiles — reusable subagent role definitions
 
-Drewgent supports a **static agent profile system** at `~/.drewgent/agents/<name>.md`. These profiles define reusable subagent roles — model, provider, instructions, and tool constraints — in a single file, then referenced by name when spawning work.
+Loragent supports a **static agent profile system** at `~/.loragent/agents/<name>.md`. These profiles define reusable subagent roles — model, provider, instructions, and tool constraints — in a single file, then referenced by name when spawning work.
 
 ### delegate_task integration (built-in)
 
@@ -350,7 +350,7 @@ And stops. The caller detects this pattern and re-routes to a Max-tier model.
 ### Current profiles (8 roles)
 
 ```
-~/.drewgent/agents/
+~/.loragent/agents/
 ├── README.md
 ├── explorer.md              flash  읽기 전용 분석 (ESCALATE 가능)
 ├── implementer.md           flash  구현 (ESCALATE 가능)
@@ -383,7 +383,7 @@ Implementer↔tester loop: tester fails → report to implementer → retry (max
 
 ### Using agent profiles with delegate_task
 
-Pre-defined subagent profiles live at `~/.drewgent/agents/*.md` and are loaded via:
+Pre-defined subagent profiles live at `~/.loragent/agents/*.md` and are loaded via:
 
 ```
 delegate_task(agent_profile="reviewer", goal="review this PR")
@@ -414,7 +414,7 @@ delegate_task(tasks=[
 ])
 ```
 
-The profile system lives at `$HERMES_HOME/agents/`. For drewgent this is `~/.drewgent/agents/`. Add new profiles by dropping a `.md` file there.
+The profile system lives at `$HERMES_HOME/agents/`. For loragent this is `~/.loragent/agents/`. Add new profiles by dropping a `.md` file there.
 
 ### Pipeline auto-decomposition via `kanban_create`
 
@@ -445,7 +445,7 @@ The `pipeline` parameter is documented in the `kanban_create` tool schema — ev
 
 ### Bugs found (fixed in script, cron paused)
 
-1. **Wrong default kanban DB path**: the script defaulted to `~/.hermes/kanban/boards.db` (doesn't exist). Actual DB is at `HERMES_HOME/kanban.db` (usually `~/.drewgent/kanban.db`).
+1. **Wrong default kanban DB path**: the script defaulted to `~/.hermes/kanban/boards.db` (doesn't exist). Actual DB is at `HERMES_HOME/kanban.db` (usually `~/.loragent/kanban.db`).
 2. **Prune query type error**: `$co:DateTime!` should be `$co:DateTimeOrDuration!` for the Linear GraphQL API. Caused silent HTTP 400 errors (script caught and swallowed them, exiting 0).
 
 ### When it was active
@@ -457,7 +457,7 @@ The `pipeline` parameter is documented in the `kanban_create` tool schema — ev
 - **Limit**: 250 issue free tier, safety margin at 200
 
 The hook script: `~/.hermes/agent-hooks/kanban-linear-sync.py`
-(The Drewgent copy at `~/.drewgent/scripts/kanban_linear_sync.py` has both fixes applied.)
+(The Loragent copy at `~/.loragent/scripts/kanban_linear_sync.py` has both fixes applied.)
 
 If Linear is re-enabled, unpause the cron job `02e28cd0a6aa`.
 
@@ -469,7 +469,7 @@ The loop engineering framework (from [addyo's essay](https://addyo.substack.com/
 
 ### The six components
 
-| # | Component | Kanban equivalent | Drewgent status |
+| # | Component | Kanban equivalent | Loragent status |
 |---|-----------|-------------------|-----------------|
 | 1 | **Automations** — scheduled discovery and triage | Cron jobs, kanban dispatcher | ✅ Strong |
 | 2 | **Worktrees** — parallel file isolation | `workspace_kind: worktree` in kanban_create | ⚠️ Adequate, not default |
@@ -488,7 +488,7 @@ The loop engineering framework (from [addyo's essay](https://addyo.substack.com/
 
 4. **Cognitive surrender risk.** Designing the loop is the cure when done with judgement, and the accelerant when done to avoid thinking. Same action, opposite result. Always route with intent, not habit.
 
-### Drewgent design principles (user preferences, established 2026-06-13)
+### Loragent design principles (user preferences, established 2026-06-13)
 
 When designing task graphs, pipelines, or multi-agent flows:
 
@@ -503,7 +503,7 @@ When designing task graphs, pipelines, or multi-agent flows:
 
 When designing a kanban task graph, ask:
 
-See `references/loop-engineering-assessment.md` for the full Drewgent assessment against this framework.
+See `references/loop-engineering-assessment.md` for the full Loragent assessment against this framework.
 - Which of these 6 components does this workflow rely on?
 - Where is the maker/checker split?
 - What happens if this runs unattended for 24 hours?

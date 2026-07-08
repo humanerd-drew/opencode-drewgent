@@ -22,7 +22,7 @@ The core challenge: MCP server config in `config.yaml` supports `env` section fo
 
 ```bash
 #!/bin/bash
-# ~/.drewgent/scripts/huly-mcp-wrapper.sh
+# ~/.loragent/scripts/huly-mcp-wrapper.sh
 export HULY_URL="https://huly.app"
 export HULY_WORKSPACE="humanerd"
 
@@ -37,7 +37,7 @@ The config.yaml just points to the wrapper:
 ```yaml
 mcp_servers:
   huly:
-    command: /Users/drew/.drewgent/scripts/huly-mcp-wrapper.sh
+    command: ~/.loragent/scripts/huly-mcp-wrapper.sh
 ```
 
 This pattern is reusable for any MCP server that needs a credential bridge to `.env`.
@@ -57,7 +57,7 @@ The `HULY_KEY` from Huly Cloud Settings → Integrations → API Access works as
 ```bash
 # Quick smoke test: pipe a tools/list request to the server
 echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | \
-  timeout 8 ~/.drewgent/scripts/huly-mcp-wrapper.sh 2>&1
+  timeout 8 ~/.loragent/scripts/huly-mcp-wrapper.sh 2>&1
 
 # Expected: "Huly MCP Server v2.4.3 running on stdio (81 tools, resources enabled)"
 #          + JSON-RPC response with all 81 tools

@@ -10,12 +10,12 @@ updated: 2026-06-1
 links:
   - "[[skills/humanerd-site]]"
   - "[[skills/quartz-remove-drafts-customization]]"
-  - "[[P3-sensors/gateway/drewgent-architecture-dataflow]]"
+  - "[[P3-sensors/gateway/loragent-architecture-dataflow]]"
   - "[[P0-brainstem/brain/rules]]"---
 
 # wrangler-pages-deploy
 
-`npx wrangler pages deploy`가 실패할 때의 진단 + 해결 절차. **Drewgent 6/1 incident에서 4번의 dead end 후 5번째에 해결한 패턴**.
+`npx wrangler pages deploy`가 실패할 때의 진단 + 해결 절차. **Loragent 6/1 incident에서 4번의 dead end 후 5번째에 해결한 패턴**.
 
 ## 문제 — 4가지 가능한 증상
 
@@ -66,7 +66,7 @@ We detected a configuration file at ... but it is missing the "pages_build_outpu
 ### Step 1: wrangler.toml 확인
 
 ```bash
-cat /Users/drew/.drewgent/humanerd-site/wrangler.toml
+cat ~/.loragent/humanerd-site/wrangler.toml
 ```
 
 **Workers용 (잘못된 형식)** — Pages에서 안 먹음:
@@ -110,12 +110,12 @@ npx wrangler --version
 
 ## Fix — 검증된 4단계 절차
 
-Drewgent humanerd.kr에서 6/1에 적용한 방식 (4번의 dead end 후 성공):
+Loragent humanerd.kr에서 6/1에 적용한 방식 (4번의 dead end 후 성공):
 
 ### 1단계: wrangler.toml을 Pages 형식으로 단순화
 
 ```bash
-cat > /Users/drew/.drewgent/humanerd-site/wrangler.toml <<'EOF'
+cat > ~/.loragent/humanerd-site/wrangler.toml <<'EOF'
 name = "humanerd-site"
 compatibility_date = "2024-01-01"
 pages_build_output_dir = "public"
@@ -196,7 +196,7 @@ curl -s -o /dev/null -w "%{http_code}\n" https://humanerd.kr/insights/foo
 
 ### 4. **fswatch LaunchAgent가 죽었어도 wrangler deploy는 동일하게 실패**
 
-`com.drewgent.quartz-fswatch` LaunchAgent가 멈춰있어도 wrangler 인증 문제는 wrangler 토큰 문제일 뿐, fswatch 재시작이 해결책 아님.
+`com.loragent.quartz-fswatch` LaunchAgent가 멈춰있어도 wrangler 인증 문제는 wrangler 토큰 문제일 뿐, fswatch 재시작이 해결책 아님.
 
 진단:
 ```bash
@@ -207,15 +207,15 @@ launchctl list | grep quartz-fswwatch
 
 fswatch 자체가 죽었으면:
 ```bash
-launchctl unload ~/Library/LaunchAgents/com.drewgent.quartz-fswatch.plist
-launchctl load -w ~/Library/LaunchAgents/com.drewgent.quartz-fswatch.plist
+launchctl unload ~/Library/LaunchAgents/com.loragent.quartz-fswatch.plist
+launchctl load -w ~/Library/LaunchAgents/com.loragent.quartz-fswatch.plist
 ```
 
 이건 wrangler auth와 별개. **둘 다 점검 필요**.
 
 ### 5. **`wrangler pages deploy`는 git과 무관 — directory deploy**
 
-`--commit-dirty=true`는 git dirty check를 skip할 뿐, **git push를 안 함**. CF Pages에 directory를 직접 upload하는 모드. Drewgent humanerd.kr는 git 없이 `public/` → wrangler → CF Pages 흐름.
+`--commit-dirty=true`는 git dirty check를 skip할 뿐, **git push를 안 함**. CF Pages에 directory를 직접 upload하는 모드. Loragent humanerd.kr는 git 없이 `public/` → wrangler → CF Pages 흐름.
 
 GitHub Pages / Cloudflare Pages with git 연결 방식과는 다름.
 
@@ -227,9 +227,9 @@ OAuth로 인증했어도 그 계정의 Pages project에 대한 `pages:write` 권
 
 OAuth flow가 정상이고 `wrangler login`이 성공해도 권한 부족이면 동일 에러.
 
-## 운영 자동화 (Drewgent fswatch script에 적용 권장)
+## 운영 자동화 (Loragent fswatch script에 적용 권장)
 
-`~/.drewgent/P4-cortex/scripts/quartz-deploy.sh`에 다음 추가:
+`~/.loragent/P4-cortex/scripts/quartz-deploy.sh`에 다음 추가:
 
 ```bash
 #!/bin/bash
@@ -238,14 +238,14 @@ export CLOUDFLARE_ACCOUNT_ID="${CLOUDFLARE_ACCOUNT_ID:-dc0199b6b6c27bc9bb2f3201d
 PROJECT="humanerd-site"
 BUILD_DIR="public"
 
-cd /Users/drew/.drewgent/humanerd-site
+cd ~/.loragent/humanerd-site
 npx wrangler pages deploy "$BUILD_DIR" --project-name="$PROJECT" --commit-dirty=true
 ```
 
-`~/.drewgent/P4-cortex/scripts/quartz-fswatch.sh`에서:
+`~/.loragent/P4-cortex/scripts/quartz-fswatch.sh`에서:
 ```bash
 export CLOUDFLARE_ACCOUNT_ID="dc0199b6b6c27bc9bb2f3201d47cb643"
-bash /Users/drew/.drewgent/P4-cortex/scripts/quartz-deploy.sh
+bash ~/.loragent/P4-cortex/scripts/quartz-deploy.sh
 ```
 
 이렇게 해두면 user가 `npx wrangler login`만 다시 실행해도 fswatch가 자동 deploy 정상 동작.
@@ -262,13 +262,13 @@ A: 다름. `<hash>.humanerd-site.pages.dev` (preview) ≠ `humanerd.kr` (custom 
 A: 둘 다 지원하지만 `.toml`이 공식 권장. `jsonc`는 Workers의 옛 형식.
 
 **Q: Account ID `dc0199b6b6c27bc9bb2f3201d47cb643`는 어디서 찾나?**
-A: CF Dashboard 우측 하단 → "Account ID" 또는 Workers & Pages → Overview → Account ID. Drewgent는 `humanerd_me` 계정의 ID. 절대 노출 안 되는 정보는 아님 (계정 식별자일 뿐).
+A: CF Dashboard 우측 하단 → "Account ID" 또는 Workers & Pages → Overview → Account ID. Loragent는 `humanerd_me` 계정의 ID. 절대 노출 안 되는 정보는 아님 (계정 식별자일 뿐).
 
 ## Related
 
 - [[skills/humanerd-site]] — Quartz publishing pipeline 전체 운영
 - [[skills/quartz-remove-drafts-customization]] — Quartz draft filter customization
-- [[P3-sensors/gateway/drewgent-architecture-dataflow]] — vault → site 데이터 흐름
+- [[P3-sensors/gateway/loragent-architecture-dataflow]] — vault → site 데이터 흐름
 
 ## 6/1 incident timeline (왜 이 skill이 필요한가)
 

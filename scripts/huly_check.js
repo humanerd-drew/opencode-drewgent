@@ -25,7 +25,7 @@ const TOKEN = fs.readFileSync(envPath, 'utf8').split('\n')
 
 if (!TOKEN) { process.exit(0); }
 
-const STATE_FILE = path.join(require('os').homedir(), '.drewgent', 'state', 'huly_last_check.json');
+const STATE_FILE = path.join(require('os').homedir(), '.loragent', 'state', 'huly_last_check.json');
 
 async function main() {
   const client = await connect('https://huly.app', {

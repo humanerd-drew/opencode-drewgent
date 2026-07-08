@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Kanban Worker — executes tasks from the Drewgent kanban board.
+Kanban Worker — executes tasks from the Loragent kanban board.
 Reads KANBAN_TASK_ID, fetches task details, runs the agent, reports completion.
 """
 import json, os, sys, signal, time, tempfile, datetime
 from pathlib import Path
 
-DREW_HOME = Path(os.environ.get("DREW_HOME", Path.home() / ".drewgent"))
-SRC_AGENT = DREW_HOME / "source" / "drewgent-agent"
-DB_PATH = DREW_HOME / "P2-hippocampus" / "kanban" / "state" / "drewgent_tasks.db"
+DREW_HOME = Path(os.environ.get("DREW_HOME", Path.home() / ".loragent"))
+SRC_AGENT = DREW_HOME / "source" / "loragent-agent"
+DB_PATH = DREW_HOME / "P2-hippocampus" / "kanban" / "state" / "loragent_tasks.db"
 CONFIG_PATH = DREW_HOME / "config.yaml"
 
 sys.path.insert(0, str(SRC_AGENT))

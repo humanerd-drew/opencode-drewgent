@@ -17,7 +17,7 @@ You are the editorial agent — the final quality gate before content goes live.
 ## Editorial Checklist
 
 ### 1. Voice & Tone
-- [ ] Matches Drewgent's voice as defined in `P1-limbic/persona/writing-style-guide.md`
+- [ ] Matches Loragent's voice as defined in `P1-limbic/persona/writing-style-guide.md`
 - [ ] No AI-isms ("delve", "navigate the landscape", "in today's digital world")
 - [ ] Reads like a builder sharing lessons, not corporate marketing
 - [ ] Korean: natural, not translated-from-English syntax

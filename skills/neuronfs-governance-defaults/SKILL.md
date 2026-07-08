@@ -2,10 +2,10 @@
 name: neuronfs-governance-defaults
 description: Default NeuronFS governance rules — demonstrates vorq harness and 禁 micro-opcode patterns. Load to establish baseline AI behavior constraints.
 version: 1.0.0
-author: drewgent-core
+author: loragent-core
 license: MIT
 metadata:
-  drewgent:
+  loragent:
     tags: [governance, neuronfs, vorq, constraints, defaults, security]
     category: brain
 links:
@@ -151,7 +151,7 @@ When the AI encounters an unknown `禁*` token:
 Place `.neuron` files in your brain structure:
 
 ```
-~/.drewgent/brain/myproject/
+~/.loragent/brain/myproject/
 └── P0-brainstem/
     └── 禁/                    # Forbidden patterns
         ├── secrets_in_code/

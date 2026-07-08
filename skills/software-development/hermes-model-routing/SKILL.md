@@ -9,7 +9,7 @@ tags: [model-routing, provider-routing, delegation, auxiliary, llm-cost, hermes-
 created: 2026-06-13
 updated: 2026-06-16
 links:
-  - "[[P3-sensors/gateway/drewgent-architecture-dataflow]]"
+  - "[[P3-sensors/gateway/loragent-architecture-dataflow]]"
   - "[[software-development/cost-optimization-background-llm]]"
   - "[[P0-brainstem/brain/rules]]"
 ---
@@ -105,7 +105,7 @@ kimi-k2.6           deepseek-v4-pro  kimi-k2.7-code  minimax-m3
 
 ## Configuration Patterns
 
-### Default (single model — current Drewgent routing)
+### Default (single model — current Loragent routing)
 
 ```yaml
 model:
@@ -140,12 +140,12 @@ auxiliary:
 
 ### Per-call Override via `agent_profile`
 
-`delegate_task(agent_profile="<name>")`로 호출하면 `~/.drewgent/agents/<name>.md` 또는
+`delegate_task(agent_profile="<name>")`로 호출하면 `~/.loragent/agents/<name>.md` 또는
 `~/.hermes/agents/<name>.md`의 profile에 박힌 model이 config의 `delegation.model`보다
 우선 적용됨. 역할별 세분화된 라우팅 (reviewer=pro, tester=flash 등) 가능.
 
 ```yaml
-# ~/.drewgent/agents/reviewer.md
+# ~/.loragent/agents/reviewer.md
 ---
 name: reviewer
 model: deepseek-v4-pro
@@ -286,8 +286,8 @@ to guarantee which provider is used.
 
 ### P3: Two config.yaml files
 
-Drewgent has `~/.hermes/config.yaml` (primary) and
-`~/.drewgent/P5-ego/config/config.yaml` (legacy copy). Both must be
+Loragent has `~/.hermes/config.yaml` (primary) and
+`~/.loragent/P5-ego/config/config.yaml` (legacy copy). Both must be
 patched in sync if the routing config is duplicated there. Check both
 before claiming "done".
 

@@ -60,7 +60,7 @@ Added ~120 lines of JavaScript to the inline `<script>` block, implementing:
 
 ## File Changed
 
-- `/Users/drew/.drewgent/P4-cortex/scripts/kanban_dashboard_server.py`
+- `~/.loragent/P4-cortex/scripts/kanban_dashboard_server.py`
   - Modal HTML: added Description tab button + `content-body` div
   - JavaScript: ~120 lines of new functions between SSE and drag-drop code
 
@@ -68,9 +68,9 @@ Added ~120 lines of JavaScript to the inline `<script>` block, implementing:
 
 After editing `kanban_dashboard_server.py`:
 ```bash
-launchctl stop ai.drewgent.kanban-dashboard
+launchctl stop ai.loragent.kanban-dashboard
 sleep 2
-launchctl start ai.drewgent.kanban-dashboard
+launchctl start ai.loragent.kanban-dashboard
 ```
 
 The server has no auto-reload. Verify:

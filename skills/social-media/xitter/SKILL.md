@@ -2,14 +2,14 @@
 name: xitter
 description: Interact with X/Twitter via the x-cli terminal client using official X API credentials. Use for posting, reading timelines, searching tweets, liking, retweeting, bookmarks, mentions, and user lookups.
 version: 1.0.0
-author: Siddharth Balyan + Drewgent Agent
+author: Siddharth Balyan + Loragent Agent
 license: MIT
 platforms: [linux, macos]
 prerequisites:
   commands: [uv]
   env_vars: [X_API_KEY, X_API_SECRET, X_BEARER_TOKEN, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET]
 metadata:
-  drewgent:
+  loragent:
     tags: [twitter, x, social-media, x-cli]
     homepage: https://github.com/Infatoshi/x-cli
 
@@ -30,7 +30,7 @@ This skill is for:
 - liking and retweeting
 - checking mentions and bookmarks
 
-This skill intentionally does not vendor a separate CLI implementation into Drewgent. Install and use upstream `x-cli` instead.
+This skill intentionally does not vendor a separate CLI implementation into Loragent. Install and use upstream `x-cli` instead.
 
 ## Important Cost / Access Note
 
@@ -97,11 +97,11 @@ If the user wants the least brittle long-term setup, use this skill. If they wan
 
 `x-cli` looks for credentials in `~/.config/x-cli/.env`.
 
-If you already keep your X credentials in `~/.drewgent/.env`, the cleanest setup is:
+If you already keep your X credentials in `~/.loragent/.env`, the cleanest setup is:
 
 ```bash
 mkdir -p ~/.config/x-cli
-ln -sf ~/.drewgent/.env ~/.config/x-cli/.env
+ln -sf ~/.loragent/.env ~/.config/x-cli/.env
 ```
 
 Or create a dedicated file:
@@ -197,7 +197,7 @@ Recommended defaults:
 - **403 oauth1-permissions**: regenerate the access token after enabling `Read and write`.
 - **Reply restrictions**: X restricts many programmatic replies. `tweet quote` is often more reliable than `tweet reply`.
 - **Rate limits**: expect per-endpoint limits and cooldown windows.
-- **Credential drift**: if you rotate tokens in `~/.drewgent/.env`, make sure `~/.config/x-cli/.env` still points at the current file.
+- **Credential drift**: if you rotate tokens in `~/.loragent/.env`, make sure `~/.config/x-cli/.env` still points at the current file.
 
 ## Notes
 
