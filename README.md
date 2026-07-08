@@ -648,7 +648,7 @@ The skill `skill("vault-secrets")` documents the full protocol.
 
 ## Cron & Automation
 
-Drewgent uses a launchd-driven 60-second tick that dispatches `scripts/drewgent_cron.py`. The scheduler (`cron/scheduler.py`) reads `cron/jobs.json` and fires jobs at their scheduled intervals.
+Drewgent uses a launchd-driven 60-second tick that runs `scripts/drewgent_cron.py` as a persistent daemon. It reads `cron/jobs.json` and dispatches script or agent jobs at their scheduled intervals.
 
 | Interval | Job | Description | Method |
 |----------|-----|-------------|--------|
@@ -851,7 +851,7 @@ Two Discord integration paths:
 │
 └── cron/                       Scheduled job definitions
     ├── jobs.json               Job schedule (intervals, scripts)
-    └── scheduler.py            Schedule resolver and dispatcher
+    └── drewgent_cron.py        Cron dispatcher daemon (60s tick)
 ```
 
 ### What's NOT in the Repo (Personal Data)

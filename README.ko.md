@@ -419,7 +419,8 @@ eval "$(vault env)"                   # 환경변수로 내보내기
 │   ├── ai.yourgent.cron.plist.example
 │   └── ai.yourgent.discord-bot.plist.example
 ├── scripts/                    27개 자동화 스크립트
-├── cron/                       jobs.json + scheduler.py
+├── scripts/                    drewgent_cron.py 등 실행 스크립트
+├── cron/                       jobs.json + 실행 출력
 ├── P0-brainstem/               거버넌스 규칙 (.neuron)
 ├── P1-limbic/                  정체성/페르소나
 ├── P2-hippocampus/             기억 레이어 (stub)
