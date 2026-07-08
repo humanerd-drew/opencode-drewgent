@@ -1,0 +1,19 @@
+{
+  "$schema": "loragent:notion-knowledge-sync:cache-meta:v1",
+  "domain": "example",
+  "created_at": "2026-07-08T00:00:00Z",
+  "notion_search_query": "",
+  "entries": [
+    {
+      "notion_id": "page_id_here",
+      "local_path": null,
+      "title": "Page Title",
+      "last_edited_at": "2026-01-01T00:00:00.000Z",
+      "last_synced_at": "2026-07-08T00:00:00Z",
+      "category": "theory",
+      "tags": [],
+      "relations": [],
+      "archived": false
+    }
+  ]
+}
