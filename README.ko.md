@@ -4,7 +4,7 @@
 
 [opencode](https://opencode.ai) 위에서 동작하는 개인 AI 에이전트 템플릿입니다.
 
-이 레포는 자신만의 AI 에이전트를 만들기 위한 **스타터 킷**입니다. subagent 오케스트레이션, 스킬 시스템, cron 자동화, 지식 관리 구조 등 솔로 개발자가 매일 처음부터 구축해야 하는 패턴들을 템플릿화했습니다. fork해서 이름을 바꾸고 커스터마이징하세요.
+이 레포는 라이브러리나 프레임워크가 아닌 **스타터 킷**입니다. 솔로 개발자가 자기만의 AI 에이전트를 만들면서 수개월의 시행착오 끝에 발견하게 될 아키텍처 패턴, 컨벤션, 인프라를 템플릿화했습니다. 철학은 단순합니다: **에이전트는 그것을 만드는 사람만큼이나 고유해야 한다.** 범용 에이전트는 아무 도움이 안 됩니다. 자신의 취향과 워크플로우로 빚어진 에이전트만이 진짜 유용합니다.
 
 ---
 
@@ -18,184 +18,154 @@ curl -fsSL https://opencode.ai/install | sh
 git clone git@github.com:YOUR_USERNAME/opencode-drewgent.git ~/.youragent
 cd ~/.youragent
 
-# 3. 의존성 설치 및 .env 생성
+# 3. 의존성 설치, .env 생성, launchd 설정
 bash scripts/setup.sh
 
 # 4. "drewgent"를 당신의 에이전트 이름으로 변경
 #    (opencode 내에서 실행:)
 skill("rename-drewgent")
 
-# 5. opencode 실행
+# 5. @identity/ 파일을 수정하여 에이전트 성격 정의
+#    이름과 목적만 먼저 정하고, 나중에 다듬어도 됩니다.
+
+# 6. opencode 실행
 opencode
 ```
 
 ---
 
-## 아키텍처
+## 볼트가 왜 필요한가 (P0-P6)
 
-### 에이전트 시스템
+볼트는 에이전트의 장기 기억이자 정체성입니다. **뇌의 은유**를 사용했습니다. 에이전트에게는 인간의 뇌가 가진 레이어가 동일하게 필요합니다: 본능, 성격, 기억, 감각, 추론, 자의식, 계획.
 
-opencode의 내장 `task(subagent_type="...")`로 멀티스텝 작업을 위임하고, 필요 시 GJC Coordinator MCP로 격리된 worktree에서 병렬 실행합니다. 주요 에이전트 프로필은 `.opencode/agents/*.md`에 정의:
+| 레이어 | 경로 | 목적 | 왜 존재하는가 |
+|-------|------|------|-------------|
+| **P0 — Brainstem** | `@identity/brain/` | 규칙, 제약, 禁 규칙 | 최소한의 안전장치. 에이전트에게 절대 규칙이 없으면 같은 실수를 무한 반복합니다. "파일을 읽지 않고 삭제하지 마라" 같은 규칙이 여기 있으며, 모든 레이어 중 최우선 적용됩니다. |
+| **P1 — Limbic** | `@identity/persona/` | 성격, 어조, 글쓰기 스타일 | 일관된 캐릭터가 필요합니다. 이것이 없으면 매 세션이 다른 사람과 대화하는 느낌이 됩니다. 말투, 격식 수준, 의사소통 선호도가 여기 있습니다. |
+| **P2 — Hippocampus** | `P2-hippocampus/` | 원본 아카이브 — 세션, 메모리, 수집 지식 | 에피소드 기억입니다. 모든 세션 로그, 인사이트, 수집한 아티클이 여기 저장됩니다. 읽기 전용 — 에이전트는 원본 기억을 직접 수정하지 않고, 필요한 내용을 컴파일해서 사용합니다. |
+| **P3 — Sensors** | `@action/` | 도구 통합, 게이트웨이 설정 | 눈과 귀입니다. MCP 서버 설정, Discord 봇 설정, 웹훅 — 에이전트가 외부 세상을 인식하고 행동할 수 있게 하는 모든 것이 여기 있습니다. |
+| **P4 — Cortex** | `skills/` | 스킬 정의, 성장 기록 | 학습된 스킬입니다. 각 스킬은 필요할 때 로드되는 특화된 능력입니다 — 코딩 패턴, SEO 전략, 결제 연동 같은 근육 기억입니다. |
+| **P5 — Ego** | `@identity/SELF_MODEL.md` | 자기 인식, 컴파일된 위키 | 에이전트의 자아 개념입니다. "나는 누구인가, 무엇을 할 수 있는가, 어떤 제약이 있는가?" 또한 매주 학습한 내용을 요약한 컴파일된 지식도 여기에 있습니다. |
+| **P6 — Prefrontal** | `P6-prefrontal/` | 인시던트, 회고, 장기 계획 | 실행 기능입니다. 문제가 생겼을 때 사후 분석이 여기에 저장됩니다. 분기 계획도 여기에 세웁니다. |
 
-| 프로필 | 모델 | 역할 |
-|--------|------|------|
-| implementer | flash | 코드 생성, 파일 수정 |
-| reviewer | pro | 코드 리뷰, 품질 게이트 |
-| explorer | flash | 코드베이스 탐색, 리서치 |
-| planner | pro/max | 작업 분해, 계획 |
-| sre | flash | 인프라, 모니터링 |
-| architect | pro | 아키텍처 결정 |
-
-### 볼트 구조 (P0-P6)
-
-Obsidian 호환 폴더 구조로 에이전트의 정체성, 지식, 메모리를 계층화:
-
-| 레이어 | 경로 | 내용 |
-|-------|------|------|
-| **P0-brainstem** | `@identity/brain/` | 규칙, 제약, 禁 규칙 |
-| **P1-limbic** | `@identity/persona/` | 성격, 어조, 글쓰기 스타일 |
-| **P2-hippocampus** | `P2-hippocampus/` | 원본 아카이브 — 세션, 메모리, 지식 |
-| **P3-sensors** | `@action/` | 툴 통합, 게이트웨이 설정 |
-| **P4-cortex** | `skills/` | 스킬 정의, 성장 기록 |
-| **P5-ego** | `@identity/SELF_MODEL.md` | 자기 인식, 컴파일된 위키 |
-| **P6-prefrontal** | `P6-prefrontal/` | 인시던트, 회고, 계획 |
-
-### MCP 서버
-
-`opencode.jsonc`에 예시 MCP 서버 설정 포함:
-
-| 서버 | 타입 | 용도 |
-|------|------|------|
-| `codebase-memory-mcp` | local stdio | 코드베이스 지식 그래프 |
-| `gajae-code` | local stdio | GJC Coordinator 격리 위임 |
-| `safari` | local stdio | 웹 브라우징 |
-| `astryx` | remote HTTP | Meta Astryx 디자인 시스템 |
-| `discord` | local stdio | Discord 연동 |
-
-### 스킬 시스템
-
-스킬은 `skill("name")`으로 로드하는 특화 명령어 파일입니다. 템플릿에는 100+ 스킬이 포함:
-
-- `skills/software-development/` — 코딩 패턴, 리팩토링, 테스팅
-- `skills/devops/` — 인프라, 배포, 모니터링
-- `skills/mlops/` — ML 학습, 추론, 파인튜닝
-- `skills/creative/` — 디자인, 아키텍처 다이어그램, 콘텐츠
-- `skills/productivity/` — 외부 툴 연동
-- `skills/seo/` — SEO 및 콘텐츠 최적화
-
-### Cron 자동화
-
-`scripts/drewgent_cron.py` 스케줄러가 `cron/jobs.json`을 읽어 주기적 작업을 실행합니다. 예시 job은 `cron/jobs.json` 참조.
-
-### Kanban 작업 파이프라인
-
-SQLite 기반 kanban 보드(`kanban.db`)로 작업을 추적합니다. 각 task는 subagent 파이프라인(explorer → implementer → reviewer)과 leverage score를 가질 수 있습니다.
+**왜 P0-P6이고 평평한 폴더가 아닌가?** 우선순위 번호가 의도적입니다. P0 규칙이 모든 것을 재정의합니다. "공손하게 행동하라"(P1)와 "비밀 절대 노출 금지"(P0)가 충돌하면, P0이 협상 없이 승리합니다. 이 계층적 설계는 에이전트가 안전 규칙을 추론으로 우회하는 것을 방지합니다.
 
 ---
 
-## 커스터마이징 가이드
+## 서브에이전트 프로필이 왜 필요한가
 
-### 1. 에이전트 이름 변경
+하나의 에이전트로 모든 것을 잘하려고 하면 — 코딩, 리뷰, 계획, 디버깅, 글쓰기 — 컨텍스트 윈도우 하나와 모델 하나로는 너무 벅찹니다. 대신:
 
-전체 repo에서 "drewgent"를 당신의 에이전트 이름으로 변경:
+**각 프로필은 전문화된 전문가입니다.** implementer는 빠르고 저렴한 모델(flash)로 코드를 생성합니다. reviewer-critical은 비싸지만 철저한 모델(max)로 아키텍처를 감사합니다. analyst는 읽기 전용이며 파일을 수정할 수 없습니다. 이 분리는 다음을 가능하게 합니다:
 
-```bash
-# 방법 A: opencode 내에서
-skill("rename-drewgent")
+- **비용 최적화**: 생산 작업에는 저렴한 모델, 필요할 때만 비싼 모델
+- **안전성**: 읽기 전용 프로필은 실수로 운영 데이터를 수정할 수 없음
+- **집중**: 각 프로필의 시스템 프롬프트는 정확히 하나의 작업을 목표로 함
+- **확장성**: 기존 프로필을 건드리지 않고 새 프로필 추가 가능
 
-# 방법 B: 수동 find/replace
-find ~/.youragent -type f -name "*.md" -o -name "*.py" -o -name "*.sh" -o -name "*.json" | \
-  xargs sed -i '' 's/drewgent/youragent/g'
+```
+implementer → reviewer → tester    (표준 개발 워크플로우)
+explorer → planner → implementer   (복잡한 작업 분해)
+analyst → sre → architect          (장애 대응)
 ```
 
-### 2. 정체성 설정
+---
 
-다음 파일을 수정하여 에이전트의 성격을 정의:
+## 연혁 기록(Provenance)이 왜 필요한가
 
-- `@identity/SELF_MODEL.md` — 목적, 역할, 핵심 지시
-- `@identity/persona/SOUL.md` — 어조, 목소리, 커뮤니케이션 스타일
-- `@identity/persona/writing-style-guide.md` — 글쓰기 컨벤션
-- `@identity/brain/rules.md` — 행동 규칙과 제약
+AI 어시스턴트의 가장 큰 문제는 **휘발성 컨텍스트**입니다. 세션 중반에 좋은 결정을 내렸지만, 세 번 후에는 그 이유를 전혀 기억하지 못합니다. 연혁 기록은 모든 artifact에 그 기원을 각인함으로써 이 문제를 해결합니다:
 
-### 3. MCP 서버 설정
+```yaml
+trigger: "무슨 문제나 요청에서 시작되었는가"
+provenance:
+  session: "YYYY-MM-DD 주제"
+  decision: "왜 이 접근법을 선택했는가, 어떤 대안이 있었는가"
+```
 
-`opencode.jsonc`를 수정하여 필요한 MCP 서버 추가:
-- Discord 봇 (`DISCORD_BOT_TOKEN` 필요)
-- Gajae-Code coordinator (`OPENCODE_API_KEY` 필요)
-- WordPress MCP 서버 (콘텐츠 관리)
-- Safari 웹 브라우징 (macOS 전용)
+두 가지 효과가 있습니다: (1) 에이전트가 나중에 `recall("decision: ...")`로 전체 컨텍스트를 조회할 수 있고, (2) 사람이 에이전트의 마음을 읽지 않고도 왜 그렇게 구축되었는지 감사할 수 있습니다. 한 사람의 기억을 넘어서는 시스템을 위한 최소한의 문서화입니다.
 
-### 4. Cron 작업 설정
+---
 
-`cron/jobs.json`을 수정하여 자동화 작업 추가. 예시:
+## 계층적 자율성(Tiered Autonomy)이 왜 필요한가
+
+모든 것에 허락을 구하는 에이전트는 쓸모없습니다. 절대 묻지 않는 에이전트는 위험합니다. 계층적 자율성은 에이전트가 언제 단독 결정하고 언제 기다려야 하는지를 정의합니다:
+
+| 계층 | 범위 | 권한 | 예시 |
+|------|------|------|------|
+| **1** | 사소한 변경 | **자율. 완료 후 보고.** | 오타 수정, 코멘트 업데이트, 메모리 저장 |
+| **2** | 기존 패턴 | **자율. 연혁 포함.** | 알려진 리팩토링 적용, 기존 cron과 유사한 새 job 추가 |
+| **3** | 구조 변경 | **제안 → 승인 대기.** | 새 MCP 서버 추가, 스킬 디렉토리 구조 변경 |
+| **4** | 아키텍처 결정 | **제안만. 사람이 결정.** | 볼트 구조 변경, 위임 전략 변경 |
+
+**"잘 모르겠으면 물어봐"는 왜 안 되는가?** 에이전트가 불확실성을 판단하게 하는 것은 모델이 특히 취약한 부분입니다. 명시적 계층은 그 판단을 제거합니다. Tier 1-2면 에이전트가 행동합니다. Tier 3이면 초안을 만듭니다. Tier 4면 요약합니다. 망설임도 없고, 잘못된 자신감도 없습니다.
+
+---
+
+## 스킬 시스템이 왜 필요한가
+
+스킬은 설정이 아닙니다. **실행 가능한 지식**입니다 — 작업이 트리거와 일치할 때 필요에 따라 로드되는 특화된 명령어입니다.
+
+```python
+# 사용자가 결제 연동을 물어보면:
+skill("portone-payment-integration")
+# → PortOne V2 SDK 패턴, KG이니시스 설정, 웹훅 처리 로딩
+```
+
+각 스킬은 `SKILL.md` 파일과 선택적으로 `references/`, `scripts/`, `templates/` 디렉토리로 구성됩니다. 스킬 시스템 덕분에 에이전트가 모든 것을 미리 알 필요가 없습니다. 필요할 때 필요한 것을 학습합니다. 시간이 지남에 따라 필요에 따라 성장하는 능력 라이브러리가 구축됩니다.
+
+---
+
+## 위임 패턴(Delegation)이 왜 두 가지인가
+
+두 패턴, 두 트레이드오프:
+
+- **`task(subagent_type="...")`** — 같은 모델, 같은 세션 서브태스크. 컨텍스트 전송 오버헤드가 없어 빠르고 저렴합니다. 구현 후 코드 리뷰를 받을 때, 또는 analyst에게 kanban 보드를 조회하게 할 때 사용합니다.
+  
+- **`gjc_delegate_execute(...)`** — 격리된 worktree + 별도 tmux 세션. 느리지만 완전히 격리됩니다. 병렬 실행이 필요할 때(세 개 모듈을 동시에 리팩토링) 또는 부수 효과가 메인 세션을 오염시키면 안 되는 작업에 사용합니다.
+
+경험칙: 서브태스크가 5분 미만이고 격리가 필요 없으면 `task()`를 사용합니다. 복잡하거나, 오래 걸리거나, 위험하면 위임합니다.
+
+---
+
+## Cron 자동화가 왜 필요한가
+
+Cron 스케줄러(`scripts/drewgent_cron.py`)는 에이전트를 반응형(말을 걸 때만 작동)에서 능동형(정기적으로 작동)으로 바꿉니다. 작업은 `cron/jobs.json`에 정의합니다:
 
 ```json
 {
-  "id": "my-job",
-  "name": "내 작업",
+  "id": "health-check",
   "enabled": true,
-  "schedule": { "kind": "cron", "expr": "0 6 * * *" },
-  "deliver": { "kind": "script", "script": "scripts/my_script.py" },
-  "workdir": "~/",
-  "max_runtime": 600
+  "schedule": { "kind": "interval", "seconds": 300 },
+  "deliver": { "kind": "script", "script": "scripts/health_check.sh" }
 }
 ```
 
-### 5. 스킬 라이브러리 구축
-
-필요 없는 스킬을 제거하고, 자신만의 스킬을 추가하세요. 각 스킬은 `skills/` 아래 디렉토리 + `SKILL.md` 파일로 구성됩니다.
-
-```bash
-ls skills/*/SKILL.md
-```
+**왜 시스템 cron만 쓰지 않는가?** 에이전트 작업은 컨텍스트가 필요합니다 — 특정 프로필로 `opencode run`을 실행하거나, kanban 보드를 확인하거나, Discord에 결과를 보고해야 할 수 있습니다. 스케줄러가 이 모든 것을 감쌉니다.
 
 ---
 
-## 주요 개념
+## Kanban이 왜 필요한가
 
-### 위임 패턴
+Kanban 보드는 프로젝트 관리 도구가 아닙니다. **작업 지속성**입니다. "이 기능을 구현해줘"라고 말하면, 그 작업은 파이프라인(explorer → implementer → reviewer)과 함께 kanban DB에 들어갑니다. 각 단계가 적절한 서브에이전트를 실행합니다. 완료되면 다음 단계가 자동으로 트리거됩니다.
 
-- **`task(subagent_type="reviewer", ...)`** — 같은 모델 서브태스크. 가볍고 빠름.
-- **`gjc_delegate_execute(...)`** — 격리된 worktree + tmux. 무거운 격리, 병렬 실행.
-- **`gjc_delegate_team(...)`** — 병렬 멀티 에이전트 오케스트레이션.
+이것이 없으면 에이전트가 작업 중간에 크래시되면 모든 것이 사라집니다. Kanban이 있으면 재시작하고, 작업 상태를 확인하고, 각 서브에이전트가 무엇을 했는지도 볼 수 있습니다. Leverage score(1-5)는 우선순위 결정을 돕습니다: "이 작업이 해결되면, 몇 개의 다른 문제가 사라지는가?"
 
-### 연혁 기록 (Provenance)
+---
 
-모든 artifact는 생성 동기를 기록:
+## MCP 서버 설정
 
-```yaml
-trigger: "무슨 문제/요청에서 시작되었는가"
-provenance:
-  session: "YYYY-MM-DD 주제"
-  decision: "왜 이렇게 설계했는가, 어떤 대안이 있었는가"
-```
+`opencode.jsonc`에 예시 MCP 서버 설정이 포함되어 있습니다:
 
-### 계층적 자율성 (Tiered Autonomy)
-
-| 계층 | 범위 | 권한 |
+| 서버 | 타입 | 용도 |
 |------|------|------|
-| 1 | 오타, 사소한 수정 | 자율. 완료 후 보고. |
-| 2 | 기존 패턴 내 작업 | 자율. 연혁 포함. |
-| 3 | 구조 변경 | 제안 → 승인 대기. |
-| 4 | 아키텍처/방향 | 제안만. 사람이 결정. |
+| `codebase-memory-mcp` | local stdio | 코드베이스 지식 그래프. 함수 검색, 호출 체인 추적, 아키텍처 이해. |
+| `gajae-code` | local stdio | GJC Coordinator — 격리된 worktree 실행 및 병렬 위임. `gjc_delegate_*` 도구에 필요. |
+| `safari` | local stdio | Safari Technology Preview를 통한 웹 브라우징. 페이지 읽기, 폼 작성, 스크린샷. |
+| `astryx` | remote HTTP | Meta의 Astryx 디자인 시스템 (React 19 + StyleX). 150+ 접근 가능한 컴포넌트. |
+| `discord` | local stdio | Discord 연동 — 메시지 읽기, 응답 보내기, 채널 관리. |
+| `wordpress` | local stdio | WordPress 콘텐츠 관리 — wp-cli로 포스트 생성, 수정, 발행. |
 
-### 중요 정책
-
-- **Filesystem = truth** — 상태와 설정은 디스크에 저장, 컨텍스트에 보관 금지
-- **QA 게이트** — 검증 없이 완료 선언 금지
-- **빅뱅 리팩토링 금지** — 한 번에 하나씩 변경, 중간마다 검증
-- **Ponytail 원칙** — YAGNI, 표준 라이브러리 우선, 불필요한 의존성 금지
-- **Answer-first** — CLI 출력은 결론 먼저, 과정은 그 다음
-
----
-
-## 생성 콘텐츠 저작권 표시
-
-공개 홍보용 콘텐츠(블로그, X 스레드, 데모)에만 추가:
-
-```
-Built with [opencode-drewgent](https://github.com/humanerd-drew/opencode-drewgent)
-```
+**참고:** `safari` MCP 서버는 macOS에서 Safari Technology Preview가 필요합니다. `discord` 서버는 환경에 `DISCORD_BOT_TOKEN`이 필요합니다.
 
 ---
 
@@ -212,6 +182,21 @@ associative array 없음. `date -j -f` 필요. `set -u` 주의.
 
 ### 토큰/비용 데이터 = SQLite
 opencode stderr 로그는 `tokens.input=0`으로 표시됨. 실제 데이터는 `~/.local/share/opencode/opencode.db`에 있음.
+
+### 사용 전 반드시 이름 변경
+`git clone` 후 `skill("rename-drewgent")` 없이 opencode를 실행하면 에이전트가 자신을 "Drewgent"라고 생각하고 그 페르소나로 답변합니다. 먼저 이름을 바꾸세요.
+
+---
+
+## 생성 콘텐츠 저작권 표시
+
+공개 홍보용 콘텐츠(블로그, X 스레드, 데모 페이지)에만 추가:
+
+```
+Built with [opencode-drewgent](https://github.com/humanerd-drew/opencode-drewgent)
+```
+
+내부 메모, 개인 메시지, 디버깅 출력에는 절대 붙이지 마세요.
 
 ---
 

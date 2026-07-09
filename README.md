@@ -4,7 +4,7 @@
 
 A personal AI agent template built on [opencode](https://opencode.ai).
 
-This repo is a **starter kit** for building your own personal AI agent. It gives you the architecture patterns, skill system, and automation infrastructure that a solo developer would otherwise build from scratch. Fork it, rename it, and make it yours.
+This is not a library or a framework. It's a **starter kit** — the architecture patterns, conventions, and infrastructure that a solo developer building their own AI agent would otherwise have to discover through months of trial and error. The philosophy is: **an agent should be as unique as the person building it.** A generic agent helps no one. A personalized agent, shaped by its creator's taste and workflow, is genuinely useful.
 
 ---
 
@@ -18,184 +18,154 @@ curl -fsSL https://opencode.ai/install | sh
 git clone git@github.com:YOUR_USERNAME/opencode-drewgent.git ~/.youragent
 cd ~/.youragent
 
-# 3. Install dependencies and create .env
+# 3. Install dependencies, create .env, set up launchd
 bash scripts/setup.sh
 
 # 4. Rename everything from "drewgent" to your agent name
 #    (inside opencode, run:)
 skill("rename-drewgent")
 
-# 5. Start opencode
+# 5. Edit `@identity/` files to define your agent's personality
+#    Start with just the name and purpose — you can refine later.
+
+# 6. Start opencode
 opencode
 ```
 
 ---
 
-## Architecture
+## Why the Vault? (P0-P6)
 
-### Agent System
+The vault is the agent's long-term memory and identity. It uses a **brain metaphor** because an agent needs the same layers a human brain has: instincts, personality, memory, senses, reasoning, self-awareness, and planning.
 
-The template uses opencode's built-in `task(subagent_type="...")` for multi-step work, plus optional GJC Coordinator MCP for isolated worktree execution. Key agent profiles are defined in `.opencode/agents/*.md`:
+| Layer | Path | Purpose | Why it exists |
+|-------|------|---------|---------------|
+| **P0 — Brainstem** | `@identity/brain/` | Rules, constraints, 禁 (never-do) rules | Bare minimum safety. If the agent has no absolute rules, it will make the same mistakes repeatedly. These are the "don't delete files without reading them first" layer — enforced at the highest priority. |
+| **P1 — Limbic** | `@identity/persona/` | Personality, voice, writing style | The agent needs a consistent character. Without this, every session feels like talking to a different person. Tone, formality, communication preferences live here. |
+| **P2 — Hippocampus** | `P2-hippocampus/` | Raw archives — sessions, memories, collected knowledge | The agent's episodic memory. Every session log, every insight, every collected article goes here. It's read-only — the agent doesn't edit raw memory, it compiles from it. |
+| **P3 — Sensors** | `@action/` | Tool integrations, gateway configs | Like your eyes and ears. MCP server configs, Discord bot setup, webhooks — anything that lets the agent perceive or act on the outside world. |
+| **P4 — Cortex** | `skills/` | Skill definitions, growth records | Learned skills. Each skill is a specialized capability loaded on demand — like a muscle memory for coding patterns, SEO strategy, or payment integration. |
+| **P5 — Ego** | `@identity/SELF_MODEL.md` | Self-awareness, compiled wiki | The agent's self-concept. "Who am I, what can I do, what are my constraints?" Also hosts compiled knowledge — weekly summaries of what the agent learned. |
+| **P6 — Prefrontal** | `P6-prefrontal/` | Incidents, retrospectives, long-term plans | Executive function. When things go wrong, the post-mortem goes here. When planning next quarter's work, the plan lives here. |
 
-| Profile | Model | Purpose |
-|---------|-------|---------|
-| implementer | flash | Code generation, file edits |
-| reviewer | pro | Code review, quality gate |
-| explorer | flash | Codebase discovery, research |
-| planner | pro/max | Task decomposition, planning |
-| sre | flash | Infrastructure, monitoring |
-| architect | pro | Architecture decisions |
-
-### Vault (P0-P6)
-
-The vault is an Obsidian-compatible folder structure that organizes agent identity, knowledge, and memory:
-
-| Layer | Path | Content |
-|-------|------|---------|
-| **P0-brainstem** | `@identity/brain/` | Rules, constraints, 禁 (never-do) rules |
-| **P1-limbic** | `@identity/persona/` | Personality, voice, writing style |
-| **P2-hippocampus** | `P2-hippocampus/` | Raw archives — sessions, memories, knowledge |
-| **P3-sensors** | `@action/` | Tool integrations, gateway configs |
-| **P4-cortex** | `skills/` | Skill definitions, growth records |
-| **P5-ego** | `@identity/SELF_MODEL.md` | Self-awareness, compiled wiki |
-| **P6-prefrontal** | `P6-prefrontal/` | Incidents, retrospectives, plans |
-
-### MCP Servers
-
-Example MCP server configs in `opencode.jsonc`:
-
-| Server | Type | Purpose |
-|--------|------|---------|
-| `codebase-memory-mcp` | local stdio | Codebase knowledge graph |
-| `gajae-code` | local stdio | GJC Coordinator for isolated delegation |
-| `safari` | local stdio | Web browsing |
-| `astryx` | remote HTTP | Meta Astryx design system |
-| `discord` | local stdio | Discord integration |
-
-### Skill System
-
-Skills are specialized instruction files loaded on demand via `skill("name")`. The template ships with 100+ skills organized by category:
-
-- `skills/software-development/` — Coding patterns, refactoring, testing
-- `skills/devops/` — Infrastructure, deployment, monitoring
-- `skills/mlops/` — ML training, inference, fine-tuning
-- `skills/creative/` — Design, architecture diagrams, content
-- `skills/productivity/` — External tool integrations
-- `skills/seo/` — SEO and content optimization
-
-### Cron Automation
-
-The template includes a cron scheduler (`scripts/drewgent_cron.py`) driven by `cron/jobs.json`. See `cron/jobs.json` for example jobs and the cron skill for setup details.
-
-### Kanban Task Pipeline
-
-Tasks are tracked in a SQLite kanban board (`kanban.db`). Each task can have a pipeline of subagent roles (e.g., explorer → implementer → reviewer) and a leverage score for prioritization.
+**Why P0-P6 and not flat folders?** The priority numbering is intentional. P0 rules override everything. When there's a conflict between "be polite" (P1) and "never expose secrets" (P0), P0 wins without negotiation. This layered design prevents the agent from reasoning its way around safety rules.
 
 ---
 
-## Customization Guide
+## Why Subagent Profiles?
 
-### 1. Rename the Agent
+A single agent tries to be good at everything — coding, reviewing, planning, debugging, content writing. That's too much for one context window and one model. Instead:
 
-The entire repo uses "drewgent" as a placeholder project name. Rename it:
+**Each profile is a specialized expert.** The implementer uses a fast, cheap model (flash) for code generation. The reviewer-critical uses an expensive, thorough model (max) for architecture audits. The analyst is read-only and can't modify files. This separation means:
 
-```bash
-# Option A: Inside opencode
-skill("rename-drewgent")
+- **Cost optimization**: Cheap models for production work, expensive ones only when needed
+- **Safety**: Read-only profiles can't accidentally modify production
+- **Focus**: Each profile's system prompt targets exactly one job
+- **Scalability**: Add a new profile without changing existing ones
 
-# Option B: Manual find/replace
-find ~/.youragent -type f -name "*.md" -o -name "*.py" -o -name "*.sh" -o -name "*.json" | \
-  xargs sed -i '' 's/drewgent/youragent/g'
 ```
-
-### 2. Set Your Identity
-
-Edit these files to define your agent's personality:
-
-- `@identity/SELF_MODEL.md` — Agent purpose, role, core directives
-- `@identity/persona/SOUL.md` — Tone, voice, communication style
-- `@identity/persona/writing-style-guide.md` — Writing conventions
-- `@identity/brain/rules.md` — Behavioral rules and constraints
-
-### 3. Configure MCP Servers
-
-Edit `opencode.jsonc` to add your own MCP servers. The template includes configs for:
-- Discord bot (requires `DISCORD_BOT_TOKEN`)
-- Gajae-Code coordinator (requires `OPENCODE_API_KEY`)
-- WordPress MCP server (for content management)
-- Safari web browsing (macOS only)
-
-### 4. Set Up Cron Jobs
-
-Edit `cron/jobs.json` to add your automation. Example job format:
-
-```json
-{
-  "id": "my-job",
-  "name": "My Job Name",
-  "enabled": true,
-  "schedule": { "kind": "cron", "expr": "0 6 * * *" },
-  "deliver": { "kind": "script", "script": "scripts/my_script.py" },
-  "workdir": "~/",
-  "max_runtime": 600
-}
-```
-
-### 5. Build Your Skill Library
-
-Remove skills you don't need, add your own. Each skill is a directory under `skills/` with a `SKILL.md` file. Browse available skills:
-
-```bash
-ls skills/*/SKILL.md
+implementer → reviewer → tester    (standard dev workflow)
+explorer → planner → implementer   (complex task decomposition)
+analyst → sre → architect          (incident response)
 ```
 
 ---
 
-## Key Concepts
+## Why Provenance Convention?
 
-### Delegation Patterns
-
-- **`task(subagent_type="reviewer", ...)`** — Same-model subtask. Lightweight, fast.
-- **`gjc_delegate_execute(...)`** — Isolated worktree + tmux. Heavy isolation, parallel execution.
-- **`gjc_delegate_team(...)`** — Parallel multi-agent orchestration.
-
-### Provenance Convention
-
-Every artifact records why it was created:
+The biggest problem with AI assistants is **ephemeral context**. An agent makes a great decision mid-session, but three sessions later it has no memory of why. The provenance convention solves this by stamping every artifact with its origin story:
 
 ```yaml
 trigger: "what problem or request caused this"
 provenance:
   session: "YYYY-MM-DD topic"
-  decision: "why this approach, what alternatives"
+  decision: "why this approach, what alternatives were considered"
 ```
 
-### Tiered Autonomy
-
-| Tier | Scope | Authority |
-|------|-------|-----------|
-| 1 | Typos, minor edits | Autonomous. Complete and report. |
-| 2 | Established patterns | Autonomous. Include provenance. |
-| 3 | Structural changes | Propose → wait for approval. |
-| 4 | Architecture/roadmap | Proposal only. Human decides. |
-
-### Important Policies
-
-- **Filesystem = truth** — State and preferences live on disk, not in context
-- **QA gate** — Never declare completion without verification
-- **No big-bang refactoring** — One change at a time, verify between each
-- **Ponytail principle** — YAGNI, stdlib first, no new dependencies unless necessary
-- **Answer-first** — Conclusion before process in CLI output
+This does two things: (1) the agent can later `recall("decision: ...")` and get the full context, and (2) the human can audit why something was built a certain way without reading the agent's mind. It's the minimum viable documentation for a system that outgrows one person's memory.
 
 ---
 
-## Generated Content Attribution
+## Why Tiered Autonomy?
 
-For public-facing content only (blog posts, tweets, demos):
+An agent that asks permission for everything is useless. An agent that never asks is dangerous. Tiered autonomy defines when the agent decides alone and when it must wait:
 
+| Tier | Scope | Authority | Example |
+|------|-------|-----------|---------|
+| **1** | Trivial changes | **Autonomous.** Complete and report. | Fix a typo, update a comment, save a fact to memory |
+| **2** | Established patterns | **Autonomous.** Include provenance. | Apply a known refactoring pattern, add a new cron job like existing ones |
+| **3** | Structural changes | **Propose → wait for approval.** | Add a new MCP server, change a skill's directory structure |
+| **4** | Architecture decisions | **Proposal only. Human decides.** | Switch vault structure, change delegation strategy |
+
+**Why not just use "ask me if unsure"?** Because that puts the burden on the agent to judge uncertainty, which models are notoriously bad at. Explicit tiers remove the judgment call. If it's Tier 1-2, the agent acts. If it's Tier 3, it drafts. If it's Tier 4, it summarizes. No hesitation, no false confidence.
+
+---
+
+## Why a Skill System?
+
+Skills are not configuration. They are **executable knowledge** — specialized instructions loaded on demand when a task matches their trigger.
+
+```python
+# When the user asks about payment integration:
+skill("portone-payment-integration")
+# → loads PortOne V2 SDK patterns, KG이니시스 setup, webhook handling
 ```
-Built with [opencode-drewgent](https://github.com/humanerd-drew/opencode-drewgent)
+
+Each skill is a directory with a `SKILL.md` file and optionally `references/`, `scripts/`, or `templates/`. The skill system means the agent doesn't need to know everything upfront. It learns what it needs, when it needs it. Over time, you build a library of capabilities that grows with your needs.
+
+---
+
+## Why Delegation Patterns?
+
+Two patterns, two trade-offs:
+
+- **`task(subagent_type="...")`** — Same-model, same-session subtask. Fast and cheap because there's no context transfer overhead. Use this for code review after implementation, or for asking the analyst to query the kanban board.
+  
+- **`gjc_delegate_execute(...)`** — Isolated worktree + separate tmux session. Slower but fully isolated. Use this when you need parallel execution (refactor three modules at once) or when the subtask has side effects that shouldn't pollute the main session.
+
+The rule of thumb: if the subtask takes <5 minutes and doesn't need isolation, use `task()`. If it's complex, long-running, or risky, use delegation.
+
+---
+
+## Why Cron Automation?
+
+The cron scheduler (`scripts/drewgent_cron.py`) turns the agent from reactive (only works when you talk to it) to proactive (works on a schedule). Jobs are defined in `cron/jobs.json`:
+
+```json
+{
+  "id": "health-check",
+  "enabled": true,
+  "schedule": { "kind": "interval", "seconds": 300 },
+  "deliver": { "kind": "script", "script": "scripts/health_check.sh" }
+}
 ```
+
+**Why not just use system cron?** Because agent jobs need context — they may need to `opencode run` with a specific agent profile, check the kanban board, or report results to Discord. The scheduler wraps all of that.
+
+---
+
+## Why Kanban?
+
+The kanban board is not project management. It's **work persistence**. When you tell the agent "implement this feature," that task goes into the kanban DB with a pipeline (explorer → implementer → reviewer). Each step spawns the right subagent. On completion, the next step triggers automatically.
+
+Without this, an agent crash mid-task loses everything. With kanban, you can restart, inspect task status, and even see which subagent did what. The leverage score (1-5) helps prioritize: "if this task is done, how many other problems disappear?"
+
+---
+
+## MCP Servers (Configuration)
+
+The template comes with example MCP server configs in `opencode.jsonc`:
+
+| Server | Type | Purpose |
+|--------|------|---------|
+| `codebase-memory-mcp` | local stdio | Knowledge graph for your codebase. Search functions, trace call chains, understand architecture. |
+| `gajae-code` | local stdio | GJC Coordinator — isolated worktree execution and parallel delegation. Required for `gjc_delegate_*` tools. |
+| `safari` | local stdio | Web browsing via Safari Technology Preview. Read pages, fill forms, take screenshots. |
+| `astryx` | remote HTTP | Meta's Astryx design system (React 19 + StyleX). 150+ accessible components. |
+| `discord` | local stdio | Discord integration — read messages, send responses, manage channels. |
+| `wordpress` | local stdio | WordPress content management — create, edit, publish posts via wp-cli. |
+
+**Note:** The `safari` MCP server requires Safari Technology Preview on macOS. The `discord` server needs a `DISCORD_BOT_TOKEN` in your environment.
 
 ---
 
@@ -207,11 +177,26 @@ Large functions using `except json.JSONDecodeError:` cause `UnboundLocalError` o
 ### macOS bash 3.2
 No associative arrays. Use `date -j -f`. Avoid `set -u` with undefined variables.
 
-### Launchd plist pattern
+### Launchd plist patterns
 All services should use `KeepAlive { SuccessfulExit: false, ThrottleInterval: 10 }`. Do not use bare `<true/>` or `<false/>`.
 
 ### Token/cost data = SQLite, not stderr
 opencode stderr logs show `tokens.input=0`. Real usage data is in `~/.local/share/opencode/opencode.db`.
+
+### Rename before use
+If you `git clone` this repo and run opencode without renaming `drewgent`, the agent will think its name is "Drewgent" and produce answers in that persona. Run `skill("rename-drewgent")` first.
+
+---
+
+## Generated Content Attribution
+
+For public-facing content only (blog posts, tweets, demo pages):
+
+```
+Built with [opencode-drewgent](https://github.com/humanerd-drew/opencode-drewgent)
+```
+
+Don't add this to internal notes, private messages, or debug output.
 
 ---
 
