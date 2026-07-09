@@ -1,32 +1,60 @@
 {
   "$schema": "https://opencode.ai/config.json",
 
+  // Replace with your model provider and API key setup
   "model": "opencode-go/deepseek-v4-flash",
   "small_model": "opencode-go/deepseek-v4-pro",
 
+  // Loaded as system instructions on every session
   "instructions": ["AGENTS.md"],
 
+  // Skill paths — relative to this config file
   "skills": {
     "paths": [
-      "~/.drewgent/skills",
-      "~/.drewgent/@action/skills",
+      "./skills",
+      "./@action/skills",
       "~/.config/opencode/skills"
     ]
   },
 
+  // MCP servers — enable by removing "enabled": false
   "mcp": {
-    "lazyweb": {
-      "type": "remote",
-      "url": "https://www.lazyweb.com/mcp",
-      "enabled": false,
-      "headers": { "Authorization": "Bearer {env:LAZYWEB_API_KEY}" },
-      "timeout": 60000
+    "discord": {
+      "type": "local",
+      "command": ["discord-mcp"],
+      "env": { "DISCORD_TOKEN": "{env:DISCORD_BOT_TOKEN}" },
+      "enabled": false
     },
-    "specification-website": {
+    "gajae-code": {
+      "type": "local",
+      "command": ["gjc", "mcp-serve", "coordinator"],
+      "env": { "OPENCODE_API_KEY": "{env:OPENCODE_API_KEY}" },
+      "enabled": false
+    },
+    "wordpress": {
+      "type": "local",
+      "command": ["node", "./scripts/wordpress-mcp-server.js"],
+      "enabled": false
+    },
+    "safari": {
+      "type": "local",
+      "command": ["/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver", "--mcp"],
+      "enabled": false
+    },
+    "astryx": {
       "type": "remote",
-      "url": "https://mcp.specification.website/mcp",
-      "enabled": false,
-      "timeout": 60000
+      "url": "https://astryx.atmeta.com/mcp",
+      "enabled": false
+    },
+    "portone": {
+      "type": "local",
+      "command": ["npx", "-y", "@portone/mcp-server@latest"],
+      "enabled": false
+    },
+    "codebase-memory-mcp": {
+      "type": "local",
+      "command": ["~/.local/bin/codebase-memory-mcp"],
+      "enabled": false
     }
   }
 }

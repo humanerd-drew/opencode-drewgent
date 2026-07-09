@@ -1,15 +1,15 @@
 ---
-
 title: Webhook Subscriptions
+description: Manage webhook subscriptions — register, verify, rotate, and monitor webhook endpoints for external service integrations.
 type: skill
 space: outcome
 tags: [outcome]
 created: 2026-05-20
 updated: 2026-05-20
-links: []
 links:
   - "[[@action/skills/SKILL-INDEX]]"
-  - "[[@identity/brain/rules]]"---
+  - "[[@identity/brain/rules]]"
+---
 
 
 
