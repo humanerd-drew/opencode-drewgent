@@ -1,4 +1,4 @@
-# opencode-{agent-name}
+# opencode-drewgent
 
 [🇰🇷 한국어](README.ko.md)
 

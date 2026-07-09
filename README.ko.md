@@ -1,4 +1,4 @@
-# opencode-{agent-name}
+# opencode-drewgent
 
 [opencode](https://opencode.ai) 위에서 동작하는 개인 AI 에이전트 템플릿입니다.
 
