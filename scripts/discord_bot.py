@@ -19,7 +19,7 @@ import discord
 HOME = os.path.expanduser("~")
 TOKEN = os.getenv("DISCORD_BOT_TOKEN", "")
 SELF_USER_ID: Optional[int] = None
-DB_PATH = os.path.join(HOME, ".drewgent", "discord_sessions.db")
+DB_PATH = os.path.join(HOME, ".{{AGENT_NAME_LOWER}}", "discord_sessions.db")
 
 OPCODE_SERVE = "http://localhost:8642"
 MAX_MSG_LEN = 1900          # Discord safe content length
@@ -138,7 +138,7 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
         "--print-logs",
         "--format", "json",
         "--thinking",
-        "--dir", os.path.join(HOME, ".drewgent"),
+        "--dir", os.path.join(HOME, ".{{AGENT_NAME_LOWER}}"),
         "--model", "opencode-go/deepseek-v4-flash",
         "--attach", OPCODE_SERVE,
     ]

@@ -189,7 +189,7 @@ drewgent-agent/
 ├── optional-skills/          # Official optional skills (discoverable via hub, not activated by default)
 ├── environments/             # RL training environments (Atropos integration)
 ├── tests/                    # Test suite
-├── website/                  # Documentation site (drewgent-agent.humanerd.ai)
+├── website/                  # Documentation site (docs.YOUR_AGENT_DOMAIN)
 │
 ├── cli-config.yaml.example   # Example configuration (copied to ~/.drewgent/config.yaml)
 └── AGENTS.md                 # Development guide for AI coding assistants

@@ -10,14 +10,14 @@
 ## SSH Access
 ```bash
 # Key-based auth (use the specific key — default id_rsa won't work):
-ssh -i ~/.ssh/id_ed25519_dr2w247 -p 8528 drew@192.168.1.53
+ssh -i ~/.ssh/YOUR_SSH_KEY -p YOUR_SSH_PORT user@192.168.1.100
 
 # Password fallback:
-ssh -p 8528 drew@192.168.1.53
+ssh -p YOUR_SSH_PORT user@192.168.1.100
 ```
 Password: `Emfbwjsxm4865`
 
-**Key auth note:** The `id_ed25519_dr2w247` key is authorized on the NAS. SSH may try `id_rsa` first by default and fail — always use `-i` to specify the correct key. The key's comment is `dr2w247@github.com` (this is the same key used by the GitHub/automation tooling).
+**Key auth note:** The `YOUR_SSH_KEY` key is authorized on the NAS. SSH may try `id_rsa` first by default and fail — always use `-i` to specify the correct key. The key's comment is `your-github@example.com` (this is the same key used by the GitHub/automation tooling).
 
 ## Docker Access via SSH + Expect
 Because Synology DSM requires a TTY for `sudo`, use `expect` scripts for automation:
@@ -26,14 +26,14 @@ Because Synology DSM requires a TTY for `sudo`, use `expect` scripts for automat
 #!/usr/bin/expect -f
 set timeout 15
 set password "Emfbwjsxm4865"
-spawn ssh -o StrictHostKeyChecking=no -p 8528 drew@192.168.1.53
+spawn ssh -o StrictHostKeyChecking=no -p YOUR_SSH_PORT user@192.168.1.100
 expect "password:"
 send "$password\r"
-expect "drew@"
+expect "user@"
 send "sudo docker compose -f /path/to/compose.yml up -d\r"
 expect "password for drew:"
 send "$password\r"
-expect "drew@"
+expect "user@"
 send "exit\r"
 expect eof
 ```
@@ -46,9 +46,9 @@ Defaults:drew !requiretty
 ```
 
 ## Docker Compose Directory
-All Docker projects live at `/Volumes/humanerd/docker/` on the Mac Mini mount.
-Projects: dev-humanerd, n8n, wordpress, nas-agent-browser
+All Docker projects live at `/Volumes/YOUR_NAS/docker/` on the Mac Mini mount.
+Projects: dev-YOUR_APP, n8n, wordpress, nas-agent-browser
 
 ## Storage
 - 16TB total volume (`/volume1`)
-- Mounted via SMB on Mac Mini at `/Volumes/humanerd/` and `/Volumes/drewgent_storage/`
+- Mounted via SMB on Mac Mini at `/Volumes/YOUR_NAS/` and `/Volumes/{{AGENT_NAME_LOWER}}_storage/`

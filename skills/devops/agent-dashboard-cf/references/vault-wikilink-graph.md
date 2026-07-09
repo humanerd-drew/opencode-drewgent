@@ -13,7 +13,7 @@ Pusher가 vault의 `.md` 파일을 스캔해서 `[[wikilinks]]`를 추출, vis-n
 | P5-Ego | `P5-ego/` | 60 files max |
 | P6-Prefrontal | `P6-prefrontal/` | 60 files max |
 | Skills | `skills/` | SKILL.md만 (142개) |
-| Root | `.drewgent/` | 최상위 .md 파일 |
+| Root | `.{{AGENT_NAME_LOWER}}/` | 최상위 .md 파일 |
 
 **제외:** P2-hippocampus (11GB, DB/벡터 파일 위주)
 

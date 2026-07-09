@@ -3,27 +3,27 @@
 ## Purpose
 
 A `launchd`-based watchdog that runs every 5 minutes, independent of the gateway process. Checks:
-1. `launchctl list ai.drewgent.gateway` → PID present and > 0?
+1. `launchctl list ai.{{AGENT_NAME_LOWER}}.gateway` → PID present and > 0?
 2. `kill -0 <pid>` → process actually alive?
-3. If either fails → `launchctl start ai.drewgent.gateway` to restart
+3. If either fails → `launchctl start ai.{{AGENT_NAME_LOWER}}.gateway` to restart
 
 ## Files
 
 | Path | Purpose |
 |------|---------|
-| `~/.drewgent/scripts/gateway_watchdog.sh` | Bash script: PID check + restart |
-| `~/Library/LaunchAgents/ai.drewgent.gateway-watchdog.plist` | launchd job: run every 300s |
-| `~/.drewgent/scripts/drewgent_launchd_watchdog.sh` | Symlink → gateway_watchdog.sh (cron-runner fallback) |
-| `~/.drewgent/logs/gateway_watchdog.log` | Log output |
+| `~/.{{AGENT_NAME_LOWER}}/scripts/gateway_watchdog.sh` | Bash script: PID check + restart |
+| `~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.gateway-watchdog.plist` | launchd job: run every 300s |
+| `~/.{{AGENT_NAME_LOWER}}/scripts/{{AGENT_NAME_LOWER}}_launchd_watchdog.sh` | Symlink → gateway_watchdog.sh (cron-runner fallback) |
+| `~/.{{AGENT_NAME_LOWER}}/logs/gateway_watchdog.log` | Log output |
 
 ## Installation
 
 ```bash
 # Load the watchdog
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.drewgent.gateway-watchdog.plist
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.gateway-watchdog.plist
 
 # Verify
-launchctl list ai.drewgent.gateway-watchdog
+launchctl list ai.{{AGENT_NAME_LOWER}}.gateway-watchdog
 ```
 
 ## How It Works
@@ -36,10 +36,10 @@ launchctl list ai.drewgent.gateway-watchdog
 
 ## Why Not Use Cron
 
-The drewgent cron runner runs **inside** the gateway process. If the gateway is dead, the cron runner is also dead. A launchd-based watchdog is independent and will still fire when the gateway has crashed.
+The {{AGENT_NAME_LOWER}} cron runner runs **inside** the gateway process. If the gateway is dead, the cron runner is also dead. A launchd-based watchdog is independent and will still fire when the gateway has crashed.
 
 ## Related
 
 - `launchd-process-health-check` skill — all sub-patterns of launchd failure
-- `~/.drewgent/scripts/gateway_watchdog.sh` — the script
-- `~/Library/LaunchAgents/ai.drewgent.gateway-watchdog.plist` — the plist
+- `~/.{{AGENT_NAME_LOWER}}/scripts/gateway_watchdog.sh` — the script
+- `~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.gateway-watchdog.plist` — the plist

@@ -2,19 +2,19 @@
 name: linear
 description: Manage Linear issues, projects, and teams via the GraphQL API. Create, update, search, and organize issues. Uses API key auth (no OAuth needed). All operations via curl — no dependencies.
 version: 1.0.0
-author: Drewgent Agent
+author: {{AGENT_NAME}} Agent
 license: MIT
 status: deprecated
 superseded_by: huly
 deprecation_note: >-
-  Linear is being retired in favor of Huly Cloud (https://huly.app/workbench/humanerd/).
+  Linear is being retired in favor of Huly Cloud (https://huly.app/workbench/YOUR_WORKSPACE/).
   Existing kanban-linear-sync cron is paused. The Linear API key and this skill
   are kept for reference/rollback but should not be used for new integration work.
 prerequisites:
   env_vars: [LINEAR_API_KEY]
   commands: [curl]
 metadata:
-  drewgent:
+  {{AGENT_NAME_LOWER}}:
     tags: [Linear, Project Management, Issues, GraphQL, API, Productivity]
 links:
   - "[[@action/skills/SKILL-INDEX]]"
@@ -28,7 +28,7 @@ Manage Linear issues, projects, and teams directly via the GraphQL API using `cu
 ## Setup
 
 1. Get a personal API key from **Linear Settings > API > Personal API keys**
-2. Set `LINEAR_API_KEY` in your environment (via `drewgent setup` or your env config)
+2. Set `LINEAR_API_KEY` in your environment (via `{{AGENT_NAME_LOWER}} setup` or your env config)
 
 ## API Basics
 

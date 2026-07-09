@@ -2,7 +2,7 @@
 title: Kanban Dashboard
 name: kanban-dashboard
 type: skill
-description: Drewgent kanban board UI — Flask dashboard server for visual task management
+description: {{AGENT_NAME}} kanban board UI — Flask dashboard server for visual task management
 space: outcome
 tags: [outcome]
 created: 2026-05-20
@@ -45,12 +45,12 @@ Flask server가 kanban board를 렌더링. SSE 실시간 업데이트 + 드래�
 ## LaunchAgent (Self-Healing, Auto-Restart)
 
 ```
-/Users/drew/Library/LaunchAgents/ai.drewgent.kanban-dashboard.plist
+~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.kanban-dashboard.plist
 ```
 
 - `KeepAlive: SuccessfulExit=false` → 프로세스 죽으면 자동 재시작
 - MacMini 재부팅해도 자동 실행
-- 로그: `/Users/drew/.drewgent/P6-prefrontal/logs/kanban-server.log`
+- 로그: `~/.{{AGENT_NAME_LOWER}}/P6-prefrontal/logs/kanban-server.log`
 
 ## 관리 명령
 
@@ -59,11 +59,11 @@ Flask server가 kanban board를 렌더링. SSE 실시간 업데이트 + 드래�
 launchctl list | grep kanban
 
 # 수동 시작/정지
-launchctl start ai.drewgent.kanban-dashboard
-launchctl stop ai.drewgent.kanban-dashboard
+launchctl start ai.{{AGENT_NAME_LOWER}}.kanban-dashboard
+launchctl stop ai.{{AGENT_NAME_LOWER}}.kanban-dashboard
 
 # 로그 확인
-tail -f /Users/drew/.drewgent/P6-prefrontal/logs/kanban-server.log
+tail -f ~/.{{AGENT_NAME_LOWER}}/P6-prefrontal/logs/kanban-server.log
 ```
 
 ## 엔드포인트
@@ -97,7 +97,7 @@ tail -f /Users/drew/.drewgent/P6-prefrontal/logs/kanban-server.log
 | `_cat_color(cat)` | 카테고리 → 컬러 매핑 (trend=#5bc0eb, conversation=#aa66ff, seo=#00c853) |
 | `_cat_emoji(cat)` | 카테고리 → 이모지 매핑 (trend=📈, conversation=💬, seo=🔍) |
 | `_extract_draft_path(body)` | `## Draft 파일 위치` 섹션에서 vault draft 절대경로 추출 |
-| `_obsidian_url(vault_path)` | 절대경로 → `obsidian://open?vault=Drewgent&file=...` URL 변환 (`urllib.parse.quote`로 인코딩) |
+| `_obsidian_url(vault_path)` | 절대경로 → `obsidian://open?vault={{AGENT_NAME}}&file=...` URL 변환 (`urllib.parse.quote`로 인코딩) |
 
 ## Obsidian Vault Integration
 
@@ -111,13 +111,13 @@ tail -f /Users/drew/.drewgent/P6-prefrontal/logs/kanban-server.log
 ### Modal-level
 - Description 탭 하단에 📄 Open in Obsidian 버튼 (JS로 body에서 `## Draft 파일 위치` regex 매칭 후 동적 생성)
 - 버튼: `background:#8b5cf6`, 흰색 텍스트, 6px radius
-- URI scheme: `obsidian://open?vault=Drewgent&file={encodeURIComponent(relative_path)}`
+- URI scheme: `obsidian://open?vault={{AGENT_NAME}}&file={encodeURIComponent(relative_path)}`
 - draft 경로가 없으면 버튼 미표시
 
 ### File path convention
-- 절대경로: `/Users/drew/.drewgent/P2-hippocampus/memories/insights/YYYY-MM-slug.md`
+- 절대경로: `~/.{{AGENT_NAME_LOWER}}/P2-hippocampus/memories/insights/YYYY-MM-slug.md`
 - 상대경로 (URL용): `P2-hippocampus/memories/insights/YYYY-MM-slug.md`
-- vault name: `Drewgent` (고정 — `~/.drewgent` 디렉토리명)
+- vault name: `{{AGENT_NAME}}` (고정 — `~/.{{AGENT_NAME_LOWER}}` 디렉토리명)
 - Obsidian URL 동작 조건: macOS에서 Obsidian이 설치되어 있어야 함. Safari/Chrome/Firefox에서 `obsidian://` scheme 핸들러 등록 필요.
 
 ## Board Maintenance
@@ -133,15 +133,15 @@ Kanban 보드 정리 프로토콜 — content pipeline에서 생성된 draft-tre
 
 ## 파일
 
-- Server script: `/Users/drew/.drewgent/P4-cortex/scripts/kanban_dashboard_server.py`
-- LaunchAgent plist: `/Users/drew/Library/LaunchAgents/ai.drewgent.kanban-dashboard.plist`
+- Server script: `~/.{{AGENT_NAME_LOWER}}/P4-cortex/scripts/kanban_dashboard_server.py`
+- LaunchAgent plist: `~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.kanban-dashboard.plist`
 
 ## Pitfalls
 
-- `get_tasks()` in server uses its own `init_db()` — task table schema must match `drewgent_tasks.db` (both use same board column). If schema mismatches, board returns empty.
+- `get_tasks()` in server uses its own `init_db()` — task table schema must match `{{AGENT_NAME_LOWER}}_tasks.db` (both use same board column). If schema mismatches, board returns empty.
 - Access from outside: `http://macmini:8765/kanban` (same network). MacMini hostname or IP 사용.
 - **f-string escape bug**: Python f-string에서 `{{var}}` → literal `{var}` 출력. Python 변수 사용은 `{var}` (single brace).
-- **Server restart required**: Changing `kanban_dashboard_server.py` doesn't auto-reload. Must run `launchctl stop ai.drewgent.kanban-dashboard && launchctl start ai.drewgent.kanban-dashboard` to apply changes.
+- **Server restart required**: Changing `kanban_dashboard_server.py` doesn't auto-reload. Must run `launchctl stop ai.{{AGENT_NAME_LOWER}}.kanban-dashboard && launchctl start ai.{{AGENT_NAME_LOWER}}.kanban-dashboard` to apply changes.
 - **Python 3.14 compat**: Server runs under Python 3.14.4 (from `.venv`). Syntax is OK but test in the actual venv, not system python3.
 - **Modal JavaScript missing**: The server generates HTML with `onclick="openModal('tid')"` on each card, but `openModal(taskId)`, `switchTab(tab)`, and `closeModal()` must be defined in the inline `<script>` block. If these JS functions are missing (e.g. after editing the template f-strings), clicking cards silently does nothing. Verify their presence after any edit to the HTML template section. The modal also needs `escapeHtml()` for safe body rendering and event listeners for Escape/overlay-close.
 - **Card title truncation**: Card titles are truncated to 60 chars on the board. Full title visible in modal header or card `title` attribute (hover).
@@ -149,7 +149,7 @@ Kanban 보드 정리 프로토콜 — content pipeline에서 생성된 draft-tre
 - **Edit API idempotency**: `POST /kanban/api/edit` always updates body (even empty string) but only updates title if non-empty. To clear body, send `body=` (empty). The edit event is logged in `task_events` with kind='edited'.
 - **JS modal functions are in f-string**: `openModal()`, `switchTab()`, `editBody()`, `saveBody()`, `cancelEdit()`, `escapeHtml()` are all embedded in the Python f-string HTML template. Any syntax error in these JS functions breaks the entire modal. After editing, verify with `curl -s http://macmini:8765/kanban | grep -c 'function openModal'` (>0 means present).
 - **Card enrichment on page load**: `_extract_summary()` and `_extract_source()` run at page render time — they add server-side compute per card. For boards with 50+ cards, consider caching or moving extraction to JS. Currently fine for <30 cards.
-- **Obsidian URL dependency**: `obsidian://open` requires (1) Obsidian.app installed on macOS, (2) browser-registered URL scheme handler. Links silently fail on non-macOS or without Obsidian. The `_obsidian_url()` function only generates URLs for paths under `/Users/drew/.drewgent/` — other paths render as plain text.
+- **Obsidian URL dependency**: `obsidian://open` requires (1) Obsidian.app installed on macOS, (2) browser-registered URL scheme handler. Links silently fail on non-macOS or without Obsidian. The `_obsidian_url()` function only generates URLs for paths under `~/.{{AGENT_NAME_LOWER}}/` — other paths render as plain text.
 - **Draft path format sensitivity**: `_extract_draft_path()` relies on the exact section header `## Draft 파일 위치` in the body. If the content-pipeline changes this header (e.g. to `## Draft Location`), draft links stop rendering silently. The regex also expects the path on the immediately following line.
 - **Modal draft link via JS regex**: The Obsidian button in the modal Description tab is generated client-side by a regex against `task.body`. This means if the body is edited via the dashboard (Edit button), the Obsidian link updates automatically on next modal open — no page reload needed. But if the body is edited externally (DB direct, API), the modal shows stale links until reload.
 
@@ -163,7 +163,7 @@ Kanban 보드 정리 프로토콜 — content pipeline에서 생성된 draft-tre
 ```
 1. Cron Trigger (every 5min)
    ↓
-2. SQLite Node — Query drewgent_tasks.db
+2. SQLite Node — Query {{AGENT_NAME_LOWER}}_tasks.db
    SQL: |
      SELECT id, title, status, assignee, created_at,
             last_heartbeat_at, consecutive_failures
@@ -182,7 +182,7 @@ Kanban 보드 정리 프로토콜 — content pipeline에서 생성된 draft-tre
 ### Board Embed Format
 
 ```
-=== Drewgent Kanban Board ===
+=== {{AGENT_NAME}} Kanban Board ===
 Board: default | Updated: 2026-05-19 10:30 KST
 
 [todo] 3 tasks
@@ -271,7 +271,7 @@ CREATE INDEX IF NOT EXISTS idx_notify_task ON kanban_notify_subs(task_id);
 ```
 Task event fires (completed/blocked/crashed)
   ↓
-1. Event Listener (from DrewgentTaskStore.task_events table)
+1. Event Listener (from {{AGENT_NAME}}TaskStore.task_events table)
    ↓
 2. Lookup subscribers for this task_id
    ↓
@@ -297,7 +297,7 @@ Task event fires (completed/blocked/crashed)
 
 ```json
 {
-  "name": "Drewgent Kanban Board",
+  "name": "{{AGENT_NAME}} Kanban Board",
   "nodes": [
     {
       "name": "Cron Trigger",

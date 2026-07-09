@@ -18,7 +18,7 @@ Agent profiles are pre-defined subagent roles loaded by `task(subagent_type="<na
 
 ## Location
 
-Profiles live at `$HERMES_HOME/agents/*.md`. For Drewgent: `~/.drewgent/agents/`.
+Profiles live at `$HERMES_HOME/agents/*.md`. For {{AGENT_NAME}}: `~/.{{AGENT_NAME_LOWER}}/agents/`.
 
 ## Format
 

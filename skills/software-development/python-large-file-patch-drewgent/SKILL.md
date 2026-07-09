@@ -1,9 +1,9 @@
 ---
-title: python-large-file-patch-drewgent
-name: python-large-file-patch-drewgent
+title: python-large-file-patch-{{AGENT_NAME_LOWER}}
+name: python-large-file-patch-{{AGENT_NAME_LOWER}}
 type: skill
 space: growth
-description: How to patch large Python files in the Drewgent codebase. Covers the dual-file layout (runtime ~/.drewgent/agent/ vs source ~/.drewgent/source/drewgent-agent/), diagnose-fallback when direct patch fails, and the copy-sync protocol to keep both copies aligned.
+description: How to patch large Python files in the {{AGENT_NAME}} codebase. Covers the dual-file layout (runtime ~/.{{AGENT_NAME_LOWER}}/agent/ vs source ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/), diagnose-fallback when direct patch fails, and the copy-sync protocol to keep both copies aligned.
 tags: [skill, software-development, patching, python]
 created: 2026-06-01
 updated: 2026-06-11
@@ -14,29 +14,29 @@ links:
   - "[[software-development/codebase-refactoring]]"
   - "[[software-development/incremental-refactoring]]"
   - "[[software-development/python-nested-import-nameerror]]"
-  - "[[software-development/yaml-config-patch-drewgent]]"
+  - "[[software-development/yaml-config-patch-{{AGENT_NAME_LOWER}}]]"
   - "[[software-development/llm-model-migration]]"
   - "[[software-development/shell-init-side-effect-gating]]"
 ---
 
-# Skill: Patching Large Python Files in Drewgent
+# Skill: Patching Large Python Files in {{AGENT_NAME}}
 
 ## When to Use
-When you need to edit a specific function or code block inside a large Python file (500+ lines) in the Drewgent codebase (signal_processor.py, run_agent.py, gateway/run.py, etc.), and direct `patch` fails due to text pattern mismatch.
+When you need to edit a specific function or code block inside a large Python file (500+ lines) in the {{AGENT_NAME}} codebase (signal_processor.py, run_agent.py, gateway/run.py, etc.), and direct `patch` fails due to text pattern mismatch.
 
 ## The Problem
 `patch` relies on exact string matching. Large files with complex docstrings (especially with newlines and special characters) often don't match what you expect from reading partial snippets. You get "old_string not found" even when the function exists.
 
 ## CRITICAL: Dual-File Layout (Runtime vs Source)
 
-Drewgent has **two copies** of the agent code:
+{{AGENT_NAME}} has **two copies** of the agent code:
 
 | Copy | Path | Purpose |
 |------|------|---------|
-| **Runtime** | `~/.drewgent/agent/` | What Python actually imports at runtime |
-| **Source** | `~/.drewgent/source/drewgent-agent/agent/` | Git-tracked development copy |
+| **Runtime** | `~/.{{AGENT_NAME_LOWER}}/agent/` | What Python actually imports at runtime |
+| **Source** | `~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/agent/` | Git-tracked development copy |
 
-When you patched a file in the `source/` copy but nothing changed, it's because Python loaded from `~/.drewgent/agent/` instead. The two copies can and do diverge.
+When you patched a file in the `source/` copy but nothing changed, it's because Python loaded from `~/.{{AGENT_NAME_LOWER}}/agent/` instead. The two copies can and do diverge.
 
 ### Patching Protocol
 
@@ -45,11 +45,11 @@ When you patched a file in the `source/` copy but nothing changed, it's because 
    python3 -c "import module_name; print(module_name.__file__)"
    ```
 
-2. **Patch the runtime copy first** (`~/.drewgent/agent/...`) — that's where the effect is immediate.
+2. **Patch the runtime copy first** (`~/.{{AGENT_NAME_LOWER}}/agent/...`) — that's where the effect is immediate.
 
 3. **Sync the source copy** after the fix to keep them aligned:
    ```bash
-   cp ~/.drewgent/agent/patched_file.py ~/.drewgent/source/drewgent-agent/agent/patched_file.py
+   cp ~/.{{AGENT_NAME_LOWER}}/agent/patched_file.py ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/agent/patched_file.py
    ```
 
 4. **Verify** with an import and test call before declaring done.
@@ -94,17 +94,17 @@ with open('/path/to/file.py', 'w') as f:
 5. **Match from unique anchor to unique anchor** — not just the function header alone; include enough context to be unique
 6. **Patch both copies** — runtime first, then sync source. Patching only the source has no effect.
 
-## Drewgent File Paths (both copies)
+## {{AGENT_NAME}} File Paths (both copies)
 
-**Runtime (active)** — `~/.drewgent/`:
+**Runtime (active)** — `~/.{{AGENT_NAME_LOWER}}/`:
 - `agent/auxiliary_client.py` (~2127 lines)
 - `agent/title_generator.py`
 - `agent/signal_processor.py`
 - `gateway/run.py` (~8700 lines)
 - `run_agent.py`
-- `drewgent_cli/auth.py`
+- `{{AGENT_NAME_LOWER}}_cli/auth.py`
 
-**Source (git-versioned)** — `~/.drewgent/source/drewgent-agent/`:
+**Source (git-versioned)** — `~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/`:
 - `agent/auxiliary_client.py`
 - `agent/signal_processor.py`
 - `agent/prompt_builder.py`

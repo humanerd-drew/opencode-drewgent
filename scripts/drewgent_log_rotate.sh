@@ -1,5 +1,5 @@
 #!/bin/bash
-# drewgent_log_rotate.sh
+# {{AGENT_NAME_LOWER}}_log_rotate.sh
 # Daily log rotation for launchd-managed services. macOS newsyslog does not
 # handle launchd stdout/stderr files, so we do it manually.
 #
@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-DREW_LOGS="$HOME/.drewgent/logs"
+DREW_LOGS="$HOME/.{{AGENT_NAME_LOWER}}/logs"
 LIB_LOGS="$HOME/Library/Logs"
 MAX_SIZE_BYTES=$((100 * 1024 * 1024))   # 100MB
 MAX_AGE_DAYS=7
@@ -21,14 +21,14 @@ KEEP_DAYS=30
 
 # (label, current_log_path, restart_command)
 LOGS=(
-  "ai.drewgent.gateway|$DREW_LOGS/gateway.log|gateway"
-  "ai.drewgent.gateway|$DREW_LOGS/gateway.error.log|gateway"
-  "ai.drewgent.cron-runner|$DREW_LOGS/cron-runner.log|cron-runner"
-  "ai.drewgent.cron-runner|$DREW_LOGS/cron-runner.error.log|cron-runner"
-  "com.drewgent.quartz-fswatch|$LIB_LOGS/quartz-fswatch.log|quartz-fswatch"
-  "com.drewgent.quartz-deploy|$LIB_LOGS/quartz-deploy.log|quartz-deploy"
-  "ai.drewgent.n8n|$DREW_LOGS/n8n.log|n8n"
-  "ai.drewgent.n8n|$DREW_LOGS/n8n.error.log|n8n"
+  "ai.{{AGENT_NAME_LOWER}}.gateway|$DREW_LOGS/gateway.log|gateway"
+  "ai.{{AGENT_NAME_LOWER}}.gateway|$DREW_LOGS/gateway.error.log|gateway"
+  "ai.{{AGENT_NAME_LOWER}}.cron-runner|$DREW_LOGS/cron-runner.log|cron-runner"
+  "ai.{{AGENT_NAME_LOWER}}.cron-runner|$DREW_LOGS/cron-runner.error.log|cron-runner"
+  "com.{{AGENT_NAME_LOWER}}.quartz-fswatch|$LIB_LOGS/quartz-fswatch.log|quartz-fswatch"
+  "com.{{AGENT_NAME_LOWER}}.quartz-deploy|$LIB_LOGS/quartz-deploy.log|quartz-deploy"
+  "ai.{{AGENT_NAME_LOWER}}.n8n|$DREW_LOGS/n8n.log|n8n"
+  "ai.{{AGENT_NAME_LOWER}}.n8n|$DREW_LOGS/n8n.error.log|n8n"
 )
 
 UID_NUM=$(id -u)
@@ -76,7 +76,7 @@ if [ ${#rotated[@]} -eq 0 ] && [ "$deleted" -eq 0 ]; then
   exit 0
 fi
 
-echo "📦 **Drewgent log rotation** @ $(date '+%Y-%m-%d %H:%M:%S %Z')"
+echo "📦 **{{AGENT_NAME}} log rotation** @ $(date '+%Y-%m-%d %H:%M:%S %Z')"
 echo "Rotated: ${#rotated[@]} files"
 for r in "${rotated[@]}"; do echo "  - $r"; done
 echo "Deleted old archives: $deleted (kept last ${KEEP_DAYS} days)"

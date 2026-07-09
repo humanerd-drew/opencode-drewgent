@@ -1,6 +1,6 @@
 ---
 title: opencode-knowledge-convention
-trigger: "Knowledge management convention for @drewgent/opencode-knowledge plugin"
+trigger: "Knowledge management convention for @{{AGENT_NAME_LOWER}}/opencode-knowledge plugin"
 provenance:
   session: "2026-07-04 memory-bank-plugin-discussion"
   decision: "plugin hooks 버그로 인해 규칙 강제로 대체. 호출되면 자동으로 동작."
@@ -9,7 +9,7 @@ created: 2026-07-04
 
 # Knowledge Management Convention
 
-이 convention은 `@drewgent/opencode-knowledge` 플러그인 설치 시 적용된다.
+이 convention은 `@{{AGENT_NAME_LOWER}}/opencode-knowledge` 플러그인 설치 시 적용된다.
 `remember()`, `recall()`, `memory-stats()` 툴이 제공될 때 반드시 따라야 할 규칙.
 
 ## Rules (Tier 1 — Autonomous)
@@ -52,7 +52,7 @@ API key, 토큰, 비밀번호, 개인정보는 절대 remember()로 저장하지
 
 ## Storage
 
-- **파일 위치**: `~/.drewgent/.opencode/knowledge.db`
+- **파일 위치**: `~/.{{AGENT_NAME_LOWER}}/.opencode/knowledge.db`
 - **엔진**: SQLite + FTS5 (built-in full-text search)
 - **FTS5 기능**: stemming, ranking, phrase matching, boolean operators
 - **types**: fact, decision, preference, pattern, session

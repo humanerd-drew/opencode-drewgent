@@ -3,7 +3,7 @@ name: systematic-debugging
 title: Systematic Debugging Skill
 type: skill
 space: outcome
-description: Multi-phase debugging protocol — find root cause before fixing. Covers the 4-phase process, Drewgent stack debugging, and T4-style stall investigation.
+description: Multi-phase debugging protocol — find root cause before fixing. Covers the 4-phase process, {{AGENT_NAME}} stack debugging, and T4-style stall investigation.
 tags: [outcome, debugging, root-cause]
 created: 2026-06-11
 updated: 2026-06-13
@@ -1218,11 +1218,11 @@ window.location.hash = '#/report-dating?t=' + Date.now();
 
 This pattern should be applied to ALL report-type history restore navigation in AppShell.js, not just the one that was reported as broken.
 
-## Drewgent Stack Debugging
+## {{AGENT_NAME}} Stack Debugging
 
-Drewgent's cron/gateway stack has a specific multi-layer architecture requiring a **process → log → scheduler → code → hypothesis** elimination chain.
+{{AGENT_NAME}}'s cron/gateway stack has a specific multi-layer architecture requiring a **process → log → scheduler → code → hypothesis** elimination chain.
 
-### Layer Map for Drewgent
+### Layer Map for {{AGENT_NAME}}
 
 ```
 launchctl list | ps -A     →    launchd process manager
@@ -1251,25 +1251,25 @@ cron-runner subprocess     →    logs/cron-runner/YYYY-MM-DD.log
 
 1. **Is the gateway process alive?**
    ```bash
-   launchctl list | grep ai.drewgent.gateway
-   launchctl print gui/$(id -u)/ai.drewgent.gateway | grep pid
+   launchctl list | grep ai.{{AGENT_NAME_LOWER}}.gateway
+   launchctl print gui/$(id -u)/ai.{{AGENT_NAME_LOWER}}.gateway | grep pid
    ```
    PID present = process alive. PID absent = crash.
 
 2. **Cron-runner log fresh?**
    ```bash
-   ls -lt ~/.drewgent/logs/cron-runner/*.log
-   grep -E '=== 2026-' ~/.drewgent/logs/cron-runner/YYYY-MM-DD.log | tail -3
+   ls -lt ~/.{{AGENT_NAME_LOWER}}/logs/cron-runner/*.log
+   grep -E '=== 2026-' ~/.{{AGENT_NAME_LOWER}}/logs/cron-runner/YYYY-MM-DD.log | tail -3
    ```
    If mtime > 5 min old + no recent `=== ISO ===` blocks → stall.
 
 3. **Sequential block (most common root cause)**
    ```bash
-   grep "Running job" ~/.drewgent/P6-prefrontal/logs/gateway.log | tail -10
+   grep "Running job" ~/.{{AGENT_NAME_LOWER}}/P6-prefrontal/logs/gateway.log | tail -10
    ```
    Is an LLM-based job (no `script` field) running before a script-based job (has `script` field)? The LLM job blocks the entire tick.
 
-4. **Check redundancy** (`~/.drewgent/cron/jobs.json`):
+4. **Check redundancy** (`~/.{{AGENT_NAME_LOWER}}/cron/jobs.json`):
    Look for duplicate job entries — same function, one script-based, one LLM-based. The LLM one blocks the tick loop.
 
 **Immediate fix** when sequential block is confirmed:
@@ -1283,20 +1283,20 @@ cron-runner subprocess     →    logs/cron-runner/YYYY-MM-DD.log
 
 **Kickstart to reset**:
 ```bash
-launchctl kickstart -k gui/$(id -u)/ai.drewgent.gateway
+launchctl kickstart -k gui/$(id -u)/ai.{{AGENT_NAME_LOWER}}.gateway
 ```
 
 **Check file lock** (stale lock blocks ticks):
 ```bash
-rm -v ~/.drewgent/cron/.tick.lock
+rm -v ~/.{{AGENT_NAME_LOWER}}/cron/.tick.lock
 ```
 
 **Auto-watchdog**:
 ```bash
-bash ~/.hermes/scripts/drewgent_cron_watchdog.sh
+bash ~/.hermes/scripts/{{AGENT_NAME_LOWER}}_cron_watchdog.sh
 ```
 
-## Drewgent Agent Integration
+## {{AGENT_NAME}} Agent Integration
 
 ### Investigation Tools
 

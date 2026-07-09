@@ -1,9 +1,9 @@
 ---
-title: gbrain-integration-drewgent
-name: gbrain-integration-drewgent
+title: gbrain-integration-{{AGENT_NAME_LOWER}}
+name: gbrain-integration-{{AGENT_NAME_LOWER}}
 description: "⚠️ DEPRECATED — gbrain replaced by SQLite FTS5 + Ollama embeddings (2026-07-05). Use recall()/remember() tools instead."
 type: skill
-tags: [gbrain, mcp, vault, search, drewgent, deprecated]
+tags: [gbrain, mcp, vault, search, {{AGENT_NAME_LOWER}}, deprecated]
 
 links:
   - "[[mcp/native-mcp]]"
@@ -12,9 +12,9 @@ links:
   - "[[@identity/brain/rules]]"
 ---
 
-# GBrain Integration for Drewgent
+# GBrain Integration for {{AGENT_NAME}}
 
-Integrate GBrain (by Garry Tan) as an MCP server into Drewgent/Hermes for hybrid search over the `.drewgent` Obsidian vault.
+Integrate GBrain (by Garry Tan) as an MCP server into {{AGENT_NAME}}/Hermes for hybrid search over the `.{{AGENT_NAME_LOWER}}` Obsidian vault.
 
 ## Prerequisites
 
@@ -47,26 +47,26 @@ is rejected by OpenAI client key validation. Vector search needs real key.
 
 ### 4. Import Vault
 
-gbrain sources add drewgent --path /Users/drew/.drewgent --name "Drewgent Vault"
-gbrain sources default drewgent
-gbrain import /Users/drew/.drewgent/P0-brainstem --source drewgent --yes --no-embed
+gbrain sources add {{AGENT_NAME_LOWER}} --path ~/.{{AGENT_NAME_LOWER}} --name "{{AGENT_NAME}} Vault"
+gbrain sources default {{AGENT_NAME_LOWER}}
+gbrain import ~/.{{AGENT_NAME_LOWER}}/P0-brainstem --source {{AGENT_NAME_LOWER}} --yes --no-embed
 gbrain extract links --yes
 
 ### 5. Register MCP Server
 
 Add to config.yaml under mcp_servers:
   gbrain:
-    command: /Users/drew/.bun/bin/gbrain
+    command: ~/.bun/bin/gbrain
     args: ["serve"]
     env:
       OPENAI_API_KEY: "ollama-local"
 
 Set env via Python to ensure proper YAML dict format:
 import yaml
-with open('/Users/drew/.drewgent/config.yaml') as f:
+with open('~/.{{AGENT_NAME_LOWER}}/config.yaml') as f:
     d = yaml.safe_load(f)
 d['mcp_servers']['gbrain']['env'] = {'OPENAI_API_KEY': 'ollama-local'}
-with open('/Users/drew/.drewgent/config.yaml', 'w') as f:
+with open('~/.{{AGENT_NAME_LOWER}}/config.yaml', 'w') as f:
     yaml.dump(d, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
 ### 6. Verify
@@ -110,7 +110,7 @@ done
 ```
 
 Two types of parent:
-- **Gateway** (`drewgent_cli.main gateway run --replace`) — KEEP this one
+- **Gateway** (`{{AGENT_NAME_LOWER}}_cli.main gateway run --replace`) — KEEP this one
 - **Hermes CLI** (`hermes` binary, often already terminated) — KILL these
 
 **Step 3 — Fix:**
@@ -143,7 +143,7 @@ Running an MCP test or CLI session can spawn a temporary gbrain subprocess. If t
 A no-agent cron job runs every 15 minutes to detect and kill orphaned gbrain processes:
 
 ```bash
-# [REMOVED 2026-07-05] Script: ~/.drewgent/scripts/drewgent_gbrain_watchdog.sh
+# [REMOVED 2026-07-05] Script: ~/.{{AGENT_NAME_LOWER}}/scripts/{{AGENT_NAME_LOWER}}_gbrain_watchdog.sh
 # Cron:   gbrain-watchdog (ID: 0fb33852686c)
 ```
 

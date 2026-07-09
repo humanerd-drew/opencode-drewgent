@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Cron Runner — every 60s by launchd/drewgent-cron-runner-001.
+Cron Runner — every 60s by launchd/{{AGENT_NAME_LOWER}}-cron-runner-001.
 
 Calls `hermes kanban dispatch` once per tick.  The old dispatch_once_*.py
 scripts pointed at a stale legacy DB and are replaced by this single
 Hermes-native dispatch command.
 
 Why this exists (2026-06-01):
-- ai.drewgent.cron-runner plist 부재 → 5/30 21:55부터 cron job들이 dormant.
+- ai.{{AGENT_NAME_LOWER}}.cron-runner plist 부재 → 5/30 21:55부터 cron job들이 dormant.
 - dispatcher는 결정론적 CLI 명령어라서 cron tick마다 안전하게 실행 가능.
 
 Output: logs/cron-runner/YYYY-MM-DD.log
@@ -18,13 +18,13 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-DREW_HOME = Path(os.environ.get("DREW_HOME", str(Path.home() / ".drewgent")))
+DREW_HOME = Path(os.environ.get("DREW_HOME", str(Path.home() / ".{{AGENT_NAME_LOWER}}")))
 LOG_DIR = DREW_HOME / "logs" / "cron-runner"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
-# The system hermes CLI (Drewgent wrapper at ~/.local/bin/hermes,
+# The system hermes CLI ({{AGENT_NAME}} wrapper at ~/.local/bin/hermes,
 # which resolves to the Hermes-agent venv).
-HERMES = os.environ.get("HERMES_BIN", "/Users/drew/.local/bin/hermes")
+HERMES = os.environ.get("HERMES_BIN", "~/.local/bin/hermes")
 
 ts = datetime.now(timezone.utc).isoformat()
 log_file = LOG_DIR / f"{datetime.now().strftime('%Y-%m-%d')}.log"
@@ -34,18 +34,18 @@ results = []
 # ── 1. Kanban dispatch ──────────────────────────────────────────────
 # Replaces the 3 old dispatch_once_*.py scripts that pointed at a stale
 # legacy DB (P2-hippocampus/kanban/state/).  Hermes native kanban at
-# ~/.drewgent/kanban.db is the single source of truth.
+# ~/.{{AGENT_NAME_LOWER}}/kanban.db is the single source of truth.
 try:
     r = subprocess.run(
         [HERMES, "kanban", "dispatch", "--json", "--max", "5"],
         capture_output=True,
         text=True,
         timeout=50,
-        # Strip trailing colon from PYTHONPATH to prevent ~/.drewgent
+        # Strip trailing colon from PYTHONPATH to prevent ~/.{{AGENT_NAME_LOWER}}
         # leaking into sys.path and shadowing hermes-agent modules.
         env={**os.environ,
-             "PYTHONPATH": "/Users/drew/.drewgent/customize",
-             "HERMES_HOME": str(Path.home() / ".drewgent"),
+             "PYTHONPATH": "~/.{{AGENT_NAME_LOWER}}/customize",
+             "HERMES_HOME": str(Path.home() / ".{{AGENT_NAME_LOWER}}"),
              "HERMES_KANBAN_BOARD": "default"},
     )
     if r.returncode == 0 and r.stdout.strip():

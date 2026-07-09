@@ -1,7 +1,7 @@
-# GBrain Implementation in Drewgent (Karpathy + GBrain hybrid, 2026-06-10)
+# GBrain Implementation in {{AGENT_NAME}} (Karpathy + GBrain hybrid, 2026-06-10)
 
 This is a record of how we applied Karpathy's "LLM Wiki" and GBrain's 3-pillar
-architecture to the existing Drewgent vault, without adopting the
+architecture to the existing {{AGENT_NAME}} vault, without adopting the
 external `garrytan/gbrain` service.
 
 ## Why we didn't install GBrain
@@ -9,11 +9,11 @@ external `garrytan/gbrain` service.
 `garrytan/gbrain` is a separate service (git-versioned brain repo, LLM
 synthesis, graph traversal, gap analysis). Adopting it would mean:
 - A new dependency to maintain
-- A separate persistence layer alongside `~/.drewgent/P2-hippocampus/`
+- A separate persistence layer alongside `~/.{{AGENT_NAME_LOWER}}/P2-hippocampus/`
 - A different tool to call for memory operations
 
-Drewgent already has:
-- A git-versioned vault (`~/.drewgent/`) with wikilinks
+{{AGENT_NAME}} already has:
+- A git-versioned vault (`~/.{{AGENT_NAME_LOWER}}/`) with wikilinks
 - `ontology-query` skill for graph traversal on P0-brainstem neurons
 - LLM-synthesis capability via the agent loop
 
@@ -21,28 +21,28 @@ The hybrid approach below gives us 3 of 4 GBrain pillars with **zero new depende
 
 ## 3-pillar mapping
 
-| GBrain pillar | Drewgent equivalent | Status |
+| GBrain pillar | {{AGENT_NAME}} equivalent | Status |
 |---|---|---|
-| 1. Repo (git-versioned) | `~/.drewgent/` vault (Obsidian-flavored, git-versioned) | ✓ pre-existing |
+| 1. Repo (git-versioned) | `~/.{{AGENT_NAME_LOWER}}/` vault (Obsidian-flavored, git-versioned) | ✓ pre-existing |
 | 2. Synthesis (LLM compile) | Memory entries as compiled procedures (not raw incident reports) | ✓ added 6/10 |
-| 3. Graph traversal | `~/.hermes/scripts/drewgent_graph_lookup.sh` (wikilink walker) + `ontology-query` skill | ✓ added 6/10 |
+| 3. Graph traversal | `~/.hermes/scripts/{{AGENT_NAME_LOWER}}_graph_lookup.sh` (wikilink walker) + `ontology-query` skill | ✓ added 6/10 |
 | 4. Gap analysis | None — TODO | ✗ |
 
-## Implementation: drewgent_graph_lookup.sh
+## Implementation: {{AGENT_NAME_LOWER}}_graph_lookup.sh
 
 A bash script that walks wikilinks across P2-hippocampus (memory), P0-brainstem
 (neurons), P4-cortex (growth), P6-prefrontal (incidents).
 
 ```bash
 # Usage
-bash ~/.hermes/scripts/drewgent_graph_lookup.sh "launchd"
+bash ~/.hermes/scripts/{{AGENT_NAME_LOWER}}_graph_lookup.sh "launchd"
 # Output:
 #   ## Direct hits
-#     • /Users/drew/.drewgent/P2-hippocampus/memories/MEMORY.md
-#     • /Users/drew/.drewgent/P6-prefrontal/incidents/cron-jobs-stalled-20260601.md
-#     • /Users/drew/.drewgent/P6-prefrontal/incidents/launchd-mass-failure-20260610.md
-#     • /Users/drew/.drewgent/P6-prefrontal/incidents/cron-runner-launchd-detached-20260601.md
-#     • /Users/drew/.drewgent/P4-cortex/growth/discord-token-resilience-protocol.md
+#     • ~/.{{AGENT_NAME_LOWER}}/P2-hippocampus/memories/MEMORY.md
+#     • ~/.{{AGENT_NAME_LOWER}}/P6-prefrontal/incidents/cron-jobs-stalled-20260601.md
+#     • ~/.{{AGENT_NAME_LOWER}}/P6-prefrontal/incidents/launchd-mass-failure-20260610.md
+#     • ~/.{{AGENT_NAME_LOWER}}/P6-prefrontal/incidents/cron-runner-launchd-detached-20260601.md
+#     • ~/.{{AGENT_NAME_LOWER}}/P4-cortex/growth/discord-token-resilience-protocol.md
 #   ## Wikilink graph (incoming)
 #     (no incoming wikilinks)
 #   ## Outgoing from memory
@@ -89,12 +89,12 @@ After (compiled procedure, 6804 chars total):
 GBrain detects: "X is in your brain repo, but no entry in MEMORY.md references
 it." This is the "gap" — facts you have but can't recall.
 
-Drewgent equivalent would be a script:
+{{AGENT_NAME}} equivalent would be a script:
 ```bash
 # Pseudo-code
-for f in ~/.drewgent/P4-cortex/knowledge/*.md; do
+for f in ~/.{{AGENT_NAME_LOWER}}/P4-cortex/knowledge/*.md; do
   topic=$(basename "$f" .md)
-  if ! grep -qE "\[\[$topic\]\]" ~/.drewgent/P2-hippocampus/memories/MEMORY.md; then
+  if ! grep -qE "\[\[$topic\]\]" ~/.{{AGENT_NAME_LOWER}}/P2-hippocampus/memories/MEMORY.md; then
     echo "GAP: $topic not referenced in memory"
   fi
 done
@@ -122,4 +122,4 @@ This is exactly what GBrain's "compilation + graph" pattern is designed to preve
 | Gap analysis | TODO | built-in |
 | Cost | 0 (just bash) | API calls for synthesis |
 
-For Drewgent's scale (single user, ~10k files, manual but occasional checkups), the local hybrid is sufficient. The day a third contributor joins or MEMORY.md hits 8K cap daily, the calculation changes.
+For {{AGENT_NAME}}'s scale (single user, ~10k files, manual but occasional checkups), the local hybrid is sufficient. The day a third contributor joins or MEMORY.md hits 8K cap daily, the calculation changes.

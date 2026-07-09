@@ -10,13 +10,13 @@
 | cron_runner.py | Cron job executor | cron/jobs.json, skills/ |
 | cron_seo_harvester.sh | SEO article collection shell wrapper | cron/jobs.json |
 | discord_bot.py | Discord ↔ opencode gateway | launchd |
-| discord_send.py | Discord message chunk sender | drewgent_cron.py, skills/ |
-| drewgent_cron.py | Cron dispatcher (60s interval) | launchd |
-| ~~drewgent_gbrain_watchdog.sh~~ | ~~gbrain brain sync health check~~ | ~~skills/~~ (REMOVED) |
-| drewgent_harmony_check.sh | Vault graph integrity check | cron/jobs.json, skills/ |
-| drewgent_log_rotate.sh | Log rotation and compression | cron/jobs.json, skills/ |
+| discord_send.py | Discord message chunk sender | {{AGENT_NAME_LOWER}}_cron.py, skills/ |
+| {{AGENT_NAME_LOWER}}_cron.py | Cron dispatcher (60s interval) | launchd |
+| ~~{{AGENT_NAME_LOWER}}_gbrain_watchdog.sh~~ | ~~gbrain brain sync health check~~ | ~~skills/~~ (REMOVED) |
+| {{AGENT_NAME_LOWER}}_harmony_check.sh | Vault graph integrity check | cron/jobs.json, skills/ |
+| {{AGENT_NAME_LOWER}}_log_rotate.sh | Log rotation and compression | cron/jobs.json, skills/ |
 | excalidraw-to-png.js | Excalidraw diagram to PNG conversion | skills/ |
-| install.sh | Drewgent installer | repo root |
+| install.sh | {{AGENT_NAME}} installer | repo root |
 | install.cmd | Windows installer | repo root |
 | install.ps1 | PowerShell installer | repo root |
 | kanban_maintenance.py | Kanban DB maintenance | skills/ |

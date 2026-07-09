@@ -56,7 +56,7 @@ When completing a pipeline task, structure your `result` as JSON:
 
 - **Research before designing.** Never jump straight to code.
 - For significant UI decisions, produce 2-3 options with trade-offs.
-- Use Lazyweb as reference, not template — adapt to Drewgent's design language.
+- Use Lazyweb as reference, not template — adapt to {{AGENT_NAME}}'s design language.
 - If the task involves backend or API logic, hand off to implementer.
 
 ## Escalation

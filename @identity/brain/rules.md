@@ -125,20 +125,12 @@ links:
 - [[@identity/brain/Drewgent-brain/P0-brainstem/禁task_qa_gate.neuron]]
 - [[@identity/brain/Drewgent-brain/P0-brainstem/禁tool_integration_3file.neuron]]
 
-## m-log 수정 검증 규칙 (2026-06-21)
-trigger: "m-log streaming 수정에서 implementer 결과물을 검증 안 하고 import 경로 오류를 놓친 사건"
-provenance:
-  session: "2026-06-21 m-log-streaming-fix"
-  decision: "매번 같은 실수를 반복하므로, 규칙으로 박아서 절대 건너뛰지 못하게 함"
+## implementer 결과 검증 필수 단계
 
-### implementer 결과 검증 필수 단계:
+trigger: "이전에 implementer 결과물을 검증 안 하고 import 경로 오류를 놓친 사건에서 도출"
+
 1. implementer가 반환한 diff를 반드시 직접 읽을 것
 2. 모든 import 경로를 `ls`로 실제 파일 존재 확인
-3. `frontend/`와 `public/` 디렉토리 구조 차이를 확인하고 sync 필요 여부 판단
+3. 프론트엔드 번들 디렉토리와 소스 디렉토리 구조 차이를 확인하고 sync 필요 여부 판단
 4. TypeScript는 `npx tsc --noEmit`, JS는 `node --check`로 각 파일 검증
 5. 위 단계를 모두 통과해야만 "완료"라고 보고할 것
-
-### m-log 프로젝트 특수사항:
-- Worker가 서빙하는 건 `public/` 디렉토리, 소스는 `frontend/`
-- `npm run dev` / `npm run deploy` 할 때 `sync:local`이 `frontend/` → `public/` 복사
-- implementer 태스크에는 반드시 "frontend/ 수정 후 public/에도 동일하게 적용"을 포함

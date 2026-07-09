@@ -5,7 +5,7 @@ title: MiniMax Token Plan — Terminal Usage Check
 domain: devops
 space: growth
 type: workflow
-tags: [minimax, token-plan, api, usage, drewgent]
+tags: [minimax, token-plan, api, usage, {{AGENT_NAME_LOWER}}]
 created: 2026-06-02
 updated: 2026-06-02
 links:
@@ -26,7 +26,7 @@ Authorization: Bearer ${MINIMAX_API_KEY}
 
 **Why GET, not POST**: trial showed POST returns `404 page not found`. GET returns JSON.
 
-**Auth source**: `MINIMAX_API_KEY` from `~/.drewgent/.env` (also exported in `~/.zshrc`).
+**Auth source**: `MINIMAX_API_KEY` from `~/.{{AGENT_NAME_LOWER}}/.env` (also exported in `~/.zshrc`).
 
 ## 2. Response Schema (important: percentages, not absolute counts)
 
@@ -58,12 +58,12 @@ Window math: 5h interval = `(end_time - start_time) / 1000 / 3600 = 5`. Weekly =
 
 ## 3. Ready-Made Script (created 2026-06-02)
 
-`~/.drewgent/scripts/minimax_usage.py` (7.1KB, no external deps, stdlib only)
+`~/.{{AGENT_NAME_LOWER}}/scripts/minimax_usage.py` (7.1KB, no external deps, stdlib only)
 
 ```bash
-python3 ~/.drewgent/scripts/minimax_usage.py            # colored table + progress bars
-python3 ~/.drewgent/scripts/minimax_usage.py --json     # raw JSON for monitoring
-python3 ~/.drewgent/scripts/minimax_usage.py --watch 30 # 30s refresh, Ctrl-C 종료
+python3 ~/.{{AGENT_NAME_LOWER}}/scripts/minimax_usage.py            # colored table + progress bars
+python3 ~/.{{AGENT_NAME_LOWER}}/scripts/minimax_usage.py --json     # raw JSON for monitoring
+python3 ~/.{{AGENT_NAME_LOWER}}/scripts/minimax_usage.py --watch 30 # 30s refresh, Ctrl-C 종료
 ```
 
 Output format:
@@ -85,8 +85,8 @@ fetched 2026-06-02 16:15:24
 `~/.zshrc` is write-protected from `mcp_patch`. User adds these 2 lines themselves:
 
 ```bash
-alias mm-usage='python3 /Users/drew/.drewgent/scripts/minimax_usage.py'
-alias mm-usage-watch='python3 /Users/drew/.drewgent/scripts/minimax_usage.py --watch 30'
+alias mm-usage='python3 ~/.{{AGENT_NAME_LOWER}}/scripts/minimax_usage.py'
+alias mm-usage-watch='python3 ~/.{{AGENT_NAME_LOWER}}/scripts/minimax_usage.py --watch 30'
 ```
 
 ## 5. Pitfalls
@@ -98,7 +98,7 @@ The fields `current_interval_usage_count` / `current_weekly_usage_count` are alw
 First instinct for `/coding_plan/remains` is to POST (since it's an action-like endpoint name). The endpoint is actually GET-only. Trial found this in 1 attempt.
 
 ### P3: `~/.zshrc` is write-protected
-`mcp_patch` on `/Users/drew/.zshrc` returns `Write denied: ... is a protected system/credential file`. Don't try to add aliases via patch — instruct the user to add them in their next shell session. The `.env` API key is fine to read from the script, but adding shell config requires user action.
+`mcp_patch` on `~/.zshrc` returns `Write denied: ... is a protected system/credential file`. Don't try to add aliases via patch — instruct the user to add them in their next shell session. The `.env` API key is fine to read from the script, but adding shell config requires user action.
 
 ### P4: `tcsetattr: Inappropriate ioctl for device` warning
 Bash warning when piping `minimax_usage.py --watch` through `timeout`/non-TTY. Comes from Python's TTY detection in the watch loop. Harmless in real terminal use. The `--watch` mode also clears the screen on each refresh, which can be janky in non-TTY contexts.
@@ -107,18 +107,18 @@ Bash warning when piping `minimax_usage.py --watch` through `timeout`/non-TTY. C
 The `model_name: "video"` entry typically shows `current_interval_status: 3` (unlimited) and `current_weekly_status: 3`. The user's main concern is `general` (text models). Don't get confused by video bucket's 100% remaining — it's not a separate quota, just labeled as unlimited for billing purposes.
 
 ### P6: Window times are local TZ
-`start_time` / `end_time` are ms-epoch UTC, but `datetime.fromtimestamp(...).astimezone()` renders them in the user's local TZ (KST in Drewgent's case). Don't double-convert or you'll show wrong times.
+`start_time` / `end_time` are ms-epoch UTC, but `datetime.fromtimestamp(...).astimezone()` renders them in the user's local TZ (KST in {{AGENT_NAME}}'s case). Don't double-convert or you'll show wrong times.
 
 ## 6. Future Extensions (suggested, not implemented)
 
-- **Statusline integration**: `mm: 51% | 5d16h` next to the prompt. Touches Drewgent identity layer → confirm with user before implementing.
+- **Statusline integration**: `mm: 51% | 5d16h` next to the prompt. Touches {{AGENT_NAME}} identity layer → confirm with user before implementing.
 - **Cron alert**: When `current_interval_remaining_percent < 20`, send Discord notification. Add as separate cron job + skill.
 - **Multi-account support**: If user has multiple MiniMax keys, allow `mm-usage --key <name>` to switch. Currently the script reads only one fixed path.
 
 ## 7. Related
 
-- [[@memory/growth/INTEGRATION_PROTOCOL]] — Drewgent 3-file integration protocol
-- [[@identity/SELF_MODEL]] — Drewgent identity (for statusline extension)
-- `~/.drewgent/scripts/minimax_usage.py` — the implementation
-- `~/.drewgent/.env` — API key source
+- [[@memory/growth/INTEGRATION_PROTOCOL]] — {{AGENT_NAME}} 3-file integration protocol
+- [[@identity/SELF_MODEL]] — {{AGENT_NAME}} identity (for statusline extension)
+- `~/.{{AGENT_NAME_LOWER}}/scripts/minimax_usage.py` — the implementation
+- `~/.{{AGENT_NAME_LOWER}}/.env` — API key source
 - MiniMax console: https://platform.minimax.io/console (for absolute counts, fallback only)

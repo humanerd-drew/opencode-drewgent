@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [openai-whisper, transformers, torch]
 metadata:
-  drewgent:
+  {{AGENT_NAME_LOWER}}:
     tags: [Whisper, Speech Recognition, ASR, Multimodal, Multilingual, OpenAI, Speech-To-Text, Transcription, Translation, Audio Processing]
 
 links:

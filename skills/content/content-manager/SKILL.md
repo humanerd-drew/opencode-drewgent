@@ -42,7 +42,7 @@ Observer (git log / session_search / kanban_list)
 
 ## Design Rules
 
-### Humanerd.kr Design System (CSS)
+### YOUR_DOMAIN Design System (CSS)
 ```
 BG:        #fafaf8 (warm off-white)
 Surface:   #ffffff
@@ -72,7 +72,7 @@ Mono:      JetBrains Mono
 ## Key Components
 
 ### Agent Profile
-- `~/.drewgent/agents/content-manager.md` — role definition (deepseek-v4-pro, opencode-go)
+- `~/.{{AGENT_NAME_LOWER}}/agents/content-manager.md` — role definition (deepseek-v4-pro, opencode-go)
 - Toolsets: terminal, file, search, session_search, kanban, web
 - Fires daily at 12:00 KST via cron
 - Also triggerable via `task(subagent_type="content-manager", description="Content run", prompt="...")`
@@ -80,7 +80,7 @@ Mono:      JetBrains Mono
 ### Knowledge Base
 at `P4-cortex/content/`:
 - `brand-guide.md` — positioning, audience, tone, content pillars (4: Build Log, AI & Tools, Systems, Creative)
-- `glossary.md` — project terms (Drewgent, Gateway, M-LOG, PDC, etc.)
+- `glossary.md` — project terms ({{AGENT_NAME}}, Gateway, M-LOG, PDC, etc.)
 - `content-inventory.md` — published/draft tracking + dedup topics
 - `narrative_arc.md` — serial continuity (current season, episodes, threads)
 
@@ -88,12 +88,12 @@ at `P4-cortex/content/`:
 - Local Docker (colima VM, 4GB→8GB RAM, 2 CPU)
 - WordPress 6.7 + MySQL 8.0 (arm64)
 - Blocksy theme (free) with custom fonts
-- Data on Synology NAS mount (`/Volumes/humanerd/docker/wordpress/`)
-- Custom MCP server at `~/.drewgent/scripts/wordpress-mcp-server.js`
+- Data on Synology NAS mount (`/Volumes/YOUR_NAS/docker/wordpress/`)
+- Custom MCP server at `~/.{{AGENT_NAME_LOWER}}/scripts/wordpress-mcp-server.js`
 - 7 MCP tools: create_post, upload_media, list_posts, get_post, create_category, set_site_option, set_theme_mod
 
 ### Huly Integration (planned)
-- Huly Cloud workspace: humanerd (huly.app)
+- Huly Cloud workspace: YOUR_WORKSPACE (huly.app)
 - MCP server: `@bgx4k3p/huly-mcp-server@latest` (81 tools)
 - Key tools: create_issue, list_issues, update_issue, search_issues
 - Note: Huly has no outgoing webhooks yet (GitHub #6996, #9187 — feature requests)
@@ -118,7 +118,7 @@ The agent profile defines `model: deepseek-v4-pro`, but calling via `task(subage
 - Mermaid renders natively in Quartz — no conversion needed
 
 ### WordPress MCP Server
-- Uses `docker exec humanerd-wp wp --allow-root` internally — WordPress must be running
+- Uses `docker exec YOUR_DOMAIN-wp wp --allow-root` internally — WordPress must be running
 - Test with `printf '{"jsonrpc":"2.0","id":1,"method":"list_tools"}\n' | timeout 5 node script.js`
 - Registered in `config.yaml` under `mcp_servers.wordpress`
 - The Automattic `wordpress-mcp` plugin is installed but has route-registration issues on this setup
@@ -136,7 +136,7 @@ The agent profile defines `model: deepseek-v4-pro`, but calling via `task(subage
 
 ## Related Skills & Files
 - `content-pipeline` — older content pipeline (external sources), cross-reference only
-- `~/.drewgent/scripts/wordpress-mcp-server.js` — WordPress MCP server
-- `~/.drewgent/scripts/excalidraw-to-png.js` — Excalidraw → PNG converter
-- `~/.drewgent/wordpress/docker-compose.yml` — WordPress Docker setup
-- `~/.drewgent/wordpress/.wp-env` — credentials (chmod 600)
+- `~/.{{AGENT_NAME_LOWER}}/scripts/wordpress-mcp-server.js` — WordPress MCP server
+- `~/.{{AGENT_NAME_LOWER}}/scripts/excalidraw-to-png.js` — Excalidraw → PNG converter
+- `~/.{{AGENT_NAME_LOWER}}/wordpress/docker-compose.yml` — WordPress Docker setup
+- `~/.{{AGENT_NAME_LOWER}}/wordpress/.wp-env` — credentials (chmod 600)

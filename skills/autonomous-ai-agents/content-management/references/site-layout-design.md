@@ -10,7 +10,7 @@ YOUR_DOMAIN/
 │   ├── Hero: "시스템을 구축하며 배운 것들"
 │   ├── Recent posts (card grid, 2 columns)
 │   ├── Category filter tabs: All / Build Log / AI & Tools / Systems / Creative
-│   └── Projects section (3 cards: Drewgent / M-LOG / YOUR_DOMAIN)
+│   └── Projects section (3 cards: {{AGENT_NAME}} / M-LOG / YOUR_DOMAIN)
 ├── /blog/ (Posts page)
 │   └── Category-filtered post list (same layout)
 └── /about/ (About page)
@@ -45,4 +45,4 @@ YOUR_DOMAIN/
 └──────────────────────────────────────┴─────────┘
 ```
 
-Visual mockup: `P4-cortex/content/humanerd-layout.svg`
+Visual mockup: `P4-cortex/content/YOUR_PREFIX-layout.svg`

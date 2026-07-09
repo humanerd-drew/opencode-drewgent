@@ -22,9 +22,9 @@ The core challenge: MCP server config in `config.yaml` supports `env` section fo
 
 ```bash
 #!/bin/bash
-# ~/.drewgent/scripts/huly-mcp-wrapper.sh
+# ~/.{{AGENT_NAME_LOWER}}/scripts/huly-mcp-wrapper.sh
 export HULY_URL="https://huly.app"
-export HULY_WORKSPACE="humanerd"
+export HULY_WORKSPACE="YOUR_WORKSPACE"
 
 HULY_KEY="$(grep '^HULY_KEY=' "$HOME/.hermes/.env" | head -1 | sed 's/^HULY_KEY=//' | tr -d '[:space:]')"
 export HULY_TOKEN="$HULY_KEY"
@@ -37,7 +37,7 @@ The config.yaml just points to the wrapper:
 ```yaml
 mcp_servers:
   huly:
-    command: /Users/drew/.drewgent/scripts/huly-mcp-wrapper.sh
+    command: ~/.{{AGENT_NAME_LOWER}}/scripts/huly-mcp-wrapper.sh
 ```
 
 This pattern is reusable for any MCP server that needs a credential bridge to `.env`.
@@ -57,7 +57,7 @@ The `HULY_KEY` from Huly Cloud Settings → Integrations → API Access works as
 ```bash
 # Quick smoke test: pipe a tools/list request to the server
 echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | \
-  timeout 8 ~/.drewgent/scripts/huly-mcp-wrapper.sh 2>&1
+  timeout 8 ~/.{{AGENT_NAME_LOWER}}/scripts/huly-mcp-wrapper.sh 2>&1
 
 # Expected: "Huly MCP Server v2.4.3 running on stdio (81 tools, resources enabled)"
 #          + JSON-RPC response with all 81 tools
@@ -68,7 +68,7 @@ echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | \
 1. **Wrapper over inline env** — avoids JWT in config.yaml
 2. **bgx4k3p over firfi** — richer tool set; milestones, time tracking, and templates matter for real project management
 3. **Stdio transport** — simplest for Hermes native MCP; Streamable HTTP available if remote access needed later
-4. **Workspace hardcoded in wrapper** — `humanerd` is the only workspace; if multi-workspace needed, can be promoted to an env var
+4. **Workspace hardcoded in wrapper** — `YOUR_WORKSPACE` is the only workspace; if multi-workspace needed, can be promoted to an env var
 
 ## Known Pitfalls
 

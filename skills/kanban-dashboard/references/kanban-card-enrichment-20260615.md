@@ -60,12 +60,12 @@ User complained that kanban dashboard shows items but "내용을 볼 수 없어 
 **Modal-level** (JS-injected on openModal):
 - Description tab bottom: purple "📄 Open in Obsidian" button
 - JS regex: `Draft\s*파일\s*위치\s*\n\s*(\/[^\n]+)`
-- URI: `obsidian://open?vault=Drewgent&file=...`
-- Fallback: if path doesn't match `/Users/drew/.drewgent/` prefix, show as text only
+- URI: `obsidian://open?vault={{AGENT_NAME}}&file=...`
+- Fallback: if path doesn't match `~/.{{AGENT_NAME_LOWER}}/` prefix, show as text only
 
 **Server-side helpers**:
 - `_extract_draft_path(body)` — regex `## Draft 파일 위치\s*\n\s*(/[^\n]+)`
-- `_obsidian_url(vault_path)` — strips `/Users/drew/.drewgent/` prefix, URL-encodes with `urllib.parse.quote`
+- `_obsidian_url(vault_path)` — strips `~/.{{AGENT_NAME_LOWER}}/` prefix, URL-encodes with `urllib.parse.quote`
 
 **Verification**:
 ```bash
@@ -81,7 +81,7 @@ curl -s http://macmini:8765/kanban | grep 'obsidian://open' | head -5
 1. Duplicate detection: same topic (cc-switch, superpowers-zh, CodeGraph) → keep best body, delete rest (3 deleted)
 2. Completed purge: 11 completed content tasks deleted (results were already logged)
 3. Stale todo: 9 unassigned tasks older than 14 days deleted
-4. Final state: 6 tasks, all drewgent-assigned
+4. Final state: 6 tasks, all {{AGENT_NAME_LOWER}}-assigned
 
 ### Verification
 

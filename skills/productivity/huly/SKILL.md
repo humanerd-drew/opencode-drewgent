@@ -2,7 +2,7 @@
 name: huly
 description: "Huly Cloud (huly.app) — All-in-One Project Management. Covers PM, Chat, Docs, HR, CRM, Storage. Agent's primary work hub replacing Linear + kanban."
 version: 1.1.0
-author: Drewgent
+author: {{AGENT_NAME}}
 created: 2026-06-14
 updated: 2026-06-14
   session: "2026-06-14 kanban-huly-integration"
@@ -20,7 +20,7 @@ references:
 
 # Huly — Agent Usage Guide
 
-Huly Cloud (https://huly.app) | Workspace: `humanerd`
+Huly Cloud (https://huly.app) | Workspace: `YOUR_WORKSPACE`
 
 ## Core Philosophy
 
@@ -65,11 +65,11 @@ Huly tools are available natively via Hermes `mcp_servers.huly`. Use tool calls 
 When MCP tools are unavailable (e.g., cron scripts), use the direct SDK:
 
 ```bash
-cd ~/.drewgent && node -e "
+cd ~/.{{AGENT_NAME_LOWER}} && node -e "
 const{connect,NodeWebSocketFactory}=require('@hcengineering/api-client');
 globalThis.window={addEventListener:()=>{}};
 const c=await connect('https://huly.app',{
-  token:process.env.HULY_KEY,workspace:'humanerd',
+    token:process.env.HULY_KEY,workspace:'YOUR_WORKSPACE',
   WebSocketFactory:NodeWebSocketFactory,
 });
 await c.addCollection('tracker:class:Issue',
@@ -84,12 +84,12 @@ await c.close();
 ### List Issues
 
 ```bash
-cd ~/.drewgent && node -e "
+cd ~/.{{AGENT_NAME_LOWER}} && node -e "
 const{connect,NodeWebSocketFactory}=require('@hcengineering/api-client');
 globalThis.window={addEventListener:()=>{}};
 (async()=>{
   const c=await connect('https://huly.app',{
-    token:process.env.HULY_KEY,workspace:'humanerd',
+  token:process.env.HULY_KEY,workspace:'YOUR_WORKSPACE',
     WebSocketFactory:NodeWebSocketFactory,
   });
   const issues=await c.findAll('tracker:class:Issue',{});
@@ -169,10 +169,10 @@ When user approves, create via UI or API:
 
 | Project | Purpose |
 |---------|---------|
-| `Drewgent Core` | Agent infrastructure, kanban, cron |
+| `{{AGENT_NAME}} Core` | Agent infrastructure, kanban, cron |
 | `Content Pipeline` | Trend harvesting, SEO, writing |
 | `M-LOG` | M-LOG development |
-| `Humanerd Site` | Website/Quartz |
+| `YOUR_SITE` | Website/Quartz |
 
 ### Suggested Channels
 | Channel | Purpose |
@@ -205,14 +205,14 @@ Status updates → reference Huly Issues. Use `huly-check-discord` for broadcast
 
 For detailed API reference, CRUD operations, connection patterns, and
 pitfalls, see the **huly-integration** skill (software-development).
-This section covers the Drewgent-specific deployment.
+This section covers the {{AGENT_NAME}}-specific deployment.
 
 ### Self-Hosted Deployment (Synology NAS)
 
 **For the full field playbook (envsubst pitfall, huly_v7.conf write pattern, cockroach v24.2 quirk, kvs-1 fix), see `references/selfhost-on-synology.md`.** This section only summarizes current state.
 
 Current state (last update 2026-06-16):
-- 14/14 containers running at `http://192.168.1.53:8087`
+- 14/14 containers running at `http://192.168.1.100:8087`
 - `kvs-1` restart-loops because huly user in cockroach never got created (the catch-22 step in the reference)
 - PICKUP for next session: create the huly user in cockroach (see reference), restart kvs/account/transactor
 - Standard `setup.sh` is broken on Synology (envsubst missing) — write huly_v7.conf by hand using the recipe in the reference
@@ -224,7 +224,7 @@ Current state (last update 2026-06-16):
 | **MCP Tools** | Hermes native MCP (`mcp_servers.huly`) | stdio → WebSocket | All agent-to-Huly interaction (issue CRUD, search, comments, milestones, projects) |
 | **Direct SDK** | `@hcengineering/api-client` (Node.js) | WebSocket | Headless cron scripts, real-time bridge daemon, pushHandler |
 
-**MCP setup:** `@bgx4k3p/huly-mcp-server` via wrapper at `~/.drewgent/scripts/huly-mcp-wrapper.sh`.
+**MCP setup:** `@bgx4k3p/huly-mcp-server` via wrapper at `~/.{{AGENT_NAME_LOWER}}/scripts/huly-mcp-wrapper.sh`.
 The wrapper reads the JWT from `.env` at runtime — never stored in config.yaml.
 
 **MCP verification:** After configuring, confirm the server is actually loaded by searching for `huly:*` tools via `tool_search(query="huly")` at the start of a session. If tools don't appear, the most likely cause is the `mcp_servers:` parent key being commented out in `~/.hermes/config.yaml`. Run `grep '^mcp_servers:' ~/.hermes/config.yaml` — if empty, the key is missing or commented. In YAML, `# mcp_servers:` at the parent level disables ALL children, even if individual server entries like `huly:` are uncommented. Fix: uncomment the `mcp_servers:` line and indent servers correctly under it.
@@ -259,7 +259,7 @@ exec node --no-warnings script.js
 
 | Name | Type | Script | Function |
 |------|------|--------|----------|
-| `ai.drewgent.huly-bridge` | launchd daemon | `huly_bridge.sh` | Real-time pushHandler → kanban create |
+| `ai.{{AGENT_NAME_LOWER}}.huly-bridge` | launchd daemon | `huly_bridge.sh` | Real-time pushHandler → kanban create |
 
 The bridge daemon keeps a persistent WebSocket connection to Huly and registers
 a `pushHandler` that receives ALL transactions in real-time. When a new Issue
@@ -269,13 +269,13 @@ worker. See `references/pushhandler-realtime.md` for the full mechanism.
 Daemon lifecycle managed by launchd:
 ```bash
 # Start
-launchctl load ~/Library/LaunchAgents/ai.drewgent.huly-bridge.plist
+launchctl load ~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.huly-bridge.plist
 # Stop
-launchctl stop ai.drewgent.huly-bridge
+launchctl stop ai.{{AGENT_NAME_LOWER}}.huly-bridge
 # Check status
-launchctl list ai.drewgent.huly-bridge
+launchctl list ai.{{AGENT_NAME_LOWER}}.huly-bridge
 # Log
-tail -f ~/.drewgent/logs/huly-bridge.log
+tail -f ~/.{{AGENT_NAME_LOWER}}/logs/huly-bridge.log
 ```
 
 ### Real-Time Event Access Path
@@ -293,12 +293,12 @@ client.client.client.conn.pushHandler((...txArr) => {
 
 ### Environment
 - `~/.hermes/.env` → `HULY_KEY` (JWT token)
-- `~/.drewgent/state/huly_last_check.json` → check timestamp
-- `~/.drewgent/scripts/huly_sync.js` / `.sh`
-- `~/.drewgent/scripts/huly_check.js` / `.sh`
-- `~/.drewgent/scripts/huly_bridge.js` / `.sh`
-- `~/.drewgent/logs/huly-bridge.log`
-- `~/Library/LaunchAgents/ai.drewgent.huly-bridge.plist`
+- `~/.{{AGENT_NAME_LOWER}}/state/huly_last_check.json` → check timestamp
+- `~/.{{AGENT_NAME_LOWER}}/scripts/huly_sync.js` / `.sh`
+- `~/.{{AGENT_NAME_LOWER}}/scripts/huly_check.js` / `.sh`
+- `~/.{{AGENT_NAME_LOWER}}/scripts/huly_bridge.js` / `.sh`
+- `~/.{{AGENT_NAME_LOWER}}/logs/huly-bridge.log`
+- `~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.huly-bridge.plist`
 
 ### Free Tier Limits
 - 10GB storage

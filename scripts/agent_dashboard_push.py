@@ -4,7 +4,7 @@ agent_dashboard_push.py — Collect local agent status and push to Cloudflare da
 
 Runs every 5 minutes via cron. Gathers:
   - System stats (uptime, load, disk, memory)
-  - Launchd services (ai.drewgent.*)
+  - Launchd services (ai.{{AGENT_NAME_LOWER}}.*)
   - Kanban board
   - Cron jobs
   - Network services
@@ -25,10 +25,10 @@ import urllib.request
 import urllib.error
 
 HOME = os.path.expanduser("~")
-DREWGENT = os.path.join(HOME, ".drewgent")
-LOG_FILE = os.path.join(DREWGENT, "logs", "opencode.stderr.log")
-_BACKUP_LOG_FILE = os.path.join(DREWGENT, "logs", "opencode.stderr.log.20260629-144123.bak")
-OLD_LOG_FILE = os.path.join(DREWGENT, "logs", "agent.log")
+AGENT_DIR = os.path.join(HOME, ".{{AGENT_NAME_LOWER}}")
+LOG_FILE = os.path.join(AGENT_DIR, "logs", "opencode.stderr.log")
+_BACKUP_LOG_FILE = os.path.join(AGENT_DIR, "logs", "opencode.stderr.log.20260629-144123.bak")
+OLD_LOG_FILE = os.path.join(AGENT_DIR, "logs", "agent.log")
 
 # Collect all available log files for multi-source reads
 _LOG_SOURCES = []
@@ -49,7 +49,7 @@ _EXTRA_PATH = os.pathsep.join([
 _EXTRA_ENV = {"PATH": _EXTRA_PATH + os.pathsep + os.environ.get("PATH", "")}
 
 # Defaults — override via env or CLI
-ENDPOINT = os.environ.get("AGENT_DASHBOARD_URL", "https://agent-dashboard.humanerd-me.workers.dev")
+ENDPOINT = os.environ.get("AGENT_DASHBOARD_URL", "https://agent-dashboard.YOUR_DOMAIN.workers.dev")
 PUSH_SECRET = os.environ.get("AGENT_DASHBOARD_SECRET", "")
 
 
@@ -117,12 +117,12 @@ def collect_system():
 
 
 def collect_launchd():
-    """Collect ai.drewgent.* launchd services."""
+    """Collect ai.{{AGENT_NAME_LOWER}}.* launchd services."""
     out, _, _ = run("launchctl list 2>/dev/null")
     services = []
     for line in (out.split("\n") if out else []):
         parts = line.strip().split()
-        if len(parts) >= 3 and "ai.drewgent." in parts[2]:
+        if len(parts) >= 3 and "ai.{{AGENT_NAME_LOWER}}." in parts[2]:
             pid_str = parts[0]
             exit_str = parts[1]
             label = parts[2]
@@ -144,7 +144,7 @@ def collect_launchd():
 
 def collect_kanban():
     """Read kanban tasks from SQLite DB."""
-    db_path = os.path.join(DREWGENT, "kanban.db")
+    db_path = os.path.join(AGENT_DIR, "kanban.db")
     if not os.path.exists(db_path):
         return {"total": 0, "blocked": 0, "ready": 0, "todo": 0, "running": 0, "tasks": []}
     try:
@@ -166,7 +166,7 @@ def collect_kanban():
 
 def collect_cron():
     """Read cron jobs from cron/jobs.json."""
-    jobs_path = os.path.join(DREWGENT, "cron", "jobs.json")
+    jobs_path = os.path.join(AGENT_DIR, "cron", "jobs.json")
     if not os.path.exists(jobs_path):
         return {"active": [], "errors": [], "paused": []}
     try:
@@ -233,10 +233,10 @@ def collect_network():
 
 
 def collect_git_status():
-    """Check git status of the drewgent vault."""
-    out, _, _ = run("cd " + DREWGENT + " && git status --porcelain 2>/dev/null | wc -l", timeout=5)
+    """Check git status of the {{AGENT_NAME_LOWER}} vault."""
+    out, _, _ = run("cd " + AGENT_DIR + " && git status --porcelain 2>/dev/null | wc -l", timeout=5)
     uncommitted = out.strip()
-    out, _, _ = run("cd " + DREWGENT + " && git log @{u}..HEAD 2>/dev/null | wc -l", timeout=5)
+    out, _, _ = run("cd " + AGENT_DIR + " && git log @{u}..HEAD 2>/dev/null | wc -l", timeout=5)
     unpushed = out.strip()
     return {
         "uncommitted_files": int(uncommitted) if uncommitted and uncommitted.isdigit() else 0,
@@ -304,7 +304,7 @@ def collect_graph():
     MAX_FILE_SIZE = 100 * 1024  # 100KB
 
     for subdir, layer_tag in layers_to_scan:
-        scan_dir = os.path.join(DREWGENT, subdir) if subdir else DREWGENT
+        scan_dir = os.path.join(AGENT_DIR, subdir) if subdir else AGENT_DIR
         if not os.path.isdir(scan_dir):
             continue
 
@@ -318,7 +318,7 @@ def collect_graph():
         # Limit per layer to avoid explosion
         layer_count = 0
         for fpath in md_files:
-            rel = os.path.relpath(fpath, DREWGENT)
+            rel = os.path.relpath(fpath, AGENT_DIR)
             # Skip hidden dirs, node_modules, .trash, P2
             if any(p in rel for p in ("/.", "/node_modules/", ".trash", "P2-hippocampus",
                                        "__pycache__", ".git/", "venv/", ".venv/")):
@@ -425,7 +425,7 @@ def collect_recent_errors():
     """Parse last 24h of agent log for ERROR/WARNING lines.
     Returns grouped by error type with counts."""
     log_paths = [
-        os.path.join(DREWGENT, "logs", "errors.log"),
+        os.path.join(AGENT_DIR, "logs", "errors.log"),
         LOG_FILE,
         OLD_LOG_FILE,
     ]
@@ -540,7 +540,7 @@ def collect_vault():
     total_human = "?"
     total_bytes = 0
     for dirname, desc in layers:
-        path = os.path.join(DREWGENT, dirname)
+        path = os.path.join(AGENT_DIR, dirname)
         if os.path.isdir(path):
             out, _, _ = run(f"du -sh '{path}' 2>/dev/null | cut -f1")
             size = out.strip() if out else "?"
@@ -936,8 +936,8 @@ def collect_skill_categories():
     """Count skills per category (handles nested skill dirs)."""
     import glob
     cats = {}
-    for fpath in glob.glob(os.path.join(DREWGENT, "skills", "**", "SKILL.md"), recursive=True):
-        rel = os.path.relpath(fpath, os.path.join(DREWGENT, "skills"))
+    for fpath in glob.glob(os.path.join(AGENT_DIR, "skills", "**", "SKILL.md"), recursive=True):
+        rel = os.path.relpath(fpath, os.path.join(AGENT_DIR, "skills"))
         parts = rel.split(os.sep)
         # parts = [category, skill-name, SKILL.md]  or  [skill-name, SKILL.md]
         cat = parts[0] if len(parts) >= 2 else "other"
@@ -1253,10 +1253,10 @@ def collect_live_activity():
 def collect_brain_health():
     """Count brain assets: skills, neuron rules, memory entries."""
     import glob
-    skills = len(glob.glob(os.path.join(DREWGENT, "skills", "**", "SKILL.md"), recursive=True))
-    neurons = len(glob.glob(os.path.join(DREWGENT, "**", "*.neuron"), recursive=True))
+    skills = len(glob.glob(os.path.join(AGENT_DIR, "skills", "**", "SKILL.md"), recursive=True))
+    neurons = len(glob.glob(os.path.join(AGENT_DIR, "**", "*.neuron"), recursive=True))
     memories = 0
-    mem_dir = os.path.join(DREWGENT, "P2-hippocampus", "memories")
+    mem_dir = os.path.join(AGENT_DIR, "P2-hippocampus", "memories")
     if os.path.isdir(mem_dir):
         memories = len([d for d in os.listdir(mem_dir) if os.path.isdir(os.path.join(mem_dir, d))])
     return {
@@ -1342,7 +1342,7 @@ def collect_alerts(system, services, cron_data):
 
     # Gateway watchdog — check the cron job, not the launchd service
     # launchd service is OnDemand (exits immediately), actual watchdog is
-    # the "Drewgent launchd watchdog" cron job running every 5m
+    # the "{{AGENT_NAME}} launchd watchdog" cron job running every 5m
     watchdog_cron = [j for j in cron_data.get("active", [])
                      if "launchd watchdog" in j.get("name", "").lower()]
     watchdog_errors = [j for j in cron_data.get("errors", [])
@@ -1538,7 +1538,7 @@ def main():
     }
 
     # Save to local state file (fallback for dashboard use)
-    state_path = os.path.join(DREWGENT, "agent-dashboard-state.json")
+    state_path = os.path.join(AGENT_DIR, "agent-dashboard-state.json")
     try:
         with open(state_path, "w") as f:
             json.dump({"latest": payload, "pushed_at": ts}, f, indent=2, ensure_ascii=False)

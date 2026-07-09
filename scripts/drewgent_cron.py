@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-drewgent_cron.py — Drewgent cron dispatcher.
+{{AGENT_NAME_LOWER}}_cron.py — {{AGENT_NAME}} cron dispatcher.
 launchd 60초 틱마다 실행. jobs.json을 단일 소스로 사용.
 """
 import os, time, subprocess, json, sys, threading
@@ -10,7 +10,7 @@ _RUNNING_AGENTS = {}
 _RUNNING_LOCK = threading.Lock()
 
 # Load .env file so Discord webhooks and other env vars are available
-dotenv_path = os.path.join(os.path.expanduser("~"), ".drewgent", ".env")
+dotenv_path = os.path.join(os.path.expanduser("~"), ".{{AGENT_NAME_LOWER}}", ".env")
 if os.path.exists(dotenv_path):
     with open(dotenv_path) as f:
         for line in f:
@@ -23,10 +23,10 @@ if os.path.exists(dotenv_path):
             os.environ.setdefault(key, val)
 
 HOME = os.path.expanduser("~")
-DREWGENT = os.path.join(HOME, ".drewgent")
-JOBS_FILE = Path(f"{DREWGENT}/cron/jobs.json")
-STATE_FILE = Path(f"{DREWGENT}/logs/cron_state.json")
-SCRIPTS_DIR = Path(f"{DREWGENT}/scripts")
+AGENT_DIR = os.path.join(HOME, ".{{AGENT_NAME_LOWER}}")
+JOBS_FILE = Path(f"{AGENT_DIR}/cron/jobs.json")
+STATE_FILE = Path(f"{AGENT_DIR}/logs/cron_state.json")
+SCRIPTS_DIR = Path(f"{AGENT_DIR}/scripts")
 
 
 def parse_schedule(job):

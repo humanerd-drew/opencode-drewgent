@@ -1,14 +1,14 @@
 {
   "specVersion": "1.0",
   "host": {
-    "displayName": "Drewgent — AI Agent System",
-    "identifier": "did:web:drewgent.ai",
-    "documentationUrl": "https://github.com/drewgent/drewgent",
+    "displayName": "{{AGENT_NAME}} — AI Agent System",
+    "identifier": "did:web:{{AGENT_NAME_LOWER}}.ai",
+    "documentationUrl": "https://github.com/{{AGENT_NAME_LOWER}}/{{AGENT_NAME_LOWER}}",
     "description": "A multi-agent AI orchestration system with opencode task() subagents + Gajae-Code Coordinator MCP, MCP server integrations, kanban pipeline, and autonomous cron-based operations."
   },
   "entries": [
     {
-      "identifier": "urn:air:drewgent.ai:agent:analyst",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:analyst",
       "displayName": "Analyst",
       "type": "application/opencode-subagent+json",
       "description": "Data analysis agent. Queries kanban DB, git log, knowledge.db for patterns, trends, and insights. Produces structured reports. Read-only on production data.",
@@ -28,7 +28,7 @@
       }
     },
     {
-      "identifier": "urn:air:drewgent.ai:agent:archiver",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:archiver",
       "displayName": "Archiver",
       "type": "application/opencode-subagent+json",
       "description": "Documentation and record-keeping agent. Writes changelogs, updates docs, saves kanban completion summaries. Does NOT implement features.",
@@ -47,7 +47,7 @@
       }
     },
     {
-      "identifier": "urn:air:drewgent.ai:agent:content-manager",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:content-manager",
       "displayName": "Content Manager",
       "type": "application/opencode-subagent+json",
       "description": "CMO-style content agent. Observes recent work activity (sessions, kanban, git), identifies narrative-worthy material, produces blog + X thread + LinkedIn drafts. Maintains narrative arc continuity.",
@@ -66,7 +66,7 @@
       }
     },
     {
-      "identifier": "urn:air:drewgent.ai:agent:designer",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:designer",
       "displayName": "Designer",
       "type": "application/opencode-subagent+json",
       "description": "UI/UX design agent. Creates mockups, SVG assets, components. Uses Lazyweb for references, baseline-ui for conventions. Does NOT implement backend logic.",
@@ -85,7 +85,7 @@
       }
     },
     {
-      "identifier": "urn:air:drewgent.ai:agent:editor",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:editor",
       "displayName": "Editor",
       "type": "application/opencode-subagent+json",
       "description": "Content editing and QA agent. Reviews drafts for tone, voice, clarity, and Korean language quality. Final quality gate before publishing.",
@@ -104,7 +104,7 @@
       }
     },
     {
-      "identifier": "urn:air:drewgent.ai:agent:explorer",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:explorer",
       "displayName": "Explorer",
       "type": "application/opencode-subagent+json",
       "description": "Read-only research and exploration agent. Gathers context, traces call chains, reports patterns. Cannot modify files. ESCALATE capability for hard problems.",
@@ -124,7 +124,7 @@
       }
     },
     {
-      "identifier": "urn:air:drewgent.ai:agent:implementer",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:implementer",
       "displayName": "Implementer",
       "type": "application/opencode-subagent+json",
       "description": "Implementation agent. Writes code, creates files, applies patches. Follows project conventions. Verifies with lint/test after changes.",
@@ -143,7 +143,7 @@
       }
     },
     {
-      "identifier": "urn:air:drewgent.ai:agent:orchestrator",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:orchestrator",
       "displayName": "Orchestrator",
       "type": "application/opencode-subagent+json",
       "description": "Work orchestration and pipeline management. Assigns tasks across agent profiles, tracks progress, resolves blockers. Delegates — does NOT implement.",
@@ -162,7 +162,7 @@
       }
     },
     {
-      "identifier": "urn:air:drewgent.ai:agent:planner",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:planner",
       "displayName": "Planner",
       "type": "application/opencode-subagent+json",
       "description": "Task decomposition and planning agent. Breaks complex goals into atomic, actionable tasks with dependency ordering. Produces structured plans only.",
@@ -181,7 +181,7 @@
       }
     },
     {
-      "identifier": "urn:air:drewgent.ai:agent:reviewer",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:reviewer",
       "displayName": "Reviewer",
       "type": "application/opencode-subagent+json",
       "description": "Code review agent. Reviews changes for logic errors, edge cases, style, security, testing, and over-engineering. Does NOT modify files.",
@@ -201,7 +201,7 @@
       }
     },
     {
-      "identifier": "urn:air:drewgent.ai:agent:reviewer-critical",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:reviewer-critical",
       "displayName": "Reviewer Critical",
       "type": "application/opencode-subagent+json",
       "description": "Critical code review for architecturally significant changes. Architecture integrity, abstraction boundaries, performance, migration strategy. Second set of eyes after standard reviewer.",
@@ -221,7 +221,7 @@
       }
     },
     {
-      "identifier": "urn:air:drewgent.ai:agent:security-reviewer",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:security-reviewer",
       "displayName": "Security Reviewer",
       "type": "application/opencode-subagent+json",
       "description": "Security-focused code review. Audits for injection, crypto misuse, auth bypass, privilege escalation, secret leakage. Blocks release on CRITICAL findings.",
@@ -241,7 +241,7 @@
       }
     },
     {
-      "identifier": "urn:air:drewgent.ai:agent:seo-engineer",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:seo-engineer",
       "displayName": "SEO Engineer",
       "type": "application/opencode-subagent+json",
       "description": "SEO service dedicated development agent. Builds the ~/seo-service/ project exclusively.",
@@ -261,7 +261,7 @@
       }
     },
     {
-      "identifier": "urn:air:drewgent.ai:agent:sre",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:sre",
       "displayName": "SRE",
       "type": "application/opencode-subagent+json",
       "description": "Site Reliability Engineering agent. Manages launchd services, cron jobs, deployment pipelines, and incident response. Read-only first.",
@@ -280,7 +280,7 @@
       }
     },
     {
-      "identifier": "urn:air:drewgent.ai:agent:tester",
+      "identifier": "urn:air:{{AGENT_NAME_LOWER}}.ai:agent:tester",
       "displayName": "Tester",
       "type": "application/opencode-subagent+json",
       "description": "Test agent. Writes and runs tests for implemented code. Verifies correctness before review. Max 2 fix cycles before reporting unrecoverable failure.",

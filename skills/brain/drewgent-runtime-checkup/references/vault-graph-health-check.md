@@ -90,11 +90,11 @@ Obsidian Graph View는 wikilink 기반 시각화. 둘은 보완 관계:
 
 ```bash
 # dangling wikilink 검사 (MEMORY.md 기준)
-bash ~/.hermes/scripts/drewgent_graph_gap_analysis.sh
+bash ~/.hermes/scripts/{{AGENT_NAME_LOWER}}_graph_gap_analysis.sh
 
 # 특정 파일의 inbound link 확인 (GBrain)
 # gbrain removed — use obsidian CLI for backlink checks instead
 
 # Obsidian Graph View = vault를 Obsidian으로 열어서 확인
-open /Users/drew/.drewgent
+open ~/.{{AGENT_NAME_LOWER}}
 ```

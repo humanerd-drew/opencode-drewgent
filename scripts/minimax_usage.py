@@ -3,14 +3,14 @@
 minimax-usage — Token Plan 사용량/리셋 터미널 표시.
 
 API: GET https://api.minimax.io/v1/api/openplatform/coding_plan/remains
-Auth: MINIMAX_API_KEY (~/.drewgent/.env)
+Auth: MINIMAX_API_KEY (~/.{{AGENT_NAME_LOWER}}/.env)
 
 출력: model별 (general, video) 현재 5h interval + 주간 사용량/리셋까지 남은 시간.
 
 사용법:
-    ~/.drewgent/scripts/minimax_usage.py            # 컬러 출력
-    ~/.drewgent/scripts/minimax_usage.py --json     # machine-readable
-    ~/.drewgent/scripts/minimax_usage.py --watch 30 # 30초마다 refresh (Ctrl-C 종료)
+    ~/.{{AGENT_NAME_LOWER}}/scripts/minimax_usage.py            # 컬러 출력
+    ~/.{{AGENT_NAME_LOWER}}/scripts/minimax_usage.py --json     # machine-readable
+    ~/.{{AGENT_NAME_LOWER}}/scripts/minimax_usage.py --watch 30 # 30초마다 refresh (Ctrl-C 종료)
 """
 from __future__ import annotations
 
@@ -27,8 +27,8 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 API_URL = "https://api.minimax.io/v1/api/openplatform/coding_plan/remains"
-ENV_PATH = Path.home() / ".drewgent" / ".env"
-DEFAULT_CACHE_PATH = Path.home() / ".drewgent" / "cache" / "minimax_usage.json"
+ENV_PATH = Path.home() / ".{{AGENT_NAME_LOWER}}" / ".env"
+DEFAULT_CACHE_PATH = Path.home() / ".{{AGENT_NAME_LOWER}}" / "cache" / "minimax_usage.json"
 DEFAULT_CACHE_TTL = 60  # seconds
 
 # ANSI colors (auto-disabled if NO_COLOR set or stdout not a tty)
@@ -101,7 +101,7 @@ def fmt_epoch_ms(ms: int | None) -> str:
 
 
 def load_api_key() -> str | None:
-    """Read MINIMAX_API_KEY from ~/.drewgent/.env (no shell sourcing needed)."""
+    """Read MINIMAX_API_KEY from ~/.{{AGENT_NAME_LOWER}}/.env (no shell sourcing needed)."""
     if not ENV_PATH.is_file():
         return None
     for line in ENV_PATH.read_text().splitlines():
@@ -359,7 +359,7 @@ def main() -> int:
 
     # --- Pretty / json / watch modes need API key + interactive loop ---
     if not api_key:
-        print(red("error: MINIMAX_API_KEY not found in ~/.drewgent/.env"), file=sys.stderr)
+        print(red("error: MINIMAX_API_KEY not found in ~/.{{AGENT_NAME_LOWER}}/.env"), file=sys.stderr)
         return 1
 
     while True:

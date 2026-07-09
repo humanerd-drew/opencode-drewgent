@@ -3,7 +3,7 @@ title: baseline-ui
 name: baseline-ui
 domain: software-development
 type: skill
-description: "Drewgent consolidated UI baseline: coherence (one-choice-per-axis), spacing, hierarchy, typography, color, icon discipline, layout, interaction, accessibility, motion performance, HTML semantics, and SEO metadata. Load for ANY frontend work."
+description: "{{AGENT_NAME}} consolidated UI baseline: coherence (one-choice-per-axis), spacing, hierarchy, typography, color, icon discipline, layout, interaction, accessibility, motion performance, HTML semantics, and SEO metadata. Load for ANY frontend work."
 tags: [ui, design, css, html, accessibility, seo, motion, frontend]
 created: 2026-06-17
 updated: 2026-06-17
@@ -19,7 +19,7 @@ links:
 
 # Baseline UI
 
-Drewgent's consolidated UI quality bar for all frontend work. Use this on its own or before loading other UI skills.
+{{AGENT_NAME}}'s consolidated UI quality bar for all frontend work. Use this on its own or before loading other UI skills.
 
 ## When to Apply
 

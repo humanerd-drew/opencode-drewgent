@@ -49,7 +49,7 @@ auxiliary:
     model: "deepseek-v4-flash"
 ```
 
-### Agent Profiles (`~/.drewgent/agents/*.md`)
+### Agent Profiles (`~/.{{AGENT_NAME_LOWER}}/agents/*.md`)
 
 8 pre-defined roles, each with model/provider/toolsets/instructions. Loaded via `task(subagent_type="reviewer", description="...", prompt="...")`. The `subagent_type` parameter is built into the `task` tool schema — every agent sees it.
 

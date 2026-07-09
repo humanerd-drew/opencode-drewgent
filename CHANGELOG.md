@@ -28,7 +28,7 @@ All notable changes to opencode-drewgent are documented here.
 - **sync-template.sh**: Replaces push-template.sh. Simple cp + sanitize + commit + push.
 - **@identity/ restored**: SELF_MODEL, rules, persona, writing-style-guide included.
 - **README reordered**: Quick Start moved above Philosophy. wordpress-mcp-server.js references removed.
-- **Private repo**: `humanerd-drew/drewgent` now tracks the full private agent source.
+- **Private repo**: Maintained separately from the public template.
 
 ---
 

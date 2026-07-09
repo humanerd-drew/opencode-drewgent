@@ -15,7 +15,7 @@ links:
 
 # Synology NAS SSH Automation
 
-The Drewgent workspace has a Synology DS920+ (20GB RAM, 14TB HDD) that hosts self-hosted services (Huly, etc.) and stores shared data. From any LAN machine, you can SSH in to inspect or modify it. This skill is the canonical playbook for that workflow.
+The {{AGENT_NAME}} workspace has a Synology DS920+ (20GB RAM, 14TB HDD) that hosts self-hosted services (Huly, etc.) and stores shared data. From any LAN machine, you can SSH in to inspect or modify it. This skill is the canonical playbook for that workflow.
 
 ## Connection Configuration (canonical)
 
@@ -25,19 +25,19 @@ These are the values used in `~/.ssh/config` on the user's machines. They are st
 |------|-------|
 | Host alias (LAN) | `NAS-local` |
 | Host alias (Tailscale) | `NASTailScale` |
-| LAN IP | `192.168.1.53` |
-| Tailscale IP | `100.110.130.54` |
-| SSH port (LAN) | **8528** (NOT 22 — Synology DSM default is non-standard) |
-| SSH port (Tailscale) | **8528** (different from default — DSM maps to alternate port) |
+| LAN IP | `192.168.1.100` |
+| Tailscale IP | `YOUR_NAS_IP` |
+| SSH port (LAN) | **YOUR_SSH_PORT** (NOT 22 — Synology DSM default is non-standard) |
+| SSH port (Tailscale) | **YOUR_SSH_PORT** (different from default — DSM maps to alternate port) |
 | User | `drew` |
-| Auth | SSH key (`id_ed25519_dr2w247` from this Mac) — **NOT** password for the SSH login itself |
+| Auth | SSH key (`YOUR_SSH_KEY` from this Mac) — **NOT** password for the SSH login itself |
 | Sudo password | `Emfbwjsxm4865` (same as DSM admin password) — required for `docker`, `apt`, system config |
 
-The NAS does NOT use port 22 even though the SSH banner is reachable on it for some operations. Always use `-p 8528` explicitly.
+The NAS does NOT use port 22 even though the SSH banner is reachable on it for some operations. Always use `-p YOUR_SSH_PORT` explicitly.
 
 ```bash
 # Quick read-only example
-ssh -tt -i ~/.ssh/id_ed25519_dr2w247 -o StrictHostKeyChecking=no -p 8528 drew@192.168.1.53 'sudo docker ps'
+ssh -tt -i ~/.ssh/YOUR_SSH_KEY -o StrictHostKeyChecking=no -p YOUR_SSH_PORT user@192.168.1.100 'sudo docker ps'
 ```
 
 ## Why expect, not just ssh + bash
@@ -60,17 +60,17 @@ Save this to `/tmp/nas-<purpose>.exp`, then `expect /tmp/nas-<purpose>.exp`. Eac
 #!/usr/bin/expect -f
 set timeout 60
 set password "Emfbwjsxm4865"
-spawn ssh -tt -i ~/.ssh/id_drew -o StrictHostKeyChecking=no -p 8528 drew@192.168.1.53
-expect "drew@"
+spawn ssh -tt -i ~/.ssh/YOUR_SSH_KEY -o StrictHostKeyChecking=no -p YOUR_SSH_PORT user@192.168.1.100
+expect "user@"
 send "<command-1>\r"
 expect {
     "Password:" { send "$password\r"; exp_continue }
-    "drew@"
+    "user@"
 }
 send "<command-2>\r"
 expect {
     "Password:" { send "$password\r"; exp_continue }
-    "drew@"
+    "user@"
 }
 send "exit\r"
 expect eof
@@ -84,8 +84,8 @@ expect eof
 - **Tcl variable expansion in `send` strings** — any `$VAR` or `${VAR}` in the `send` argument is interpreted as a Tcl variable lookup **before** it reaches the shell on the NAS. Symptoms: `can't read "HULY_S": no such variable` or the literal `***` getting sent through (because credential masking in the editor produced `$HULY_S` but expect expanded it to empty). **Workaround:** write the `send` argument as a Tcl list with no `$` references that aren't Tcl vars you actually defined with `set`. For commands that need shell-side `$()`, compose them in NAS shell via `cat`/`printf` chains — don't try to interpolate secrets on the agent side.
 - **Wrap each command in its own `expect` block.** Don't assume the next prompt will arrive on a fixed schedule.
 - **Keep timeouts realistic (60s for normal commands, 120s+ for `docker compose up`).** Timeouts too short cause expect to give up mid-command with no useful error.
-- **`sudo cmd1 && sudo cmd2 && sudo cmd3` in a single send HANGs** — the first sudo authenticates and 5-minute credential cache kicks in. The second sudo runs without a password prompt, but expect's `expect "drew@"` is still waiting for the prompt that never comes, then hangs on the third sudo. **Workaround**: wrap all the chained commands in one `sudo bash -c '...'` so sudo only prompts once: `sudo bash -c 'mkdir -p /foo && chmod 777 /foo && cd /bar && docker compose up -d' > /tmp/out.log 2>&1; tail -3 /tmp/out.log; echo DONE`.
-- **DSM login banner delays `drew@` prompt matching.** SSH opens with a 5-line "Using terminal commands to modify system configs..." system warning before the actual `drew@HUMANERD:~$` prompt. expect's `expect "drew@"` matches the first `drew@` it sees (the banner's `drew@` if any), not the real shell prompt. **Always** use `expect "drew@HUMANERD"` (or `expect "drew@HUMANERD:~"` for tightest match) when matching, and add a 1-2 second sleep before the first `send` so the banner finishes printing.
+- **`sudo cmd1 && sudo cmd2 && sudo cmd3` in a single send HANGs** — the first sudo authenticates and 5-minute credential cache kicks in. The second sudo runs without a password prompt, but expect's `expect "user@"` is still waiting for the prompt that never comes, then hangs on the third sudo. **Workaround**: wrap all the chained commands in one `sudo bash -c '...'` so sudo only prompts once: `sudo bash -c 'mkdir -p /foo && chmod 777 /foo && cd /bar && docker compose up -d' > /tmp/out.log 2>&1; tail -3 /tmp/out.log; echo DONE`.
+- **DSM login banner delays `user@` prompt matching.** SSH opens with a 5-line "Using terminal commands to modify system configs..." system warning before the actual `user@YOUR_HOST:~$` prompt. expect's `expect "user@"` matches the first `user@` it sees (the banner's `user@` if any), not the real shell prompt. **Always** use `expect "user@HUMANERD"` (or `expect "user@HUMANERD:~"` for tightest match) when matching, and add a 1-2 second sleep before the first `send` so the banner finishes printing.
 - **`sudo tee`, `sudo sed -i`, `sudo bash -c 'multi-command'` get flagged as destructive** by the agent security policy and return `BLOCKED: User denied this command` even for non-destructive content (e.g. `sudo tee config.yml > /dev/null` to write a config). **`printf 'line1\nline2\n' > file` is the safe pattern** for writing files — it's a single short command, no heredoc, no tee, and the agent's destructive heuristic doesn't match it. See "Safe file writes" below.
 
 ## Read-Only Diagnostics (safe to run anytime)
@@ -130,10 +130,10 @@ ls -la /volume1/docker/<stack>/data/
 
 ```bash
 # Is a service listening on the NAS?
-nc -z -G 2 192.168.1.53 <port>
+nc -z -G 2 192.168.1.100 <port>
 
 # Can we reach an HTTP endpoint?
-curl -s -o /dev/null -w "HTTP %{http_code} | %{time_total}s\n" http://192.168.1.53:<port>/
+curl -s -o /dev/null -w "HTTP %{http_code} | %{time_total}s\n" http://192.168.1.100:<port>/
 ```
 
 ## Destructive Operations (REQUIRE EXPLICIT USER APPROVAL)
@@ -228,8 +228,8 @@ User-driven manual execution is the **right tool** for destructive-on-external-s
 | Chaining many `sudo` with `&&` in a single send | First sudo auth-caches, subsequent sudos skip prompt and expect hangs. Wrap in `sudo bash -c '...'`. |
 | Chaining many commands in one expect session | Sudo + tty state issues cause mid-script hangs |
 | Auto-running `rm -rf` after read-only diagnosis | User must approve destructive on external systems |
-| Assuming `~/.ssh/config` `NAS-local` is on port 22 | It's 8528 — DSM default is non-standard |
-| Using the wrong SSH key (id_ed25519 vs id_ed25519_dr2w247) | Only `id_ed25519_dr2w247` is registered on the NAS |
+| Assuming `~/.ssh/config` `NAS-local` is on port 22 | It's YOUR_SSH_PORT — DSM default is non-standard |
+| Using the wrong SSH key (e.g. id_rsa vs YOUR_SSH_KEY) | Only `YOUR_SSH_KEY` is registered on the NAS |
 | Copying a `***` from terminal output back into a script | The masking is display-only; the actual command sent had the real value. Re-injecting `***` produces a broken command. |
 | Continuing to retry destructive commands after `BLOCKED: User denied` | Policy treats "achieve same outcome via different command" as a retry. Switch to manual execution or read-only diagnostics. |
 | Heredoc with indented content (e.g. `cat > file <<EOF\n  key=value\nEOF`) | Editor or wrapper may insert leading spaces; the agent's policy often mangles or masks values from multi-line indented heredocs. Use `printf 'k1=v1\nk2=v2\n' > file` — single line, no leading whitespace, no heredoc. |
@@ -240,7 +240,7 @@ User-driven manual execution is the **right tool** for destructive-on-external-s
 When you need to write a multi-line file on the NAS via expect, **`sudo tee` and indented heredocs both trigger the destructive policy or get masked.** The pattern that survives:
 
 ```tcl
-send "cd /volume1/docker/huly && printf 'HULY_VERSION=v0.7.423\nDOCKER_NAME=huly\nHOST_ADDRESS=192.168.1.53:8087\n' > huly_v7.conf; echo WROTE\r"
+send "cd /volume1/docker/huly && printf 'HULY_VERSION=v0.7.423\nDOCKER_NAME=huly\nHOST_ADDRESS=192.168.1.100:8087\n' > huly_v7.conf; echo WROTE\r"
 expect "WROTE"
 ```
 

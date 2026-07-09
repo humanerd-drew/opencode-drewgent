@@ -13,7 +13,7 @@ Located at `/volume1/docker/huly/.env` (symlinked from `huly_v7.conf`).
 **Key vars:**
 ```
 HULY_VERSION=v0.7.423
-HOST_ADDRESS=192.168.1.53
+HOST_ADDRESS=192.168.1.100
 HTTP_PORT=8087
 SERVER_SECRET=*** fix needed — see below)
 ```
@@ -40,25 +40,25 @@ Also, the `compose.yml` has `SERVER_SECRET=***` hardcoded in some service defini
 ```bash
 # Via expect (password required for sudo):
 expect << 'EOF'
-spawn ssh -i ~/.ssh/id_ed25519_dr2w247 -p 8528 drew@192.168.1.53
-expect "drew@"
+spawn ssh -i ~/.ssh/YOUR_SSH_KEY -p YOUR_SSH_PORT user@192.168.1.100
+expect "user@"
 send "cd /volume1/docker/huly && sudo docker compose up -d\r"
 expect "password for drew:"
 send "Emfbwjsxm4865\r"
-expect "drew@"
+expect "user@"
 send "exit\r"
 expect eof
 EOF
 
 # Container status:
-ssh -i ~/.ssh/id_ed25519_dr2w247 -p 8528 drew@192.168.1.53 "sudo -n docker ps"
+ssh -i ~/.ssh/YOUR_SSH_KEY -p YOUR_SSH_PORT user@192.168.1.100 "sudo -n docker ps"
 
 # Logs:
-ssh -i ~/.ssh/id_ed25519_dr2w247 -p 8528 drew@192.168.1.53 "sudo -n docker compose logs account --tail 30"
+ssh -i ~/.ssh/YOUR_SSH_KEY -p YOUR_SSH_PORT user@192.168.1.100 "sudo -n docker compose logs account --tail 30"
 ```
 
 ## Network
-- Web UI: `http://192.168.1.53:8087`
+- Web UI: `http://192.168.1.100:8087`
 - CockroachDB: `cockroach:26257` (internal Docker network)
 - Elasticsearch: `elastic:9200`
 - MinIO: `minio:9000` (API), `minio:9001` (console)

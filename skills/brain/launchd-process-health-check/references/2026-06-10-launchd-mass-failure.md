@@ -5,27 +5,27 @@ Session-specific detail captured during the 2026-06-10 status checkup. Used to g
 ## Snapshot at 2026-06-10 15:35 KST
 
 ```
-$ launchctl list | grep drewgent
--	0	ai.drewgent.cron-runner
--	1	com.drewgent.quartz-deploy
-1543	0	ai.drewgent.kanban-dashboard
--	0	com.drewgent.quartz-fswatch
--	64	com.drewgent.nas-mount
+$ launchctl list | grep {{AGENT_NAME_LOWER}}
+-	0	ai.{{AGENT_NAME_LOWER}}.cron-runner
+-	1	com.{{AGENT_NAME_LOWER}}.quartz-deploy
+1543	0	ai.{{AGENT_NAME_LOWER}}.kanban-dashboard
+-	0	com.{{AGENT_NAME_LOWER}}.quartz-fswatch
+-	64	com.{{AGENT_NAME_LOWER}}.nas-mount
 ```
 
-Five drewgent services; only `kanban-dashboard` (PID 1543) had a real PID. Four had `-` (dead). The fact that no service had crashed and recovered — no pattern of "died, restarted" — tells us KeepAlive was not actually keeping them up.
+Five {{AGENT_NAME_LOWER}} services; only `kanban-dashboard` (PID 1543) had a real PID. Four had `-` (dead). The fact that no service had crashed and recovered — no pattern of "died, restarted" — tells us KeepAlive was not actually keeping them up.
 
 ## Per-service findings
 
 | Service | launchctl state | Last log mtime | Symptom |
 |---|---|---|---|
-| `ai.drewgent.cron-runner` | PID=- exit 0 | cron-runner.log absent (no per-tick logging) | All jobs.json last_run_at stuck at 2026-05-19 |
-| `ai.drewgent.n8n` | PID=- (no row even) | n8n.log mtime 2026-06-04 16:41, ends with "Received SIGTERM. Shutting down..." | Port 5678 not listening |
-| `com.drewgent.quartz-fswatch` | active count = 0, "not running" | unknown | Source path `~/humanerd` missing entirely |
-| `com.drewgent.quartz-deploy` | "spawn scheduled" (not yet attempted) | unknown | Same source-path issue; deploy never got to its 5s debounce |
-| `ai.drewgent.kanban-dashboard` | running PID 1543 | log mtime 6/10 (alive) | Port 5555 returns HTTP 000 — process alive but socket not bound |
+| `ai.{{AGENT_NAME_LOWER}}.cron-runner` | PID=- exit 0 | cron-runner.log absent (no per-tick logging) | All jobs.json last_run_at stuck at 2026-05-19 |
+| `ai.{{AGENT_NAME_LOWER}}.n8n` | PID=- (no row even) | n8n.log mtime 2026-06-04 16:41, ends with "Received SIGTERM. Shutting down..." | Port 5678 not listening |
+| `com.{{AGENT_NAME_LOWER}}.quartz-fswatch` | active count = 0, "not running" | unknown | Source path `~/YOUR_SITE` missing entirely |
+| `com.{{AGENT_NAME_LOWER}}.quartz-deploy` | "spawn scheduled" (not yet attempted) | unknown | Same source-path issue; deploy never got to its 5s debounce |
+| `ai.{{AGENT_NAME_LOWER}}.kanban-dashboard` | running PID 1543 | log mtime 6/10 (alive) | Port 5555 returns HTTP 000 — process alive but socket not bound |
 
-## jobs.json state (sample, from `~/.drewgent/cron/jobs.json`)
+## jobs.json state (sample, from `~/.{{AGENT_NAME_LOWER}}/cron/jobs.json`)
 
 ```json
 {
@@ -44,7 +44,7 @@ Five drewgent services; only `kanban-dashboard` (PID 1543) had a real PID. Four 
 
 Memory entry dated 2026-06-01:
 
-> "Drewgent cron infra — cron-runner (`ai.drewgent.cron-runner` + `scripts/cron_runner.py`)는 3 board dispatcher만. jobs.json cron expression (SEO/Trend/kanban-maintenance/cron-output-cleanup)은 별도 process (gateway 내부 scheduler?). 두 in-memory state 분리. **jobs.json 신규 entry는 in-memory state에 안 들어감** — patch로 next_run_at set해도 dispatch 안 됨. fix: process restart. plist: StartInterval=60, **KeepAlive 없음** (60초 공백)."
+> "{{AGENT_NAME}} cron infra — cron-runner (`ai.{{AGENT_NAME_LOWER}}.cron-runner` + `scripts/cron_runner.py`)는 3 board dispatcher만. jobs.json cron expression (SEO/Trend/kanban-maintenance/cron-output-cleanup)은 별도 process (gateway 내부 scheduler?). 두 in-memory state 분리. **jobs.json 신규 entry는 in-memory state에 안 들어감** — patch로 next_run_at set해도 dispatch 안 됨. fix: process restart. plist: StartInterval=60, **KeepAlive 없음** (60초 공백)."
 
 Read literally, this says "5/30 fix 복구됨" and describes the in-memory state quirk as a known limitation with a known workaround (process restart). But there was no follow-through evidence: no record of the restart being performed after 6/1, no `cron-runner.log` mtime indicating recent activity, no `cron/output/*/` files newer than 6/5.
 
@@ -62,13 +62,13 @@ The 6/1 incident doc (`P6-prefrontal/incidents/cron-runner-launchd-detached-2026
 ## Concrete fix sequence (for the next session that picks up this incident)
 
 1. **Add `KeepAlive: { SuccessfulExit: false, ThrottleInterval: 10 }` to every plist** that has bare `<true/>` or no `KeepAlive` at all. Current candidates:
-   - `~/Library/LaunchAgents/ai.drewgent.cron-runner.plist` (no KeepAlive per memory)
-   - `~/Library/LaunchAgents/ai.drewgent.n8n.plist` (had `<true/>` per memory — bare form, vulnerable to SIGTERM→exit0 trap)
-   - `~/Library/LaunchAgents/com.drewgent.quartz-fswatch.plist`
-   - `~/Library/LaunchAgents/com.drewgent.quartz-deploy.plist`
-   - `~/Library/LaunchAgents/ai.drewgent.kanban-dashboard.plist`
+   - `~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.cron-runner.plist` (no KeepAlive per memory)
+   - `~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.n8n.plist` (had `<true/>` per memory — bare form, vulnerable to SIGTERM→exit0 trap)
+   - `~/Library/LaunchAgents/com.{{AGENT_NAME_LOWER}}.quartz-fswatch.plist`
+   - `~/Library/LaunchAgents/com.{{AGENT_NAME_LOWER}}.quartz-deploy.plist`
+   - `~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.kanban-dashboard.plist`
 2. **Register the watchdog cron** in the main SKILL.md — no_agent=True, every 5 min, Discord webhook
-3. **Resolve Quartz source path** — `~/humanerd` is gone; need to pick one of `~/Sites/quartz` vs `~/.drewgent/humanerd-site` as canonical, symlink the other, then fix fswatch script to use the symlink
+3. **Resolve Quartz source path** — `~/YOUR_SITE` is gone; need to pick one of `~/Sites/quartz` vs `~/.{{AGENT_NAME_LOWER}}/YOUR_SITE` as canonical, symlink the other, then fix fswatch script to use the symlink
 4. **Patch all stale `next_run_at` to `now-5s`** in jobs.json AFTER gateway restart (the in-memory state still won't pick this up — need to restart gateway once after the fix)
 5. **Write a 2026-06-10 incident doc** at `P6-prefrontal/incidents/cron-runner-launchd-detached-20260610.md` (or similar) so the 6/1 doc gets a "see also" and the gap is documented
 6. **Update memory entry** for the 5/30 cron incident — annotate that the fix was incomplete (in-memory state) and the actual sustained-recovery verification was never performed

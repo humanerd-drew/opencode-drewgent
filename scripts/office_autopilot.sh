@@ -3,9 +3,9 @@
 # Picks one pending task, dispatches via OmO Sisyphus orchestrator.
 set -e
 
-DB="$HOME/.drewgent/kanban.db"
-PID_FILE="$HOME/.drewgent/.ultrawork.pid"
-LOG="$HOME/.drewgent/logs/office-autopilot.log"
+DB="$HOME/.{{AGENT_NAME_LOWER}}/kanban.db"
+PID_FILE="$HOME/.{{AGENT_NAME_LOWER}}/.ultrawork.pid"
+LOG="$HOME/.{{AGENT_NAME_LOWER}}/logs/office-autopilot.log"
 
 # === DUPLICATE SPAWN GUARD ===
 # Only one ultrawork at a time — token limit 방지
@@ -37,7 +37,7 @@ TASK_TITLE=$(echo "$TASK" | cut -d'|' -f2)
 
 echo "[$(date '+%Y-%m-%d %H:%M')] Dispatching 1 task: $TASK_TITLE ($TASK_ID)" >> "$LOG"
 
-ULTRALOG="$HOME/.drewgent/logs/ultrawork-$(date '+%Y%m%d-%H%M%S').log"
+ULTRALOG="$HOME/.{{AGENT_NAME_LOWER}}/logs/ultrawork-$(date '+%Y%m%d-%H%M%S').log"
 opencode run --attach http://localhost:8642 \
   "ultrawork: process ONE kanban task.
 

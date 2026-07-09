@@ -26,7 +26,7 @@ content-manager → draft → create_issue via Huly MCP (status: "In Progress")
 - **Package:** `@bgx4k3p/huly-mcp-server@latest`
 - **Version:** v2.4.3
 - **Tools:** 81 total
-- **Workspace:** `humanerd` (huly.app)
+- **Workspace:** `YOUR_WORKSPACE` (huly.app)
 - **Auth:** `HULY_KEY` from `~/.hermes/.env`
 
 ### Key Tools for Content Review
@@ -56,7 +56,7 @@ This differs from the custom WordPress MCP server which uses `list_tools` for si
 # Set env
 HULY_KEY="$(grep '^HULY_KEY=' ~/.hermes/.env | head -1 | sed 's/^HULY_KEY=//' | tr -d '\"[:space:]')"
 export HULY_URL="https://huly.app"
-export HULY_WORKSPACE="humanerd"
+export HULY_WORKSPACE="YOUR_WORKSPACE"
 export HULY_TOKEN="$HULY_KEY"
 
 # List tools

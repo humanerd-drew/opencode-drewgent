@@ -71,7 +71,7 @@ cp example-huly.conf huly_v7.conf
 # Edit huly_v7.conf: HOST_ADDRESS, HTTP_PORT, CR_USERNAME, CR_USER_PASSWORD
 sudo bash setup.sh --secret   # generates SECRET=*** in huly_v7.conf
 sudo bash setup.sh --quick    # generates nginx.conf + docker compose up -d
-# Wait 60 seconds. http://192.168.1.53:8087 is live.
+# Wait 60 seconds. http://192.168.1.100:8087 is live.
 ```
 
 The reference `setup.sh` **already** has the cr_certs init container logic integrated (it adds a hidden init container at runtime that creates the certs and the huly user). Our manual add of `cr_certs_init` / `cr_huly_user` is reinventing what upstream already solved. The 5-hour debugging session (2026-06-15) was entirely unnecessary — `setup.sh --quick` would have done it in 5 minutes.
@@ -88,7 +88,7 @@ Future re-deploys should use the upstream `setup.sh` and apply only the env-spec
 | account service loops `ECONNREFUSED 192.168.48.X:26257` | cr_huly_user init didn't run (cert issue or compose path wrong), so huly user/db was never created | Verify cr_certs init completed, then `sudo docker compose ps` should show cr_huly_user as `Exited (0)` not `Restarting` |
 | `Require key` in account logs (JWT signing fails) | compose expects `SECRET` env var, stock .env only has `SERVER_SECRET` | Add `SECRET=*** to .env or copy `SERVER_SECRET` to `SECRET` |
 | `Sorry, try again.` in expect after `send -- "$password\r"` (race condition) | sudo's prompt takes longer than expect's `sleep N` to render; expect sends the password before sudo is ready, sudo rejects it | Use `sleep 2` (not 1) and `send -- "$password\n"` (not `\r`); if still failing, the issue is `tty` setup (use `-tt` not `-T`) |
-| expect hangs after multi-sudo `&&` chained command | second `sudo` doesn't prompt (cache), expect's `expect "drew@"` waits for next prompt that never comes | Either split into single `sudo` per expect round-trip, or use `sudo bash -c '...'` to wrap the chain in one sudo |
+| expect hangs after multi-sudo `&&` chained command | second `sudo` doesn't prompt (cache), expect's `expect "user@"` waits for next prompt that never comes | Either split into single `sudo` per expect round-trip, or use `sudo bash -c '...'` to wrap the chain in one sudo |
 
 ## Drawer checklist — when NOT to write a custom expect script
 

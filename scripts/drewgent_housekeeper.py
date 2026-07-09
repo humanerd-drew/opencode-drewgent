@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Drewgent system housekeeper — monitors, diagnoses, cleans.
+"""{{AGENT_NAME}} system housekeeper — monitors, diagnoses, cleans.
 
 Cron schedule:
   *:00  — Light check (every hour)
@@ -12,7 +12,7 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-DREW_HOME = Path(os.environ.get("DREW_HOME", str(Path.home() / ".drewgent")))
+DREW_HOME = Path(os.environ.get("DREW_HOME", str(Path.home() / ".{{AGENT_NAME_LOWER}}")))
 SCRIPTS = DREW_HOME / "scripts"
 CRON_DIR = DREW_HOME / "cron"
 LOGS = DREW_HOME / "logs"
@@ -98,8 +98,8 @@ def check_tmux():
 def check_launchd():
     """Check core services."""
     r = subprocess.run(["launchctl", "list"], capture_output=True, text=True, timeout=5)
-    services = {"ai.drewgent.opencode", "ai.drewgent.discord-bot",
-                "ai.drewgent.cron", "ai.drewgent.cloudflared-wp"}
+    services = {"ai.{{AGENT_NAME_LOWER}}.opencode", "ai.{{AGENT_NAME_LOWER}}.discord-bot",
+                "ai.{{AGENT_NAME_LOWER}}.cron", "ai.{{AGENT_NAME_LOWER}}.cloudflared-wp"}
     running = set()
     dead = []
     for line in r.stdout.strip().split("\n"):

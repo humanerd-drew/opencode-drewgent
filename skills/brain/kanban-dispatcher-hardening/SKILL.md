@@ -1,26 +1,26 @@
 ---
 name: kanban-dispatcher-hardening
 title: kanban-dispatcher-hardening
-description: Drewgent kanban dispatcher의 logfile redirect + dead worker watchdog 적용 skill. PIPE deadlock 회피, dead worker 즉시 reclaim.
+description: {{AGENT_NAME}} kanban dispatcher의 logfile redirect + dead worker watchdog 적용 skill. PIPE deadlock 회피, dead worker 즉시 reclaim.
 type: skill
 space: knowledge
 tags: [P3, sensors, kanban, dispatcher, watchdog, logfile, operational]
 created: 2026-06-01
 updated: 2026-06-01
 links:
-  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁kanban_worker_accountability.neuron]]"
+  - "[[@identity/brain/{{AGENT_NAME}}-brain/P0-brainstem/禁/禁kanban_worker_accountability.neuron]]"
   - "[[@memory/kanban/KANBAN_INDEX]]"
   - "[[@memory/growth/KANBAN-USER-GUIDE]]"
   - "[[@identity/brain/rules]]"---
 
 # kanban-dispatcher-hardening
 
-Drewgent kanban dispatcher의 두 가지 운영 hardening 적용 skill.
+{{AGENT_NAME}} kanban dispatcher의 두 가지 운영 hardening 적용 skill.
 
 **적용 대상**:
-- `~/.drewgent/scripts/dispatch_once_default.py`
-- `~/.drewgent/scripts/dispatch_once_content.py`
-- `~/.drewgent/scripts/dispatch_once_integrations.py`
+- `~/.{{AGENT_NAME_LOWER}}/scripts/dispatch_once_default.py`
+- `~/.{{AGENT_NAME_LOWER}}/scripts/dispatch_once_content.py`
+- `~/.{{AGENT_NAME_LOWER}}/scripts/dispatch_once_integrations.py`
 
 3개 파일 모두 동일 패턴으로 적용.
 
@@ -51,7 +51,7 @@ logf.close()  # Popen이 fd 상속 — parent close 안전
 ### 디버깅
 ```bash
 # worker output 실시간 확인
-tail -f ~/.drewgent/P4-cortex/scripts/kanban/logs/workers/<task_id>.log
+tail -f ~/.{{AGENT_NAME_LOWER}}/P4-cortex/scripts/kanban/logs/workers/<task_id>.log
 ```
 
 ---
@@ -139,7 +139,7 @@ watchdog_reclaimed=N | ttl_reclaimed=M | claimed=K | spawned=L
 ### 1. AST 검증
 ```bash
 for f in dispatch_once_default dispatch_once_content dispatch_once_integrations; do
-  python3 -c "import ast; ast.parse(open('/Users/drew/.drewgent/scripts/${f}.py').read()); print('${f}: AST OK')"
+  python3 -c "import ast; ast.parse(open('~/.{{AGENT_NAME_LOWER}}/scripts/${f}.py').read()); print('${f}: AST OK')"
 done
 ```
 
@@ -149,8 +149,8 @@ import sqlite3, subprocess
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 
-DB = Path.home() / '.drewgent' / 'P2-hippocampus' / 'kanban' / 'state' / 'drewgent_tasks.db'
-DREW_HOME = Path.home() / '.drewgent'
+DB = Path.home() / '.{{AGENT_NAME_LOWER}}' / 'P2-hippocampus' / 'kanban' / 'state' / '{{AGENT_NAME_LOWER}}_tasks.db'
+DREW_HOME = Path.home() / '.{{AGENT_NAME_LOWER}}'
 
 # Fake dead worker: in_progress + worker_pid=99999 (절대 안 쓰는 PID)
 fake_pid = 99999
@@ -187,13 +187,13 @@ conn.commit()
 
 ### 문제
 
-`scheduler.py:tick()`가 `for job in due_jobs:`에서 **순차 실행**. LLM 기반 cron job (kanban-dispatcher, `d1ef68ced116`) 이 먼저 실행되면 script 기반 dispatcher (`drewgent-cron-runner-001`)가 그 뒤에서 **block**됨. LLM job이 `task_qa_gate` neuron contract phase에서 hang → 전체 tick stall, 15-26분간 dispatcher 0 fire.
+`scheduler.py:tick()`가 `for job in due_jobs:`에서 **순차 실행**. LLM 기반 cron job (kanban-dispatcher, `d1ef68ced116`) 이 먼저 실행되면 script 기반 dispatcher (`{{AGENT_NAME_LOWER}}-cron-runner-001`)가 그 뒤에서 **block**됨. LLM job이 `task_qa_gate` neuron contract phase에서 hang → 전체 tick stall, 15-26분간 dispatcher 0 fire.
 
 ### 발견된 패턴
 
 1. `d1ef68ced116` (kanban-dispatcher, LLM agent job)가 `tick()` loop에서 먼저 실행
 2. `run_job()`이 AIAgent 호출 → `task_qa_gate` neuron `contract.json` 없음 → **QA gate FAILED** (non-blocking이지만 agent가 추가 LLM 호출 중 hang)
-3. `drewgent-cron-runner-001` (script-based)이 뒤에서 실행 불가
+3. `{{AGENT_NAME_LOWER}}-cron-runner-001` (script-based)이 뒤에서 실행 불가
 4. 다음 tick (60s 후)에서도 LLM job이 여전히 실행 중 → dispatcher fire 0 지속
 
 ### 해결
@@ -217,8 +217,8 @@ for job in _script_jobs + _llm_jobs:
 |---|---|---|
 | A.2 | `gateway/run.py:3260-3290` | housekeeping try/except 분해 — exception 누수 방지 |
 | T4.3 | `gateway/run.py:3236` | tick watchdog (`tick_elapsed > 5×interval` → warning) |
-| T4.4 | `drewgent_harmony_check.sh` | Layer 3.5b — cron-runner fire frequency 검출 |
-| T4.6 | `drewgent_cron_watchdog.sh` | 0 fires in 5min → auto kickstart |
+| T4.4 | `{{AGENT_NAME_LOWER}}_harmony_check.sh` | Layer 3.5b — cron-runner fire frequency 검출 |
+| T4.6 | `{{AGENT_NAME_LOWER}}_cron_watchdog.sh` | 0 fires in 5min → auto kickstart |
 
 ### Pitfall
 
@@ -240,13 +240,13 @@ content dispatcher는 `board = "" OR board IS NULL`도 받음 — `kanban_create
 ---
 
 ## Related
-- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁kanban_worker_accountability.neuron]] — TTL/heartbeat enforcement
+- [[@identity/brain/{{AGENT_NAME}}-brain/P0-brainstem/禁/禁kanban_worker_accountability.neuron]] — TTL/heartbeat enforcement
 - [[@memory/kanban/KANBAN_INDEX]] — kanban brain integration
-- `~/.drewgent/scripts/dispatch_once_default.py`
-- `~/.drewgent/scripts/dispatch_once_content.py`
-- `~/.drewgent/scripts/dispatch_once_integrations.py`
+- `~/.{{AGENT_NAME_LOWER}}/scripts/dispatch_once_default.py`
+- `~/.{{AGENT_NAME_LOWER}}/scripts/dispatch_once_content.py`
+- `~/.{{AGENT_NAME_LOWER}}/scripts/dispatch_once_integrations.py`
 
 ---
 
-*Generated by Drewgent — 2026-06-01*
+*Generated by {{AGENT_NAME}} — 2026-06-01*
 *Source: agent design session for dispatcher hardening (Phase 1)*

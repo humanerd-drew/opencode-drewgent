@@ -15,7 +15,7 @@ Used to run Huly, WordPress, or other containers on the NAS. The Mac Mini's Dock
 
 ## SSH Access
 
-**Port:** 8528 (non-standard, configured in DSM)
+**Port:** YOUR_SSH_PORT (non-standard, configured in DSM)
 
 **User:** `drew` (DSM admin account, UID 1033)
 
@@ -23,7 +23,7 @@ Used to run Huly, WordPress, or other containers on the NAS. The Mac Mini's Dock
 
 ### Step 1: Enable SSH on DSM
 
-DSM → **Control Panel → Terminal & SNMP** → Enable SSH service. Port 8528.
+DSM → **Control Panel → Terminal & SNMP** → Enable SSH service. Port YOUR_SSH_PORT.
 
 ### Step 2: Add SSH Public Key
 
@@ -31,9 +31,9 @@ Copy the Mac Mini's public key to the NAS for passwordless login:
 
 ```bash
 # From the Mac Mini, using sshpass:
-sshpass -p '<nas-password>' ssh -p 8528 drew@192.168.1.53 \
+sshpass -p '<nas-password>' ssh -p YOUR_SSH_PORT user@192.168.1.100 \
   "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys" \
-  < ~/.ssh/id_ed25519_dr2w247.pub
+  < ~/.ssh/YOUR_SSH_KEY.pub
 ```
 
 Or manually via expect script if the above is blocked by security tooling:
@@ -42,12 +42,12 @@ Or manually via expect script if the above is blocked by security tooling:
 #!/usr/bin/expect -f
 set timeout 15
 set password "<nas-password>"
-set pubkey [exec cat ~/.ssh/id_ed25519_dr2w247.pub]
-spawn ssh -o StrictHostKeyChecking=no -p 8528 drew@192.168.1.53
+set pubkey [exec cat ~/.ssh/YOUR_SSH_KEY.pub]
+spawn ssh -o StrictHostKeyChecking=no -p YOUR_SSH_PORT user@192.168.1.100
 expect "password:" { send "$password\r" }
-expect "drew@" { send "mkdir -p ~/.ssh && chmod 700 ~/.ssh\r" }
-expect "drew@" { send "echo '$pubkey' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys\r" }
-expect "drew@" { send "exit\r" }
+expect "user@" { send "mkdir -p ~/.ssh && chmod 700 ~/.ssh\r" }
+expect "user@" { send "echo '$pubkey' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys\r" }
+expect "user@" { send "exit\r" }
 expect eof
 ```
 
@@ -56,7 +56,7 @@ expect eof
 SSH key auth will fail if `~` has group/world-writable permissions (OpenSSH StrictModes).
 
 ```bash
-ssh -i ~/.ssh/id_ed25519_dr2w247 -p 8528 drew@192.168.1.53 \
+ssh -i ~/.ssh/YOUR_SSH_KEY -p YOUR_SSH_PORT user@192.168.1.100 \
   "chmod 755 ~ && chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
 ```
 
@@ -76,7 +76,7 @@ sudo chmod 440 /etc/sudoers.d/drew-docker
 ### Verification
 
 ```bash
-ssh -i ~/.ssh/id_ed25519_dr2w247 -p 8528 drew@192.168.1.53 \
+ssh -i ~/.ssh/YOUR_SSH_KEY -p YOUR_SSH_PORT user@192.168.1.100 \
   "sudo -n docker ps && sudo -n docker compose version"
 ```
 
@@ -104,13 +104,13 @@ Docker volumes on Synology should use shared folders for persistence:
 /volume1/docker/huly/      # Huly data (future)
 ```
 
-Mounted on the Mac Mini at `/Volumes/humanerd/docker/` via SMB.
+Mounted on the Mac Mini at `/Volumes/YOUR_NAS/docker/` via SMB.
 
 ### Running Docker Compose
 
 ```bash
 # From Mac Mini, SSH to NAS:
-ssh -i ~/.ssh/id_ed25519_dr2w247 -p 8528 drew@192.168.1.53 \
+ssh -i ~/.ssh/YOUR_SSH_KEY -p YOUR_SSH_PORT user@192.168.1.100 \
   "cd /path/to/compose && sudo -n docker compose up -d"
 ```
 

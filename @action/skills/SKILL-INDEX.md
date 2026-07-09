@@ -325,7 +325,7 @@ Each skill category directory contains a `DESCRIPTION.md` that describes the cat
 - [[skills/github/github-pr-workflow/templates/pr-body-feature]]
 - [[skills/github/github-repo-management/SKILL]]
 - [[skills/github/github-repo-management/references/github-api-cheatsheet]]
-- [[skills/humanerd-site/SKILL]]
+- [[skills/YOUR_SITE/SKILL]]
 - [[skills/seo-audit/SKILL]]
 - [[skills/inference-sh/DESCRIPTION]]
 - [[skills/leisure/find-nearby/SKILL]]

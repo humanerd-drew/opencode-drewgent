@@ -1,5 +1,5 @@
 {
-  "name": "drewgent-whatsapp-bridge",
+  "name": "{{AGENT_NAME_LOWER}}-whatsapp-bridge",
   "version": "1.0.0",
   "description": "WhatsApp bridge for Hermes Agent using Baileys",
   "private": true,

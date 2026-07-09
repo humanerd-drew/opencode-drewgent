@@ -79,7 +79,7 @@ STOPWORDS = {
     'final', 'tmp', 'temp', 'cache', 'cached', 'bytes', 'size', 'length',
     'count', 'total', 'sum', 'avg', 'mean', 'min', 'max', 'limit', 'offset',
     # Misc
-    'friction', 'hugh-kim', 'humanerd', 'drewgent',  # too specific to user/system names
+    'friction',  # too specific to user/system names
     'meas', 'conversion', 'tokens', 'token',
 }
 

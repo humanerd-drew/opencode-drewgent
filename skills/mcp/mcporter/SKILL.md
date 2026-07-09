@@ -5,7 +5,7 @@ version: 1.0.0
 author: community
 license: MIT
 metadata:
-  drewgent:
+  {{AGENT_NAME_LOWER}}:
     tags: [MCP, Tools, API, Integrations, Interop]
     homepage: https://mcporter.dev
 prerequisites:
@@ -13,7 +13,7 @@ prerequisites:
 
 links:
   - "[[mcp/native-mcp]]"
-  # gbrain-integration-drewgent — REMOVED 2026-07-05 (replaced by knowledge.db recall/remember)
+  # gbrain-integration-{{AGENT_NAME_LOWER}} — REMOVED 2026-07-05 (replaced by knowledge.db recall/remember)
   - "[[@action/skills/SKILL-INDEX]]"
   - "[[@identity/brain/rules]]"
 ---
@@ -76,7 +76,7 @@ mcporter call --stdio "bun run ./server.ts" scrape url=https://example.com
 # JSON payload
 mcporter call <server.tool> --args '{"limit": 5}'
 
-# Machine-readable output (recommended for Drewgent)
+# Machine-readable output (recommended for {{AGENT_NAME}})
 mcporter call <server.tool> key=value --output json
 ```
 

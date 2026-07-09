@@ -38,7 +38,7 @@ grep -n "self\._run_agent" gateway/run.py gateway/agent_cache.py
 
 # Also check for other extracted methods with same pattern — 
 # compare current GatewayRunner methods against committed version:
-cd ~/.drewgent/source/drewgent-agent
+cd ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent
 git diff HEAD -- gateway/run.py | grep "^[-].*def " | grep -v "^---"
 # Shows methods that were removed from the class (likely extracted)
 ```
@@ -83,8 +83,8 @@ return await _run_agent(
 
 ### Step 4: Restart and verify
 ```bash
-kill -TERM $(pgrep -f "drewgent_cli.main gateway")
-launchctl start ai.drewgent.gateway
+kill -TERM $(pgrep -f "{{AGENT_NAME_LOWER}}_cli.main gateway")
+launchctl start ai.{{AGENT_NAME_LOWER}}.gateway
 sleep 5
 # Send a test message on Discord — should respond now
 ```

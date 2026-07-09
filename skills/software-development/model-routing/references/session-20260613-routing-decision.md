@@ -17,7 +17,7 @@ Current state: single deepseek-v4-flash doing everything, MiniMax key unused.
 
 The [addyo essay](https://addyo.substack.com/p/loop-engineering) defines 5 building blocks + 1 memory store:
 
-| # | Component | Drewgent Status | Gap |
+| # | Component | {{AGENT_NAME}} Status | Gap |
 |---|-----------|----------------|-----|
 | 1 | Automations (scheduled discovery/triage) | ✅ Strong — cron + kanban dispatcher | No /goal in main session (kanban goal_mode covers it) |
 | 2 | Worktrees (parallel file isolation) | ⚠️ Adequate — kanban_create workspace_kind=worktree exists but not default | Subagent worktree isolation missing |

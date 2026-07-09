@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [dspy, openai, anthropic]
 metadata:
-  drewgent:
+  {{AGENT_NAME_LOWER}}:
     tags: [Prompt Engineering, DSPy, Declarative Programming, RAG, Agents, Prompt Optimization, LM Programming, Stanford NLP, Automatic Optimization, Modular AI]
 
 links:

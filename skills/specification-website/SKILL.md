@@ -12,7 +12,7 @@ created: 2026-06-01
 updated: 2026-06-01
 links:
   - "[[@action/skills/SKILL-INDEX]]"
-  - "[[skills/humanerd-site]]"
+  - "[[skills/YOUR_SITE]]"
   - "[[skills/seo-audit]]"
   - "[[@memory/knowledge/obsidian-vault-site-principle]]"
   - "[[@identity/brain/rules]]"---
@@ -110,7 +110,7 @@ When citing, use the page's canonical URL and the `updated` frontmatter field as
 
 ## YOUR_DOMAIN 적용 노트
 
-YOUR_DOMAIN에 직접 와닿는 항목 (Drewgent 추가 메모):
+YOUR_DOMAIN에 직접 와닿는 항목 ({{AGENT_NAME}} 추가 메모):
 
 - `required` 누락 위험: `<meta name="theme-color">`, `color-scheme`, `/robots.txt` (Quartz 기본 미생성), `/sitemap-index.xml`
 - `recommended` 큰 가치: `/llms.txt`, MCP 서버 노출, `/.well-known/agent-skills/`, `Accept: text/markdown` 미들웨어

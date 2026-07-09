@@ -15,26 +15,26 @@ WordPress + Docker + Blocksy + MCP integration for YOUR_DOMAIN.
 ## Docker Setup
 
 ```yaml
-# ~/.drewgent/wordpress/docker-compose.yml
+# ~/.{{AGENT_NAME_LOWER}}/wordpress/docker-compose.yml
 services:
   db:
     image: mysql:8.0
-    container_name: humanerd-db
+    container_name: YOUR_DOMAIN-db
     ports: ["3307:3306"]
     volumes:
-      - /Volumes/humanerd/docker/wordpress/db:/var/lib/mysql
+      - /Volumes/YOUR_NAS/docker/wordpress/db:/var/lib/mysql
   wordpress:
     image: wordpress:6.7-php8.3-apache
-    container_name: humanerd-wp
+    container_name: YOUR_DOMAIN-wp
     depends_on: [db]
     ports: ["8080:80"]
     volumes:
-      - /Volumes/humanerd/docker/wordpress/wp-content:/var/www/html/wp-content
-      - /Users/drew/.drewgent/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
-      - /Users/drew/.drewgent/wordpress/wp-content/themes:/var/www/html/wp-content/themes
+      - /Volumes/YOUR_NAS/docker/wordpress/wp-content:/var/www/html/wp-content
+      - ~/.{{AGENT_NAME_LOWER}}/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
+      - ~/.{{AGENT_NAME_LOWER}}/wordpress/wp-content/themes:/var/www/html/wp-content/themes
 ```
 
-**pw 저장:** `~/.drewgent/wordpress/.wp-env` (chmod 600)
+**pw 저장:** `~/.{{AGENT_NAME_LOWER}}/wordpress/.wp-env` (chmod 600)
 
 ## Blocksy Theme
 
@@ -49,16 +49,16 @@ Blocksy is the active theme. Free version supports:
 ### Setup via wp-cli
 
 ```bash
-docker exec humanerd-wp wp --allow-root theme install blocksy --activate
-docker exec humanerd-wp wp --allow-root plugin install blocksy-companion --activate
+docker exec YOUR_DOMAIN-wp wp --allow-root theme install blocksy --activate
+docker exec YOUR_DOMAIN-wp wp --allow-root plugin install blocksy-companion --activate
 ```
 
 ### Custom Fonts (Google Fonts)
 
-MU plugin at `wp-content/mu-plugins/humanerd-fonts.php`:
+MU plugin at `wp-content/mu-plugins/YOUR_PREFIX-fonts.php`:
 ```php
 add_action("wp_enqueue_scripts", function() {
-  wp_enqueue_style("humanerd-fonts",
+  wp_enqueue_style("YOUR_PREFIX-fonts",
     "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
   );
 });
@@ -104,9 +104,9 @@ RewriteRule . /index.php [L]
 
 Custom MCP server for autonomous agent→WordPress interaction.
 
-**Path:** `/Users/drew/.drewgent/scripts/wordpress-mcp-server.js`
+**Path:** `~/.{{AGENT_NAME_LOWER}}/scripts/wordpress-mcp-server.js`
 **Config:** `mcp_servers.wordpress` in `~/.hermes/config.yaml`
-**Backend:** Node.js wrapping `docker exec humanerd-wp wp --allow-root` via STDIO JSON-RPC 2.0
+**Backend:** Node.js wrapping `docker exec YOUR_DOMAIN-wp wp --allow-root` via STDIO JSON-RPC 2.0
 
 ### Available Tools
 
@@ -123,12 +123,12 @@ Custom MCP server for autonomous agent→WordPress interaction.
 ### Test
 
 ```bash
-printf '{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n' | node /Users/drew/.drewgent/scripts/wordpress-mcp-server.js
+printf '{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n' | node ~/.{{AGENT_NAME_LOWER}}/scripts/wordpress-mcp-server.js
 ```
 
 ## Huly MCP Integration
 
-Huly workspace "humanerd" with MCP server (`@bgx4k3p/huly-mcp-server@latest`).
+Huly workspace "YOUR_WORKSPACE" with MCP server (`@bgx4k3p/huly-mcp-server@latest`).
 81 tools available including issue management, project management, team management.
 
 Key tools for content workflow:
@@ -153,22 +153,22 @@ Categories: build-log (Build Log), ai-tools (AI & Tools), systems (Systems), cre
 
 ```bash
 # Post management
-docker exec humanerd-wp wp --allow-root post create --post_title="T" --post_content="C" --post_status=publish --post_category=systems
+docker exec YOUR_DOMAIN-wp wp --allow-root post create --post_title="T" --post_content="C" --post_status=publish --post_category=systems
 
 # Theme/plugin
-docker exec humanerd-wp wp --allow-root theme install <slug> --activate
-docker exec humanerd-wp wp --allow-root plugin install <slug> --activate
+docker exec YOUR_DOMAIN-wp wp --allow-root theme install <slug> --activate
+docker exec YOUR_DOMAIN-wp wp --allow-root plugin install <slug> --activate
 
 # Options
-docker exec humanerd-wp wp --allow-root option update blogname "humanerd"
-docker exec humanerd-wp wp --allow-root rewrite flush
+docker exec YOUR_DOMAIN-wp wp --allow-root option update blogname "YOUR_SITE_NAME"
+docker exec YOUR_DOMAIN-wp wp --allow-root rewrite flush
 
 # Media
-docker exec humanerd-wp wp --allow-root media import /path/to/file.png --title="Logo"
+docker exec YOUR_DOMAIN-wp wp --allow-root media import /path/to/file.png --title="Logo"
 
 # Custom PHP
-docker exec humanerd-wp wp --allow-root eval 'echo get_option("blogname");'
-docker exec humanerd-wp wp --allow-root eval-file /tmp/setup.php
+docker exec YOUR_DOMAIN-wp wp --allow-root eval 'echo get_option("blogname");'
+docker exec YOUR_DOMAIN-wp wp --allow-root eval-file /tmp/setup.php
 ```
 
 ## Path Pitfalls

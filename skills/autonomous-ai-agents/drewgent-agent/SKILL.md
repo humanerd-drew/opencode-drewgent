@@ -1,13 +1,13 @@
 ---
-name: drewgent-agent
-description: Complete guide to using and extending Drewgent Agent — CLI usage, setup, configuration, spawning additional agents, gateway platforms, skills, voice, tools, profiles, and a concise contributor reference. Load this skill when helping users configure Drewgent, troubleshoot issues, spawn agent instances, or make code contributions.
+name: {{AGENT_NAME_LOWER}}-agent
+description: Complete guide to using and extending {{AGENT_NAME}} Agent — CLI usage, setup, configuration, spawning additional agents, gateway platforms, skills, voice, tools, profiles, and a concise contributor reference. Load this skill when helping users configure {{AGENT_NAME}}, troubleshoot issues, spawn agent instances, or make code contributions.
 version: 2.0.0
-author: Drewgent Agent + Teknium
+author: {{AGENT_NAME}} Agent + Teknium
 license: MIT
 metadata:
-  drewgent:
+  {{AGENT_NAME_LOWER}}:
     tags: [opencode, setup, configuration, multi-agent, spawning, cli, gateway, development]
-    homepage: https://github.com/NousResearch/drewgent-agent
+    homepage: https://github.com/NousResearch/{{AGENT_NAME_LOWER}}-agent
     related_skills: [claude-code, codex, opencode]
 links:
   - "[[@identity/brain/rules]]"
@@ -16,32 +16,32 @@ links:
   - "[[@identity/brain/rules]]"
 ---
 
-# Drewgent Agent
+# {{AGENT_NAME}} Agent
 
-Drewgent Agent is an open-source AI agent framework by HUMANERD that runs in your terminal, messaging platforms, and IDEs. It belongs to the same category as Claude Code (Anthropic), Codex (OpenAI), and OpenClaw — autonomous coding and task-execution agents that use tool calling to interact with your system. Drewgent works with any LLM provider (OpenRouter, Anthropic, OpenAI, DeepSeek, local models, and 15+ others) and runs on Linux, macOS, and WSL.
+{{AGENT_NAME}} Agent is an open-source AI agent framework that runs in your terminal, messaging platforms, and IDEs. It belongs to the same category as Claude Code (Anthropic), Codex (OpenAI), and OpenClaw — autonomous coding and task-execution agents that use tool calling to interact with your system. {{AGENT_NAME}} works with any LLM provider (OpenRouter, Anthropic, OpenAI, DeepSeek, local models, and 15+ others) and runs on Linux, macOS, and WSL.
 
-What makes Drewgent different:
+What makes {{AGENT_NAME}} different:
 
-- **Self-improving through skills** — Drewgent learns from experience by saving reusable procedures as skills. When it solves a complex problem, discovers a workflow, or gets corrected, it can persist that knowledge as a skill document that loads into future sessions. Skills accumulate over time, making the agent better at your specific tasks and environment.
+- **Self-improving through skills** — {{AGENT_NAME}} learns from experience by saving reusable procedures as skills. When it solves a complex problem, discovers a workflow, or gets corrected, it can persist that knowledge as a skill document that loads into future sessions. Skills accumulate over time, making the agent better at your specific tasks and environment.
 - **Persistent memory across sessions** — remembers who you are, your preferences, environment details, and lessons learned. Pluggable memory backends (built-in, Honcho, Mem0, and more) let you choose how memory works.
 - **Multi-platform gateway** — the same agent runs on Telegram, Discord, Slack, WhatsApp, Signal, Matrix, Email, and 8+ other platforms with full tool access, not just chat.
 - **Provider-agnostic** — swap models and providers mid-workflow without changing anything else. Credential pools rotate across multiple API keys automatically.
-- **Profiles** — run multiple independent Drewgent instances with isolated configs, sessions, skills, and memory.
+- **Profiles** — run multiple independent {{AGENT_NAME}} instances with isolated configs, sessions, skills, and memory.
 - **Extensible** — plugins, MCP servers, custom tools, webhook triggers, cron scheduling, and the full Python ecosystem.
 
-People use Drewgent for software development, research, system administration, data analysis, content creation, home automation, and anything else that benefits from an AI agent with persistent context and full system access.
+People use {{AGENT_NAME}} for software development, research, system administration, data analysis, content creation, home automation, and anything else that benefits from an AI agent with persistent context and full system access.
 
-**This skill helps you work with Drewgent Agent effectively** — setting it up, configuring features, spawning additional agent instances, troubleshooting issues, finding the right commands and settings, and understanding how the system works when you need to extend or contribute to it.
+**This skill helps you work with {{AGENT_NAME}} Agent effectively** — setting it up, configuring features, spawning additional agent instances, troubleshooting issues, finding the right commands and settings, and understanding how the system works when you need to extend or contribute to it.
 
-**Docs:** https://drewgent-agent.humanerd.ai/docs/
+**Docs:** https://docs.YOUR_AGENT_DOMAIN/docs/
 
 ## Quick Start
 
 ```bash
 # Install
-curl -fsSL https://raw.githubusercontent.com/NousResearch/drewgent-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/{{AGENT_NAME_LOWER}}-agent/main/scripts/install.sh | bash
 
-# Drewgent now runs via opencode (the hermes CLI has been removed).
+# {{AGENT_NAME}} now runs via opencode (the hermes CLI has been removed).
 # Interactive chat (default)
 opencode
 
@@ -49,13 +49,13 @@ opencode
 opencode run -q "What is the capital of France?"
 
 # Setup wizard
-drewgent setup
+{{AGENT_NAME_LOWER}} setup
 
 # Change model/provider
 # Use opencode's model selection or edit ~/.config/opencode/opencode.jsonc
 
 # Check health
-drewgent doctor
+{{AGENT_NAME_LOWER}} doctor
 ```
 
 ---
@@ -91,30 +91,30 @@ opencode [flags]
 ### Configuration
 
 ```
-drewgent setup [section]      Interactive wizard (model|terminal|gateway|tools|agent)
-drewgent config               View current config
-drewgent config edit          Open config in $EDITOR
-drewgent config set KEY VAL   Set a config value
-drewgent config path          Print config path
-drewgent config check         Check for missing/outdated config
-drewgent doctor [--fix]       Check dependencies and config
-drewgent status [--all]       Show component status
+{{AGENT_NAME_LOWER}} setup [section]      Interactive wizard (model|terminal|gateway|tools|agent)
+{{AGENT_NAME_LOWER}} config               View current config
+{{AGENT_NAME_LOWER}} config edit          Open config in $EDITOR
+{{AGENT_NAME_LOWER}} config set KEY VAL   Set a config value
+{{AGENT_NAME_LOWER}} config path          Print config path
+{{AGENT_NAME_LOWER}} config check         Check for missing/outdated config
+{{AGENT_NAME_LOWER}} doctor [--fix]       Check dependencies and config
+{{AGENT_NAME_LOWER}} status [--all]       Show component status
 ```
 
 ### Tools & Skills
 
 ```
-drewgent tools                Interactive tool enable/disable (curses UI)
-drewgent tools list           Show all tools and status
-drewgent tools enable NAME    Enable a toolset
-drewgent tools disable NAME   Disable a toolset
+{{AGENT_NAME_LOWER}} tools                Interactive tool enable/disable (curses UI)
+{{AGENT_NAME_LOWER}} tools list           Show all tools and status
+{{AGENT_NAME_LOWER}} tools enable NAME    Enable a toolset
+{{AGENT_NAME_LOWER}} tools disable NAME   Disable a toolset
 
-drewgent skills list          List installed skills
-drewgent skills search QUERY  Search the skills hub
-drewgent skills install ID    Install a skill
-drewgent skills inspect ID    Preview without installing
-drewgent skills update        Update outdated skills
-drewgent skills uninstall N   Remove a hub skill
+{{AGENT_NAME_LOWER}} skills list          List installed skills
+{{AGENT_NAME_LOWER}} skills search QUERY  Search the skills hub
+{{AGENT_NAME_LOWER}} skills install ID    Install a skill
+{{AGENT_NAME_LOWER}} skills inspect ID    Preview without installing
+{{AGENT_NAME_LOWER}} skills update        Update outdated skills
+{{AGENT_NAME_LOWER}} skills uninstall N   Remove a hub skill
 ```
 
 ### MCP Servers
@@ -124,12 +124,12 @@ MCP servers are configured in `~/.config/opencode/opencode.jsonc`. Use the openc
 ### Gateway (Messaging Platforms)
 
 ```
-drewgent gateway run          Start gateway foreground
-drewgent gateway install      Install as background service
-drewgent gateway start/stop   Control the service
-drewgent gateway restart      Restart the service
-drewgent gateway status       Check status
-drewgent gateway setup        Configure platforms
+{{AGENT_NAME_LOWER}} gateway run          Start gateway foreground
+{{AGENT_NAME_LOWER}} gateway install      Install as background service
+{{AGENT_NAME_LOWER}} gateway start/stop   Control the service
+{{AGENT_NAME_LOWER}} gateway restart      Restart the service
+{{AGENT_NAME_LOWER}} gateway status       Check status
+{{AGENT_NAME_LOWER}} gateway setup        Configure platforms
 ```
 
 ### Sessions
@@ -138,28 +138,28 @@ Sessions are managed through opencode's native session system. Use `opencode --r
 
 ### Cron Jobs
 
-Cron jobs are managed through `~/.drewgent/cron/jobs.json` and the launchd cron dispatcher. Edit `jobs.json` directly or use the Python cron API.
+Cron jobs are managed through `~/.{{AGENT_NAME_LOWER}}/cron/jobs.json` and the launchd cron dispatcher. Edit `jobs.json` directly or use the Python cron API.
 
 ### Profiles
 
 Agent profiles live at `~/.config/opencode/agents/*.md`. List with `ls ~/.config/opencode/agents/`.
 
 ```
-drewgent profile list         List all profiles
-drewgent profile create NAME  Create (--clone, --clone-all, --clone-from)
-drewgent profile use NAME     Set sticky default
-drewgent profile delete NAME  Delete a profile
-drewgent profile show NAME    Show details
+{{AGENT_NAME_LOWER}} profile list         List all profiles
+{{AGENT_NAME_LOWER}} profile create NAME  Create (--clone, --clone-all, --clone-from)
+{{AGENT_NAME_LOWER}} profile use NAME     Set sticky default
+{{AGENT_NAME_LOWER}} profile delete NAME  Delete a profile
+{{AGENT_NAME_LOWER}} profile show NAME    Show details
 ```
 
 ### Other
 
 ```
-drewgent insights [--days N]  Usage analytics
-drewgent update               Update to latest version
-drewgent honcho setup/status  Honcho memory integration
-drewgent memory setup/status/off  Memory provider config
-drewgent acp                  ACP server (IDE integration)
+{{AGENT_NAME_LOWER}} insights [--days N]  Usage analytics
+{{AGENT_NAME_LOWER}} update               Update to latest version
+{{AGENT_NAME_LOWER}} honcho setup/status  Honcho memory integration
+{{AGENT_NAME_LOWER}} memory setup/status/off  Memory provider config
+{{AGENT_NAME_LOWER}} acp                  ACP server (IDE integration)
 ```
 
 ---
@@ -229,20 +229,20 @@ Type these during an interactive chat session.
 ## Key Paths & Config
 
 ```
-~/.drewgent/config.yaml       Main configuration
-~/.drewgent/.env              API keys and secrets
-~/.drewgent/skills/           Installed skills
-~/.drewgent/sessions/         Session transcripts
-~/.drewgent/logs/             Gateway and error logs
-~/.drewgent/auth.json         OAuth tokens and credential pools
-~/.drewgent/drewgent-agent/     Source code (if git-installed)
+~/.{{AGENT_NAME_LOWER}}/config.yaml       Main configuration
+~/.{{AGENT_NAME_LOWER}}/.env              API keys and secrets
+~/.{{AGENT_NAME_LOWER}}/skills/           Installed skills
+~/.{{AGENT_NAME_LOWER}}/sessions/         Session transcripts
+~/.{{AGENT_NAME_LOWER}}/logs/             Gateway and error logs
+~/.{{AGENT_NAME_LOWER}}/auth.json         OAuth tokens and credential pools
+~/.{{AGENT_NAME_LOWER}}/{{AGENT_NAME_LOWER}}-agent/     Source code (if git-installed)
 ```
 
-Profiles use `~/.drewgent/profiles/<name>/` with the same layout.
+Profiles use `~/.{{AGENT_NAME_LOWER}}/profiles/<name>/` with the same layout.
 
 ### Config Sections
 
-Edit with `drewgent` config edit` or `drewgent` config set section.key value`.
+Edit with `{{AGENT_NAME_LOWER}}` config edit` or `{{AGENT_NAME_LOWER}}` config set section.key value`.
 
 | Section | Key options |
 |---------|-------------|
@@ -259,18 +259,18 @@ Edit with `drewgent` config edit` or `drewgent` config set section.key value`.
 | `smart_model_routing` | `enabled`, `cheap_model` |
 | `checkpoints` | `enabled`, `max_snapshots` (50) |
 
-Full config reference: https://drewgent-agent.humanerd.ai/docs/user-guide/configuration
+Full config reference: https://docs.YOUR_AGENT_DOMAIN/docs/user-guide/configuration
 
 ### Providers
 
-18 providers supported. Set via `drewgent` model` or `drewgent setup`.
+18 providers supported. Set via `{{AGENT_NAME_LOWER}}` model` or `{{AGENT_NAME_LOWER}} setup`.
 
 | Provider | Auth | Key env var |
 |----------|------|-------------|
 | OpenRouter | API key | `OPENROUTER_API_KEY` |
 | Anthropic | API key | `ANTHROPIC_API_KEY` |
-| Nous Portal | OAuth | `drewgent` login --provider nous` |
-| OpenAI Codex | OAuth | `drewgent` login --provider openai-codex` |
+| Nous Portal | OAuth | `{{AGENT_NAME_LOWER}}` login --provider nous` |
+| OpenAI Codex | OAuth | `{{AGENT_NAME_LOWER}}` login --provider openai-codex` |
 | GitHub Copilot | Token | `COPILOT_GITHUB_TOKEN` |
 | DeepSeek | API key | `DEEPSEEK_API_KEY` |
 | Hugging Face | Token | `HF_TOKEN` |
@@ -283,11 +283,11 @@ Full config reference: https://drewgent-agent.humanerd.ai/docs/user-guide/config
 
 Plus: AI Gateway, OpenCode Zen, OpenCode Go, MiniMax CN, GitHub Copilot ACP.
 
-Full provider docs: https://drewgent-agent.humanerd.ai/docs/integrations/providers
+Full provider docs: https://docs.YOUR_AGENT_DOMAIN/docs/integrations/providers
 
 ### Toolsets
 
-Enable/disable via `drewgent` tools` (interactive) or `drewgent` tools enable/disable NAME`.
+Enable/disable via `{{AGENT_NAME_LOWER}}` tools` (interactive) or `{{AGENT_NAME_LOWER}}` tools enable/disable NAME`.
 
 | Toolset | What it provides |
 |---------|-----------------|
@@ -346,13 +346,13 @@ Voice commands: `/voice on` (voice-to-voice), `/voice tts` (always voice), `/voi
 
 ---
 
-## Spawning Additional Drewgent Instances
+## Spawning Additional {{AGENT_NAME}} Instances
 
-Run additional Drewgent processes as fully independent subprocesses — separate sessions, tools, and environments.
+Run additional {{AGENT_NAME}} processes as fully independent subprocesses — separate sessions, tools, and environments.
 
 ### When to Use This vs delegate_task
 
-| | `delegate_task` | Spawning `drewgent`` process |
+| | `delegate_task` | Spawning `{{AGENT_NAME_LOWER}}`` process |
 |-|-----------------|--------------------------|
 | Isolation | Separate conversation, shared process | Fully independent process |
 | Duration | Minutes (bounded by parent loop) | Hours/days |
@@ -371,7 +371,7 @@ terminal(command="opencode run -q 'Set up CI/CD for ~/myapp'", background=true)
 
 ### Interactive PTY Mode (via tmux)
 
-Drewgent uses prompt_toolkit, which requires a real terminal. Use tmux for interactive spawning:
+{{AGENT_NAME}} uses prompt_toolkit, which requires a real terminal. Use tmux for interactive spawning:
 
 ```
 # Start
@@ -394,11 +394,11 @@ terminal(command="tmux send-keys -t agent1 '/exit' Enter && sleep 2 && tmux kill
 
 ```
 # Agent A: backend
-terminal(command="tmux new-session -d -s backend -x 120 -y 40 'drewgent -w'", timeout=10)
+terminal(command="tmux new-session -d -s backend -x 120 -y 40 '{{AGENT_NAME_LOWER}} -w'", timeout=10)
 terminal(command="sleep 8 && tmux send-keys -t backend 'Build REST API for user management' Enter", timeout=15)
 
 # Agent B: frontend
-terminal(command="tmux new-session -d -s frontend -x 120 -y 40 'drewgent -w'", timeout=10)
+terminal(command="tmux new-session -d -s frontend -x 120 -y 40 '{{AGENT_NAME_LOWER}} -w'", timeout=10)
 terminal(command="sleep 8 && tmux send-keys -t frontend 'Build React dashboard for user management' Enter", timeout=15)
 
 # Check progress, relay context between them
@@ -413,7 +413,7 @@ terminal(command="tmux send-keys -t frontend 'Here is the API schema from the ba
 terminal(command="tmux new-session -d -s resumed 'opencode --continue'", timeout=10)
 
 # Resume specific session
-terminal(command="tmux new-session -d -s resumed 'drewgent --resume 20260225_143052_a1b2c3'", timeout=10)
+terminal(command="tmux new-session -d -s resumed '{{AGENT_NAME_LOWER}} --resume 20260225_143052_a1b2c3'", timeout=10)
 ```
 
 ### Tips
@@ -435,13 +435,13 @@ terminal(command="tmux new-session -d -s resumed 'drewgent --resume 20260225_143
 3. Restart gateway: `/restart`
 
 ### Tool not available
-1. `drewgent` tools` — check if toolset is enabled for your platform
+1. `{{AGENT_NAME_LOWER}}` tools` — check if toolset is enabled for your platform
 2. Some tools need env vars (check `.env`)
 3. `/reset` after enabling tools
 
 ### Model/provider issues
-1. `drewgent doctor` — check config and dependencies
-2. `drewgent` login` — re-authenticate OAuth providers
+1. `{{AGENT_NAME_LOWER}} doctor` — check config and dependencies
+2. `{{AGENT_NAME_LOWER}}` login` — re-authenticate OAuth providers
 3. Check `.env` has the right API key
 
 ### Changes not taking effect
@@ -450,14 +450,14 @@ terminal(command="tmux new-session -d -s resumed 'drewgent --resume 20260225_143
 - **Code changes:** Restart the CLI or gateway process
 
 ### Skills not showing
-1. `drewgent skills list` — verify installed
-2. `drewgent skills config` — check platform enablement
-3. Load explicitly: `/skill name` or `drewgent` -s name`
+1. `{{AGENT_NAME_LOWER}} skills list` — verify installed
+2. `{{AGENT_NAME_LOWER}} skills config` — check platform enablement
+3. Load explicitly: `/skill name` or `{{AGENT_NAME_LOWER}}` -s name`
 
 ### Gateway issues
 Check logs first:
 ```bash
-grep -i "failed to send\|error" ~/.drewgent/logs/gateway.log | tail -20
+grep -i "failed to send\|error" ~/.{{AGENT_NAME_LOWER}}/logs/gateway.log | tail -20
 ```
 
 ---
@@ -466,39 +466,39 @@ grep -i "failed to send\|error" ~/.drewgent/logs/gateway.log | tail -20
 
 | Looking for... | Location |
 |----------------|----------|
-| Config options | `drewgent` config edit` or [Configuration docs](https://drewgent-agent.humanerd.ai/docs/user-guide/configuration) |
-| Available tools | `drewgent` tools list` or [Tools reference](https://drewgent-agent.humanerd.ai/docs/reference/tools-reference) |
-| Slash commands | `/help` in session or [Slash commands reference](https://drewgent-agent.humanerd.ai/docs/reference/slash-commands) |
-| Skills catalog | `drewgent skills browse` or [Skills catalog](https://drewgent-agent.humanerd.ai/docs/reference/skills-catalog) |
-| Provider setup | `drewgent` model` or [Providers guide](https://drewgent-agent.humanerd.ai/docs/integrations/providers) |
-| Platform setup | `drewgent gateway setup` or [Messaging docs](https://drewgent-agent.humanerd.ai/docs/user-guide/messaging/) |
-| MCP servers | `drewgent` mcp list` or [MCP guide](https://drewgent-agent.humanerd.ai/docs/user-guide/features/mcp) |
-| Profiles | `drewgent` profile list` or [Profiles docs](https://drewgent-agent.humanerd.ai/docs/user-guide/profiles) |
-| Cron jobs | `drewgent` cron list` or [Cron docs](https://drewgent-agent.humanerd.ai/docs/user-guide/features/cron) |
-| Memory | `drewgent` memory status` or [Memory docs](https://drewgent-agent.humanerd.ai/docs/user-guide/features/memory) |
-| Env variables | `drewgent` config env-path` or [Env vars reference](https://drewgent-agent.humanerd.ai/docs/reference/environment-variables) |
-| CLI commands | `drewgent --help` or [CLI reference](https://drewgent-agent.humanerd.ai/docs/reference/cli-commands) |
-| Gateway logs | `~/.drewgent/logs/gateway.log` |
-| Session files | `~/.drewgent/sessions/` or `drewgent` sessions browse` |
-| Source code | `~/.drewgent/drewgent-agent/` |
+| Config options | `{{AGENT_NAME_LOWER}}` config edit` or [Configuration docs](https://docs.YOUR_AGENT_DOMAIN/docs/user-guide/configuration) |
+| Available tools | `{{AGENT_NAME_LOWER}}` tools list` or [Tools reference](https://docs.YOUR_AGENT_DOMAIN/docs/reference/tools-reference) |
+| Slash commands | `/help` in session or [Slash commands reference](https://docs.YOUR_AGENT_DOMAIN/docs/reference/slash-commands) |
+| Skills catalog | `{{AGENT_NAME_LOWER}} skills browse` or [Skills catalog](https://docs.YOUR_AGENT_DOMAIN/docs/reference/skills-catalog) |
+| Provider setup | `{{AGENT_NAME_LOWER}}` model` or [Providers guide](https://docs.YOUR_AGENT_DOMAIN/docs/integrations/providers) |
+| Platform setup | `{{AGENT_NAME_LOWER}} gateway setup` or [Messaging docs](https://docs.YOUR_AGENT_DOMAIN/docs/user-guide/messaging/) |
+| MCP servers | `{{AGENT_NAME_LOWER}}` mcp list` or [MCP guide](https://docs.YOUR_AGENT_DOMAIN/docs/user-guide/features/mcp) |
+| Profiles | `{{AGENT_NAME_LOWER}}` profile list` or [Profiles docs](https://docs.YOUR_AGENT_DOMAIN/docs/user-guide/profiles) |
+| Cron jobs | `{{AGENT_NAME_LOWER}}` cron list` or [Cron docs](https://docs.YOUR_AGENT_DOMAIN/docs/user-guide/features/cron) |
+| Memory | `{{AGENT_NAME_LOWER}}` memory status` or [Memory docs](https://docs.YOUR_AGENT_DOMAIN/docs/user-guide/features/memory) |
+| Env variables | `{{AGENT_NAME_LOWER}}` config env-path` or [Env vars reference](https://docs.YOUR_AGENT_DOMAIN/docs/reference/environment-variables) |
+| CLI commands | `{{AGENT_NAME_LOWER}} --help` or [CLI reference](https://docs.YOUR_AGENT_DOMAIN/docs/reference/cli-commands) |
+| Gateway logs | `~/.{{AGENT_NAME_LOWER}}/logs/gateway.log` |
+| Session files | `~/.{{AGENT_NAME_LOWER}}/sessions/` or `{{AGENT_NAME_LOWER}}` sessions browse` |
+| Source code | `~/.{{AGENT_NAME_LOWER}}/{{AGENT_NAME_LOWER}}-agent/` |
 
 ---
 
 ## Contributor Quick Reference
 
-For occasional contributors and PR authors. Full developer docs: https://drewgent-agent.humanerd.ai/docs/developer-guide/
+For occasional contributors and PR authors. Full developer docs: https://docs.YOUR_AGENT_DOMAIN/docs/developer-guide/
 
 ### Project Layout
 
 ```
-drewgent-agent/
+{{AGENT_NAME_LOWER}}-agent/
 ├── run_agent.py          # AIAgent — core conversation loop
 ├── model_tools.py        # Tool discovery and dispatch
 ├── toolsets.py           # Toolset definitions
-├── cli.py                # Interactive CLI (DrewgentCLI)
-├── drewgent_state.py       # SQLite session store
+├── cli.py                # Interactive CLI ({{AGENT_NAME}}CLI)
+├── {{AGENT_NAME_LOWER}}_state.py       # SQLite session store
 ├── agent/                # Prompt builder, compression, display, adapters
-├── drewgent_cli/           # CLI subcommands, config, setup, commands
+├── {{AGENT_NAME_LOWER}}_cli/           # CLI subcommands, config, setup, commands
 │   ├── commands.py       # Slash command registry (CommandDef)
 │   ├── config.py         # DEFAULT_CONFIG, env var definitions
 │   └── main.py           # CLI entry point and argparse
@@ -511,7 +511,7 @@ drewgent-agent/
 └── website/              # Docusaurus docs site
 ```
 
-Config: `~/.drewgent/config.yaml` (settings), `~/.drewgent/.env` (API keys).
+Config: `~/.{{AGENT_NAME_LOWER}}/config.yaml` (settings), `~/.{{AGENT_NAME_LOWER}}/.env` (API keys).
 
 ### Adding a Tool (3 files)
 
@@ -541,11 +541,11 @@ registry.register(
 
 **3. Add to `toolsets.py`** → `_HERMES_CORE_TOOLS` list.
 
-All handlers must return JSON strings. Use `get_drewgent_home()` for paths, never hardcode `~/.drewgent`.
+All handlers must return JSON strings. Use `get_{{AGENT_NAME_LOWER}}_home()` for paths, never hardcode `~/.{{AGENT_NAME_LOWER}}`.
 
 ### Adding a Slash Command
 
-1. Add `CommandDef` to `COMMAND_REGISTRY` in `drewgent_cli/commands.py`
+1. Add `CommandDef` to `COMMAND_REGISTRY` in `{{AGENT_NAME_LOWER}}_cli/commands.py`
 2. Add handler in `cli.py` → `process_command()`
 3. (Optional) Add gateway handler in `gateway/run.py`
 
@@ -571,7 +571,7 @@ python -m pytest tests/ -o 'addopts=' -q   # Full suite
 python -m pytest tests/tools/ -q            # Specific area
 ```
 
-- Tests auto-redirect `DREW_HOME` to temp dirs — never touch real `~/.drewgent/`
+- Tests auto-redirect `DREW_HOME` to temp dirs — never touch real `~/.{{AGENT_NAME_LOWER}}/`
 - Run full suite before pushing any change
 - Use `-o 'addopts='` to clear any baked-in pytest flags
 
@@ -589,6 +589,6 @@ Types: `fix:`, `feat:`, `refactor:`, `docs:`, `chore:`
 
 - **Never break prompt caching** — don't change context, tools, or system prompt mid-conversation
 - **Message role alternation** — never two assistant or two user messages in a row
-- Use `get_drewgent_home()` from `drewgent_constants` for all paths (profile-safe)
+- Use `get_{{AGENT_NAME_LOWER}}_home()` from `{{AGENT_NAME_LOWER}}_constants` for all paths (profile-safe)
 - Config values go in `config.yaml`, secrets go in `.env`
 - New tools need a `check_fn` so they only appear when requirements are met

@@ -8,9 +8,9 @@ tags: [skill, filesystem-truth, audit, memory, vault, diagnostics]
 created: 2026-06-01
 updated: 2026-06-01
 links:
-  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]]"
+  - "[[@identity/brain/{{AGENT_NAME}}-brain/P0-brainstem/禁/禁filesystem_truth.neuron]]"
   - "[[@identity/SELF_MODEL]]"
-  - "[[@action/gateway/drewgent-architecture-dataflow]]"
+  - "[[@action/gateway/{{AGENT_NAME_LOWER}}-architecture-dataflow]]"
   - "[[@identity/brain/rules]]"---
 
 # Filesystem Truth Audit — Memory vs Reality 검증
@@ -32,11 +32,11 @@ memory/vault/위키에 적힌 "Done" 또는 "exists" 항목이 실제 filesystem
 memory/vault에서 path claim 찾기:
 
 ```bash
-grep -rn "Done" ~/.drewgent/P0-brainstem ~/.drewgent/P4-cortex ~/.drewgent/P2-hippocampus 2>/dev/null | head -20
-grep -rn "tools/.*\.py" ~/.drewgent/P4-cortex/growth 2>/dev/null | head -10
+grep -rn "Done" ~/.{{AGENT_NAME_LOWER}}/P0-brainstem ~/.{{AGENT_NAME_LOWER}}/P4-cortex ~/.{{AGENT_NAME_LOWER}}/P2-hippocampus 2>/dev/null | head -20
+grep -rn "tools/.*\.py" ~/.{{AGENT_NAME_LOWER}}/P4-cortex/growth 2>/dev/null | head -10
 ```
 
-"tools/drewgent_kanban_db.py (Phase 1) Done" 같은 줄 추출.
+"tools/{{AGENT_NAME_LOWER}}_kanban_db.py (Phase 1) Done" 같은 줄 추출.
 
 ### Step 1b: Config value claim 추출
 
@@ -44,9 +44,9 @@ memory/vault에서 config value claim (config 변경 사실) 찾기:
 
 ```bash
 # threshold 같은 config 변경 claim
-grep -rn "threshold:" ~/.drewgent/P4-cortex/growth 2>/dev/null | head -10
-grep -rn "0.5 → 0.9\|0.5 -> 0.9" ~/.drewgent/P4-cortex ~/.drewgent/P6-prefrontal 2>/dev/null | head -10
-grep -rn "applied\|patched\|configured" ~/.drewgent/P4-cortex/growth 2>/dev/null | head -10
+grep -rn "threshold:" ~/.{{AGENT_NAME_LOWER}}/P4-cortex/growth 2>/dev/null | head -10
+grep -rn "0.5 → 0.9\|0.5 -> 0.9" ~/.{{AGENT_NAME_LOWER}}/P4-cortex ~/.{{AGENT_NAME_LOWER}}/P6-prefrontal 2>/dev/null | head -10
+grep -rn "applied\|patched\|configured" ~/.{{AGENT_NAME_LOWER}}/P4-cortex/growth 2>/dev/null | head -10
 ```
 
 "compression.threshold: 0.5 → 0.9 (2026-05-21)" 같은 줄 추출.
@@ -55,26 +55,26 @@ grep -rn "applied\|patched\|configured" ~/.drewgent/P4-cortex/growth 2>/dev/null
 
 ```bash
 # 2a. 단일 path 직접 확인
-test -f /Users/drew/.drewgent/source/drewgent-agent/tools/drewgent_kanban_db.py && echo EXISTS || echo MISSING
+test -f ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/tools/{{AGENT_NAME_LOWER}}_kanban_db.py && echo EXISTS || echo MISSING
 
 # 2b. 이름으로 전체 검색
-find ~/.drewgent -name "drewgent_kanban_db.py" -type f 2>/dev/null
+find ~/.{{AGENT_NAME_LOWER}} -name "{{AGENT_NAME_LOWER}}_kanban_db.py" -type f 2>/dev/null
 
 # 2c. wildcard 패턴 검증
-ls ~/.drewgent/source/*/tools/*.py 2>/dev/null | wc -l
+ls ~/.{{AGENT_NAME_LOWER}}/source/*/tools/*.py 2>/dev/null | wc -l
 ```
 
 ### Step 3: Symlink / Root confusion 처리
 
-Drewgent는 root가 바뀔 수 있음:
-- 옛 root: `~/.drewgent/source/claude-code`
-- 신 root: `~/.drewgent/source/drewgent-agent`
-- quarantine: `~/.drewgent/P6-prefrontal/archive/quarantine-.../`
+{{AGENT_NAME}}는 root가 바뀔 수 있음:
+- 옛 root: `~/.{{AGENT_NAME_LOWER}}/source/claude-code`
+- 신 root: `~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent`
+- quarantine: `~/.{{AGENT_NAME_LOWER}}/P6-prefrontal/archive/quarantine-.../`
 
 ```bash
-readlink -f /Users/drew/.drewgent/source/drewgent-agent 2>/dev/null
-ls -la ~/.drewgent/source/ 2>/dev/null
-ls -la ~/.drewgent/P6-prefrontal/archive/ 2>/dev/null
+readlink -f ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent 2>/dev/null
+ls -la ~/.{{AGENT_NAME_LOWER}}/source/ 2>/dev/null
+ls -la ~/.{{AGENT_NAME_LOWER}}/P6-prefrontal/archive/ 2>/dev/null
 ```
 
 ### Step 4: Discrepancy Report
@@ -82,7 +82,7 @@ ls -la ~/.drewgent/P6-prefrontal/archive/ 2>/dev/null
 | Memory claim | Reality | Severity |
 |--------------|---------|----------|
 | tools/X.py Done | 파일 부재 | HIGH (broken ref) |
-| ~/.drewgent/source/old/ path | 새 root로 이동 | MEDIUM (outdated) |
+| ~/.{{AGENT_NAME_LOWER}}/source/old/ path | 새 root로 이동 | MEDIUM (outdated) |
 | script path in jobs.json | 실제 script 부재 | HIGH (cron fail) |
 | table 존재 (memory) | DB에 부재 | MEDIUM (gap) |
 
@@ -95,9 +95,9 @@ ls -la ~/.drewgent/P6-prefrontal/archive/ 2>/dev/null
 ## Pitfalls
 
 - readlink 없이 ls로 확인하면 symlink target를 모름
-- brain root를 source root로 착각 — `~/.drewgent` (brain home) ≠ `~/.drewgent/source/drewgent-agent` (code root)
+- brain root를 source root로 착각 — `~/.{{AGENT_NAME_LOWER}}` (brain home) ≠ `~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent` (code root)
 - quarantine 안에 진짜 있을 수도 — 옛 파일이 archive로 이동했을 수 있음
-- vault path ≠ filesystem path — wikilink `[[@memory/...]]` ↔ `~/.drewgent/P4-cortex/...` 변환 필요
+- vault path ≠ filesystem path — wikilink `[[@memory/...]]` ↔ `~/.{{AGENT_NAME_LOWER}}/P4-cortex/...` 변환 필요
 - "Done" marker는 validation 안 됨 — implementation_plan.md 등의 status를 무조건 신뢰하지 말 것
 
 ## Verification
@@ -105,19 +105,19 @@ ls -la ~/.drewgent/P6-prefrontal/archive/ 2>/dev/null
 ```bash
 test -f PATH_1 && test -f PATH_2 && ... && echo "ALL OK"
 N_CLAIM=$(grep -c "Done" PATH_TO_MEMORY.md)
-N_REAL=$(find ~/.drewgent/source -name "*.py" | wc -l)
+N_REAL=$(find ~/.{{AGENT_NAME_LOWER}}/source -name "*.py" | wc -l)
 echo "claimed=$N_CLAIM real=$N_REAL"
 ```
 
 ## Example (2026-06-01)
 
-- Claim: tools/drewgent_kanban_db.py Done
+- Claim: tools/{{AGENT_NAME_LOWER}}_kanban_db.py Done
 - Reality: find 0 hits
 - 해석: dispatcher script가 자체 sqlite3 코드 갖고 있어서 import 안 함
 - Action: memory 정정
 
 ## Related
 
-- [[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁filesystem_truth.neuron]] — P0 강제 규칙
+- [[@identity/brain/{{AGENT_NAME}}-brain/P0-brainstem/禁/禁filesystem_truth.neuron]] — P0 강제 규칙
 - [[@identity/SELF_MODEL]] — self-model에 path claim
-- [[@action/migrations/drewgent-root-consolidation-20260506]] — root 변경 migration
+- [[@action/migrations/{{AGENT_NAME_LOWER}}-root-consolidation-20260506]] — root 변경 migration

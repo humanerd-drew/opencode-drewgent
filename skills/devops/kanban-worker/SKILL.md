@@ -79,7 +79,7 @@ kanban_block(
     reason="review-required: rate limiter shipped, 14/14 tests pass — needs eyes on the user_id/IP fallback choice before merging",
 )
 
-**Side effect:** A `post_tool_call` hook fires after every `kanban_complete`, syncing review-required/blocked/critical tasks to a Linear issue tracker (DEPRECATED 2026-06-14 — Linear integration paused, pending Huly evaluation). The hook stub remains at `~/.drewgent/scripts/kanban_linear_sync.py`.
+**Side effect:** A `post_tool_call` hook fires after every `kanban_complete`, syncing review-required/blocked/critical tasks to a Linear issue tracker (DEPRECATED 2026-06-14 — Linear integration paused, pending Huly evaluation). The hook stub remains at `~/.{{AGENT_NAME_LOWER}}/scripts/kanban_linear_sync.py`.
 
 Use `kanban_complete` only when the task is genuinely terminal
 Use `kanban_complete` only when the task is genuinely terminal — e.g. a one-line typo fix, a docs change with no functional consequences, or a research task where the artifact IS the writeup itself.
@@ -299,16 +299,16 @@ curl -s http://macmini:8765/kanban/api/board | python3 -m json.tool
 
 **Worker crash with "pid not alive" on spawn.** When the dispatcher reports `pid NNNNN not alive` repeatedly and the task moves to `gave_up`/blocked, the worker process died before doing any work. Causes:
 
-1. **Python import error at startup** — worker starts but immediately crashes on an `ImportError`. Fix: check the dispatcher log (`~/.drewgent/P4-cortex/scripts/kanban/logs/dispatcher.log` or `grep -r "task_id" ~/.drewgent/P4-cortex/scripts/kanban/logs/workers/`). Common causes: missing venv, broken PYTHONPATH (customize layer), missing cloudflare workers-types, or a dependency that's only available in `node_modules` (npm context missing).
+1. **Python import error at startup** — worker starts but immediately crashes on an `ImportError`. Fix: check the dispatcher log (`~/.{{AGENT_NAME_LOWER}}/P4-cortex/scripts/kanban/logs/dispatcher.log` or `grep -r "task_id" ~/.{{AGENT_NAME_LOWER}}/P4-cortex/scripts/kanban/logs/workers/`). Common causes: missing venv, broken PYTHONPATH (customize layer), missing cloudflare workers-types, or a dependency that's only available in `node_modules` (npm context missing).
 2. **Segfault in workerd/sqlite** — less common. Check system logs.
 3. **Dispatcher's spawn mechanism issue on macOS** — fork-exec of `run_kanban_worker.py` may fail if the shell environment has conflicting PYTHONPATH or if the venv's python binary is missing.
 
 **Diagnostic steps for "pid not alive":**
 ```bash
 # 1. Try spawning the worker manually
-cd ~/.drewgent
+cd ~/.{{AGENT_NAME_LOWER}}
 source .venv/bin/activate
-python ~/.drewgent/scripts/run_kanban_worker.py --task-id <TASK_ID> 2>&1 | head -50
+python ~/.{{AGENT_NAME_LOWER}}/scripts/run_kanban_worker.py --task-id <TASK_ID> 2>&1 | head -50
 
 # 2. Check if it's an import error
 python -c "from tools.kanban import kanban_show" 2>&1
@@ -356,21 +356,21 @@ When the user's original request is **Task A**, and during execution you discove
 
 1. **Do not assume pasted text is from the same context.** Look at the prompt text *and* the technical content. The user often dumps multiple terminal windows or pastes one-off outputs. Cross-check the actual environment (`lsof -i :8787` vs `lsof -i :8087`, `docker ps`, the IP they're connecting to).
 2. **Disambiguate quickly with one diagnostic**, not a long investigation. A single `lsof -nP -iTCP:8087 -sTCP:LISTEN` tells you "what is on this port, on this Mac, right now" — usually enough to name the real environment.
-3. **If the user's pasted error and the real environment disagree, name it in one sentence**: "The wrangler trace you pasted is from a different process (m-log-v2 dev on port 8787); your Huly session is on 192.168.1.53:8087 — that one is on a different machine (NAS). Want me to look at the NAS or fix the Mac dev?"
+3. **If the user's pasted error and the real environment disagree, name it in one sentence**: "The wrangler trace you pasted is from a different process (m-log-v2 dev on port 8787); your Huly session is on 192.168.1.100:8087 — that one is on a different machine (NAS). Want me to look at the NAS or fix the Mac dev?"
 4. **Don't fabricate a connection between unrelated stack traces.** If the user says "이게 문제라는데" about a wrangler trace and the real blocker is on a different machine, the honest answer is: "those are different systems; the actual Huly blocker is on the NAS, not this Mac." Don't chase the wrangler trace.
 
 **The same lesson applies in reverse**: when *you* (the agent) are chasing a fragile system (like NAS docker containers) and produce reams of guess-and-check debugging output, **stop after 2-3 attempts of the same pattern**. If the same `expect`/ssh race condition has bitten you three times in a row, the right move is to ask the user to either run the command themselves or give you a different transport. The user may be running the same fragile command in 2 minutes; you might still be debugging the race condition 30 minutes later.
 
-**Dispatcher reads wrong DB → tasks never dispatched.** When a custom cron runner dispatches kanban tasks (e.g. `drewgent-cron-runner-001` calling `dispatch_once_*.py`), verify it reads from the **same DB** that `kanban_create`/`kanban_list` use. The native kanban is at `~/.drewgent/kanban.db`. If the dispatcher reads a separate legacy DB (`~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db`), tasks created via the `kanban_*` toolset will never dispatch — they exist in a different database. Fix: point the dispatcher to the native kanban DB.
+**Dispatcher reads wrong DB → tasks never dispatched.** When a custom cron runner dispatches kanban tasks (e.g. `{{AGENT_NAME_LOWER}}-cron-runner-001` calling `dispatch_once_*.py`), verify it reads from the **same DB** that `kanban_create`/`kanban_list` use. The native kanban is at `~/.{{AGENT_NAME_LOWER}}/kanban.db`. If the dispatcher reads a separate legacy DB (`~/.{{AGENT_NAME_LOWER}}/P2-hippocampus/kanban/state/{{AGENT_NAME_LOWER}}_tasks.db`), tasks created via the `kanban_*` toolset will never dispatch — they exist in a different database. Fix: point the dispatcher to the native kanban DB.
 
 **Subprocess PYTHONPATH can shadow modules.** When spawning kanban dispatch from a cron runner, explicitly set `PYTHONPATH` in the subprocess env to prevent leaked sys.path entries (e.g. from a trailing colon in `.zshrc`) from shadowing `utils`, `tools.registry`, and other modules. See `shell-init-side-effect-gating` skill for the fix pattern.
 
-**no_agent cron jobs with `.js` scripts fail silently.** `_run_job_script()` in the Drewgent cron scheduler interprets file extension to pick the runner: `.sh`/`.bash` → bash, **everything else → `sys.executable` (Python)**. A `.js` script passed to no_agent cron will be run by the Python interpreter and fail with a syntax error about non-ASCII characters (e.g. the JS comment's em-dash `—` triggers it first). Fix: wrap Node.js scripts in a `.sh` wrapper:
+**no_agent cron jobs with `.js` scripts fail silently.** `_run_job_script()` in the {{AGENT_NAME}} cron scheduler interprets file extension to pick the runner: `.sh`/`.bash` → bash, **everything else → `sys.executable` (Python)**. A `.js` script passed to no_agent cron will be run by the Python interpreter and fail with a syntax error about non-ASCII characters (e.g. the JS comment's em-dash `—` triggers it first). Fix: wrap Node.js scripts in a `.sh` wrapper:
 
 ```bash
 #!/bin/bash
 cd "$(dirname "$0")" || exit 1
-HULY_KEY="$(grep '^HULY_KEY=' "$HOME/.drewgent/.env" | head -1 | cut -d= -f2-)"
+HULY_KEY="$(grep '^HULY_KEY=' "$HOME/.{{AGENT_NAME_LOWER}}/.env" | head -1 | cut -d= -f2-)"
 export HULY_KEY
 exec 2>/dev/null
 exec node --no-warnings your_script.js

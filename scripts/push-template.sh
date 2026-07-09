@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
+# ⚠ DEPRECATED — Use `sync-template.sh` instead (more comprehensive sanitize patterns).
 # push-template.sh — Push local changes to public template repo
 # Automatically sanitizes personal data, filters runtime state, pushes to public/main
 set -euo pipefail
 
 PUBLIC_REMOTE="public"
 PUBLIC_BRANCH="main"
-WORKTREE="/tmp/drewgent-push-$$"
+WORKTREE="/tmp/{{AGENT_NAME_LOWER}}-push-$$"
 TRACKING_FILE=".last-template-push"
 
 RED='\033[0;31m'
@@ -70,7 +71,7 @@ EXCLUDE_PATTERNS=(
   "^datagen-config-examples/"
   "^docker/"
   "^docs/"
-  "^drewgent_cli/"
+  "^{{AGENT_NAME_LOWER}}_cli/"
   "^environments/"
   "^gateway/"
   "^hooks/"
@@ -94,17 +95,17 @@ EXCLUDE_PATTERNS=(
   "^toolset_distributions\.py"
   "^trajectory_compressor\.py"
   "^utils\.py"
-  "^check_drewgent_update\.py"
-  "^drewgent_constants\.py"
-  "^drewgent_logging\.py"
-  "^drewgent_state\.py"
-  "^drewgent_time\.py"
-  "^drewgent$"
-  "^drewgent-architecture\.html"
+  "^check_{{AGENT_NAME_LOWER}}_update\.py"
+  "^{{AGENT_NAME_LOWER}}_constants\.py"
+  "^{{AGENT_NAME_LOWER}}_logging\.py"
+  "^{{AGENT_NAME_LOWER}}_state\.py"
+  "^{{AGENT_NAME_LOWER}}_time\.py"
+  "^{{AGENT_NAME_LOWER}}$"
+  "^{{AGENT_NAME_LOWER}}-architecture\.html"
   "^cli-config\.yaml\.example"
   "^MANIFEST\.in"
   "^pyproject\.toml"
-  "^setup-drewgent\.sh"
+  "^setup-{{AGENT_NAME_LOWER}}\.sh"
   "^SOUL\.md$"
   "^DOCKERHUB\.md$"
   "^kanban-orchestrator\.md"
@@ -117,12 +118,12 @@ EXCLUDE_PATTERNS=(
   "^scripts/content_"
   "^scripts/cron_seo_"
   "^scripts/ingest_"
-  "^scripts/recall\.py$"
+  # "^scripts/recall\.py$"  # 2026-07-08: search layer improvements released
   "^scripts/seo_"
   "^scripts/trend_"
   "^scripts/n8n_trigger_runner\.py$"
   "^scripts/oneshot_digest\.py$"
-  "^scripts/drewgent_gbrain_watchdog\.sh$"
+  "^scripts/{{AGENT_NAME_LOWER}}_gbrain_watchdog\.sh$"
   "^scripts/wordpress-mcp-server\.js$"
 
   # ── Junk / Hermes-era releases ──
@@ -212,90 +213,17 @@ echo -e "${GREEN}  ✓ No secrets detected${NC}"
 echo -e "\n${BLUE}[3/5] Creating worktree from public/$PUBLIC_BRANCH...${NC}"
 git worktree add "$WORKTREE" "$PUBLIC_REMOTE/$PUBLIC_BRANCH" 2>&1 | head -3
 
-# ── Step 4: Copy + sanitize files ──
-echo -e "\n${BLUE}[4/5] Copying and sanitizing files...${NC}"
+# ── DEPRECATED: sanitize + push logic removed ──
+echo -e "\n${YELLOW}╔══════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${YELLOW}║  push-template.sh is deprecated.                            ║${NC}"
+echo -e "${YELLOW}║  Use sync-template.sh instead for template sync.            ║${NC}"
+echo -e "${YELLOW}╚══════════════════════════════════════════════════════════════╝${NC}"
+echo -e "\nRun: ${BLUE}bash sync-template.sh${NC}\n"
 
-for f in "${TEMPLATE_FILES[@]}"; do
-  if [[ -f "$f" ]]; then
-    mkdir -p "$(dirname "$WORKTREE/$f")"
-    cp "$f" "$WORKTREE/$f"
-    # Sanitize: replace personal domain
-    if grep -q "humanerd\.kr" "$WORKTREE/$f" 2>/dev/null; then
-      sed -i '' 's/humanerd\.kr/YOUR_DOMAIN/g' "$WORKTREE/$f"
-      echo -e "  ${YELLOW}↻${NC} $f (sanitized YOUR_DOMAIN)"
-    fi
-    # Sanitize: replace personal email
-    if grep -q "drew@humanerd" "$WORKTREE/$f" 2>/dev/null; then
-      sed -i '' 's/drew@humanerd\.ai/your-email@example.com/g' "$WORKTREE/$f"
-      echo -e "  ${YELLOW}↻${NC} $f (sanitized email)"
-    fi
-    # Sanitize: replace personal Docker Hub
-    if grep -q "YOUR_DOCKER_USER/" "$WORKTREE/$f" 2>/dev/null; then
-      sed -i '' 's/humanerdkr\//YOUR_DOCKER_USER\//g' "$WORKTREE/$f"
-      echo -e "  ${YELLOW}↻${NC} $f (sanitized docker user)"
-    fi
-    # Sanitize: replace personal ARD identifiers
-    if grep -q "urn:air:humanerd\." "$WORKTREE/$f" 2>/dev/null; then
-      sed -i '' 's/urn:air:humanerd[^:]*/urn:air:YOUR_DOMAIN/g' "$WORKTREE/$f"
-      echo -e "  ${YELLOW}↻${NC} $f (sanitized ARD identifier)"
-    fi
-  fi
-done
-
-# ── Step 4.5: Remove excluded files from worktree ──
-echo -e "\n${BLUE}[4.5/5] Removing excluded/stale files from worktree...${NC}"
-
-REMOVED_COUNT=0
-# Remove files that match EXCLUDE_PATTERNS
-while IFS= read -r f; do
-  skip=false
-  for pattern in "${EXCLUDE_PATTERNS[@]}"; do
-    if [[ "$f" =~ $pattern ]]; then
-      skip=true
-      break
-    fi
-  done
-  if [[ "$skip" == true ]] && [[ -f "$WORKTREE/$f" ]]; then
-    rm "$WORKTREE/$f"
-    echo -e "  ${RED}✗${NC} $f (excluded)"
-    ((REMOVED_COUNT++))
-  fi
-done < <(cd "$WORKTREE" && git ls-files 2>/dev/null)
-
-# Remove empty directories that had all their files removed
-(cd "$WORKTREE" && find . -type d -empty -not -path './.git/*' -delete 2>/dev/null) || true
-
-if [[ $REMOVED_COUNT -gt 0 ]]; then
-  echo -e "  ${GREEN}  Removed $REMOVED_COUNT excluded file(s)${NC}"
-else
-  echo -e "  ${YELLOW}  No excluded files to remove${NC}"
+# Cleanup worktree if it was created
+if [[ -d "$WORKTREE" ]]; then
+  cd ~/.{{AGENT_NAME_LOWER}}
+  git worktree remove "$WORKTREE" 2>/dev/null || true
 fi
 
-# ── Step 5: Commit + push ──
-echo -e "\n${BLUE}[5/5] Committing and pushing...${NC}"
-
-cd "$WORKTREE"
-git add -A
-
-if git diff --cached --quiet; then
-  echo -e "${YELLOW}  No changes to commit (all were filtered or already in template).${NC}"
-else
-  # Generate commit message from changed files
-  CHANGED_LIST=$(git diff --cached --name-only | head -10 | tr '\n' ' ')
-  git commit -m "template: sync $(date +%Y-%m-%d)" -m "Files: $CHANGED_LIST"
-  git push "$PUBLIC_REMOTE" "HEAD:$PUBLIC_BRANCH" 2>&1 | tail -5
-  echo -e "${GREEN}  ✓ Pushed to $PUBLIC_REMOTE/$PUBLIC_BRANCH${NC}"
-fi
-
-# Cleanup
-cd /Users/drew/.drewgent
-git worktree remove "$WORKTREE"
-
-# Update tracking file
-git rev-parse HEAD > "$TRACKING_FILE"
-echo -e "  ✓ Updated tracking file"
-
-echo ""
-echo -e "${GREEN}╔══════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║  Done! Template is live.                    ║${NC}"
-echo -e "${GREEN}╚══════════════════════════════════════════════╝${NC}"
+exit 0

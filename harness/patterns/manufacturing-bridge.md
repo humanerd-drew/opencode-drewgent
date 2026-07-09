@@ -1,6 +1,6 @@
 ---
 title: manufacturing-bridge
-description: "6대 패턴(점진제동/구조적불가능/자동정지-HITL/flaky-vs-systematic/두눈실증/사전위험식별)의 Drewgent 동형매핑 정본 + enforcement"
+description: "6대 패턴(점진제동/구조적불가능/자동정지-HITL/flaky-vs-systematic/두눈실증/사전위험식별)의 {{AGENT_NAME}} 동형매핑 정본 + enforcement"
 type: reference
 space: concept
 tags: [concept, harness, quality, enforcement]
@@ -39,7 +39,7 @@ links:
   - "[[scripts/bridge-lint.sh]]"
 ---
 
-# Manufacturing Bridge — 6대 패턴 (Drewgent 정본)
+# Manufacturing Bridge — 6대 패턴 ({{AGENT_NAME}} 정본)
 
 일관된 의사결정을 위한 6개 패턴. 새 메커니즘/가드레일을 설계하기 전에 이 표를 먼저 참조한다.
 패턴은 provenance 태그로 추적되고, enforcement tier별로 강제된다.
@@ -51,7 +51,7 @@ links:
 **원리:** 장애 대응을 4단계로 분리. 처음부터 멈추지 않고 단계별로 강도를 높인다.
 즉시 kill -9는 마지막 수단. 선행신호 → 조이기 → 늦추기 → 세우기 순서.
 
-**Drewgent 구현체:**
+**{{AGENT_NAME}} 구현체:**
 
 | 단계 | 동작 | 파일 | 트리거 조건 |
 |------|------|------|-----------|
@@ -71,16 +71,16 @@ links:
 **원리:** "하지 마" 규칙이 아니라 구조적으로 불가능하게 만든다.
 검사로 막는 게 아니라, 접근 경로 자체를 차단하거나, 틀린 입력이 애초에 들어오지 않게 설계.
 
-**Drewgent 구현체:**
+**{{AGENT_NAME}} 구현체:**
 
 | 포카요케 | 방지 대상 | 메커니즘 | 파일 |
 |----------|-----------|----------|------|
 | watcher exclude | vault.key, secrets_vault.json 읽기 | opencode.jsonc watcher 경로 제외 | `~/.config/opencode/opencode.jsonc` |
-| chmod 600 | DB/Admin credential 노출 | 파일 권한으로 읽기 원천 차단 | `~/.drewgent/wordpress/.wp-env` |
+| chmod 600 | DB/Admin credential 노출 | 파일 권한으로 읽기 원천 차단 | `~/.{{AGENT_NAME_LOWER}}/wordpress/.wp-env` |
 | knowledge.db isolation | knowledge.db 직접 탐색 | CLI-only 접근, MCP로는 불가 | chmod 600, watcher exclude |
-| vault_cli.py 의무화 | API 키 평문 저장 | set/get 외 저장 경로 없음 | `~/.drewgent/scripts/vault_cli.py` |
+| vault_cli.py 의무화 | API 키 평문 저장 | set/get 외 저장 경로 없음 | `~/.{{AGENT_NAME_LOWER}}/scripts/vault_cli.py` |
 | 禁 blind_write | 파일 읽기 없는 쓰기 | tool 설계상 Read 선행 필수 + P0 규칙 | rules.md 禁 rule |
-| launchd KeepAlive 패턴 | 잘못된 재시작 조건 | `SuccessfulExit: false` 고정 | 모든 `ai.drewgent.*.plist` |
+| launchd KeepAlive 패턴 | 잘못된 재시작 조건 | `SuccessfulExit: false` 고정 | 모든 `ai.{{AGENT_NAME_LOWER}}.*.plist` |
 
 **ponytail 관계:** ponytail의 6단계 체크리스트(구현 전 YAGNI→stdlib→native→dep→oneline→min)는 구조적 불가능의 **코드 레벨 인스턴스**. 체크리스트를 통과하면 불필요한 코드가 애초에 생성되지 않는다. → [[skills/software-development/ponytail]]
 
@@ -95,7 +95,7 @@ links:
 **원리:** guardrail이 감지되면 자동으로 정지. 판단은 인간에게 넘긴다.
 정지까지는 자동, 재가동 결정은 반드시 사람. 자동정지만 있고 인간지혜가 없으면 무음 fail이 된다.
 
-**Drewgent 구현체:**
+**{{AGENT_NAME}} 구현체:**
 
 | Guardrail | 자동정지 조건 | 판단자 | 비가역 | 파일 |
 |-----------|-------------|--------|--------|------|
@@ -118,7 +118,7 @@ links:
 **원리:** 실패를 패턴으로 분류한다. 단발성(flaky)은 무시해도 되고, 반복성(systematic)은 근본수정이 필요하다.
 이 구분 없이 모든 실패에 똑같이 대응하면 flaky에 과잉대응하거나 systematic을 방치하게 된다.
 
-**Drewgent 구현체:**
+**{{AGENT_NAME}} 구현체:**
 
 | 관측 | 분류 | 조치 | 대상 파일 |
 |------|------|------|----------|
@@ -140,7 +140,7 @@ links:
 **원리:** CI-green ≠ live-works. checksum이나 테스트 통과만 믿고 "됐다"고 단정하지 않는다.
 실제 실행 환경(현장), 실제 상태 덤프(현물), 실제 결과(현실) 중 최소 2가지를 직접 확인해야 QA 통과.
 
-**Drewgent 구현체:**
+**{{AGENT_NAME}} 구현체:**
 
 | 3현 | 의미 | 검증 방법 | 적용 파일 |
 |-----|------|-----------|----------|
@@ -161,7 +161,7 @@ links:
 **원리:** 작업 시작 전에 잠재 고장 모드를 점수화한다. RPN = 심각도 × 발생 × 검출.
 모든 위험을 막을 순 없으니 점수로 우선순위를 정하고, 높은 것만 집중 방어.
 
-**Drewgent 구현체:**
+**{{AGENT_NAME}} 구현체:**
 
 | RPN | 등급 | 요구 조치 |
 |-----|------|----------|

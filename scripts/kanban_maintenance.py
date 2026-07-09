@@ -15,8 +15,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-DREW_HOME = Path.home() / ".drewgent"
-DB = DREW_HOME / "P2-hippocampus" / "kanban" / "state" / "drewgent_tasks.db"
+DREW_HOME = Path.home() / ".{{AGENT_NAME_LOWER}}"
+DB = DREW_HOME / "P2-hippocampus" / "kanban" / "state" / "{{AGENT_NAME_LOWER}}_tasks.db"
 HTML_REFRESH_SCRIPT = DREW_HOME / "P4-cortex" / "scripts" / "generate_kanban_html.py"
 
 if not DB.exists():

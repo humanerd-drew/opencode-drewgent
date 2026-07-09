@@ -52,9 +52,21 @@ sanitize() {
   done < <(git ls-files 2>/dev/null | xargs -I{} file "$TEMPLATE_DIR/{}" 2>/dev/null | grep text | cut -d: -f1)
 }
 
+# ── Personal data patterns ──
 sanitize "humanerd\.kr" "YOUR_DOMAIN"
 sanitize "drew@humanerd\.ai" "your-email@example.com"
 sanitize "humanerdkr/" "YOUR_DOCKER_USER/"
+sanitize "/Users/drew/" "~/"
+sanitize "drewgent-agent\.humanerd\.ai" "docs.YOUR_AGENT_DOMAIN"
+sanitize "@humanerd" "@yourname"
+sanitize "/Volumes/humanerd/" "/Volumes/YOUR_NAS/"
+sanitize "id_ed25519_dr2w247" "YOUR_SSH_KEY"
+sanitize "Drew Kim" "Your Name"
+sanitize "100\.110\.130\.54" "YOUR_NAS_IP"
+sanitize "port 8528" "port 22"
+sanitize "\-p 8528" "-p 22"
+sanitize "8528 (LAN)" "22 (LAN)"
+sanitize "dr2w247@github\.com" "your-github@example.com"
 
 # ── Commit + push ──
 echo -e "\n${BLUE}[3/3] Committing and pushing...${NC}"

@@ -3,11 +3,11 @@ title: vault-secrets
 trigger: "User provides an API key, token, or any secret value — store it encrypted, never in plaintext"
 provenance:
   session: "2026-07-01 vault-system"
-  decision: "keyring (OS-native) + Fernet (cross-platform). vault_cli.py in scripts/, skill in skills/security/. Template-included for drewgent installs."
+  decision: "keyring (OS-native) + Fernet (cross-platform). vault_cli.py in scripts/, skill in skills/security/. Template-included for {{AGENT_NAME_LOWER}} installs."
 created: 2026-07-01
 ---
 
-# Vault Secrets — Drewgent Encrypted Secrets Manager
+# Vault Secrets — {{AGENT_NAME}} Encrypted Secrets Manager
 
 ## Core Rule
 
@@ -43,7 +43,7 @@ vault delete OPENAI_API_KEY
 `.zshrc` / `$PROFILE` should have:
 
 ```zsh
-eval "$(python3 ~/.drewgent/scripts/vault_cli.py env 2>/dev/null)" || true
+eval "$(python3 ~/.{{AGENT_NAME_LOWER}}/scripts/vault_cli.py env 2>/dev/null)" || true
 ```
 
 This decrypts all keys at shell login. `opencode.jsonc` references them via `{env:KEY_NAME}`.
@@ -58,7 +58,7 @@ This decrypts all keys at shell login. `opencode.jsonc` references them via `{en
 
 ```bash
 pip install cryptography keyring
-python3 ~/.drewgent/scripts/vault_cli.py init
+python3 ~/.{{AGENT_NAME_LOWER}}/scripts/vault_cli.py init
 vault scan   # find existing plaintext keys
 vault migrate  # encrypt & replace with {env:VAR}
 ```

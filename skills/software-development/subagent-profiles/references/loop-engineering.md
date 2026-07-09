@@ -1,4 +1,4 @@
-# Loop Engineering — Drewgent Assessment
+# Loop Engineering — {{AGENT_NAME}} Assessment
 
 Source: [Loop Engineering — addyo.substack.com](https://addyo.substack.com/p/loop-engineering)
 Assessed: 2026-06-13
@@ -7,7 +7,7 @@ Assessed: 2026-06-13
 
 ### 1. Automations (Heartbeat)
 
-| Requirement | Drewgent Status |
+| Requirement | {{AGENT_NAME}} Status |
 |-------------|-----------------|
 | Scheduled auto-discovery | `cronjob` tool — cron, intervals, ISO timestamps |
 | Background triage | Kanban dispatcher + cron-runner auto-spawns tasks |
@@ -22,7 +22,7 @@ block the user session.
 
 ### 2. Worktrees (Parallel Isolation)
 
-| Requirement | Drewgent Status |
+| Requirement | {{AGENT_NAME}} Status |
 |-------------|-----------------|
 | Git worktree for parallel agents | `kanban_create(workspace_kind="worktree")` |
 | Config toggle | `config.yaml worktree: true/false` |
@@ -35,19 +35,19 @@ Kanban tasks with `workspace_kind="worktree"` do get isolation.
 
 ### 3. Skills (Project Knowledge)
 
-| Requirement | Drewgent Status |
+| Requirement | {{AGENT_NAME}} Status |
 |-------------|-----------------|
 | SKILL.md format | ✅ 100+ skills, YAML frontmatter + markdown |
 | Trigger conditions | `trigger:` frontmatter field |
 | Skill auto-matching | ❌ Manual via `skill_view()`. Codex/Claude Code auto-match by description. |
-| Cross-repo sharing | ✅ `skill_manage` tool, `~/.drewgent/skills/` |
+| Cross-repo sharing | ✅ `skill_manage` tool, `~/.{{AGENT_NAME_LOWER}}/skills/` |
 | Intent capture | ✅ 禁.neuron files, P0-P6 vault incidents, provenance convention |
 
 **Gap**: No auto-matching. The model must know to call `skill_view()`.
 
 ### 4. Plugins & Connectors (MCP)
 
-| Requirement | Drewgent Status |
+| Requirement | {{AGENT_NAME}} Status |
 |-------------|-----------------|
 | MCP protocol | ✅ Native client + mcporter CLI |
 | Connectors | MCP catalog (gbrain, specification-website, etc.) |
@@ -59,7 +59,7 @@ available MCP servers from inside the agent loop.
 
 ### 5. Sub-agents (Maker/Checker Split)
 
-| Requirement | Drewgent Status |
+| Requirement | {{AGENT_NAME}} Status |
 |-------------|-----------------|
 | Sub-agent spawning | ✅ `delegate_task` — single + batch (parallel) |
 | Different model per subagent | ✅ `delegation.provider/model` config + `agent_profile` override |
@@ -72,7 +72,7 @@ available MCP servers from inside the agent loop.
 
 ### 6. Memory (External State = Spine)
 
-| Requirement | Drewgent Status |
+| Requirement | {{AGENT_NAME}} Status |
 |-------------|-----------------|
 | Kanban board as durable state | ✅ `kanban_create/kanban_complete` lifecycle |
 | Cron context chaining | ✅ `context_from: [job_id]` |
@@ -84,7 +84,7 @@ available MCP servers from inside the agent loop.
 > "The model forgets everything between runs so the memory has to be on disk
 > and not in the context."
 
-Drewgent's P-layer vault + kanban + memory tool implement this with three
+{{AGENT_NAME}}'s P-layer vault + kanban + memory tool implement this with three
 redundant systems at different TTLs.
 
 ## Overall Score
@@ -100,7 +100,7 @@ redundant systems at different TTLs.
 
 ## Key Insight
 
-The article's core loop shape is already achievable with Drewgent:
+The article's core loop shape is already achievable with {{AGENT_NAME}}:
 
 > An automation runs every morning on the repo. Its prompt calls a triage skill
 > that reads yesterday's CI failures, the open issues, the recent commits, and

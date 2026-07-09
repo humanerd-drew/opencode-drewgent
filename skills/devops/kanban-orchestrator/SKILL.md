@@ -167,7 +167,7 @@ Tell them what you created in plain prose, naming the actual profiles you used:
 
 ## Office Autopilot — Queue Processing Mode
 
-Drewgent's `office_autopilot.sh` runs every 5 minutes via cron. When it finds pending tasks in the native kanban DB, it dispatches **you** (the orchestrator) to process the queue.
+{{AGENT_NAME}}'s `office_autopilot.sh` runs every 5 minutes via cron. When it finds pending tasks in the native kanban DB, it dispatches **you** (the orchestrator) to process the queue.
 
 ### Intake flow
 
@@ -200,7 +200,7 @@ When spawned by the autopilot, read all tasks with `status='todo'` or `status='r
 3. **Block ambiguous tasks.** If a task lacks context, `kanban_block` with a clear "needs: X" note. Don't guess.
 4. **Report to Discord.** After processing all tasks, pipe a summary to `discord_send.py`:
    ```
-   python3 ~/.drewgent/scripts/discord_send.py <webhook_url>
+   python3 ~/.{{AGENT_NAME_LOWER}}/scripts/discord_send.py <webhook_url>
    ```
    Summary format: what was completed, what was delegated, what was blocked.
 5. **SILENT is correct.** If nothing could be done (all ambiguous), say so and stop.
@@ -227,11 +227,11 @@ You run on qwen3.7-max. Every 5-minute cron tick is cheap (SQLite check), but wh
 
 **Tenant inheritance.** If `HERMES_TENANT` is set in your env, pass `tenant=os.environ.get("HERMES_TENANT")` on every `kanban_create` call so child tasks stay in the same namespace.
 
-**Dual-kanban-DB mismatch (Drewgent-specific).** On Drewgent's setup there are TWO separate kanban databases:
-- **Native kanban** at `~/.drewgent/kanban.db` — used by the `kanban_*` tools.
-- **Drewgent legacy kanban** at `~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db` — used by the old `dispatch_once_*` scripts in `cron_runner.py`.
+**Dual-kanban-DB mismatch ({{AGENT_NAME}}-specific).** On {{AGENT_NAME}}'s setup there are TWO separate kanban databases:
+- **Native kanban** at `~/.{{AGENT_NAME_LOWER}}/kanban.db` — used by the `kanban_*` tools.
+- **{{AGENT_NAME}} legacy kanban** at `~/.{{AGENT_NAME_LOWER}}/P2-hippocampus/kanban/state/{{AGENT_NAME_LOWER}}_tasks.db` — used by the old `dispatch_once_*` scripts in `cron_runner.py`.
 
-**Fix:** Replace the `dispatch_once_*` scripts with direct kanban DB reads from `~/.drewgent/kanban.db` (the native kanban database). This reads from the correct DB, handles claim locks, worker spawning, and failure detection.
+**Fix:** Replace the `dispatch_once_*` scripts with direct kanban DB reads from `~/.{{AGENT_NAME_LOWER}}/kanban.db` (the native kanban database). This reads from the correct DB, handles claim locks, worker spawning, and failure detection.
 
 ## Provenance Convention — record why each task exists
 
@@ -320,7 +320,7 @@ kanban_complete(
 
 GJC는 OpenCode Go 구독 모델 풀에 접근:
 
-| Tier | GJC alias | Drewgent 용도 |
+| Tier | GJC alias | {{AGENT_NAME}} 용도 |
 |------|-----------|---------------|
 | `--smol` / default | `deepseek-v4-flash` | 탐색, 문서, 간단 구현 |
 | `--model deepseek-v4-pro` | `deepseek-v4-pro` | 코드 리뷰 |
@@ -359,7 +359,7 @@ This creates 5 tasks in dependency order (each promotes when parent completes).
 
 ### Bugs found (fixed in script, cron paused)
 
-1. **Wrong default kanban DB path**: the script defaulted to `~/.hermes/kanban/boards.db` (doesn't exist). Actual DB is at `HERMES_HOME/kanban.db` (usually `~/.drewgent/kanban.db`).
+1. **Wrong default kanban DB path**: the script defaulted to `~/.hermes/kanban/boards.db` (doesn't exist). Actual DB is at `HERMES_HOME/kanban.db` (usually `~/.{{AGENT_NAME_LOWER}}/kanban.db`).
 2. **Prune query type error**: `$co:DateTime!` should be `$co:DateTimeOrDuration!` for the Linear GraphQL API. Caused silent HTTP 400 errors (script caught and swallowed them, exiting 0).
 
 ### When it was active
@@ -370,7 +370,7 @@ This creates 5 tasks in dependency order (each promotes when parent completes).
 - **Archive**: issues completed >7d auto-archived
 - **Limit**: 250 issue free tier, safety margin at 200
 
-The hook script: `~/.drewgent/scripts/kanban_linear_sync.py`
+The hook script: `~/.{{AGENT_NAME_LOWER}}/scripts/kanban_linear_sync.py`
 (Contains the fixes for both bugs found on 2026-06-14.)
 
 If Linear is re-enabled, unpause the cron job `02e28cd0a6aa`.
@@ -383,7 +383,7 @@ The loop engineering framework (from [addyo's essay](https://addyo.substack.com/
 
 ### The six components
 
-| # | Component | Kanban equivalent | Drewgent status |
+| # | Component | Kanban equivalent | {{AGENT_NAME}} status |
 |---|-----------|-------------------|-----------------|
 | 1 | **Automations** — scheduled discovery and triage | Cron jobs, kanban dispatcher | ✅ Strong |
 | 2 | **Worktrees** — parallel file isolation | `workspace_kind: worktree` in kanban_create | ⚠️ Adequate, not default |
@@ -402,7 +402,7 @@ The loop engineering framework (from [addyo's essay](https://addyo.substack.com/
 
 4. **Cognitive surrender risk.** Designing the loop is the cure when done with judgement, and the accelerant when done to avoid thinking. Same action, opposite result. Always route with intent, not habit.
 
-### Drewgent design principles (user preferences, established 2026-06-13)
+### {{AGENT_NAME}} design principles (user preferences, established 2026-06-13)
 
 When designing task graphs, pipelines, or multi-agent flows:
 
@@ -417,7 +417,7 @@ When designing task graphs, pipelines, or multi-agent flows:
 
 When designing a kanban task graph, ask:
 
-See `references/loop-engineering-assessment.md` for the full Drewgent assessment against this framework.
+See `references/loop-engineering-assessment.md` for the full {{AGENT_NAME}} assessment against this framework.
 - Which of these 6 components does this workflow rely on?
 - Where is the maker/checker split?
 - What happens if this runs unattended for 24 hours?

@@ -1,7 +1,7 @@
 ---
 name: llm-cost-audit
-title: Drewgent LLM Cost Audit
-description: Drewgent의 LLM 호출 작업을 inventory하고 cost optimization 후보를 도출하는 표준 절차
+title: {{AGENT_NAME}} LLM Cost Audit
+description: {{AGENT_NAME}}의 LLM 호출 작업을 inventory하고 cost optimization 후보를 도출하는 표준 절차
 domain: devops
 space: growth
 type: skill
@@ -17,9 +17,9 @@ links:
   - "[[skills/software-development/llm-model-migration]]"
 ---
 
-# Drewgent LLM Cost Audit
+# {{AGENT_NAME}} LLM Cost Audit
 
-Drewgent의 LLM 호출 작업을 inventory하고 cost optimization 후보를 도출하는 표준 절차.
+{{AGENT_NAME}}의 LLM 호출 작업을 inventory하고 cost optimization 후보를 도출하는 표준 절차.
 
 ## When to use
 
@@ -46,7 +46,7 @@ config.yaml의 `smart_model_routing.cheap_model.model`이 main `model.model`과 
 ### Step 1 — jobs.json inventory
 
 ```bash
-cat ~/.drewgent/cron/jobs.json | jq '.jobs[] | {id, name, schedule: .schedule.expr, enabled, model, prompt_len: (.prompt | length)}'
+cat ~/.{{AGENT_NAME_LOWER}}/cron/jobs.json | jq '.jobs[] | {id, name, schedule: .schedule.expr, enabled, model, prompt_len: (.prompt | length)}'
 ```
 
 분류:
@@ -57,8 +57,8 @@ cat ~/.drewgent/cron/jobs.json | jq '.jobs[] | {id, name, schedule: .schedule.ex
 ### Step 2 — Dispatcher / worker LLM grep
 
 ```bash
-grep -n "AIAgent\|chat\.completions\|messages\.create" ~/.drewgent/scripts/run_kanban_worker.py
-grep -n "AIAgent" ~/.drewgent/scripts/dispatch_once_*.py
+grep -n "AIAgent\|chat\.completions\|messages\.create" ~/.{{AGENT_NAME_LOWER}}/scripts/run_kanban_worker.py
+grep -n "AIAgent" ~/.{{AGENT_NAME_LOWER}}/scripts/dispatch_once_*.py
 ```
 
 예상:
@@ -69,9 +69,9 @@ grep -n "AIAgent" ~/.drewgent/scripts/dispatch_once_*.py
 
 ```bash
 grep -rn "AIAgent\|chat\.completions\|call_llm" \
-  ~/.drewgent/source/drewgent-agent/acp_adapter/ \
-  ~/.drewgent/source/drewgent-agent/gateway/run.py \
-  ~/.drewgent/source/drewgent-agent/cli.py 2>/dev/null
+  ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/acp_adapter/ \
+  ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/gateway/run.py \
+  ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/cli.py 2>/dev/null
 ```
 
 | Entry | Pattern | LLM? |
@@ -84,7 +84,7 @@ grep -rn "AIAgent\|chat\.completions\|call_llm" \
 ### Step 4 — Aux LLM caller inventory
 
 ```bash
-grep -rn "call_llm" ~/.drewgent/source/drewgent-agent/agent/ | grep -v test
+grep -rn "call_llm" ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/agent/ | grep -v test
 ```
 
 확인 위치:
@@ -97,7 +97,7 @@ grep -rn "call_llm" ~/.drewgent/source/drewgent-agent/agent/ | grep -v test
 ### Step 5 — config.yaml model audit
 
 ```bash
-grep -A2 "model:\|provider:\|cheap_model:\|summary_provider:\|fallback_model" ~/.drewgent/config.yaml | head -50
+grep -A2 "model:\|provider:\|cheap_model:\|summary_provider:\|fallback_model" ~/.{{AGENT_NAME_LOWER}}/config.yaml | head -50
 ```
 
 핵심 check:
@@ -133,20 +133,20 @@ grep -A2 "model:\|provider:\|cheap_model:\|summary_provider:\|fallback_model" ~/
 
 1. **Smart routing cheap = main model** (Finding #1)
    ```bash
-   grep -E "model:|cheap_model:" ~/.drewgent/config.yaml
+   grep -E "model:|cheap_model:" ~/.{{AGENT_NAME_LOWER}}/config.yaml
    ```
    cheap_model.model이 main model.model과 같으면 효과 0. 즉각 변경 후보.
 
 2. **Kanban worker 결정론적 여부** (Finding #2)
    ```bash
-   grep -n "AIAgent" ~/.drewgent/scripts/run_kanban_worker.py
+   grep -n "AIAgent" ~/.{{AGENT_NAME_LOWER}}/scripts/run_kanban_worker.py
    ```
    KANBAN_WORKER_MODE 환경변수가 있어도 LLM 호출하면 결정론적이 아님.
    KANBAN_REVIEW 같은 과거 review 문서의 "결정론적" 기술 신뢰 금지.
 
 3. **Cron scheduler LLM dispatch** (Finding #3)
    ```bash
-   grep -n "AIAgent" ~/.drewgent/source/drewgent-agent/cron/scheduler.py
+   grep -n "AIAgent" ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/cron/scheduler.py
    ```
    jobs.json prompt가 단순 shell이라도 LLM 1회 거침. scheduler.py가
    shell-only path 지원하면 cron 단순 shell job은 LLM 우회 가능.
@@ -155,7 +155,7 @@ grep -A2 "model:\|provider:\|cheap_model:\|summary_provider:\|fallback_model" ~/
 
 실측 데이터 없이 추정만 하지 말 것. 다음 절차:
 
-1. `display.show_cost: true` 켜기 (`~/.drewgent/config.yaml`)
+1. `display.show_cost: true` 켜기 (`~/.{{AGENT_NAME_LOWER}}/config.yaml`)
 2. 1~2주 baseline 수집 (LLM call count, input/output tokens)
 3. H1/H2 등 1개씩 적용 → 1주 측정
 4. 절감률 계산 (전월 baseline 대비)

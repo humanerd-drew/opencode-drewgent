@@ -22,8 +22,8 @@ gbrain init --pglite --no-embedding
 ## Import Vault
 
 ```bash
-gbrain sources add drewgent --path /Users/drew/.drewgent --name "Drewgent Vault"
-gbrain import /Users/drew/.drewgent --source drewgent --no-embed
+gbrain sources add drewgent --path ~/.drewgent --name "Drewgent Vault"
+gbrain import ~/.drewgent --source drewgent --no-embed
 gbrain extract links --yes  # extract wikilinks
 ```
 
@@ -32,7 +32,7 @@ gbrain extract links --yes  # extract wikilinks
 ```yaml
 mcp_servers:
   gbrain:
-    command: /Users/drew/.bun/bin/gbrain
+    command: ~/.bun/bin/gbrain
     args: ["serve"]
     timeout: 120
     description: "GBrain hybrid search over vault"

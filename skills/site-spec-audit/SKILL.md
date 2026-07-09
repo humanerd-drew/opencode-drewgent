@@ -4,12 +4,12 @@ title: site-spec-audit — YOUR_DOMAIN을 The Website Spec으로 감사
 description: Audit any URL (default: YOUR_DOMAIN) against The Website Specification (specification.website). Uses the `specification-website` MCP server (search, list_topics, get_topic, get_checklist, get_categories). Reports `required` items first, then `recommended`, with primary sources cited. Use when the user asks to audit/check/validate YOUR_DOMAIN, when a new site is deployed, or when planning a new feature that touches foundations/seo/accessibility/security/agent-readiness.
 type: skill
 space: growth
-tags: [skill, audit, web-standards, humanerd-site, agent-readiness]
+tags: [skill, audit, web-standards, YOUR_SITE, agent-readiness]
 created: 2026-06-01
 updated: 2026-06-01
 links:
   - "[[skills/specification-website]]"
-  - "[[skills/humanerd-site]]"
+  - "[[skills/YOUR_SITE]]"
   - "[[skills/seo-audit]]"
   - "[[skills/filesystem-truth-audit]]"
   - "[[@action/skills/SKILL-INDEX]]"
@@ -34,7 +34,7 @@ YOUR_DOMAIN (or any URL) 을 The Website Specification으로 감사하는 스킬
 
 이 스킬은 두 가지를 조합한다:
 
-1. **MCP 서버** `specification-website` — `~/.drewgent/config.yaml`의 `mcp_servers.specification-website`에 등록됨
+1. **MCP 서버** `specification-website` — `~/.{{AGENT_NAME_LOWER}}/config.yaml`의 `mcp_servers.specification-website`에 등록됨
 2. **HTTP fallback** — `https://specification.website/.well-known/agent-skills/specification-website/SKILL.md`의 워크플로우대로 직접 fetch
 
 MCP 도구 우선. MCP가 안 되면 llms.txt / 직접 fetch로 fallback.
@@ -160,4 +160,4 @@ Quartz 빌드 결과를 기준으로 자주 빠지는 항목:
 
 - The Website Specification: https://specification.website/
 - Spec SKILL: https://specification.website/.well-known/agent-skills/specification-website/SKILL.md
-- humanerd-site skill: [[skills/humanerd-site]]
+- YOUR_SITE skill: [[skills/YOUR_SITE]]

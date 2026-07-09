@@ -25,7 +25,7 @@ links:
 
 Use this skill whenever the user asks about Microsoft Teams meeting summaries, transcripts, recordings, action items, Graph subscriptions, or any operational question about the Teams meeting pipeline. Works in any language — the triggers below are examples, not an exhaustive list.
 
-Everything operator-facing was a `hermes teams-pipeline` subcommand run via the terminal tool. **Note:** The hermes CLI has been removed from the system. These subcommands are no longer available. The pipeline functionality may still exist through direct script execution in `~/.drewgent/scripts/`.
+Everything operator-facing was a `hermes teams-pipeline` subcommand run via the terminal tool. **Note:** The hermes CLI has been removed from the system. These subcommands are no longer available. The pipeline functionality may still exist through direct script execution in `~/.{{AGENT_NAME_LOWER}}/scripts/`.
 
 ## When to use this skill
 
@@ -87,7 +87,7 @@ The following `hermes teams-pipeline` subcommands were previously available but 
 
 ## Decision tree for common asks
 
-> **Note:** The hermes CLI has been removed. The commands referenced below (`list`, `show`, `subscriptions`, etc.) were hermes subcommands and are no longer available. Check `~/.drewgent/scripts/` for any standalone pipeline scripts.
+> **Note:** The hermes CLI has been removed. The commands referenced below (`list`, `show`, `subscriptions`, etc.) were hermes subcommands and are no longer available. Check `~/.{{AGENT_NAME_LOWER}}/scripts/` for any standalone pipeline scripts.
 
 - User asks "why didn't I get a summary for today's meeting?" → check pipeline logs and job status files.
 - User asks "is setup working?" → check Graph token status and subscription files.

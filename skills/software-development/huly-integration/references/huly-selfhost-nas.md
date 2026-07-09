@@ -1,6 +1,6 @@
 # Huly Self-Host on Synology NAS — Recipie
 
-Reference notes from the 2026-06-14/15 sessions where Drewgent self-hosted `hcengineering/huly-selfhost` on a Synology DS920+ (20 GB RAM, 16 TB free) accessed via `drew@192.168.1.53:8528` with key `~/.ssh/id_ed25519_dr2w247`. Captures the **hcengineering-standard procedure** and the gotchas that almost derailed the install.
+Reference notes from the 2026-06-14/15 sessions where {{AGENT_NAME}} self-hosted `hcengineering/huly-selfhost` on a Synology DS920+ (20 GB RAM, 16 TB free) accessed via `user@192.168.1.100:YOUR_SSH_PORT` with key `~/.ssh/YOUR_SSH_KEY`. Captures the **hcengineering-standard procedure** and the gotchas that almost derailed the install.
 
 ## The standard procedure (in order)
 
@@ -57,7 +57,7 @@ Running both chained on one line was the failure pattern. Two reasons:
 ```bash
 cd /volume1/docker/huly
 rm -f huly_v7.conf .env
-printf 'HULY_VERSION=v0.7.423\nDOCKER_NAME=huly\nHOST_ADDRESS=192.168.1.53:8087\nSECURE=\nHTTP_PORT=8087\nHTTP_BIND=\nTITLE=Huly Self Host\nDEFAULT_LANGUAGE=en\nLAST_NAME_FIRST=true\nREDPANDA_ADMIN_USER=superadmin\nREDPANDA_ADMIN_PWD=<value from .rp.secret>\nCR_DATABASE=huly\nCR_USERNAME=huly\nCR_USER_PASSWORD=*** from .cr.secret>\nSECRET=*** from .huly.secret>\nDESKTOP_CHANNEL=0.7.423\nCR_DB_URL=postgresql://huly:***@cockroach:26257/huly?sslmode=disable\n' > huly_v7.conf
+printf 'HULY_VERSION=v0.7.423\nDOCKER_NAME=huly\nHOST_ADDRESS=192.168.1.100:8087\nSECURE=\nHTTP_PORT=8087\nHTTP_BIND=\nTITLE=Huly Self Host\nDEFAULT_LANGUAGE=en\nLAST_NAME_FIRST=true\nREDPANDA_ADMIN_USER=superadmin\nREDPANDA_ADMIN_PWD=<value from .rp.secret>\nCR_DATABASE=huly\nCR_USERNAME=huly\nCR_USER_PASSWORD=*** from .cr.secret>\nSECRET=*** from .huly.secret>\nDESKTOP_CHANNEL=0.7.423\nCR_DB_URL=postgresql://huly:***@cockroach:26257/huly?sslmode=disable\n' > huly_v7.conf
 ln -s huly_v7.conf .env
 ```
 
@@ -73,7 +73,7 @@ CR_DB_URL=postgresql://<CR_USERNAME>:***@cockroach:26257/<CR_DATABASE>?sslmode=d
 
 ## Default port and IPs
 
-- Web UI: `http://<HOST_ADDRESS>` — set in `HOST_ADDRESS=<ip>:<port>` (e.g. `192.168.1.53:8087`).
+- Web UI: `http://<HOST_ADDRESS>` — set in `HOST_ADDRESS=<ip>:<port>` (e.g. `192.168.1.100:8087`).
 - Cockroach SQL: `26257` (internal, container-to-container).
 - Front: `8080` (internal) → mapped to `HTTP_PORT` (e.g. 8087) via nginx.
 - Each Huly service has its own internal port (account=3000, transactor=3333, collaborator=3078, etc.) — these don't need to be exposed.
@@ -118,7 +118,7 @@ sudo docker logs huly-account-1 --tail 30 2>&1 | grep -iE "error|started|listeni
 ## Why the user pushed back on multi-step expect automation
 
 The agent's `expect`-based SSH automation on the NAS kept timing out (60-120s) on long chained commands. Root causes observed:
-- `expect`'s `Password:` prompt match races with `sudo` password caching (5-min cache) — first sudo prompts, second sudo doesn't, and expect's `expect "drew@"` matcher picks up wrong stream chunks.
+- `expect`'s `Password:` prompt match races with `sudo` password caching (5-min cache) — first sudo prompts, second sudo doesn't, and expect's `expect "user@"` matcher picks up wrong stream chunks.
 - Security policy flags `sudo docker compose down` / `sudo rm -rf /volume1/...` as destructive and blocks them outright in some agent runtimes.
 - `sudo -S` (stdin pipe) is blocked as "brute-force attack vector."
 

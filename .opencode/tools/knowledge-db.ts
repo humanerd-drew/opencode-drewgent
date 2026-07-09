@@ -2,7 +2,7 @@ import { Database } from "bun:sqlite";
 import { mkdirSync } from "fs";
 import { join } from "path";
 
-const DB_PATH = join(process.env.HOME || "/tmp", ".drewgent", ".opencode", "knowledge.db");
+const DB_PATH = join(process.env.HOME || "/tmp", ".{{AGENT_NAME_LOWER}}", ".opencode", "knowledge.db");
 
 let _db: Database | null = null;
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-cron_health_check.py — Health check for Drewgent cron jobs.
-Reads ~/.drewgent/cron/jobs.json and reports issues.
+cron_health_check.py — Health check for {{AGENT_NAME}} cron jobs.
+Reads ~/.{{AGENT_NAME_LOWER}}/cron/jobs.json and reports issues.
 Exit 0 = all healthy, 1 = issues found.
 """
 import json
@@ -11,7 +11,7 @@ import pathlib
 import re
 
 HOME = pathlib.Path.home()
-JOBS_PATH = HOME / ".drewgent" / "cron" / "jobs.json"
+JOBS_PATH = HOME / ".{{AGENT_NAME_LOWER}}" / "cron" / "jobs.json"
 NOW = datetime.datetime.now(datetime.timezone.utc)
 
 FMT_DISCORD = (

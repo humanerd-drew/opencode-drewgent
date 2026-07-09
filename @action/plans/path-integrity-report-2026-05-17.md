@@ -16,20 +16,20 @@ links:
 
 # Drewgent Path Integrity Report - 2026-05-17
 
-Scope: `/Users/drew/.drewgent` runtime layout, active NeuronFS/Obsidian layers, and `source/drewgent-agent` path references. This report intentionally excludes broad archive/session-log cleanup from automatic fixes.
+Scope: `~/.drewgent` runtime layout, active NeuronFS/Obsidian layers, and `source/drewgent-agent` path references. This report intentionally excludes broad archive/session-log cleanup from automatic fixes.
 
 ## Summary
 
 - Core runtime data flow is connected:
-  - `/Users/drew/.drewgent/brain` -> `P0-brainstem/brain`
-  - `/Users/drew/.drewgent/memories` -> `P2-hippocampus/memories`
-  - `/Users/drew/.drewgent/sessions` -> `P2-hippocampus/sessions`
-  - `/Users/drew/.drewgent/logs` -> `P6-prefrontal/logs`
+  - `~/.drewgent/brain` -> `P0-brainstem/brain`
+  - `~/.drewgent/memories` -> `P2-hippocampus/memories`
+  - `~/.drewgent/sessions` -> `P2-hippocampus/sessions`
+  - `~/.drewgent/logs` -> `P6-prefrontal/logs`
 - Active brain is `Drewgent-brain`.
 - `brain_load()` returns governance content and includes `禁task_qa_gate` and `禁karpathy_coding_principles`.
 - Gateway logs show the gateway started successfully with 3 platforms after the last restart.
 - One broken symlink was found:
-  - `/Users/drew/.drewgent/humanerd-site/content/scripts` -> `/Users/drew/.drewgent/P4-cortex/scripts/`
+  - `~/.drewgent/YOUR_SITE/content/scripts` -> `~/.drewgent/P4-cortex/scripts/`
 
 ## Runtime Path Findings
 
@@ -39,13 +39,13 @@ Scope: `/Users/drew/.drewgent` runtime layout, active NeuronFS/Obsidian layers, 
 - Logs are routed through the prefrontal layer.
 - Memory wiki is routed through the hippocampus layer.
 - Active brain symlinks P1-P6 into the active brain tree.
-- QA evidence now resolves under `/Users/drew/.drewgent/P2-hippocampus/qa-evidence`.
+- QA evidence now resolves under `~/.drewgent/P2-hippocampus/qa-evidence`.
 
 ### Needs Cleanup
 
-1. `humanerd-site/content/scripts` has a missing target.
+1. `YOUR_SITE/content/scripts` has a missing target.
    - Impact: site/content graph only; not core agent runtime.
-   - Low-risk fix: create `/Users/drew/.drewgent/P4-cortex/scripts`.
+   - Low-risk fix: create `~/.drewgent/P4-cortex/scripts`.
 
 2. Some runtime helpers still compute default state paths with `Path.home() / ".drewgent"` instead of the shared `get_drewgent_home()`.
    - Impact: default profile works, but named/custom profiles may write state to the wrong home.
@@ -56,8 +56,8 @@ Scope: `/Users/drew/.drewgent` runtime layout, active NeuronFS/Obsidian layers, 
      - `source/drewgent-agent/agent/auto_learn.py`
 
 3. Config is duplicated as real files:
-   - `/Users/drew/.drewgent/config.yaml`
-   - `/Users/drew/.drewgent/P5-ego/config/config.yaml`
+   - `~/.drewgent/config.yaml`
+   - `~/.drewgent/P5-ego/config/config.yaml`
    - Impact: potential drift.
    - Recommendation: do not auto-fix yet. First determine whether P5 copy is intended as identity-layer snapshot or stale migration artifact.
 
@@ -81,7 +81,7 @@ Recommendation: wikilinks should be handled in a separate graph hygiene pass, no
 
 ## Safe Cleanup Plan
 
-1. Create missing `/Users/drew/.drewgent/P4-cortex/scripts` directory.
+1. Create missing `~/.drewgent/P4-cortex/scripts` directory.
 2. Replace simple profile-unsafe state path defaults with `get_drewgent_home()`.
 3. Re-run:
    - broken symlink scan

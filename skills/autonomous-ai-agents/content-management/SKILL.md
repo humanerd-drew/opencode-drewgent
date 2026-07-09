@@ -49,7 +49,7 @@ In addition to direct work activity, content-manager monitors two automated coll
 ### 1. Trend Harvester
 - **Location**: `@memory/growth/trend-harvester/{collected,applied,evaluated}/`
 - **Content**: GitHub trending repos scored via 5-axis philosophy filter (6h cycle)
-- **Use**: Pick applied/evaluated items with high scores → write "AI Tool of the Week" posts or deep-dives into tools that got integrated into Drewgent
+- **Use**: Pick applied/evaluated items with high scores → write "AI Tool of the Week" posts or deep-dives into tools that got integrated into {{AGENT_NAME}}
 
 ### 2. SEO Article Harvester
 - **Location**: `P2-hippocampus/knowledge/seo-articles/YYYY/`
@@ -58,7 +58,7 @@ In addition to direct work activity, content-manager monitors two automated coll
 
 ## Agent Profile
 
-Defined at `~/.drewgent/agents/content-manager.md`. Full instructions include:
+Defined at `~/.{{AGENT_NAME_LOWER}}/agents/content-manager.md`. Full instructions include:
 
 1. **Load Knowledge Base** — Read brand-guide, glossary, content-inventory, narrative_arc
 2. **Gather Context** — session_search, git log, kanban completions, harvester outputs
@@ -115,8 +115,8 @@ For complex architecture/flow diagrams. Two-step process:
 2. Convert to PNG via headless Chrome: `scripts/excalidraw-to-png.js`
 
 ```
-NODE_PATH=/Users/drew/.drewgent/scripts/node_modules \
-  node /Users/drew/.drewgent/scripts/excalidraw-to-png.js \
+NODE_PATH=~/.{{AGENT_NAME_LOWER}}/scripts/node_modules \
+  node ~/.{{AGENT_NAME_LOWER}}/scripts/excalidraw-to-png.js \
     input.excalidraw.json \
     output.png
 ```
@@ -126,7 +126,7 @@ NODE_PATH=/Users/drew/.drewgent/scripts/node_modules \
 | File | Path | Purpose |
 |------|------|---------|
 | **brand-guide** | `P4-cortex/content/brand-guide.md` | Voice, audience, platform strategy |
-| **glossary** | `P4-cortex/content/glossary.md` | Project terms (Drewgent, M-LOG, etc.) |
+| **glossary** | `P4-cortex/content/glossary.md` | Project terms ({{AGENT_NAME}}, M-LOG, etc.) |
 | **narrative_arc** | `P4-cortex/content/narrative_arc.md` | Published content continuity tracking |
 | **content-inventory** | `P4-cortex/content/content-inventory.md` | All drafts/published with dedup topics |
 | **writing-style-guide** | `P1-limbic/persona/writing-style-guide.md` | Tone, forbidden expressions, Korean voice |
@@ -139,7 +139,7 @@ After drafting, enrich the post with links before saving as draft:
 1. **내부 링크**: Scan `narrative_arc.md` and `content-inventory.md` for existing posts on related topics. Add internal links where natural (e.g., "v0.8 simplification post ([link])에서 다뤘듯이...")
 2. **외부 참조**: Check SEO harvester articles for relevant sources (e.g., Google announcements, agentic web trends). Link to original sources where cited.
 3. **상호 참조 클러스터**: Posts on the same pillar (BUILD LOG, AI & TOOLS, SYSTEMS, CREATIVE) should interlink. Episode 1→2→3 of a season should form a chain.
-4. **용어 링크**: First mention of Drewgent/M-LOG/ARD 등 should link to the glossary or relevant explanation if it's the first post in a series.
+4. **용어 링크**: First mention of {{AGENT_NAME}}/M-LOG/ARD 등 should link to the glossary or relevant explanation if it's the first post in a series.
 
 Format example:
 ```html
@@ -189,7 +189,7 @@ Before drafting, study `https://YOUR_DOMAIN/` `s published posts (ID 12, 13) to 
 
 ## Content Pillars (Editorial Judgment)
 
-1. **BUILD LOG** — Drewgent infra, architecture, troubleshooting
+1. **BUILD LOG** — {{AGENT_NAME}} infra, architecture, troubleshooting
 2. **AI & TOOLS** — Agent systems, tool reviews, pattern discovery
 3. **SYSTEMS** — Design philosophy, decision frameworks, taste
 4. **CREATIVE** — M-LOG, side projects, experiments
@@ -262,7 +262,7 @@ content-curator (script, 08:00/15:00, $0)
 - **No CLI approval needed.** Pipeline is fully autonomous.
 - `create_post` 호출 시 **반드시** `slug`, `author`, `category` 전달. `tags`는 절대 전달 금지.
 - `slug`: 영어 kebab-case (예: `model-routing-architecture`). 절대 한글/빈 값 금지.
-- `author`: `1` (humanerd) — 전 카테고리 공통
+- `author`: `1` (YOUR_USERNAME) — 전 카테고리 공통
 - `category`: 카테고리 **이름**(ID 아님): `"Build Log"`, `"AI & Tools"`, `"Systems"`, `"Creative"`
 - **Creative pillar는 explicit-only.** 자동 감지 금지. kanban task / 사용자 요청 / `creative-backlog.md` 참조 시에만 작성.
 - SVG cover를 생성했다면 `featured_image`에 절대 경로 전달
@@ -280,7 +280,7 @@ content-curator (script, 08:00/15:00, $0)
 | Fonts | Noto Sans KR (body), Noto Serif KR (headings), JetBrains Mono (code) |
 | Colors | `#fafaf8` bg, `#8b7355` accent, `#1c1c1a` text |
 | Layout | no-sidebar, separate-containers |
-| Tunnel | Cloudflare Tunnel (launchd: `ai.drewgent.cloudflared-wp`) |
+| Tunnel | Cloudflare Tunnel (launchd: `ai.{{AGENT_NAME_LOWER}}.cloudflared-wp`) |
 
 ## Relationship to content-pipeline Skill
 

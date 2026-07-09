@@ -1,17 +1,17 @@
 # Huly Self-Host on Synology NAS — Field Playbook
 
-> Drewgent's NAS instance. Drawn from a 2026-06-16 setup session that ended with 14/14 containers up but kvs-1 still restart-looping due to masked credentials. **Next session: pick up at "PICKUP" below.**
+> {{AGENT_NAME}}'s NAS instance. Drawn from a 2026-06-16 setup session that ended with 14/14 containers up but kvs-1 still restart-looping due to masked credentials. **Next session: pick up at "PICKUP" below.**
 
 ## Target
 
 | What | Value |
 |------|-------|
 | Host | Synology DS920+ |
-| LAN IP | 192.168.1.53 (this Mac is 192.168.1.100 — *different box*) |
-| Web UI | `http://192.168.1.53:8087` |
+| LAN IP | 192.168.1.100 (this Mac is 192.168.1.100 — *different box*) |
+| Web UI | `http://192.168.1.100:8087` |
 | Project dir | `/volume1/docker/huly` (hcengineering/huly-selfhost canonical clone) |
 | User | `drew` (sudo password = DSM account password) |
-| SSH key | `id_ed25519_dr2w247` → port 8528 (LAN) / `NASTailScale` alias via 100.110.130.54:8528 |
+| SSH key | `YOUR_SSH_KEY` → port 22 (LAN) / `NASTailScale` alias via YOUR_NAS_IP:22 |
 
 ## Why this is hard (decision recorded 2026-06-16)
 
@@ -52,7 +52,7 @@ cd /volume1/docker/huly
 rm -f huly_v7.conf .env
 printf 'HULY_VERSION=v0.7.423
 DOCKER_NAME=huly
-HOST_ADDRESS=192.168.1.53:8087
+HOST_ADDRESS=192.168.1.100:8087
 SECURE=
 HTTP_PORT=8087
 HTTP_BIND=
@@ -119,7 +119,7 @@ sudo docker compose restart kvs account transactor
 If picking up from a mid-setup failure:
 
 ```bash
-ssh -i ~/.ssh/id_ed25519_dr2w247 -p 8528 drew@192.168.1.53
+ssh -i ~/.ssh/YOUR_SSH_KEY -p YOUR_SSH_PORT user@192.168.1.100
 cd /volume1/docker/huly
 # 1. Verify huly_v7.conf has real secret values, not ***:
 grep -E 'CR_USER_PASSWORD|^SECRET|CR_DB_URL' huly_v7.conf
@@ -153,4 +153,4 @@ curl -s -o /dev/null -w '%{http_code}' http://localhost:8087  # 200
 - **Don't try `cockroach sql --insecure` on v24.2** — silently does what you don't want. Always `--certs-dir`.
 - **Don't try `docker compose up` non-detached** — it backgrounds forever and the agent loses track. Always `-d` + tail /tmp/up.out + check `docker compose ps`.
 - **Don't trust setup.sh** to handle Synology. The `envsubst` step is a hard dependency that doesn't exist on Synology by default, and the failure mode (silent empty file) is bad. Skip setup.sh after step 2 (secret generation) and write huly_v7.conf by hand.
-- **The hcengineering/huly-selfhost canonical repo is the only blessed source** — earlier Drewgent sessions tried to invent cr_certs_init / cr_huly_user init containers on top of the compose, but the standard repo already does both via the cr_certs_init container + an envsubst step. Stick to the canonical repo and just patch around the Synology limitations.
+- **The hcengineering/huly-selfhost canonical repo is the only blessed source** — earlier {{AGENT_NAME}} sessions tried to invent cr_certs_init / cr_huly_user init containers on top of the compose, but the standard repo already does both via the cr_certs_init container + an envsubst step. Stick to the canonical repo and just patch around the Synology limitations.

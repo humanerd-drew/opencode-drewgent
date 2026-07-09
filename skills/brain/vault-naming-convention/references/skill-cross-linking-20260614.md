@@ -9,7 +9,7 @@ Many skills had `related_skills` arrays in their `metadata.hermes` section but n
 **Detection**:
 ```bash
 # Find skills with related_skills but no links section
-grep -l 'related_skills' ~/.drewgent/skills/software-development/*/SKILL.md | while read f; do
+grep -l 'related_skills' ~/.{{AGENT_NAME_LOWER}}/skills/software-development/*/SKILL.md | while read f; do
   has_links=$(grep -c '^links:' "$f")
   related=$(grep -A1 'related_skills:' "$f" | tail -1)
   [ "$has_links" -eq 0 ] && echo "$(basename $(dirname $f)): $related"

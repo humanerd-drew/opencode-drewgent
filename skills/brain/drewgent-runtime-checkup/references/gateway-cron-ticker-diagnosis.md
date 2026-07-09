@@ -54,7 +54,7 @@ hang) blocks the entire loop — script jobs after it never execute.
 **Diagnosis**:
 ```bash
 grep "Running job" gateway.log | tail -20
-# Only d1ef68ced116 entries, NO drewgent-cron-runner-001 = block
+# Only d1ef68ced116 entries, NO {{AGENT_NAME_LOWER}}-cron-runner-001 = block
 ```
 
 **Fix**: Disable redundant LLM job (`d1ef68ced116`) when cron_runner.py
@@ -72,7 +72,7 @@ for job in _script_jobs + _llm_jobs:
 ```
 
 **Verify**: `grep "Running job.*d1ef68ced116" gateway.log` → zero after fix.
-And `grep "Running job.*drewgent-cron-runner-001" gateway.log` → fires
+And `grep "Running job.*{{AGENT_NAME_LOWER}}-cron-runner-001" gateway.log` → fires
 every 60s regardless of concurrent LLM jobs.
 
 ## Root Cause C: Stale File Lock
@@ -81,7 +81,7 @@ every 60s regardless of concurrent LLM jobs.
 
 **Cause**: Previous gateway crashed holding `.tick.lock`.
 
-**Fix**: `rm -f ~/.drewgent/cron/.tick.lock`
+**Fix**: `rm -f ~/.{{AGENT_NAME_LOWER}}/cron/.tick.lock`
 
 ## Tick Watchdog (T4.3 patch)
 
@@ -117,7 +117,7 @@ FIRE_COUNT=$(awk -v cutoff="$CUTOFF" '
 
 ## Auto-Kickstart Watchdog
 
-Full script at `~/.hermes/scripts/drewgent_cron_watchdog.sh`. Covers:
+Full script at `~/.hermes/scripts/{{AGENT_NAME_LOWER}}_cron_watchdog.sh`. Covers:
 - Gateway uptime check (>300s before acting)
 - `date -u -j -f` TZ-aware parsing (cron-runner uses UTC +00:00)
 - `launchctl kickstart` when 0 fires in 5 min

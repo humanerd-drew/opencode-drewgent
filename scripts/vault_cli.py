@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""vault — cross-platform encrypted secrets manager for Drewgent.
+"""vault — cross-platform encrypted secrets manager for {{AGENT_NAME}}.
 
 Usage:
   vault init              Create master key in OS keyring
@@ -37,9 +37,9 @@ try:
 except ImportError:
     sys.exit("cryptography not installed. Run: pip install cryptography")
 
-VAULT_DIR = Path.home() / ".config" / "drewgent"
+VAULT_DIR = Path.home() / ".config" / "{{AGENT_NAME_LOWER}}"
 VAULT_FILE = VAULT_DIR / "vault.enc"
-KEYRING_SERVICE = "drewgent-vault"
+KEYRING_SERVICE = "{{AGENT_NAME_LOWER}}-vault"
 
 
 def _ensure_dir():
@@ -289,7 +289,7 @@ def _has_keyring():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Drewgent vault — encrypted secrets manager")
+    parser = argparse.ArgumentParser(description="{{AGENT_NAME}} vault — encrypted secrets manager")
     parser.add_argument("command", choices=["init", "set", "get", "list", "delete", "env", "scan", "migrate", "status"])
     parser.add_argument("args", nargs="*", help="key [value]")
     parser.add_argument("--dry-run", action="store_true", help="For migrate: preview only")

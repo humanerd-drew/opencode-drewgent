@@ -17,7 +17,7 @@
     </array>
 
     <key>WorkingDirectory</key>
-    <string>{{DREWGENT_DIR}}</string>
+    <string>{{AGENT_DIR}}</string>
 
     <key>EnvironmentVariables</key>
     <dict>
@@ -39,9 +39,9 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>{{DREWGENT_DIR}}/logs/opencode.stdout.log</string>
+    <string>{{AGENT_DIR}}/logs/opencode.stdout.log</string>
 
     <key>StandardErrorPath</key>
-    <string>{{DREWGENT_DIR}}/logs/opencode.stderr.log</string>
+    <string>{{AGENT_DIR}}/logs/opencode.stderr.log</string>
 </dict>
 </plist>

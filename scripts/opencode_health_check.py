@@ -7,11 +7,11 @@ import subprocess, json, os, sys
 
 HOME = os.path.expanduser("~")
 SERVE_URL = "http://localhost:8642"
-LOG = os.path.join(HOME, ".drewgent", "logs", "health-check.log")
+LOG = os.path.join(HOME, ".{{AGENT_NAME_LOWER}}", "logs", "health-check.log")
 
 def run():
     prompt = (
-        "Check Drewgent system health. Run: launchctl list | grep drewgent, "
+        "Check {{AGENT_NAME}} system health. Run: launchctl list | grep {{AGENT_NAME_LOWER}}, "
         "and verify opencode serve at localhost:8642 responds. "
         "If all services running, reply 'HEALTHY'. "
         "If any service is down, reply 'UNHEALTHY: <details>'."
@@ -21,7 +21,7 @@ def run():
         "--attach", SERVE_URL,
         "--agent", "sre",
         "--dangerously-skip-permissions",
-        "--dir", HOME + "/.drewgent",
+        "--dir", HOME + "/.{{AGENT_NAME_LOWER}}",
         "--format", "json",
     ]
     try:

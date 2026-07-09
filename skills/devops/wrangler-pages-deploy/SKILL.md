@@ -4,18 +4,18 @@ title: "wrangler-pages-deploy — Cloudflare Pages + wrangler OAuth multi-accoun
 description: "Cloudflare Pages에 wrangler로 deploy할 때 발생하는 'More than one account available but unable to select one in non-interactive mode' 또는 403 Authentication error 해결 절차. OAuth token에 여러 CF 계정이 연결돼 있을 때 (personal + org 흔함) 발생하는 multi-account selection 문제 + wrangler.toml이 Pages 형식과 안 맞는 문제. YOUR_DOMAIN, Quartz publishing pipeline, fswatch 자동 deploy 등 영향."
 type: skill
 space: growth
-tags: [skill, wrangler, cloudflare, pages, deploy, auth, oauth, devops, humanerd-site]
+tags: [skill, wrangler, cloudflare, pages, deploy, auth, oauth, devops, YOUR_SITE]
 created: 2026-06-01
 updated: 2026-06-1
 links:
-  - "[[skills/humanerd-site]]"
+  - "[[skills/YOUR_SITE]]"
   - "[[skills/quartz-remove-drafts-customization]]"
-  - "[[@action/gateway/drewgent-architecture-dataflow]]"
+  - "[[@action/gateway/{{AGENT_NAME_LOWER}}-architecture-dataflow]]"
   - "[[@identity/brain/rules]]"---
 
 # wrangler-pages-deploy
 
-`npx wrangler pages deploy`가 실패할 때의 진단 + 해결 절차. **Drewgent 6/1 incident에서 4번의 dead end 후 5번째에 해결한 패턴**.
+`npx wrangler pages deploy`가 실패할 때의 진단 + 해결 절차. **{{AGENT_NAME}} 6/1 incident에서 4번의 dead end 후 5번째에 해결한 패턴**.
 
 ## 문제 — 4가지 가능한 증상
 
@@ -26,8 +26,8 @@ links:
 
   Please set the appropriate `account_id` in your Wrangler configuration file or assign it to the `CLOUDFLARE_ACCOUNT_ID` environment variable.
   Available accounts are (`<name>`: `<account_id>`):
-    `humanerd_me`: `dc0199b6b6c27bc9bb2f3201d47cb643`
-    `humanerd_org`: `ba5e8b86f33e63c791da65ef587bdc98`
+    `YOUR_ACCOUNT`: `YOUR_CF_ACCOUNT_ID`
+    `YOUR_ORG`: `YOUR_CF_ORG_ID`
 ```
 
 원인: OAuth token에 CF 계정 2개 이상 연결. dev/sandbox 환경에서 흔함.
@@ -66,7 +66,7 @@ We detected a configuration file at ... but it is missing the "pages_build_outpu
 ### Step 1: wrangler.toml 확인
 
 ```bash
-cat /Users/drew/.drewgent/humanerd-site/wrangler.toml
+cat ~/.{{AGENT_NAME_LOWER}}/YOUR_SITE/wrangler.toml
 ```
 
 **Workers용 (잘못된 형식)** — Pages에서 안 먹음:
@@ -75,12 +75,12 @@ compatibility_date = "2024-01-01"
 account_id = "dc0199b6b6c27bc9bb2f3201d47cb643"   # ← Pages는 top-level에서 안 받음
 
 [pages]                                            # ← Pages에서는 unexpected field
-project_name = "humanerd-site"
+project_name = "YOUR_SITE"
 ```
 
 **Pages용 (올바른 형식)**:
 ```toml
-name = "humanerd-site"
+name = "YOUR_SITE"
 compatibility_date = "2024-01-01"
 pages_build_output_dir = "public"
 ```
@@ -110,13 +110,13 @@ npx wrangler --version
 
 ## Fix — 검증된 4단계 절차
 
-Drewgent YOUR_DOMAIN에서 6/1에 적용한 방식 (4번의 dead end 후 성공):
+{{AGENT_NAME}} YOUR_DOMAIN에서 6/1에 적용한 방식 (4번의 dead end 후 성공):
 
 ### 1단계: wrangler.toml을 Pages 형식으로 단순화
 
 ```bash
-cat > /Users/drew/.drewgent/humanerd-site/wrangler.toml <<'EOF'
-name = "humanerd-site"
+cat > ~/.{{AGENT_NAME_LOWER}}/YOUR_SITE/wrangler.toml <<'EOF'
+name = "YOUR_SITE"
 compatibility_date = "2024-01-01"
 pages_build_output_dir = "public"
 EOF
@@ -140,7 +140,7 @@ npx wrangler login
 
 ```bash
 CLOUDFLARE_ACCOUNT_ID=dc0199b6b6c27bc9bb2f3201d47cb643 \
-  npx wrangler pages deploy public/ --project-name=humanerd-site --commit-dirty=true
+  npx wrangler pages deploy public/ --project-name=YOUR_SITE --commit-dirty=true
 ```
 
 **project name은 wrangler.toml에 있으면 안 적어도 되지만 명시 권장** (실수 방지).
@@ -149,7 +149,7 @@ CLOUDFLARE_ACCOUNT_ID=dc0199b6b6c27bc9bb2f3201d47cb643 \
 
 ```bash
 # Preview URL 확인
-echo "Deploy complete → check https://<hash>.humanerd-site.pages.dev"
+echo "Deploy complete → check https://<hash>.YOUR_SITE.pages.dev"
 
 # Custom domain 확인
 curl -s -o /dev/null -w "%{http_code}\n" https://YOUR_DOMAIN/
@@ -192,11 +192,11 @@ curl -s -o /dev/null -w "%{http_code}\n" https://YOUR_DOMAIN/insights/foo
 # 200
 ```
 
-**올바른 진단**: deploy 후 30~60초 wait → curl. 또는 Preview URL (`<hash>.humanerd-site.pages.dev`)로 즉시 확인 가능 (전파 안 거치고 origin hit).
+**올바른 진단**: deploy 후 30~60초 wait → curl. 또는 Preview URL (`<hash>.YOUR_SITE.pages.dev`)로 즉시 확인 가능 (전파 안 거치고 origin hit).
 
 ### 4. **fswatch LaunchAgent가 죽었어도 wrangler deploy는 동일하게 실패**
 
-`com.drewgent.quartz-fswatch` LaunchAgent가 멈춰있어도 wrangler 인증 문제는 wrangler 토큰 문제일 뿐, fswatch 재시작이 해결책 아님.
+`com.{{AGENT_NAME_LOWER}}.quartz-fswatch` LaunchAgent가 멈춰있어도 wrangler 인증 문제는 wrangler 토큰 문제일 뿐, fswatch 재시작이 해결책 아님.
 
 진단:
 ```bash
@@ -207,15 +207,15 @@ launchctl list | grep quartz-fswwatch
 
 fswatch 자체가 죽었으면:
 ```bash
-launchctl unload ~/Library/LaunchAgents/com.drewgent.quartz-fswatch.plist
-launchctl load -w ~/Library/LaunchAgents/com.drewgent.quartz-fswatch.plist
+launchctl unload ~/Library/LaunchAgents/com.{{AGENT_NAME_LOWER}}.quartz-fswatch.plist
+launchctl load -w ~/Library/LaunchAgents/com.{{AGENT_NAME_LOWER}}.quartz-fswatch.plist
 ```
 
 이건 wrangler auth와 별개. **둘 다 점검 필요**.
 
 ### 5. **`wrangler pages deploy`는 git과 무관 — directory deploy**
 
-`--commit-dirty=true`는 git dirty check를 skip할 뿐, **git push를 안 함**. CF Pages에 directory를 직접 upload하는 모드. Drewgent YOUR_DOMAIN는 git 없이 `public/` → wrangler → CF Pages 흐름.
+`--commit-dirty=true`는 git dirty check를 skip할 뿐, **git push를 안 함**. CF Pages에 directory를 직접 upload하는 모드. {{AGENT_NAME}} YOUR_DOMAIN는 git 없이 `public/` → wrangler → CF Pages 흐름.
 
 GitHub Pages / Cloudflare Pages with git 연결 방식과는 다름.
 
@@ -227,25 +227,25 @@ OAuth로 인증했어도 그 계정의 Pages project에 대한 `pages:write` 권
 
 OAuth flow가 정상이고 `wrangler login`이 성공해도 권한 부족이면 동일 에러.
 
-## 운영 자동화 (Drewgent fswatch script에 적용 권장)
+## 운영 자동화 ({{AGENT_NAME}} fswatch script에 적용 권장)
 
-`~/.drewgent/P4-cortex/scripts/quartz-deploy.sh`에 다음 추가:
+`~/.{{AGENT_NAME_LOWER}}/P4-cortex/scripts/quartz-deploy.sh`에 다음 추가:
 
 ```bash
 #!/bin/bash
 # Multi-account OAuth 환경에서 deploy
 export CLOUDFLARE_ACCOUNT_ID="${CLOUDFLARE_ACCOUNT_ID:-dc0199b6b6c27bc9bb2f3201d47cb643}"
-PROJECT="humanerd-site"
+PROJECT="YOUR_SITE"
 BUILD_DIR="public"
 
-cd /Users/drew/.drewgent/humanerd-site
+cd ~/.{{AGENT_NAME_LOWER}}/YOUR_SITE
 npx wrangler pages deploy "$BUILD_DIR" --project-name="$PROJECT" --commit-dirty=true
 ```
 
-`~/.drewgent/P4-cortex/scripts/quartz-fswatch.sh`에서:
+`~/.{{AGENT_NAME_LOWER}}/P4-cortex/scripts/quartz-fswatch.sh`에서:
 ```bash
 export CLOUDFLARE_ACCOUNT_ID="dc0199b6b6c27bc9bb2f3201d47cb643"
-bash /Users/drew/.drewgent/P4-cortex/scripts/quartz-deploy.sh
+bash ~/.{{AGENT_NAME_LOWER}}/P4-cortex/scripts/quartz-deploy.sh
 ```
 
 이렇게 해두면 user가 `npx wrangler login`만 다시 실행해도 fswatch가 자동 deploy 정상 동작.
@@ -256,19 +256,19 @@ bash /Users/drew/.drewgent/P4-cortex/scripts/quartz-deploy.sh
 A: OAuth flow에선 API token 안 써도 됨. OAuth user의 권한에 따름. **다만 OAuth보다 API token이 더 세밀한 권한 제어 가능** (예: Pages project 1개만 접근). token 발급은 CF Dashboard에서 가능.
 
 **Q: Preview URL은 custom domain과 다른가?**
-A: 다름. `<hash>.humanerd-site.pages.dev` (preview) ≠ `YOUR_DOMAIN` (custom domain). Preview는 즉시 전파, custom domain은 DNS + edge cache 거쳐서 30~60초.
+A: 다름. `<hash>.YOUR_SITE.pages.dev` (preview) ≠ `YOUR_DOMAIN` (custom domain). Preview는 즉시 전파, custom domain은 DNS + edge cache 거쳐서 30~60초.
 
 **Q: wrangler.toml과 wrangler.jsonc 중에 어느 거 쓰나?**
 A: 둘 다 지원하지만 `.toml`이 공식 권장. `jsonc`는 Workers의 옛 형식.
 
 **Q: Account ID `dc0199b6b6c27bc9bb2f3201d47cb643`는 어디서 찾나?**
-A: CF Dashboard 우측 하단 → "Account ID" 또는 Workers & Pages → Overview → Account ID. Drewgent는 `humanerd_me` 계정의 ID. 절대 노출 안 되는 정보는 아님 (계정 식별자일 뿐).
+A: CF Dashboard 우측 하단 → "Account ID" 또는 Workers & Pages → Overview → Account ID. {{AGENT_NAME}}는 `YOUR_ACCOUNT` 계정의 ID. 절대 노출 안 되는 정보는 아님 (계정 식별자일 뿐).
 
 ## Related
 
-- [[skills/humanerd-site]] — Quartz publishing pipeline 전체 운영
+- [[skills/YOUR_SITE]] — Quartz publishing pipeline 전체 운영
 - [[skills/quartz-remove-drafts-customization]] — Quartz draft filter customization
-- [[@action/gateway/drewgent-architecture-dataflow]] — vault → site 데이터 흐름
+- [[@action/gateway/{{AGENT_NAME_LOWER}}-architecture-dataflow]] — vault → site 데이터 흐름
 
 ## 6/1 incident timeline (왜 이 skill이 필요한가)
 

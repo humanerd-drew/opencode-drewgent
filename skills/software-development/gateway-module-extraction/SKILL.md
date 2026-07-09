@@ -3,13 +3,13 @@ name: gateway-module-extraction
 description: Extract modules from gateway/run.py (9,876 lines) into isolated files under gateway/. Covers stdlib name collision, runner circular reference, mock fixture sync order, and honest multi-session QA verdicts.
 type: skill
 space: outcome
-tags: [skill, software-development, refactoring, drewgent-gateway]
+tags: [skill, software-development, refactoring, {{AGENT_NAME_LOWER}}-gateway]
 created: 2026-06-01
 updated: 2026-06-12
 links:
   - "[[@identity/brain/rules]]"
   - "[[@memory/plans/gateway_decomposition_plan]]"
-  - "[[software-development/python-large-file-patch-drewgent]]"
+  - "[[software-development/python-large-file-patch-{{AGENT_NAME_LOWER}}]]"
   - "[[software-development/codebase-refactoring]]"
   - "[[software-development/incremental-refactoring]]"
   - "[[software-development/codebase-structure-audit]]"
@@ -45,7 +45,7 @@ class SentinelGuard:
 
 b) Pass the specific attributes the class needs (cleaner but verbose).
 
-For Drewgent gateway, use (a) — 51 attribute references would make (b) painful.
+For {{AGENT_NAME}} gateway, use (a) — 51 attribute references would make (b) painful.
 
 ### 3. Mock fixture sync order
 After extracting modules, tests fail because `mock_gateway_runner` (built via `object.__new__(GatewayRunner)`) doesn't have the new attributes. **Order matters**:
@@ -136,7 +136,7 @@ for p in glob.glob('gateway/*.py'):
 "
 
 # 2. Import check
-cd /Users/drew/.drewgent/source/drewgent-agent
+cd ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent
 python3 -c "from gateway.sentinel_guard import SentinelGuard; print('SentinelGuard importable')"
 
 # 3. Check for orphaned extracted methods (defined but never called or registered)
@@ -155,10 +155,10 @@ grep -n "_run_agent" gateway/run.py gateway/agent_cache.py | grep -v "import\|__
 
 # 4. Existing gateway smoke test: check platforms connect
 # Restart gateway via launchd, then check logs
-launchctl kickstart gui/$(id -u)/ai.drewgent.gateway 2>/dev/null || \\
-    launchctl start ai.drewgent.gateway
+launchctl kickstart gui/$(id -u)/ai.{{AGENT_NAME_LOWER}}.gateway 2>/dev/null || \\
+    launchctl start ai.{{AGENT_NAME_LOWER}}.gateway
 sleep 6
-grep -E "Connecting|connected" ~/.drewgent/logs/gateway.log | tail -5
+grep -E "Connecting|connected" ~/.{{AGENT_NAME_LOWER}}/logs/gateway.log | tail -5
 
 # 5. Existing tests still pass (regression)
 pytest tests/gateway/ -x -q 2>&1 | tail -20
@@ -550,7 +550,7 @@ def _resolve_runtime_agent_kwargs() -> dict:
 
 ```bash
 # Check CLI provider
-grep "^model:" ~/.drewgent/config.yaml  # e.g. "opencode-go/deepseek-v4-flash"
+grep "^model:" ~/.{{AGENT_NAME_LOWER}}/config.yaml  # e.g. "opencode-go/deepseek-v4-flash"
 
 # Check which provider the gateway resolves
 grep "runtime.*provider" gateway/run.py  # look for resolve_runtime_provider call
@@ -601,7 +601,7 @@ async def start(self) -> bool:
 
 **Verification**: After fixing, restart gateway and check logs:
 ```bash
-grep -E "Connecting|connected" ~/.drewgent/logs/gateway.log | tail -10
+grep -E "Connecting|connected" ~/.{{AGENT_NAME_LOWER}}/logs/gateway.log | tail -10
 # Expected:
 # Connecting to discord...
 # ✓ discord connected
@@ -610,6 +610,6 @@ grep -E "Connecting|connected" ~/.drewgent/logs/gateway.log | tail -10
 # Connected 3/3 platform(s)
 ```
 
-**Related**: `drewgent-runtime-checkup` skill's `references/gateway-platform-connection-diagnosis.md` for the broader diagnostic pattern.
+**Related**: `{{AGENT_NAME_LOWER}}-runtime-checkup` skill's `references/gateway-platform-connection-diagnosis.md` for the broader diagnostic pattern.
 
 **See also**: `references/gateway-delegate-pattern.md` — lightweight subagent with focused toolset to avoid 151-tool context blowup.

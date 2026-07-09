@@ -1,7 +1,7 @@
 # Huly API Client — Reverse-Engineering Notes
 
 Session: 2026-06-14 kanban-linear-huly
-Target: Huly Cloud (huly.app), workspace `humanerd`
+Target: Huly Cloud (huly.app), workspace `YOUR_WORKSPACE`
 
 ## Connection Flow
 

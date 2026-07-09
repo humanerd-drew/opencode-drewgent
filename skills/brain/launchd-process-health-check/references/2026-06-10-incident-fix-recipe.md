@@ -8,7 +8,7 @@ This reference is the **playbook that was actually executed on 2026-06-10**, dis
 
 Before the recipe: **install a watchdog first.** Without one, the next incident goes undetected for days. The watchdog used on 6/10 is canonical:
 
-**Path**: `~/.hermes/scripts/drewgent_launchd_watchdog.sh` (symlink to `~/.drewgent/P4-cortex/scripts/drewgent_launchd_watchdog.sh`)
+**Path**: `~/.hermes/scripts/{{AGENT_NAME_LOWER}}_launchd_watchdog.sh` (symlink to `~/.{{AGENT_NAME_LOWER}}/P4-cortex/scripts/{{AGENT_NAME_LOWER}}_launchd_watchdog.sh`)
 
 **Why `~/.hermes/scripts/`**: Hermes `cronjob` tool with `no_agent=True` requires scripts under that path (relative; the tool resolves the home directory).
 
@@ -16,18 +16,18 @@ Before the recipe: **install a watchdog first.** Without one, the next incident 
 
 ```bash
 #!/bin/bash
-# drewgent_launchd_watchdog.sh
+# {{AGENT_NAME_LOWER}}_launchd_watchdog.sh
 # 5분마다 launchd 서비스 상태를 검사하고, 1개 이상 PID=-면 Discord webhook으로 알림.
 
 set -euo pipefail
 
 WATCHED_LABELS=(
-  "ai.drewgent.cron-runner"
-  "ai.drewgent.gateway"
-  "ai.drewgent.kanban-dashboard"
-  "ai.drewgent.n8n"
-  "com.drewgent.quartz-fswatch"
-  "com.drewgent.quartz-deploy"
+  "ai.{{AGENT_NAME_LOWER}}.cron-runner"
+  "ai.{{AGENT_NAME_LOWER}}.gateway"
+  "ai.{{AGENT_NAME_LOWER}}.kanban-dashboard"
+  "ai.{{AGENT_NAME_LOWER}}.n8n"
+  "com.{{AGENT_NAME_LOWER}}.quartz-fswatch"
+  "com.{{AGENT_NAME_LOWER}}.quartz-deploy"
 )
 
 alerts=()
@@ -59,7 +59,7 @@ if [ ${#alerts[@]} -eq 0 ]; then
   exit 0  # silent when all ok (no_agent=True pattern: empty stdout = silent)
 fi
 
-message="🚨 **Drewgent launchd watchdog** @ $timestamp
+message="🚨 **{{AGENT_NAME}} launchd watchdog** @ $timestamp
 $ok_count/$total services running
 
 ${alerts[*]}"
@@ -77,9 +77,9 @@ printf '%s\n' "$message"
 **Cron registration** (Hermes tool call):
 
 ```
-cronjob(action="create", name="Drewgent launchd watchdog",
+cronjob(action="create", name="{{AGENT_NAME}} launchd watchdog",
         no_agent=True, schedule="every 5m",
-        script="drewgent_launchd_watchdog.sh")
+        script="{{AGENT_NAME_LOWER}}_launchd_watchdog.sh")
 ```
 
 Script is bare filename (no path) — Hermes resolves it from `~/.hermes/scripts/`.
@@ -115,18 +115,18 @@ Apply this to **every** launchd plist. Verified pattern from 6/10 fix (5 plists 
 
 ## 2. Plist audit — 5 plists in `~/Library/LaunchAgents/`
 
-Standard Drewgent plist inventory (verify these exist + the Label key matches the filename):
+Standard {{AGENT_NAME}} plist inventory (verify these exist + the Label key matches the filename):
 
 | Filename | Label | Notes |
 |---|---|---|
-| `ai.drewgent.cron-runner.plist` | `ai.drewgent.cron-runner` | dispatcher loop, StartInterval=60 |
-| `ai.drewgent.gateway.plist` | `ai.drewgent.gateway` | **label MUST match filename** (see Sub-pattern 4) |
-| `ai.drewgent.kanban-dashboard.plist` | `ai.drewgent.kanban-dashboard` | flask on port 5555 |
-| `ai.drewgent.n8n.plist` | `ai.drewgent.n8n` | may be missing — n8n case study in Sub-pattern 1 |
-| `com.drewgent.quartz-fswatch.plist` | `com.drewgent.quartz-fswatch` | vault → wrangler pipeline |
-| `com.drewgent.quartz-deploy.plist` | `com.drewgent.quartz-deploy` | explicit deploy trigger |
+| `ai.{{AGENT_NAME_LOWER}}.cron-runner.plist` | `ai.{{AGENT_NAME_LOWER}}.cron-runner` | dispatcher loop, StartInterval=60 |
+| `ai.{{AGENT_NAME_LOWER}}.gateway.plist` | `ai.{{AGENT_NAME_LOWER}}.gateway` | **label MUST match filename** (see Sub-pattern 4) |
+| `ai.{{AGENT_NAME_LOWER}}.kanban-dashboard.plist` | `ai.{{AGENT_NAME_LOWER}}.kanban-dashboard` | flask on port 5555 |
+| `ai.{{AGENT_NAME_LOWER}}.n8n.plist` | `ai.{{AGENT_NAME_LOWER}}.n8n` | may be missing — n8n case study in Sub-pattern 1 |
+| `com.{{AGENT_NAME_LOWER}}.quartz-fswatch.plist` | `com.{{AGENT_NAME_LOWER}}.quartz-fswatch` | vault → wrangler pipeline |
+| `com.{{AGENT_NAME_LOWER}}.quartz-deploy.plist` | `com.{{AGENT_NAME_LOWER}}.quartz-deploy` | explicit deploy trigger |
 
-**Label mismatch (Sub-pattern 4)** is silent: `launchctl bootout ai.drewgent.gateway` returns "No such process" because the registered label is `ai.custom-agent.gateway` (the value inside the plist). Always cross-check filename vs. `<Label>` before restart commands.
+**Label mismatch (Sub-pattern 4)** is silent: `launchctl bootout ai.{{AGENT_NAME_LOWER}}.gateway` returns "No such process" because the registered label is `ai.custom-agent.gateway` (the value inside the plist). Always cross-check filename vs. `<Label>` before restart commands.
 
 ---
 
@@ -134,13 +134,13 @@ Standard Drewgent plist inventory (verify these exist + the Label key matches th
 
 ```bash
 UID_NUM=$(id -u)
-SERVICE="ai.drewgent.gateway"  # the LABEL, not the filename
+SERVICE="ai.{{AGENT_NAME_LOWER}}.gateway"  # the LABEL, not the filename
 
 # 1. Unload (in case old label is still registered)
 launchctl bootout gui/$UID_NUM/$SERVICE 2>/dev/null || true
 
 # 2. Bootstrap (loads plist into launchd, but does not start)
-launchctl bootstrap gui/$UID_NUM ~/Library/LaunchAgents/ai.drewgent.gateway.plist
+launchctl bootstrap gui/$UID_NUM ~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.gateway.plist
 
 # 3. Kickstart (actually starts the process)
 launchctl kickstart -k gui/$UID_NUM/$SERVICE
@@ -176,16 +176,16 @@ Sub-pattern 6 (verified): patching jobs.json `next_run_at` does NOT trigger exec
 
 ## 5. Quartz path (single source of truth)
 
-**Source**: `~/.drewgent/humanerd-site/content/`
+**Source**: `~/.{{AGENT_NAME_LOWER}}/YOUR_SITE/content/`
 **Watch list** (in `quartz-fswatch.sh`):
-- `~/.drewgent/memories/insights`
-- `~/.drewgent/P4-cortex/growth`
-- `~/.drewgent/P4-cortex/knowledge`
-- `~/.drewgent/humanerd-site/content`
+- `~/.{{AGENT_NAME_LOWER}}/memories/insights`
+- `~/.{{AGENT_NAME_LOWER}}/P4-cortex/growth`
+- `~/.{{AGENT_NAME_LOWER}}/P4-cortex/knowledge`
+- `~/.{{AGENT_NAME_LOWER}}/YOUR_SITE/content`
 
 **Not source** (don't deploy from these):
 - `~/Sites/quartz` — Quartz github template clone (no `content/` dir, 0 .md files). Harmless, leave alone.
-- `~/humanerd` — old path in memory, not used. Don't recreate.
+- `~/YOUR_SITE` — old path in memory, not used. Don't recreate.
 
 **Don't trust `last_status=ok` in jobs.json** — it's a stale marker from before any failure. Verify with cron output dir mtime + last log mtime.
 
@@ -195,16 +195,16 @@ Sub-pattern 6 (verified): patching jobs.json `next_run_at` does NOT trigger exec
 
 Use this on every launchd incident fix:
 
-- [ ] `launchctl list | grep drewgent` → count of running (PID present) vs. stopped (PID=-)
+- [ ] `launchctl list | grep {{AGENT_NAME_LOWER}}` → count of running (PID present) vs. stopped (PID=-)
 - [ ] For each running service: `ps aux | grep <pattern>` confirms actual process
 - [ ] For each listening service (gateway, kanban-dashboard, n8n): `lsof -i :<port>` shows LISTEN
-- [ ] `~/.drewgent/cron/jobs.json`: all `enabled` jobs have future-dated `next_run_at`
-- [ ] `~/.drewgent/P6-prefrontal/logs/cron-runner.log` mtime < 5 min (means scheduler is ticking)
-- [ ] `~/.drewgent/logs/gateway.log` last entry is recent + "Cron ticker started" / equivalent
+- [ ] `~/.{{AGENT_NAME_LOWER}}/cron/jobs.json`: all `enabled` jobs have future-dated `next_run_at`
+- [ ] `~/.{{AGENT_NAME_LOWER}}/P6-prefrontal/logs/cron-runner.log` mtime < 5 min (means scheduler is ticking)
+- [ ] `~/.{{AGENT_NAME_LOWER}}/logs/gateway.log` last entry is recent + "Cron ticker started" / equivalent
 - [ ] Watchdog cron (`hermes cron list | grep -A3 watchdog`) is enabled, every 5m, no_agent
 - [ ] All 5+ plists have `KeepAlive { SuccessfulExit: false, ThrottleInterval: 10 }`
 - [ ] All plist `Label` keys match filenames
-- [ ] Incident doc written to `~/.drewgent/P6-prefrontal/incidents/<descriptive-name>-<YYYYMMDD>.md` with: symptoms, root causes (multi-factor), resolution steps, verification, lessons
+- [ ] Incident doc written to `~/.{{AGENT_NAME_LOWER}}/P6-prefrontal/incidents/<descriptive-name>-<YYYYMMDD>.md` with: symptoms, root causes (multi-factor), resolution steps, verification, lessons
 
 ---
 

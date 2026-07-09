@@ -4,7 +4,7 @@
 - Cloudflare Workers + D1 + Static Assets (Wrangler)
 - Dual worker architecture: main (m-log.cc) + quintax sub-worker
 - SPA frontend at `/app/` with vanilla JS ES modules
-- External saju calculator API at `saju-calculator-api.humanerd.workers.dev`
+- External saju calculator API at `YOUR_API.YOUR_DOMAIN.workers.dev`
 
 ## Dead Code Removed
 | File | Size | Reason |

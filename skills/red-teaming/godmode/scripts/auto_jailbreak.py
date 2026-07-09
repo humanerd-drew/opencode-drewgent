@@ -7,7 +7,7 @@ finds what works, and locks it in by writing config.yaml + prefill.json.
 
 Usage in execute_code:
     exec(open(os.path.expanduser(
-        "~/.drewgent/skills/red-teaming/godmode/scripts/auto_jailbreak.py"
+        "~/.{{AGENT_NAME_LOWER}}/skills/red-teaming/godmode/scripts/auto_jailbreak.py"
     )).read())
     
     result = auto_jailbreak()  # Uses current model from config
@@ -38,7 +38,7 @@ try:
     _SKILL_DIR = Path(__file__).resolve().parent.parent
 except NameError:
     # __file__ not defined when loaded via exec() — search standard paths
-    _SKILL_DIR = Path(os.getenv("DREW_HOME", Path.home() / ".drewgent")) / "skills" / "red-teaming" / "godmode"
+    _SKILL_DIR = Path(os.getenv("DREW_HOME", Path.home() / ".{{AGENT_NAME_LOWER}}")) / "skills" / "red-teaming" / "godmode"
 
 _SCRIPTS_DIR = _SKILL_DIR / "scripts"
 _TEMPLATES_DIR = _SKILL_DIR / "templates"
@@ -57,10 +57,10 @@ if _race_path.exists():
     exec(compile(open(_race_path).read(), str(_race_path), 'exec'), _caller_globals)
 
 # ═══════════════════════════════════════════════════════════════════
-# Drewgent config paths
+# {{AGENT_NAME}} config paths
 # ═══════════════════════════════════════════════════════════════════
 
-DREW_HOME = Path(os.getenv("DREW_HOME", Path.home() / ".drewgent"))
+DREW_HOME = Path(os.getenv("DREW_HOME", Path.home() / ".{{AGENT_NAME_LOWER}}"))
 CONFIG_PATH = DREW_HOME / "config.yaml"
 PREFILL_PATH = DREW_HOME / "prefill.json"
 
@@ -181,8 +181,8 @@ MODEL_STRATEGIES = {
             ),
         },
     },
-    # Nous/Drewgent models — already uncensored, just needs clean prompt
-    "drewgent": {
+    # Nous/{{AGENT_NAME}} models — already uncensored, just needs clean prompt
+    "{{AGENT_NAME_LOWER}}": {
         "order": ["prefill_only"],
         "system_templates": {},
     },
@@ -308,8 +308,8 @@ def _detect_model_family(model: str) -> str:
         return "gemini"
     if "grok" in model_lower or "x-ai" in model_lower:
         return "grok"
-    if "drewgent" in model_lower or "nous" in model_lower:
-        return "drewgent"
+    if "{{AGENT_NAME_LOWER}}" in model_lower or "nous" in model_lower:
+        return "{{AGENT_NAME_LOWER}}"
     if "deepseek" in model_lower:
         return "deepseek"
     if "llama" in model_lower or "meta" in model_lower:
@@ -322,7 +322,7 @@ def _detect_model_family(model: str) -> str:
 
 
 def _get_current_model() -> tuple:
-    """Read current model and provider from Drewgent config.yaml.
+    """Read current model and provider from {{AGENT_NAME}} config.yaml.
     Returns (model_str, base_url)."""
     if not CONFIG_PATH.exists():
         return None, None
@@ -410,7 +410,7 @@ def _write_config(system_prompt: str = None, prefill_file: str = None):
 
 
 def _write_prefill(prefill_messages: list):
-    """Write prefill messages to ~/.drewgent/prefill.json."""
+    """Write prefill messages to ~/.{{AGENT_NAME_LOWER}}/prefill.json."""
     with open(PREFILL_PATH, "w") as f:
         json.dump(prefill_messages, f, indent=2, ensure_ascii=False)
     return str(PREFILL_PATH)
@@ -671,7 +671,7 @@ def auto_jailbreak(model=None, base_url=None, api_key=None,
             if verbose:
                 print(f"[LOCKED] Config written to: {config_written}")
                 print()
-                print("[DONE] Jailbreak locked in. Restart Drewgent for changes to take effect.")
+                print("[DONE] Jailbreak locked in. Restart {{AGENT_NAME}} for changes to take effect.")
         else:
             if verbose:
                 print("[DRY RUN] Would write config + prefill but dry_run=True")
@@ -739,7 +739,7 @@ def undo_jailbreak(verbose=True):
             print(f"[UNDO] Deleted {PREFILL_PATH}")
 
     if verbose:
-        print("[UNDO] Jailbreak removed. Restart Drewgent for changes to take effect.")
+        print("[UNDO] Jailbreak removed. Restart {{AGENT_NAME}} for changes to take effect.")
 
 
 # ═══════════════════════════════════════════════════════════════════

@@ -25,7 +25,7 @@ from typing import Optional
 import html
 
 # ── 설정 ────────────────────────────────────────────
-DREW_HOME = Path(os.environ.get("DREW_HOME", os.path.expanduser("~/.drewgent")))
+DREW_HOME = Path(os.environ.get("DREW_HOME", os.path.expanduser("~/.{{AGENT_NAME_LOWER}}")))
 sys.path.insert(0, str(DREW_HOME))
 
 from agent.obsidian_graph import ensure_backlink, ensure_related_section, wiki_link
@@ -213,7 +213,7 @@ def fetch_rss(url: str, timeout: int = 20) -> Optional[ET.Element]:
         req = urllib.request.Request(
             url,
             headers={
-                "User-Agent": "Mozilla/5.0 (compatible; SEO-Harvester/1.0; +https://drewgent.ai)",
+                "User-Agent": "Mozilla/5.0 (compatible; SEO-Harvester/1.0; +https://{{AGENT_NAME_LOWER}}.ai)",
                 "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml",
             }
         )
@@ -558,7 +558,7 @@ def send_discord(new_articles: list):
             data=data,
             headers={
                 "Content-Type": "application/json",
-                "User-Agent": "Mozilla/5.0 (compatible; Drewgent-Harvester/1.0)",
+                "User-Agent": "Mozilla/5.0 (compatible; {{AGENT_NAME}}-Harvester/1.0)",
             },
             method="POST"
         )

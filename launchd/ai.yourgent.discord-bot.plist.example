@@ -8,11 +8,11 @@
     <key>ProgramArguments</key>
     <array>
         <string>{{PYTHON_PATH}}</string>
-        <string>{{DREWGENT_DIR}}/scripts/discord_bot.py</string>
+        <string>{{AGENT_DIR}}/scripts/discord_bot.py</string>
     </array>
 
     <key>WorkingDirectory</key>
-    <string>{{DREWGENT_DIR}}</string>
+    <string>{{AGENT_DIR}}</string>
 
     <key>EnvironmentVariables</key>
     <dict>
@@ -37,9 +37,9 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>{{DREWGENT_DIR}}/logs/discord-bot.log</string>
+    <string>{{AGENT_DIR}}/logs/discord-bot.log</string>
 
     <key>StandardErrorPath</key>
-    <string>{{DREWGENT_DIR}}/logs/discord-bot.err.log</string>
+    <string>{{AGENT_DIR}}/logs/discord-bot.err.log</string>
 </dict>
 </plist>

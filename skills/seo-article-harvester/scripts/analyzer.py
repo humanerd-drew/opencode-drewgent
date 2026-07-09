@@ -15,7 +15,7 @@ import os, re, json, sys, subprocess, shutil, time
 from datetime import datetime
 from pathlib import Path
 
-DREW_HOME = Path(os.environ.get("DREW_HOME", os.path.expanduser("~/.drewgent")))
+DREW_HOME = Path(os.environ.get("DREW_HOME", os.path.expanduser("~/.{{AGENT_NAME_LOWER}}")))
 SEO_DIR = DREW_HOME / "P2-hippocampus" / "knowledge" / "seo-articles"
 NEW_DIR = SEO_DIR / "_new"
 STATE_FILE = DREW_HOME / "P4-cortex" / "growth" / "seo" / "seo_analysis_state.json"
@@ -37,7 +37,7 @@ Return JSON with these fields:
 - "relevance_score": 1-5 integer
 - "is_duplicate": true/false (true if this is clearly a near-duplicate of another article on the same topic)
 - "tags": array of 3-5 relevant tags
-- "linked_wikilinks": array of Drewgent P-node wikilinks relevant to this article's topic (e.g. ["P4-cortex/growth/seo/technical-seo", "P2-hippocampus/knowledge/seo"])
+- "linked_wikilinks": array of {{AGENT_NAME}} P-node wikilinks relevant to this article's topic (e.g. ["P4-cortex/growth/seo/technical-seo", "P2-hippocampus/knowledge/seo"])
 - "duplicate_reason": string explaining why if is_duplicate=true, else null
 """
 

@@ -2,7 +2,7 @@
 
 ## Status: SELF-HOSTED ON NAS (DS920+)
 
-Huly self-host is deployed at **`http://192.168.1.53:8087`**.
+Huly self-host is deployed at **`http://192.168.1.100:8087`**.
 
 ### Stack (14 containers)
 nginx, cockroach, redpanda, minio, elastic, rekoni, transactor, collaborator, account, workspace, front, fulltext, stats, kvs
@@ -25,7 +25,7 @@ nginx, cockroach, redpanda, minio, elastic, rekoni, transactor, collaborator, ac
 Required variables (set in `huly_v7.conf` / `.env`):
 ```
 HULY_VERSION=v0.7.423
-HOST_ADDRESS=192.168.1.53
+HOST_ADDRESS=192.168.1.100
 HTTP_PORT=8087
 SERVER_SECRET=<random-hex>
 # CockroachDB — currently NOT SET, causing account service to fail
@@ -56,7 +56,7 @@ Also, the compose.yml has `SERVER_SECRET=***` hardcoded in some services — the
 ```
 Content-manager → draft files (SVG + MD + PNG)
   → Huly issue created (assignee: drew, status: "Todo")
-  → Drew reviews in Huly kanban (web UI at http://192.168.1.53:8087)
+  → Drew reviews in Huly kanban (web UI at http://192.168.1.100:8087)
   → Status changes to "Done"
   → Watcher detects change via MCP polling
   → WordPress MCP pushes to YOUR_DOMAIN
@@ -82,5 +82,5 @@ Planned approach: lightweight polling via gateway internal scheduler.
 ## Alternative: Local Kanban Board
 If Huly integration isn't ready, use the local kanban system:
 1. Content-manager creates kanban task (status: "blocked" = needs review)
-2. Dashboard: `localhost:8644` or via launchctl `ai.drewgent.kanban-dashboard`
+2. Dashboard: `localhost:8644` or via launchctl `ai.{{AGENT_NAME_LOWER}}.kanban-dashboard`
 3. Unblock → triggers WordPress publish via dispatch_once_content.py

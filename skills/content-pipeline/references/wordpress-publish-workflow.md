@@ -12,7 +12,7 @@ content-manager → memories/insights/(slug).md + SVG + Excalidraw + PNG
 
 ## WordPress MCP Server
 
-**Script:** `~/.drewgent/scripts/wordpress-mcp-server.js`
+**Script:** `~/.{{AGENT_NAME_LOWER}}/scripts/wordpress-mcp-server.js`
 **Registration:** `config.yaml` → `mcp_servers.wordpress`
 **Communication:** STDIO JSON-RPC 2.0 (not standard MCP tools/list — uses `list_tools` and `call_tool`)
 **Auth:** Docker socket access (runs as root via `docker exec`)
@@ -33,10 +33,10 @@ content-manager → memories/insights/(slug).md + SVG + Excalidraw + PNG
 
 ```bash
 # List tools
-echo '{"jsonrpc":"2.0","id":1,"method":"list_tools"}' | node ~/.drewgent/scripts/wordpress-mcp-server.js
+echo '{"jsonrpc":"2.0","id":1,"method":"list_tools"}' | node ~/.{{AGENT_NAME_LOWER}}/scripts/wordpress-mcp-server.js
 
 # Create test post
-echo '{"jsonrpc":"2.0","id":2,"method":"call_tool","params":{"name":"create_post","arguments":{"title":"Test","content":"Hello","status":"draft"}}}' | node ~/.drewgent/scripts/wordpress-mcp-server.js
+echo '{"jsonrpc":"2.0","id":2,"method":"call_tool","params":{"name":"create_post","arguments":{"title":"Test","content":"Hello","status":"draft"}}}' | node ~/.{{AGENT_NAME_LOWER}}/scripts/wordpress-mcp-server.js
 ```
 
 ## WordPress Local Docker Setup
@@ -45,14 +45,14 @@ echo '{"jsonrpc":"2.0","id":2,"method":"call_tool","params":{"name":"create_post
 
 | Container | Image | Port |
 |-----------|-------|------|
-| `humanerd-wp` | wordpress:6.7-php8.3-apache | 8080→80 |
-| `humanerd-db` | mysql:8.0 | 3307→3306 |
+| `YOUR_DOMAIN-wp` | wordpress:6.7-php8.3-apache | 8080→80 |
+| `YOUR_DOMAIN-db` | mysql:8.0 | 3307→3306 |
 
 ### Data Storage
 
-- WP uploads: `/Volumes/humanerd/docker/wordpress/wp-content/` (NAS SMB mount)
-- MySQL data: `/Volumes/humanerd/docker/wordpress/db/` (NAS SMB mount)
-- Config: `/Users/drew/.drewgent/wordpress/`
+- WP uploads: `/Volumes/YOUR_NAS/docker/wordpress/wp-content/` (NAS SMB mount)
+- MySQL data: `/Volumes/YOUR_NAS/docker/wordpress/db/` (NAS SMB mount)
+- Config: `~/.{{AGENT_NAME_LOWER}}/wordpress/`
 
 ### Theme: Blocksy (Free)
 
@@ -68,10 +68,10 @@ Blocksy was chosen over GeneratePress because:
 
 ```bash
 # Install/activate theme
-docker exec humanerd-wp wp --allow-root theme install blocksy --activate
+docker exec YOUR_DOMAIN-wp wp --allow-root theme install blocksy --activate
 
 # Set color palette
-docker exec humanerd-wp wp --allow-root eval '
+docker exec YOUR_DOMAIN-wp wp --allow-root eval '
 set_theme_mod("blocksy_color_palette", [
   ["color"=>"#1c1c1a","id"=>"color1"],
   ["color"=>"#8b7355","id"=>"color8"]
@@ -79,22 +79,22 @@ set_theme_mod("blocksy_color_palette", [
 '
 
 # Set logo
-docker exec humanerd-wp wp --allow-root media import /path/to/logo.png --porcelain
-docker exec humanerd-wp wp --allow-root eval '
+docker exec YOUR_DOMAIN-wp wp --allow-root media import /path/to/logo.png --porcelain
+docker exec YOUR_DOMAIN-wp wp --allow-root eval '
 set_theme_mod("custom_logo", 14);
 set_theme_mod("logo_type", "logo");
 '
 
 # Custom CSS
-docker exec humanerd-wp wp --allow-root eval '
+docker exec YOUR_DOMAIN-wp wp --allow-root eval '
 wp_update_custom_css_post("body { font-family: ... }");
 '
 
 # Add Google Fonts via MU plugin
-docker exec humanerd-wp wp --allow-root eval '
-$plugin = "/var/www/html/wp-content/mu-plugins/humanerd-fonts.php";
+docker exec YOUR_DOMAIN-wp wp --allow-root eval '
+$plugin = "/var/www/html/wp-content/mu-plugins/YOUR_PREFIX-fonts.php";
 file_put_contents($plugin, "<?php add_action(\"wp_enqueue_scripts\", function() {
-  wp_enqueue_style(\"humanerd-fonts\", \"https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap\", array(), null);
+  wp_enqueue_style(\"YOUR_PREFIX-fonts\", \"https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap\", array(), null);
 });");
 '
 ```
@@ -104,7 +104,7 @@ file_put_contents($plugin, "<?php add_action(\"wp_enqueue_scripts\", function() 
 WordPress permalink rewrite rules may not be auto-generated in Docker. Manual fix:
 
 ```bash
-docker exec humanerd-wp sh -c "cat > /var/www/html/.htaccess << 'EOF'
+docker exec YOUR_DOMAIN-wp sh -c "cat > /var/www/html/.htaccess << 'EOF'
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On
@@ -123,11 +123,11 @@ EOF"
 
 ```bash
 # wp-cli
-docker exec humanerd-wp wp --allow-root <command>
+docker exec YOUR_DOMAIN-wp wp --allow-root <command>
 
 # Docker compose
-export DOCKER_HOST=unix:///Users/drew/.colima/default/docker.sock
-cd /Users/drew/.drewgent/wordpress && docker-compose up -d
+export DOCKER_HOST=unix://~/.colima/default/docker.sock
+cd ~/.{{AGENT_NAME_LOWER}}/wordpress && docker-compose up -d
 
 # Colima (Docker runtime)
 colima status
@@ -135,8 +135,8 @@ colima start --cpu 4 --memory 8 --disk 50
 
 # Access WordPress
 open http://localhost:8080/wp-admin
-# User: humanerd
-# Password: stored in ~/.drewgent/wordpress/.wp-env (chmod 600)
+# User: YOUR_USERNAME
+# Password: stored in ~/.{{AGENT_NAME_LOWER}}/wordpress/.wp-env (chmod 600)
 ```
 
 ## Publish Pipeline (Future)

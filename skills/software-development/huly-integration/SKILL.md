@@ -34,10 +34,10 @@ A native Hermes MCP server is configured at `~/.hermes/config.yaml` → `mcp_ser
 # ~/.hermes/config.yaml — already configured
 mcp_servers:
   huly:
-    command: /Users/drew/.drewgent/scripts/huly-mcp-wrapper.sh
+    command: ~/.{{AGENT_NAME_LOWER}}/scripts/huly-mcp-wrapper.sh
 ```
 
-The wrapper script (`~/.drewgent/scripts/huly-mcp-wrapper.sh`) reads `HULY_KEY` from `~/.hermes/.env` at runtime and bridges it as `HULY_TOKEN`. This keeps the JWT out of config.yaml — no credential exposure in version control.
+The wrapper script (`~/.{{AGENT_NAME_LOWER}}/scripts/huly-mcp-wrapper.sh`) reads `HULY_KEY` from `~/.hermes/.env` at runtime and bridges it as `HULY_TOKEN`. This keeps the JWT out of config.yaml — no credential exposure in version control.
 
 **Auth:** No extra setup — the existing `HULY_KEY` (JWT from Settings → Integrations → API Access) is used directly.
 
@@ -114,7 +114,7 @@ Huly is self-hosted on the Synology DS920+ NAS as well as using Huly Cloud.
 
 | Detail | Value |
 |--------|-------|
-| URL | `http://192.168.1.53:8087` |
+| URL | `http://192.168.1.100:8087` |
 | Server | Synology DS920+ (20GB RAM, 14TB HDD, 4TB SSD cache) |
 | Docker | v24.0.2, Compose v2.20.1 |
 | Stack | 14 containers (cockroach, redpanda, minio, elastic, + Node.js services) |
@@ -130,11 +130,11 @@ sudo rm -rf huly                              # nuke the manually-edited version
 sudo git clone https://github.com/hcengineering/huly-selfhost.git huly   # fresh clone
 cd huly
 cp example-huly.conf huly_v7.conf             # copy template
-# edit huly_v7.conf: HOST_ADDRESS=192.168.1.53:8087, HTTP_PORT=8087,
+# edit huly_v7.conf: HOST_ADDRESS=192.168.1.100:8087, HTTP_PORT=8087,
 #                    CR_USERNAME=huly, CR_USER_PASSWORD=***
 sudo bash setup.sh --secret                   # generates SECRET in huly_v7.conf
 sudo bash setup.sh --quick                    # writes nginx.conf + docker compose up -d
-# 60 seconds later, http://192.168.1.53:8087 is live
+# 60 seconds later, http://192.168.1.100:8087 is live
 ```
 
 `hcengineering/huly-selfhost` ships with a battle-tested `setup.sh` that handles:
@@ -154,7 +154,7 @@ sudo bash setup.sh --quick                    # writes nginx.conf + docker compo
 
 ```bash
 # SSH into NAS (key + port)
-ssh -i ~/.ssh/id_ed25519_dr2w247 -p 8528 drew@192.168.1.53
+ssh -i ~/.ssh/YOUR_SSH_KEY -p YOUR_SSH_PORT user@192.168.1.100
 
 # Fresh clone + setup (one-time, only if not already done)
 cd /volume1/docker
@@ -165,7 +165,7 @@ cp example-huly.conf huly_v7.conf                                   # template
 
 # Edit huly_v7.conf — the only required edits for NAS + 8087:
 #   HULY_VERSION=v0.7.423
-#   HOST_ADDRESS=192.168.1.53:8087
+#   HOST_ADDRESS=192.168.1.100:8087
 #   HTTP_PORT=8087
 #   CR_USERNAME=huly
 #   CR_USER_PASSWORD=*** Then:
@@ -179,7 +179,7 @@ sudo docker compose ps
 sudo docker compose logs account --tail 10
 ```
 
-Note: The NAS requires a sudo password. Use `expect` scripts or interactive SSH — `sudo -n` (non-interactive) does NOT work because the SSH session doesn't cache sudo credentials. See `~/.drewgent/scripts/` for reusable expect wrappers or pipe via `ssh -tt`. For the canonical expect + NAS pattern, see `devops/nas-synology-ssh-automation`.
+Note: The NAS requires a sudo password. Use `expect` scripts or interactive SSH — `sudo -n` (non-interactive) does NOT work because the SSH session doesn't cache sudo credentials. See `~/.{{AGENT_NAME_LOWER}}/scripts/` for reusable expect wrappers or pipe via `ssh -tt`. For the canonical expect + NAS pattern, see `devops/nas-synology-ssh-automation`.
 
 > **For expect + Synology sudo patterns** (the `sleep 2` + `send -- "$password\n"` + `exp_continue` sequence that actually works, plus anti-patterns that don't), see `references/nas-ssh-expect-patterns.md`.
 
@@ -344,7 +344,7 @@ The 5-hour lesson (kept for context):
    ```
    You should see `huly` in the users list and `huly` in the databases list.
 
-6. **Open the web UI**: `http://192.168.1.53:8087` — register the first admin account.
+6. **Open the web UI**: `http://192.168.1.100:8087` — register the first admin account.
 
 ### Insecure window — what is it and why can't we rely on it
 
@@ -401,7 +401,7 @@ RP_PW_VAL=$(cat .rp.secret)
 cat > huly_v7.conf <<HULYCONF
 HULY_VERSION=v0.7.423
 DOCKER_NAME=huly
-HOST_ADDRESS=192.168.1.53:8087
+HOST_ADDRESS=192.168.1.100:8087
 SECURE=
 HTTP_PORT=8087
 HTTP_BIND=
@@ -666,14 +666,14 @@ rawConn.pushHandler((...txArr) => {
 
 ### Bridge Daemon (Production)
 
-Deployed as a launchd daemon at `ai.drewgent.huly-bridge` (PID verified running):
+Deployed as a launchd daemon at `ai.{{AGENT_NAME_LOWER}}.huly-bridge` (PID verified running):
 
 | File | Path |
 |------|------|
-| Node.js script | `~/.drewgent/scripts/huly_bridge.js` |
-| Bash wrapper | `~/.drewgent/scripts/huly_bridge.sh` |
-| launchd plist | `~/Library/LaunchAgents/ai.drewgent.huly-bridge.plist` |
-| Log | `~/.drewgent/logs/huly-bridge.log` |
+| Node.js script | `~/.{{AGENT_NAME_LOWER}}/scripts/huly_bridge.js` |
+| Bash wrapper | `~/.{{AGENT_NAME_LOWER}}/scripts/huly_bridge.sh` |
+| launchd plist | `~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.huly-bridge.plist` |
+| Log | `~/.{{AGENT_NAME_LOWER}}/logs/huly-bridge.log` |
 
 **Behavior:**
 - Connects to Huly, registers pushHandler
@@ -683,10 +683,10 @@ Deployed as a launchd daemon at `ai.drewgent.huly-bridge` (PID verified running)
 
 **Commands:**
 ```bash
-launchctl load ~/Library/LaunchAgents/ai.drewgent.huly-bridge.plist   # start
-launchctl stop ai.drewgent.huly-bridge                                  # stop
-launchctl list ai.drewgent.huly-bridge                                  # status
-tail -f ~/.drewgent/logs/huly-bridge.log                                # log
+launchctl load ~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.huly-bridge.plist   # start
+launchctl stop ai.{{AGENT_NAME_LOWER}}.huly-bridge                                  # stop
+launchctl list ai.{{AGENT_NAME_LOWER}}.huly-bridge                                  # status
+tail -f ~/.{{AGENT_NAME_LOWER}}/logs/huly-bridge.log                                # log
 ```
 
 ### Architecture Without Webhooks
@@ -714,9 +714,9 @@ Huly Server ──WebSocket──→ client.client.client.conn
 Pushes recently completed Hermes kanban tasks to Huly as new Issues.
 
 ```bash
-# Script: ~/.drewgent/scripts/huly_sync.sh → huly_sync.js
-# Cron: job fc33f33c8b47 in ~/.drewgent/cron/jobs.json
-# Token: HULY_KEY from ~/.drewgent/.env
+# Script: ~/.{{AGENT_NAME_LOWER}}/scripts/huly_sync.sh → huly_sync.js
+# Cron: job fc33f33c8b47 in ~/.{{AGENT_NAME_LOWER}}/cron/jobs.json
+# Token: HULY_KEY from ~/.{{AGENT_NAME_LOWER}}/.env
 # Duplicate check: by title
 ```
 
@@ -725,8 +725,8 @@ Pushes recently completed Hermes kanban tasks to Huly as new Issues.
 Polls Huly for recent changes, posts to Discord #agent-chat when there are updates.
 
 ```bash
-# Script: ~/.drewgent/scripts/huly_check.sh → huly_check.js
-# Cron: job e38860f7e162 in ~/.drewgent/cron/jobs.json
+# Script: ~/.{{AGENT_NAME_LOWER}}/scripts/huly_check.sh → huly_check.js
+# Cron: job e38860f7e162 in ~/.{{AGENT_NAME_LOWER}}/cron/jobs.json
 # Silent when no changes (empty stdout = no delivery)
 ```
 
@@ -735,7 +735,7 @@ Polls Huly for recent changes, posts to Discord #agent-chat when there are updat
 ```
 Huly Issue created (by user in UI)
     ↓ REAL-TIME (pushHandler)
-huly_bridge.js ──→ kanban create ──→ Drewgent dispatcher ──→ worker spawns
+huly_bridge.js ──→ kanban create ──→ {{AGENT_NAME}} dispatcher ──→ worker spawns
     ↓                                                                  ↓
 huly_check.js (30min polling)                                worker completes
     ↓                                                                  ↓
@@ -746,10 +746,10 @@ Discord #agent-chat                                          huly_sync.js (120mi
 
 ## Kanban → Huly Sync Architecture
 
-See `scripts/huly_sync.js` in `~/.drewgent/scripts/` for the production sync script.
+See `scripts/huly_sync.js` in `~/.{{AGENT_NAME_LOWER}}/scripts/` for the production sync script.
 
 ```
-Drewgent kanban (done tasks)
+{{AGENT_NAME}} kanban (done tasks)
     ↓ (every 120m via cron job, no_agent)
 huly_sync.js (Node.js)
     ↓ (@hcengineering/api-client WebSocket)
@@ -760,9 +760,9 @@ Issues created as "[Kanban] title"
 
 **Duplicate prevention:** Script checks existing issue titles before creating new ones.
 
-**Cron job:** Registered in `~/.drewgent/cron/jobs.json` as `huly-kanban-sync` (job_id `fc33f33c8b47`). Runs every 120m, no_agent, script `huly_sync.js`.
+**Cron job:** Registered in `~/.{{AGENT_NAME_LOWER}}/cron/jobs.json` as `huly-kanban-sync` (job_id `fc33f33c8b47`). Runs every 120m, no_agent, script `huly_sync.js`.
 
-**Env setup:** `HULY_KEY` stored in `~/.drewgent/.env`.
+**Env setup:** `HULY_KEY` stored in `~/.{{AGENT_NAME_LOWER}}/.env`.
 
 ## Discord Webhook Bridge
 
@@ -774,7 +774,7 @@ Huly does NOT expose webhook config via API. To receive notifications in Discord
 
 ### Alternative: LLM Watch
 
-If Discord webhook isn't configured, a cron job with Discord delivery can periodically check kanban state. Register a no_agent cron job in `~/.drewgent/cron/jobs.json` with:
+If Discord webhook isn't configured, a cron job with Discord delivery can periodically check kanban state. Register a no_agent cron job in `~/.{{AGENT_NAME_LOWER}}/cron/jobs.json` with:
 - `schedule`: `every 60m`
 - `deliver`: `discord:1479507905276267553`
 - `prompt`: "Summarize recent Huly workspace activity briefly"

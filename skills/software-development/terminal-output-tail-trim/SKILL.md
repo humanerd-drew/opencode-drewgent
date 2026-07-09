@@ -19,13 +19,13 @@ links:
 
 ## Audit Finding (2026-05-31)
 
-Drewgent의 `terminal` tool은 50,000자 cap + 40/60 head/tail split safety net만 있었음. 50K는 **safety net치고 너무 큼** — 50K ≈ 12,500 tokens. verbose 명령 (pytest, npm install, gcc) 한 번에 12.5K 토큰 context 소비. 90%의 terminal call은 <5K 출력이지만, 나머지 10%가 cap kick in → 매번 50K push.
+{{AGENT_NAME}}의 `terminal` tool은 50,000자 cap + 40/60 head/tail split safety net만 있었음. 50K는 **safety net치고 너무 큼** — 50K ≈ 12,500 tokens. verbose 명령 (pytest, npm install, gcc) 한 번에 12.5K 토큰 context 소비. 90%의 terminal call은 <5K 출력이지만, 나머지 10%가 cap kick in → 매번 50K push.
 
 원인: 기존 설계는 "rare huge output" 케이스만 상정. LLM이 매번 50K 받음. 12.5K 토큰은 LLM context window의 1-5%를 한 tool call이 잡아먹음.
 
 ## Fix (shipped 2026-05-31)
 
-`/Users/drew/.drewgent/source/drewgent-agent/tools/terminal_tool.py` 의 `terminal_tool`에 3개 파라미터 추가, default cap 변경:
+`~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/tools/terminal_tool.py` 의 `terminal_tool`에 3개 파라미터 추가, default cap 변경:
 
 | param | type | default | 의미 |
 |---|---|---|---|
@@ -88,7 +88,7 @@ Phase 2 (`terminal-output-tail-trim`)은 **default change pattern**:
 **default change의 trade-off:**
 - Risk: 기존 prompt/test가 50K 출력을 가정하면 break.
 - Mitigate: `truncate_chars=50000` opt-out으로 즉시 복원 가능. backward compat 한 줄.
-- Drewgent의 internal 사용 (cron, gateway, MCP server) 위주로 영향. 외부 LLM API는 schema description을 보고 알아서 적응.
+- {{AGENT_NAME}}의 internal 사용 (cron, gateway, MCP server) 위주로 영향. 외부 LLM API는 schema description을 보고 알아서 적응.
 
 ## Pitfalls
 

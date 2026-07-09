@@ -1,22 +1,22 @@
 ---
-name: drewgent-llm-cost-opt-impl
-title: Drewgent LLM Cost Optimization — 3-Round Implementation
-description: 3-round implementation playbook (config → scheduler → worker) for reducing background/cron LLM calls in Drewgent. Use after `llm-cost-audit` produces candidate list. Captures verified pitfalls from 2026-06-02 production patch.
+name: {{AGENT_NAME_LOWER}}-llm-cost-opt-impl
+title: {{AGENT_NAME}} LLM Cost Optimization — 3-Round Implementation
+description: 3-round implementation playbook (config → scheduler → worker) for reducing background/cron LLM calls in {{AGENT_NAME}}. Use after `llm-cost-audit` produces candidate list. Captures verified pitfalls from 2026-06-02 production patch.
 domain: devops
 space: growth
 type: skill
-tags: [devops, cost, llm, optimization, implementation, drewgent]
+tags: [devops, cost, llm, optimization, implementation, {{AGENT_NAME_LOWER}}]
 created: 2026-06-02
 updated: 2026-06-02
 links:
   - "[[skills/devops/llm-cost-audit]]"
   - "[[skills/devops/cron-script-fastpath]]"
-  - "[[skills/software-development/yaml-config-patch-drewgent]]"
+  - "[[skills/software-development/yaml-config-patch-{{AGENT_NAME_LOWER}}]]"
   - "[[skills/software-development/llm-model-migration]]"
   - "[[@memory/growth/KANBAN-REVIEW-20260520]]"
   - "[[@identity/brain/rules]]"---
 
-# Drewgent LLM Cost Optimization — 3-Round Implementation
+# {{AGENT_NAME}} LLM Cost Optimization — 3-Round Implementation
 
 After `llm-cost-audit` produces candidate list, execute patches in this order
 to minimize risk and maximize verifiable progress. Round 1 is cheap config-only
@@ -43,25 +43,25 @@ re-grep before relying on prior review claims:
 ```bash
 # Verify scheduler/worker code matches the documented behavior
 grep -n "AIAgent\|chat.completions\|messages.create" \
-  ~/.drewgent/scripts/run_kanban_worker.py \
-  ~/.drewgent/source/drewgent-agent/cron/scheduler.py
+  ~/.{{AGENT_NAME_LOWER}}/scripts/run_kanban_worker.py \
+  ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/cron/scheduler.py
 
 # Verify smart_routing cheap_model != main model (else routing effect 0)
-grep -E "model:|cheap_model:" ~/.drewgent/config.yaml
+grep -E "model:|cheap_model:" ~/.{{AGENT_NAME_LOWER}}/config.yaml
 ```
 
-Also check **DB path canonical** — `~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db`
-is canonical. The top-level `~/.drewgent/state/` is stale. Verify:
+Also check **DB path canonical** — `~/.{{AGENT_NAME_LOWER}}/P2-hippocampus/kanban/state/{{AGENT_NAME_LOWER}}_tasks.db`
+is canonical. The top-level `~/.{{AGENT_NAME_LOWER}}/state/` is stale. Verify:
 
 ```bash
-find ~/.drewgent -name drewgent_tasks.db -not -path '*/.git/*' -not -path '*/node_modules/*' -not -path '*/archive/*'
+find ~/.{{AGENT_NAME_LOWER}} -name {{AGENT_NAME_LOWER}}_tasks.db -not -path '*/.git/*' -not -path '*/node_modules/*' -not -path '*/archive/*'
 # Two files will appear. Use the P2-hippocampus one for INSERT/SELECT.
 ```
 
 ## Round 1 — Config-only (5 min, 0 risk)
 
-**Scope**: `auxiliary.compression` in BOTH `~/.drewgent/config.yaml` AND
-`~/.drewgent/P5-ego/config/config.yaml`. Affects `title_generator.py:38` and
+**Scope**: `auxiliary.compression` in BOTH `~/.{{AGENT_NAME_LOWER}}/config.yaml` AND
+`~/.{{AGENT_NAME_LOWER}}/P5-ego/config/config.yaml`. Affects `title_generator.py:38` and
 `context_compressor.py:364` (side tasks, max_tokens=30 summary).
 
 **Change**:
@@ -77,8 +77,8 @@ auxiliary:
 ```python
 import yaml
 for p in [
-    '/Users/drew/.drewgent/config.yaml',
-    '/Users/drew/.drewgent/P5-ego/config/config.yaml',
+    '~/.{{AGENT_NAME_LOWER}}/config.yaml',
+    '~/.{{AGENT_NAME_LOWER}}/P5-ego/config/config.yaml',
 ]:
     c = yaml.safe_load(open(p))
     aux = c['auxiliary']['compression']
@@ -143,8 +143,8 @@ def _run_script_subprocess(
         result = subprocess.run(
             [sys.executable, expanded],
             capture_output=True, text=True, timeout=300,
-            env={**os.environ, "DREW_HOME": str(_drewgent_home)},
-            cwd=str(_drewgent_home),
+            env={**os.environ, "DREW_HOME": str(_{{AGENT_NAME_LOWER}}_home)},
+            cwd=str(_{{AGENT_NAME_LOWER}}_home),
         )
         output = result.stdout.strip()
         if result.returncode != 0:
@@ -157,7 +157,7 @@ def _run_script_subprocess(
 ```
 
 **If the cron job has no script yet** (e.g., `kanban-maintenance`):
-- Write the script under `~/.drewgent/scripts/<job_name>.py` following the
+- Write the script under `~/.{{AGENT_NAME_LOWER}}/scripts/<job_name>.py` following the
   pattern in `P4-cortex/growth/kanban-maintenance-guide.md` if it exists
 - Best-effort HTML refresh is OK (fail silently if script missing)
 - Add the script path to jobs.json
@@ -166,9 +166,9 @@ def _run_script_subprocess(
 
 ```python
 import sys, json
-sys.path.insert(0, '/Users/drew/.drewgent/source/drewgent-agent')
+sys.path.insert(0, '~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent')
 from cron.scheduler import run_job
-jobs = json.load(open('/Users/drew/.drewgent/cron/jobs.json'))['jobs']
+jobs = json.load(open('~/.{{AGENT_NAME_LOWER}}/cron/jobs.json'))['jobs']
 for job_id in ('a130ff5768c1', 'e402e47447c1'):
     job = next(j for j in jobs if j['id'] == job_id)
     success, output, final, error = run_job(job)
@@ -176,7 +176,7 @@ for job_id in ('a130ff5768c1', 'e402e47447c1'):
     # No AIAgent instance was created — verify by absence of "Running job" log
 ```
 
-Then check `~/.drewgent/cron/output/{board}/<job_id>_<timestamp>.md` exists
+Then check `~/.{{AGENT_NAME_LOWER}}/cron/output/{board}/<job_id>_<timestamp>.md` exists
 and matches LLM-path output format (since `tick()` reuses the same delivery
 logic for both paths).
 
@@ -188,7 +188,7 @@ Currently 0 shell-prefix tasks in DB, so effect is 0 — but **future-proof
 safety net** when shell tasks do enter the queue.
 
 **⚠ DB path canonical (recheck)**: Insert tasks into
-`P2-hippocampus/kanban/state/drewgent_tasks.db`, NOT `~/.drewgent/state/`.
+`P2-hippocampus/kanban/state/{{AGENT_NAME_LOWER}}_tasks.db`, NOT `~/.{{AGENT_NAME_LOWER}}/state/`.
 The top-level is stale. `dispatch_once_default.py` only sees the P2 path.
 
 **Add classifier + shell-only path to `run_kanban_worker.py`**:
@@ -238,8 +238,8 @@ def run_worker(task_id):
 
 ```python
 import sqlite3, subprocess, time
-DB = '/Users/drew/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db'
-VENV = '/Users/drew/.drewgent/source/drewgent-agent/.venv/bin/python'
+DB = '~/.{{AGENT_NAME_LOWER}}/P2-hippocampus/kanban/state/{{AGENT_NAME_LOWER}}_tasks.db'
+VENV = '~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/.venv/bin/python'
 
 # 1. Insert shell + instruction tasks
 conn = sqlite3.connect(DB)
@@ -250,11 +250,11 @@ conn.execute("INSERT INTO tasks ... VALUES (?, 'ready', 'default', 'Run kanban c
 conn.commit(); conn.close()
 
 # 2. Run dispatcher
-subprocess.run([VENV, '/Users/drew/.drewgent/scripts/dispatch_once_default.py'],
-               env={'DREW_HOME': '/Users/drew/.drewgent', **os.environ}, check=True)
+subprocess.run([VENV, '~/.{{AGENT_NAME_LOWER}}/scripts/dispatch_once_default.py'],
+               env={'DREW_HOME': '~/.{{AGENT_NAME_LOWER}}', **os.environ}, check=True)
 
 # 3. Wait for workers, check logs
-log_dir = Path('/Users/drew/.drewgent/P4-cortex/scripts/kanban/logs/workers')
+log_dir = Path('~/.{{AGENT_NAME_LOWER}}/P4-cortex/scripts/kanban/logs/workers')
 for _ in range(30):
     if (log_dir / f'{shell_id}.log').exists() and (log_dir / f'{instr_id}.log').exists():
         time.sleep(2)  # let write settle
@@ -284,8 +284,8 @@ the end. This is critical — future sessions will trust the docs.
 
 - **P5-ego config duplication** (Round 1): root-level `compression:` and
   `auxiliary.compression:` both exist. Use unique multi-line `old_string`.
-- **DB path stale** (Round 3): `~/.drewgent/state/` is stale; P2-hippocampus
-  path is canonical. Two separate `drewgent_tasks.db` files exist.
+- **DB path stale** (Round 3): `~/.{{AGENT_NAME_LOWER}}/state/` is stale; P2-hippocampus
+  path is canonical. Two separate `{{AGENT_NAME_LOWER}}_tasks.db` files exist.
 - **Scheduler run_job() try-block placement** (Round 2): the `if script_path:`
   branch MUST be inside the try block so the finally cleanup runs
   (env vars popped, `session_db.end_session` called).
@@ -309,7 +309,7 @@ the end. This is critical — future sessions will trust the docs.
 
 - `llm-cost-audit` — generates the candidate list (Steps 1-5 framework)
 - `cron-script-fastpath` — Round 2 only (scheduler script: branch)
-- `yaml-config-patch-drewgent` — Round 1 only (dual-config patching)
+- `yaml-config-patch-{{AGENT_NAME_LOWER}}` — Round 1 only (dual-config patching)
 - `llm-model-migration` — M2.7→M3 catalog flip
 - `token-compression-headroom` — tool output 4-layer cap (different lever)
 

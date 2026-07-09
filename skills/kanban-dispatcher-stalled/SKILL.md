@@ -10,7 +10,7 @@ updated: 2026-06-01
 links:
   - "[[@memory/kanban/KANBAN_INDEX]]"
   - "[[@memory/growth/kanban-stuck-task-recovery]]"
-  - "[[@action/gateway/drewgent-architecture-dataflow]]"
+  - "[[@action/gateway/{{AGENT_NAME_LOWER}}-architecture-dataflow]]"
   - "[[@identity/brain/rules]]"---
 
 # Kanban Dispatcher Stalled — 진단 스킬
@@ -32,32 +32,32 @@ jobs.json 등록은 됐는데 launchd plist가 없거나 unload됨.
 
 ```bash
 # 1a. launchd에 트리거 plist가 떠있는지
-launchctl list | grep -i 'drewgent\|kanban\|cron'
+launchctl list | grep -i '{{AGENT_NAME_LOWER}}\|kanban\|cron'
 
-# 기대: ai.drewgent.gateway 또는 ai.drewgent.cron-runner 같은 plist label
+# 기대: ai.{{AGENT_NAME_LOWER}}.gateway 또는 ai.{{AGENT_NAME_LOWER}}.cron-runner 같은 plist label
 # (quartz / n8n / kanban-dashboard / fswatch / nas-mount는 무관 — 별개 service)
 
 # 1b. plist 파일 자체 존재 확인
-ls -la ~/Library/LaunchAgents/ai.drewgent.*.plist 2>/dev/null
-ls -la ~/Library/LaunchAgents/com.drewgent.*.plist 2>/dev/null
+ls -la ~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.*.plist 2>/dev/null
+ls -la ~/Library/LaunchAgents/com.{{AGENT_NAME_LOWER}}.*.plist 2>/dev/null
 
 # 1c. gateway plist 내용 확인
-plutil -p ~/Library/LaunchAgents/ai.drewgent.gateway.plist 2>/dev/null
+plutil -p ~/Library/LaunchAgents/ai.{{AGENT_NAME_LOWER}}.gateway.plist 2>/dev/null
 ```
 
-Fix: plist 부재 → `drewgent-update-checker` skill 또는 수동 작성 후 `launchctl load`. gateway plist가 cron runner 역할도 해야 함 (embedded design).
+Fix: plist 부재 → `{{AGENT_NAME_LOWER}}-update-checker` skill 또는 수동 작성 후 `launchctl load`. gateway plist가 cron runner 역할도 해야 함 (embedded design).
 
 ### 2. Script 부재 / Path mismatch
 script 파일이 jobs.json의 command path와 일치하지 않음.
 
 ```bash
 # 2a. script 존재 확인
-ls -la ~/.drewgent/scripts/dispatch_once_*.py
+ls -la ~/.{{AGENT_NAME_LOWER}}/scripts/dispatch_once_*.py
 
 # 2b. jobs.json의 script path와 비교
 python3 -c "
 import json
-with open('/Users/drew/.drewgent/cron/jobs.json') as f:
+with open('~/.{{AGENT_NAME_LOWER}}/cron/jobs.json') as f:
     jobs = json.load(f)
 for j in jobs.get('jobs', []):
     if 'dispatcher' in j.get('name','').lower():
@@ -65,7 +65,7 @@ for j in jobs.get('jobs', []):
 "
 ```
 
-Fix: script missing → memory의 옛 path가 outdated. `~/.drewgent/source/claude-code/...` → `~/.drewgent/source/drewgent-agent/...` 같은 root 변경이 있었을 수 있음.
+Fix: script missing → memory의 옛 path가 outdated. `~/.{{AGENT_NAME_LOWER}}/source/claude-code/...` → `~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/...` 같은 root 변경이 있었을 수 있음.
 
 ### 3. Stale "last_status=ok" marker
 jobs.json의 last_status=ok가 거짓말. last_run_at은 며칠 전.
@@ -75,7 +75,7 @@ jobs.json의 last_status=ok가 거짓말. last_run_at은 며칠 전.
 python3 -c "
 import json
 from datetime import datetime, timezone
-with open('/Users/drew/.drewgent/cron/jobs.json') as f:
+with open('~/.{{AGENT_NAME_LOWER}}/cron/jobs.json') as f:
     jobs = json.load(f)
 now = datetime.now(timezone.utc)
 for j in jobs.get('jobs', []):
@@ -100,7 +100,7 @@ fake worker_pid (작은 정수) 가 in_progress task에 남아있어 reclaim 로
 python3 -c "
 import sqlite3
 from pathlib import Path
-DB = Path.home() / '.drewgent' / 'state' / 'drewgent_tasks.db'
+DB = Path.home() / '.{{AGENT_NAME_LOWER}}' / 'state' / '{{AGENT_NAME_LOWER}}_tasks.db'
 conn = sqlite3.connect(str(DB))
 for r in conn.execute(\"SELECT id, status, board, worker_pid, claim_expires, title FROM tasks WHERE status='in_progress'\"):
     pid = r[3] or 0
@@ -112,7 +112,7 @@ fake worker_pid (99999, 39483 같은 작은 정수) — autotest 잔재. os.kill
 python3 -c "
 import sqlite3
 from pathlib import Path
-DB = Path.home() / '.drewgent' / 'state' / 'drewgent_tasks.db'
+DB = Path.home() / '.{{AGENT_NAME_LOWER}}' / 'state' / '{{AGENT_NAME_LOWER}}_tasks.db'
 conn = sqlite3.connect(str(DB))
 n = conn.execute(\"UPDATE tasks SET status='todo', worker_pid=NULL, claim_expires=NULL WHERE status='in_progress'\").rowcount
 conn.commit()
@@ -129,7 +129,7 @@ print(f'reclaimed: {n}')
 # 1) jobs.json 직접 read — enabled=true인 모든 job의 last/next state
 python3 -c "
 import json
-with open('/Users/drew/.drewgent/cron/jobs.json') as f:
+with open('~/.{{AGENT_NAME_LOWER}}/cron/jobs.json') as f:
     d = json.load(f)
 for j in d.get('jobs', []):
     if not j.get('enabled', True): continue
@@ -139,7 +139,7 @@ for j in d.get('jobs', []):
 "
 
 # 2) cron output dir의 최신 파일 timestamp vs 현재 시각
-ls -lt ~/.drewgent/cron/output/*/ 2>/dev/null | head -30
+ls -lt ~/.{{AGENT_NAME_LOWER}}/cron/output/*/ 2>/dev/null | head -30
 
 # 3) date 기준 staleness (1.5일+ vs 1분)
 date '+%Y-%m-%d %H:%M:%S %Z'
@@ -180,10 +180,10 @@ if not next_run:
 5개 enabled cron/interval job의 `next_run_at`을 `now-5s`로 일괄 patch → 다음 60초 tick에서 due → `mark_job_run`이 compute 결과로 자동 재계산.
 
 ```python
-from cron.jobs import load_jobs, save_jobs, _drewgent_now
+from cron.jobs import load_jobs, save_jobs, _{{AGENT_NAME_LOWER}}_now
 from datetime import timedelta
 
-now = _drewgent_now()
+now = _{{AGENT_NAME_LOWER}}_now()
 jobs = load_jobs()
 for j in jobs:
     if (j.get('enabled')
@@ -217,7 +217,7 @@ save_jobs(jobs)
 - cron-output-cleanup이 output을 매일 04:00에 삭제 — output이 비어있다고 dispatcher 안 도는 건 아님
 - fake worker_pid (99999, 39483 같은 작은 정수) — autotest 잔재. os.kill(pid, 0)도 fail → silent
 - 3 board dispatcher 중 1개만 미등록 가능 — jobs.json 검사 시 모든 board (default/content/integrations) 다 확인할 것
-- gateway plist와 cron plist가 별개 — ai.drewgent.gateway는 메시지 처리, ai.drewgent.cron-runner는 cron tick
+- gateway plist와 cron plist가 별개 — ai.{{AGENT_NAME_LOWER}}.gateway는 메시지 처리, ai.{{AGENT_NAME_LOWER}}.cron-runner는 cron tick
 - **next_run_at=null이면 due list에서 영원히 제외** — `get_due_jobs()`의 recurring 분기 부재가 root cause. 단순 disk patch만으로는 prevention 안 됨, jobs.py fix + restart 필요 (mode 5)
 - `last_status=ok`는 **stale marker일 수 있음** — 현재 spawn 안 되는 상태와 무관. last_run_at staleness와 함께 봐야 진실
 - `kind=once` job의 next_run_at=null은 mode 5가 아니라 oneshot recovery 로직이 별도 — `kind in ("cron", "interval")`인 recurring job만 mode 5 대상
@@ -243,7 +243,7 @@ save_jobs(jobs)
 
 ```bash
 # Check cron-runner fire frequency in last 5 min
-grep -E '=== 2026-' ~/.drewgent/logs/cron-runner/$(date +%Y-%m-%d).log \
+grep -E '=== 2026-' ~/.{{AGENT_NAME_LOWER}}/logs/cron-runner/$(date +%Y-%m-%d).log \
   | awk -F'[T:.]' '{print $2":"$3}' | tail -5
 # 0 entries in 5+ min = likely Mode 6 stall
 ```
@@ -254,7 +254,7 @@ Also checked by harmony check Layer 3.5b.
 
 ```bash
 UID_NUM=$(id -u)
-launchctl kickstart -k gui/${UID_NUM}/ai.drewgent.gateway
+launchctl kickstart -k gui/${UID_NUM}/ai.{{AGENT_NAME_LOWER}}.gateway
 # Gateway restarts, missed jobs fast-forward, normal tick resumes in 60-90s
 ```
 
@@ -277,7 +277,7 @@ for job in _script_jobs + _llm_jobs:
 ```
 
 **Option C (watchdog)**: Harmony check Layer 3.5b detects 0 fires in 5 min.  
-`drewgent_cron_watchdog.sh` auto-kickstarts if 0 fires + gateway uptime > 5 min.
+`{{AGENT_NAME_LOWER}}_cron_watchdog.sh` auto-kickstarts if 0 fires + gateway uptime > 5 min.
 
 #### 6d. Verification
 
@@ -288,6 +288,6 @@ Gateway log shows NO long gaps between `Running job` entries for script-based jo
 
 - [[@memory/kanban/KANBAN_INDEX]] — kanban brain integration
 - [[@memory/growth/kanban-stuck-task-recovery]] — stuck task recovery skill (별개)
-- [[@action/gateway/drewgent-architecture-dataflow]] — cron tick architecture
+- [[@action/gateway/{{AGENT_NAME_LOWER}}-architecture-dataflow]] — cron tick architecture
 - [[@action/incidents/cron-jobs-stalled-20260601]] — mode 5의 origin incident (5개 enabled cron 1.5일 정지, jobs.py get_due_jobs 분기 부재)
 - [[@action/incidents/cron-job-failure-20260518]] — 이전 incident (advanced_next_run 배치 advance로 double-run fix)

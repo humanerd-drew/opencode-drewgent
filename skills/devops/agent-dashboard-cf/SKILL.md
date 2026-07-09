@@ -1,7 +1,7 @@
 ---
 name: agent-dashboard-cf
 title: Agent Dashboard (Cloudflare Workers)
-description: "Drewgent 에이전트 상태를 Cloudflare Workers + KV로 호스팅. 4-tab insight-driven dashboard (Overview/System/Brain/Usage) + live agent activity + 23 collectors"
+description: "{{AGENT_NAME}} 에이전트 상태를 Cloudflare Workers + KV로 호스팅. 4-tab insight-driven dashboard (Overview/System/Brain/Usage) + live agent activity + 23 collectors"
   session: "2026-06-15 agent-dashboard (v6-final)"
   decision: "CF Worker + static assets + KV + pusher. v6: 4-tab layout (Overview/System/Brain/Usage), insight-driven design, live activity 15s refresh. KEY LESSON: tab-based depth > single-page cramming; live activity (>static metrics); error grouping > flat list; JS scoping bugs from render() accessing load() variables"
 created: 2026-06-15
@@ -250,19 +250,19 @@ wrangler deploy
 cd ~/Sites/agent-dashboard && wrangler deploy
 
 # After deploy, push initial data
-python3 ~/.drewgent/scripts/agent_dashboard_push.py
+python3 ~/.{{AGENT_NAME_LOWER}}/scripts/agent_dashboard_push.py
 ```
 
 ## Pusher Script
 
-Located at `~/.drewgent/scripts/agent_dashboard_push.py`. Runs every 5min via no-agent cron.
+Located at `~/.{{AGENT_NAME_LOWER}}/scripts/agent_dashboard_push.py`. Runs every 5min via no-agent cron.
 
 ### 23 Collectors
 
 | Collector | Source | Returns |
 |-----------|--------|---------|
 | collect_system() | uptime/df/vm_stat/sw_vers/uname | uptime, load, disk, memory, os/kernel/python/opencode versions |
-| collect_launchd() | launchctl list | ai.drewgent.* services with PID/exit_code |
+| collect_launchd() | launchctl list | ai.{{AGENT_NAME_LOWER}}.* services with PID/exit_code |
 | collect_kanban() | kanban.db direct read | tasks with status/assignee |
 | collect_cron() | jobs.json direct read | active/errors/paused jobs |
 | collect_network() | lsof -iTCP | known services with listening/down |
@@ -321,11 +321,11 @@ provider=openrouter model=opencode-go/deepseek-v4-flash → HTTP 400
 provider=opencode-go model=deepseek-v4-flash → OK
 ```
 
-**Fix**: Remove OPENROUTER_API_KEY from ~/.drewgent/.env. Session restore picks up openrouter as provider but model name `opencode-go/...` doesn't exist there.
+**Fix**: Remove OPENROUTER_API_KEY from ~/.{{AGENT_NAME_LOWER}}/.env. Session restore picks up openrouter as provider but model name `opencode-go/...` doesn't exist there.
 
 ### Gateway Watchdog — No PID Expected
 
-`ai.drewgent.gateway-watchdog` is OnDemand=true. Actual watchdog is the cron job running every 5min. Pusher checks cron job status, not launchd PID.
+`ai.{{AGENT_NAME_LOWER}}.gateway-watchdog` is OnDemand=true. Actual watchdog is the cron job running every 5min. Pusher checks cron job status, not launchd PID.
 
 ### Health Warning Count Overlap
 

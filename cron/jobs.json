@@ -1,0 +1,104 @@
+{
+  "jobs": [
+    {
+      "id": "health-check-example",
+      "name": "System health check",
+      "prompt": "Run a quick health check and report any issues.",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "~/scripts/health_check.py",
+      "script_only": true,
+      "schedule": {
+        "kind": "interval",
+        "minutes": 5,
+        "display": "every 5m"
+      },
+      "schedule_display": "every 5m",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "next_run_at": null,
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "deliver": "local",
+      "origin": null
+    },
+    {
+      "id": "cleanup-example",
+      "name": "Daily temp cleanup",
+      "prompt": "Clean up temporary files and rotate logs.",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "~/scripts/cleanup.py",
+      "script_only": true,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 4 * * *",
+        "display": "0 4 * * *"
+      },
+      "schedule_display": "0 4 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "next_run_at": null,
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "deliver": "local",
+      "origin": null
+    },
+    {
+      "id": "example-cron-format",
+      "name": "Example: agent job (disabled)",
+      "prompt": "This is an example of an agent-based cron job. Replace with your own prompt.",
+      "skills": ["baseline-ui"],
+      "skill": "baseline-ui",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "script_only": false,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * 1",
+        "display": "0 9 * * 1"
+      },
+      "schedule_display": "0 9 * * 1",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": false,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "next_run_at": null,
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "deliver": "local",
+      "origin": null
+    }
+  ],
+  "updated_at": "2026-01-01T00:00:00+00:00"
+}

@@ -1,12 +1,12 @@
-# Loop Engineering Assessment — Drewgent (2026-06-13, updated 2026-06-13)
+# Loop Engineering Assessment — {{AGENT_NAME}} (2026-06-13, updated 2026-06-13)
 
-Assessment of Drewgent against the [loop engineering framework](https://addyo.substack.com/p/loop-engineering): 5 building blocks + 1 memory store.
+Assessment of {{AGENT_NAME}} against the [loop engineering framework](https://addyo.substack.com/p/loop-engineering): 5 building blocks + 1 memory store.
 
 ## 1. Automations (Heartbeat)
 
 **Score: ★★★★☆**
 
-| Requirement | Drewgent |
+| Requirement | {{AGENT_NAME}} |
 |---|---|
 | Scheduled auto-discovery | `cronjob` tool — cron, interval, ISO |
 | Background triage | Kanban dispatcher + cron-runner |
@@ -20,7 +20,7 @@ Assessment of Drewgent against the [loop engineering framework](https://addyo.su
 
 **Score: ★★★☆☆**
 
-| Requirement | Drewgent |
+| Requirement | {{AGENT_NAME}} |
 |---|---|
 | Git worktree | `kanban_create(workspace_kind="worktree")` |
 | Config toggle | `config.yaml worktree: true/false` (commented) |
@@ -33,7 +33,7 @@ Assessment of Drewgent against the [loop engineering framework](https://addyo.su
 
 **Score: ★★★★★**
 
-| Requirement | Drewgent |
+| Requirement | {{AGENT_NAME}} |
 |---|---|
 | SKILL.md format | Full YAML frontmatter + body, 100+ skills |
 | Trigger conditions | `trigger:` field in frontmatter |
@@ -41,14 +41,14 @@ Assessment of Drewgent against the [loop engineering framework](https://addyo.su
 | Shared across repos | `skill_manage` tool |
 
 **Note:** Skills captured from this session (2026-06-13):
-- `devops/kanban-orchestrator` — updated with agent profiles, cost-aware pipeline, Drewgent design principles
+- `devops/kanban-orchestrator` — updated with agent profiles, cost-aware pipeline, {{AGENT_NAME}} design principles
 - `devops/kanban-worker` — updated with agent profile references and Linear hook side-effect
 
 ## 4. Plugins & Connectors (MCP)
 
 **Score: ★★★★☆**
 
-| Requirement | Drewgent |
+| Requirement | {{AGENT_NAME}} |
 |---|---|
 | MCP protocol | Native MCP client + mcporter |
 | Connectors | knowledge.db, specification-website, linear MCP (installed) |
@@ -61,11 +61,11 @@ Assessment of Drewgent against the [loop engineering framework](https://addyo.su
 
 **Score: ★★★★★**
 
-| Requirement | Drewgent |
+| Requirement | {{AGENT_NAME}} |
 |---|---|
 | Sub-agent spawning | `delegate_task` single + batch |
 | Per-agent model override | `agent_profile` parameter (baked into `delegate_task` schema) |
-| Static agent profiles | 8 roles at `~/.drewgent/agents/*.md` |
+| Static agent profiles | 8 roles at `~/.{{AGENT_NAME_LOWER}}/agents/*.md` |
 | Pipeline | `kanban_create(pipeline=[...])` auto-decomposition |
 | ESCALATE mechanism | Flash-tier profiles can signal `ESCALATE: <reason>` |
 | Cost-aware tiers | Flash/Pro/Max — complexity determines routing |
@@ -74,7 +74,7 @@ Assessment of Drewgent against the [loop engineering framework](https://addyo.su
 
 **Score: ★★★★★**
 
-| Requirement | Drewgent |
+| Requirement | {{AGENT_NAME}} |
 |---|---|
 | Durable task state | Kanban SQLite board |
 | Cross-session context | `memory()` tool + `session_search()` FTS5 |
@@ -99,7 +99,7 @@ Tier 3: Planner(max) → Explorer → Implementer ↔ Tester [≤3] → Reviewer
 | OpenCode Go ($10/mo) | deepseek-v4-flash/pro, qwen3.7-max, etc. | Fixed | Saturate — marginal cost $0 |
 | MiniMax Token Plan | MiniMax-M3 (via direct API) | Per-call | Fallback only |
 
-## Drewgent Design Principles (2026-06-13)
+## {{AGENT_NAME}} Design Principles (2026-06-13)
 
 Established from the loop engineering essay analysis and multi-agent architecture discussion:
 

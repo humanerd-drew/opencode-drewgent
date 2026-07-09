@@ -1,6 +1,6 @@
 #!/bin/bash
-# drewgent_harmony_check.sh
-# Cross-layer state diff for Drewgent infrastructure. Run when:
+# {{AGENT_NAME_LOWER}}_harmony_check.sh
+# Cross-layer state diff for {{AGENT_NAME}} infrastructure. Run when:
 #   - watchdog fires alert (6/10 incident trigger)
 #   - user says "에이전트 상태 점검" or similar
 #   - cron output is suspicious (no recent files, last_run_at stale)
@@ -21,30 +21,30 @@ set -o pipefail
 # NOTE: deliberately NOT set -u — bash 3.2 (macOS default) trips on associative
 # array key expansion with dotted labels. Unbound-var check disabled for safety.
 
-DREW_HOME="${DREW_HOME:-$HOME/.drewgent}"
+DREW_HOME="${DREW_HOME:-$HOME/.{{AGENT_NAME_LOWER}}}"
 JOBS_JSON="$DREW_HOME/cron/jobs.json"
 LIB_PLIST="$HOME/Library/LaunchAgents"
-# Memory is in P2-hippocampus (Drewgent's own), not ~/.claude/ (Codex's)
+# Memory is in P2-hippocampus ({{AGENT_NAME}}'s own), not ~/.claude/ (Codex's)
 MEMORY_FILE="$DREW_HOME/P2-hippocampus/memories/MEMORY.md"
 LAUNCHD_LABELS=(
-  "ai.drewgent.cron-runner"
-  "ai.drewgent.gateway"
-  "ai.drewgent.kanban-dashboard"
-  "ai.drewgent.n8n"
-  "com.drewgent.quartz-fswatch"
-  "com.drewgent.quartz-deploy"
+  "ai.{{AGENT_NAME_LOWER}}.cron-runner"
+  "ai.{{AGENT_NAME_LOWER}}.gateway"
+  "ai.{{AGENT_NAME_LOWER}}.kanban-dashboard"
+  "ai.{{AGENT_NAME_LOWER}}.n8n"
+  "com.{{AGENT_NAME_LOWER}}.quartz-fswatch"
+  "com.{{AGENT_NAME_LOWER}}.quartz-deploy"
 )
 
 # Per-label process fingerprints (ps grep patterns).
 # bash 3.2 (macOS default) has no associative arrays, so use parallel
 # arrays indexed by position. Order MUST match LAUNCHD_LABELS above.
 PROC_PATTERNS=(
-  "cron_runner.py"                              # ai.drewgent.cron-runner
-  "drewgent_cli.main.*gateway"                  # ai.drewgent.gateway
-  "kanban_dashboard_server.py"                  # ai.drewgent.kanban-dashboard
-  "n8n start"                                   # ai.drewgent.n8n
-  "quartz-fswatch.sh"                           # com.drewgent.quartz-fswatch
-  "quartz-deploy.sh"                            # com.drewgent.quartz-deploy
+  "cron_runner.py"                              # ai.{{AGENT_NAME_LOWER}}.cron-runner
+  "{{AGENT_NAME_LOWER}}_cli.main.*gateway"                  # ai.{{AGENT_NAME_LOWER}}.gateway
+  "kanban_dashboard_server.py"                  # ai.{{AGENT_NAME_LOWER}}.kanban-dashboard
+  "n8n start"                                   # ai.{{AGENT_NAME_LOWER}}.n8n
+  "quartz-fswatch.sh"                           # com.{{AGENT_NAME_LOWER}}.quartz-fswatch
+  "quartz-deploy.sh"                            # com.{{AGENT_NAME_LOWER}}.quartz-deploy
 )
 
 drift=0
@@ -58,7 +58,7 @@ emit() {
   fi
 }
 
-emit "🔍 **Drewgent harmony check** @ $(date '+%Y-%m-%d %H:%M:%S %Z')"
+emit "🔍 **{{AGENT_NAME}} harmony check** @ $(date '+%Y-%m-%d %H:%M:%S %Z')"
 emit ""
 
 # --- Layer 1: launchd view ---
@@ -230,7 +230,7 @@ if [ -f "$JOBS_JSON" ]; then
         MTIME=$(date -u -j -f "%Y-%m-%d %H:%M:%S" "$LAST_TS_NAIVE" +%s 2>/dev/null || echo 0)
       elif [[ "$LAST_TS" == *"+"* ]] || [[ "$LAST_TS" == *"-"* ]]; then
         # Has timezone offset, but not UTC. Use python for parse.
-        MTIME=$(/Users/drew/.hermes/hermes-agent/venv/bin/python3 -c "
+        MTIME=$(~/.hermes/hermes-agent/venv/bin/python3 -c "
 from datetime import datetime
 import sys
 ts = '$LAST_TS'
@@ -286,7 +286,7 @@ emit ""
 emit "## Layer 4: memory claims vs filesystem"
 # n8n plist claim from memory 6/1
 if [ -f "$MEMORY_FILE" ] && grep -q "n8n 셀프호스트 launchd 등록 완료" "$MEMORY_FILE" 2>/dev/null; then
-  if [ -f "$LIB_PLIST/ai.drewgent.n8n.plist" ]; then
+  if [ -f "$LIB_PLIST/ai.{{AGENT_NAME_LOWER}}.n8n.plist" ]; then
     emit "  ✓ n8n plist: memory 6/1 claim matches filesystem"
   else
     emit "  ⚠ n8n plist: memory 6/1 says 'registered' but plist MISSING on disk"
@@ -295,9 +295,9 @@ else
   emit "  ~ n8n plist claim: not found in memory (skip)"
 fi
 # gateway plist label vs filename
-if [ -f "$LIB_PLIST/ai.drewgent.gateway.plist" ]; then
-  actual_label=$(plutil -extract Label raw "$LIB_PLIST/ai.drewgent.gateway.plist" 2>/dev/null)
-  expected_label="ai.drewgent.gateway"
+if [ -f "$LIB_PLIST/ai.{{AGENT_NAME_LOWER}}.gateway.plist" ]; then
+  actual_label=$(plutil -extract Label raw "$LIB_PLIST/ai.{{AGENT_NAME_LOWER}}.gateway.plist" 2>/dev/null)
+  expected_label="ai.{{AGENT_NAME_LOWER}}.gateway"
   if [ "$actual_label" = "$expected_label" ]; then
     emit "  ✓ gateway plist: Label = $actual_label (matches filename)"
   else
@@ -315,13 +315,13 @@ if [ -f "$DREW_MEMORY" ] && [ -f "$CODEX_MEMORY" ]; then
   CODEX_MTIME=$(stat -f %m "$CODEX_MEMORY")
   CODEX_NEWER_DAYS=$(( (CODEX_MTIME - DREW_MTIME) / 86400 ))
   if [ "$CODEX_MTIME" -gt $((DREW_MTIME + 86400)) ]; then
-    emit "  ⚠ Codex MEMORY.md is ${CODEX_NEWER_DAYS}d newer than Drewgent memory"
-    emit "     Drewgent does NOT sync to Codex path. This is informational only."
+    emit "  ⚠ Codex MEMORY.md is ${CODEX_NEWER_DAYS}d newer than {{AGENT_NAME}} memory"
+    emit "     {{AGENT_NAME}} does NOT sync to Codex path. This is informational only."
   else
-    emit "  ✓ Drewgent memory is canonical (Codex ${CODEX_NEWER_DAYS}d older or aligned)"
+    emit "  ✓ {{AGENT_NAME}} memory is canonical (Codex ${CODEX_NEWER_DAYS}d older or aligned)"
   fi
 elif [ -f "$DREW_MEMORY" ]; then
-  emit "  ✓ Drewgent memory exists; Codex path absent (clean)"
+  emit "  ✓ {{AGENT_NAME}} memory exists; Codex path absent (clean)"
 fi
 
 # --- Verdict ---

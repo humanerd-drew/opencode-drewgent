@@ -24,7 +24,7 @@ The canonical case (2026-06-11): `GatewayRunner.start()` in `gateway/run.py` was
 
 ```bash
 # Check if any platform connection was attempted since last restart
-grep -E "Connecting|connected|Connecting to" ~/.drewgent/logs/gateway.log | tail -20
+grep -E "Connecting|connected|Connecting to" ~/.{{AGENT_NAME_LOWER}}/logs/gateway.log | tail -20
 ```
 
 Expected output for a healthy gateway:
@@ -42,19 +42,19 @@ If output is empty or only shows disconnect messages, platforms are not being co
 
 ```bash
 # 1. Confirm gateway is using the right .env
-grep DISCORD_BOT_TOKEN ~/.drewgent/.env | head -1
+grep DISCORD_BOT_TOKEN ~/.{{AGENT_NAME_LOWER}}/.env | head -1
 # Should show the bot token (first 20 chars visible)
 
 # 2. Check if connect logic exists but isn't wired
-grep -rn "connect_all\|connect_adapter" ~/.drewgent/source/drewgent-agent/gateway/adapters.py | head -5
+grep -rn "connect_all\|connect_adapter" ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/gateway/adapters.py | head -5
 # Should show the method definition
 
 # 3. Verify no call site exists
-grep -rn "connect_all" ~/.drewgent/source/drewgent-agent/gateway/run.py
+grep -rn "connect_all" ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/gateway/run.py
 # If empty = orphaned method, needs wiring
 
 # 4. Check GatewayRunner.start()
-grep -A 5 "async def start" ~/.drewgent/source/drewgent-agent/gateway/run.py
+grep -A 5 "async def start" ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/gateway/run.py
 # BAD: just "self._running = True; return True"
 # GOOD: calls self._adapter_loader.connect_all()
 ```
@@ -76,15 +76,15 @@ async def start(self) -> bool:
 Then restart the gateway:
 ```bash
 # Kill current processes (launchd will auto-restart with --replace)
-kill -TERM $(pgrep -f "drewgent_cli.main gateway")
+kill -TERM $(pgrep -f "{{AGENT_NAME_LOWER}}_cli.main gateway")
 # Or if not auto-restarting:
-launchctl start ai.drewgent.gateway
+launchctl start ai.{{AGENT_NAME_LOWER}}.gateway
 ```
 
 ## Verify
 
 ```bash
-sleep 5 && grep -E "Connecting|connected" ~/.drewgent/logs/gateway.log | tail -10
+sleep 5 && grep -E "Connecting|connected" ~/.{{AGENT_NAME_LOWER}}/logs/gateway.log | tail -10
 ```
 
 ## Prevention

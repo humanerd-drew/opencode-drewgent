@@ -1,11 +1,11 @@
 ---
 name: neuronfs-subsumption-ordering
-description: Maps NeuronFS 7-layer brain architecture to Drewgent prompt layers. Explains how P0-brainstem rules override all others.
+description: Maps NeuronFS 7-layer brain architecture to {{AGENT_NAME}} prompt layers. Explains how P0-brainstem rules override all others.
 version: 1.0.0
-author: drewgent-core
+author: {{AGENT_NAME_LOWER}}-core
 license: MIT
 metadata:
-  drewgent:
+  {{AGENT_NAME_LOWER}}:
     tags: [neuronfs, subsumption, brain, architecture, layers]
     category: brain
 links:
@@ -18,7 +18,7 @@ links:
 
 # NeuronFS Subsumption Architecture
 
-This skill explains how NeuronFS-style brain governance maps to Drewgent's prompt architecture, specifically the 7-layer subsumption hierarchy where P0 overrides all other layers.
+This skill explains how NeuronFS-style brain governance maps to {{AGENT_NAME}}'s prompt architecture, specifically the 7-layer subsumption hierarchy where P0 overrides all other layers.
 
 ## The Subsumption Principle
 
@@ -28,7 +28,7 @@ This is modeled after biological neural architectures where the brainstem (survi
 
 ## 7-Layer Mapping
 
-| Layer | Name | Drewgent Prompt Section | Priority |
+| Layer | Name | {{AGENT_NAME}} Prompt Section | Priority |
 |-------|------|------------------------|----------|
 | **P0** | brainstem | System prompt TOP (before identity) | **HIGHEST** |
 | **P1** | limbic | Tool-use enforcement | HIGH |
@@ -189,10 +189,10 @@ When rendering the system prompt:
 - Later layers append below
 - The AI reads top-to-bottom, giving earlier content more weight
 
-## Implementation in Drewgent
+## Implementation in {{AGENT_NAME}}
 
 ```
-~/.drewgent/brain/<name>/
+~/.{{AGENT_NAME_LOWER}}/brain/<name>/
 ├── P0-brainstem/     # Rendered FIRST → highest priority
 │   ├── 禁/          # Forbidden patterns
 │   ├── bomb.neuron  # Kill switches

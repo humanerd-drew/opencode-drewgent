@@ -75,7 +75,7 @@ _BATCH_MARKER = "<!-- Batch {n} @ {ts} -->"
 
 
 def ensure_note(thread_id: str, title: str, channel_id: str,
-                participants: str = "@humanerd") -> tuple[Path, str]:
+                participants: str = "@yourname") -> tuple[Path, str]:
     """
     Phase 4: Create an empty session note skeleton when a thread is created.
     Returns (filepath, vault_rel) for subsequent append_batch() calls.
@@ -777,7 +777,7 @@ def ensure_sessions_index(new_session_rel: str = ""):
 def _session_title_from_path(fp: Path) -> str:
     """Extract readable title from session filename."""
     name = fp.stem
-    # Format: 2026-04-12_dev-humanerd____agent-chat___topic-name____topic_123456
+    # Format: 2026-04-12_dev-YOUR_APP____agent-chat___topic-name____topic_123456
     parts = name.split("_")
     if len(parts) >= 4:
         # Try to find a meaningful title segment
@@ -1308,7 +1308,7 @@ if __name__ == "__main__":
     p = sub.add_parser("archive", help="Archive a session")
     p.add_argument("--title", default="Untitled Session")
     p.add_argument("--messages", nargs="*", default=[])
-    p.add_argument("--participants", default="@humanerd")
+    p.add_argument("--participants", default="@yourname")
     p.add_argument("--trigger", default="manual")
     p.add_argument("--thread-url", default="")
     p.add_argument("--webhook", default="")
@@ -1351,7 +1351,7 @@ if __name__ == "__main__":
             thread_id=args.thread_id,
             title=args.title,
             channel_id=args.channel_id,
-            participants=args.participants or "@humanerd",
+            participants=args.participants or "@yourname",
         )
         return {"success": True, "filepath": vault_rel, "thread_id": args.thread_id}
 
@@ -1371,7 +1371,7 @@ if __name__ == "__main__":
     p8.add_argument("--thread-id", required=True)
     p8.add_argument("--channel-id", required=True)
     p8.add_argument("--title", required=True)
-    p8.add_argument("--participants", default="@humanerd")
+    p8.add_argument("--participants", default="@yourname")
     p8.set_defaults(func=cmd_ensure_note)
 
     p9 = sub.add_parser("append-batch", help="[Phase 4] Append a batch of messages incrementally")

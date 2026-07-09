@@ -62,7 +62,7 @@ var hourly = d.hourly || [];
 
 ## Verification Checklist
 
-- [ ] `curl https://agent-dashboard.humanerd-me.workers.dev/api/status` returns 200 with JSON
+- [ ] `curl https://agent-dashboard.YOUR_ACCOUNT.workers.dev/api/status` returns 200 with JSON
 - [ ] HTML contains `<script>` with `load()` at end
 - [ ] No `catch(e){}` — always display errors
 - [ ] vis-network script loads (check Network tab in DevTools)

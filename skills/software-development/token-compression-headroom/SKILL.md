@@ -1,7 +1,7 @@
 ---
-title: headroom token compression — Drewgent POC + integration guide
+title: headroom token compression — {{AGENT_NAME}} POC + integration guide
 name: token-compression-headroom
-description: How to measure and cut token cost on Drewgent tool outputs. Two paths — headroom_ai library (POC done, deferred) and Drewgent-native 4-layer cap pattern (3 patches live, 78-80% savings). Auto-apply the cap pattern whenever you add or modify a tool that emits over 5K chars of JSON. Use when evaluating token compression, seeing high token cost on tool output, or adding a new tool that returns large records.
+description: How to measure and cut token cost on {{AGENT_NAME}} tool outputs. Two paths — headroom_ai library (POC done, deferred) and {{AGENT_NAME}}-native 4-layer cap pattern (3 patches live, 78-80% savings). Auto-apply the cap pattern whenever you add or modify a tool that emits over 5K chars of JSON. Use when evaluating token compression, seeing high token cost on tool output, or adding a new tool that returns large records.
 domain: software-development
 created: 2026-06-02
 updated: 2026-06-02
@@ -9,14 +9,14 @@ links:
   - "[[skills/software-development/external-tool-evaluation]]"
   - "[[skills/software-development/python-nested-import-nameerror]]"
   - "[[skills/software-development/llm-model-migration]]"
-  - "[[@memory/portfolio/drewgent]]"
+  - "[[@memory/portfolio/{{AGENT_NAME_LOWER}}]]"
   - "[[@memory/knowledge/NEURONFS_RULES]]"
   - "[[@memory/knowledge/headroom-poc-20260602]]"
   - "[[@memory/knowledge/token-compression-headroom-20260602]]"
-  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁task_qa_gate.neuron]]"
+  - "[[@identity/brain/{{AGENT_NAME}}-brain/P0-brainstem/禁/禁task_qa_gate.neuron]]"
   - "[[@identity/brain/rules]]"---
 
-# headroom (token compression) — Drewgent POC + integration guide
+# headroom (token compression) — {{AGENT_NAME}} POC + integration guide
 
 ## Auto-apply rule — for new/modified tools
 
@@ -35,7 +35,7 @@ links:
    - Single-record gets (kanban_get, doc fetch): 3000-5000 chars
    - File reads (read_file): 20000 chars (rare to hit)
 
-4. **Apply the pattern (see "Drewgent-native alternative" section below for full code template).**
+4. **Apply the pattern (see "{{AGENT_NAME}}-native alternative" section below for full code template).**
 
 5. **Document in the tool's schema what the cap does, the default, and how to override.**
 
@@ -52,10 +52,10 @@ links:
 
 ## When to use this skill
 
-You're evaluating `headroom-ai` (chopratejas/headroom, 4.3k stars, 60B+ tokens saved) for Drewgent, OR you're cutting token cost on Drewgent tool outputs. Use this skill to:
-- Install headroom-ai in Drewgent's Python 3.14 venv (ABI3 workaround required)
-- Run a POC to verify the 60-92% claim on real Drewgent tool outputs
-- Apply the **Drewgent-native 4-layer cap pattern** (no library needed) — see "Drewgent-native alternative" section
+You're evaluating `headroom-ai` (chopratejas/headroom, 4.3k stars, 60B+ tokens saved) for {{AGENT_NAME}}, OR you're cutting token cost on {{AGENT_NAME}} tool outputs. Use this skill to:
+- Install headroom-ai in {{AGENT_NAME}}'s Python 3.14 venv (ABI3 workaround required)
+- Run a POC to verify the 60-92% claim on real {{AGENT_NAME}} tool outputs
+- Apply the **{{AGENT_NAME}}-native 4-layer cap pattern** (no library needed) — see "{{AGENT_NAME}}-native alternative" section
 - Decide between (a) full surgical integration (b) JSON-only opt-in (c) skip
 - Debug `transforms_applied` logs when something looks off
 
@@ -65,7 +65,7 @@ PyO3 0.22.6 (headroom's Rust binding) does NOT officially support Python 3.14. A
 
 ```bash
 PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1 \
-  /Users/drew/.drewgent/source/drewgent-agent/.venv/bin/python3 -m pip install headroom-ai
+  ~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent/.venv/bin/python3 -m pip install headroom-ai
 ```
 
 **Do NOT use `--no-build-isolation`** (maturin missing in build env → `Cannot import 'maturin'`). With build-isolation + ABI3 env, builds a `cp314` wheel cleanly.
@@ -105,7 +105,7 @@ def measure(label, msgs):
 
 **If tokens_after > tokens_before despite `optimize=True`**: the message was protected AND metadata overhead made it larger. This is signal not to compress that message type.
 
-## Expected results — Drewgent tool inventory
+## Expected results — {{AGENT_NAME}} tool inventory
 
 | Tool output type | Compression | Why |
 |---|---|---|
@@ -115,13 +115,13 @@ def measure(label, msgs):
 | Image tool results | 0% via `compress()` API | image comp exists but not in default pipeline |
 
 **Decision rule**: if your tool output is >50% JSON, headroom is worth integrating. Otherwise look at:
-- **Drewgent-native 4-layer cap** (see next section) — no library, surgical patches, 78-80% savings on kanban/read
-- Drewgent's existing `agent/context_compressor.py` (conversation-level summary, 0.9 threshold, M3 1M compatible)
+- **{{AGENT_NAME}}-native 4-layer cap** (see next section) — no library, surgical patches, 78-80% savings on kanban/read
+- {{AGENT_NAME}}'s existing `agent/context_compressor.py` (conversation-level summary, 0.9 threshold, M3 1M compatible)
 - Custom JSON-specific compression (schema-aware row drop)
 
-## Drewgent-native alternative — 4-layer cap pattern (no library)
+## {{AGENT_NAME}}-native alternative — 4-layer cap pattern (no library)
 
-If headroom_ai integration feels heavy, Drewgent already has a working token-saving pattern applied as surgical patches across 4 tool layers. **No library, no latency, no SDK compatibility concerns.**
+If headroom_ai integration feels heavy, {{AGENT_NAME}} already has a working token-saving pattern applied as surgical patches across 4 tool layers. **No library, no latency, no SDK compatibility concerns.**
 
 ### What was patched (2026-06-02)
 
@@ -136,7 +136,7 @@ If headroom_ai integration feels heavy, Drewgent already has a working token-sav
 
 ### When to apply this pattern (decision rule)
 
-Use the Drewgent-native cap pattern when:
+Use the {{AGENT_NAME}}-native cap pattern when:
 - Tool output JSON has a "metadata + bulk" shape (e.g., `[{id, title, body}, ...]`)
 - The bulk field is read-once by the model then discarded (no follow-up edits)
 - You want zero new dependencies and zero added latency
@@ -148,7 +148,7 @@ Use headroom_ai instead when:
 
 ### When NOT to use either
 
-- Source code files — both approaches protect code (router:protected:recent_code for headroom, model would re-read with offset for Drewgent-native)
+- Source code files — both approaches protect code (router:protected:recent_code for headroom, model would re-read with offset for {{AGENT_NAME}}-native)
 - Image tool results — neither compresses (use vision model summary)
 - Real-time streams (cron output, kanban log dumps) — these are better handled at the conversation level (`agent/context_compressor.py`)
 
@@ -167,7 +167,7 @@ Use headroom_ai instead when:
 ```python
 # Test the patch end-to-end
 import importlib, sys
-sys.path.insert(0, "/Users/drew/.drewgent/source/drewgent-agent")
+sys.path.insert(0, "~/.{{AGENT_NAME_LOWER}}/source/{{AGENT_NAME_LOWER}}-agent")
 for m in list(sys.modules):
     if m.startswith("tools.YOUR_TOOL"):
         del sys.modules[m]
@@ -175,9 +175,9 @@ import tools.YOUR_TOOL as t
 # ... call with and without the new param, compare sizes
 ```
 
-### 40/60 vs 50/50 split — why Drewgent uses 40/60
+### 40/60 vs 50/50 split — why {{AGENT_NAME}} uses 40/60
 
-Drewgent tool outputs are usually "context header + log dump" shaped. The model's next-action decision lives in the last error / result, which is in the tail. 50/50 would risk cutting the tail. 40/60 is the safe default — header gets less but the model only needs schema there, not body.
+{{AGENT_NAME}} tool outputs are usually "context header + log dump" shaped. The model's next-action decision lives in the last error / result, which is in the tail. 50/50 would risk cutting the tail. 40/60 is the safe default — header gets less but the model only needs schema there, not body.
 
 All 4 layers use the same 40/60 ratio for consistency.
 
@@ -210,12 +210,12 @@ Add `headroom_enabled: bool = False` to `AIAgent.__init__` and `headroom.enabled
 
 - 5-50ms per call on small messages (typical tool output)
 - 50-200ms on large messages (>10KB)
-- Acceptable (Drewgent already does 1-3s API roundtrips)
+- Acceptable ({{AGENT_NAME}} already does 1-3s API roundtrips)
 - If latency-sensitive, gate on message length
 
-**Drewgent-native 4-layer cap**: 0ms added latency. The truncation is a string operation (`s[:head] + marker + s[-tail:]`), no parsing, no library call.
+**{{AGENT_NAME}}-native 4-layer cap**: 0ms added latency. The truncation is a string operation (`s[:head] + marker + s[-tail:]`), no parsing, no library call.
 
-## Info preservation verification (Drewgent-specific)
+## Info preservation verification ({{AGENT_NAME}}-specific)
 
 ```python
 # After compress, verify critical info (URLs, IDs, names) preserved
@@ -225,22 +225,22 @@ ids_kept = sum(1 for tid in original_task_ids if tid in compressed_str)
 # Target: 100% preservation for any field the LLM needs to act on
 ```
 
-**For Drewgent-native cap**: the marker is explicit, so verification is just checking `_truncated: true` in the JSON response. No library-specific tokens to count.
+**For {{AGENT_NAME}}-native cap**: the marker is explicit, so verification is just checking `_truncated: true` in the JSON response. No library-specific tokens to count.
 
 ## Verification after integration (headroom_ai)
 
-1. Measure `tokens_saved` over a 10-turn Drewgent session (target: 30-60% aggregate)
+1. Measure `tokens_saved` over a 10-turn {{AGENT_NAME}} session (target: 30-60% aggregate)
 2. Run an existing workflow end-to-end, verify same final answer
 3. Check `_headroom_stats_this_session` after each session
 4. Monitor tool failure rate (no regressions)
 5. If integrating into `run_agent.py`, run `qa-scenario-gen` tests (latent task → QA gate per `禁task_qa_gate`)
 
-## Verification after Drewgent-native cap patch
+## Verification after {{AGENT_NAME}}-native cap patch
 
 1. `python3 -c "import ast; ast.parse(open('tools/your_tool.py').read())"` — syntax check
 2. Fresh module reload + call with and without new param — compare response sizes
 3. `ps -p $GATEWAY_PID` — confirm gateway still running 30s after restart
-4. `tail -50 /Users/drew/.drewgent/logs/gateway.log` — confirm "80 tools loaded" and no import errors
+4. `tail -50 ~/.{{AGENT_NAME_LOWER}}/logs/gateway.log` — confirm "80 tools loaded" and no import errors
 5. `launchctl list | grep gateway` — confirm new PID after kickstart
 
 ## Lessons (POC + 4-layer patch, 2026-06-02)
@@ -254,7 +254,7 @@ ids_kept = sum(1 for tid in original_task_ids if tid in compressed_str)
 - **First-call lazy init**: warmup 안 하면 첫 측정만 outlier
 - **Tool result는 인식 잘 됨**: OpenAI `role: tool` + `tool_call_id` 포맷 그대로 작동
 
-### Drewgent-native 4-layer cap
+### {{AGENT_NAME}}-native 4-layer cap
 - **78-80% saving on real DB**: measured, not estimated
 - **40/60 split beats 50/50**: tail-biased, preserves model's next-action context
 - **Truncation marker 필수**: silent truncation = model makes decision on incomplete data
@@ -277,9 +277,9 @@ Re-evaluate headroom_ai integration if **2 or more** of these become true:
 - `[[skills/software-development/external-tool-evaluation]]` — sibling tool eval pattern
 - `[[skills/software-development/python-nested-import-nameerror]]` — sibling Python 3.14 + ABI issue (json UnboundLocalError)
 - `[[skills/software-development/llm-model-migration]]` — sibling LLM version change pattern (M2.7→M3)
-- `[[@memory/portfolio/drewgent]]` — Drewgent architecture
+- `[[@memory/portfolio/{{AGENT_NAME_LOWER}}]]` — {{AGENT_NAME}} architecture
 - `[[@memory/knowledge/NEURONFS_RULES]]` — file system rules
 - `[[@memory/knowledge/headroom-poc-20260602]]` — headroom_ai POC result (sibling doc)
-- `[[@memory/knowledge/token-compression-headroom-20260602]]` — Drewgent-native 4-layer cap result (sibling doc)
-- `[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁task_qa_gate.neuron]]` — QA gate (production integration 필수)
-- `[[agent/context_compressor]]` — Drewgent's existing conversation-level summarizer (complementary, not redundant)
+- `[[@memory/knowledge/token-compression-headroom-20260602]]` — {{AGENT_NAME}}-native 4-layer cap result (sibling doc)
+- `[[@identity/brain/{{AGENT_NAME}}-brain/P0-brainstem/禁/禁task_qa_gate.neuron]]` — QA gate (production integration 필수)
+- `[[agent/context_compressor]]` — {{AGENT_NAME}}'s existing conversation-level summarizer (complementary, not redundant)
