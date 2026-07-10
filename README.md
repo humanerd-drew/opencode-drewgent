@@ -152,6 +152,60 @@ Without this, an agent crash mid-task loses everything. With kanban, you can res
 
 ---
 
+## From Symptom to Solution
+
+Most agent setups only handle two states: "write code" and "answer questions." This template adds a third: **solve problems systematically**. The loop is simple:
+
+```
+Name it → Trace it → Match it → Decide → Fix → Archive
+```
+
+### 1. Name it
+
+A problem you can't name is a problem you'll solve twice. Drop the symptom somewhere permanent — `P2-hippocampus/` for raw observations, or a kanban task if it needs action. The label can be ugly. It just needs to exist.
+
+### 2. Trace it
+
+Problems are never isolated. A cron failure connects to launchd, to Python version, to `jobs.json` format, to the last time you changed the scheduler. Use `recall()` to find related decisions. Use `trace_path` in `codebase-memory-mcp` to follow code call chains. Use `@identity/brain/rules.md` to check if you've already made a rule about this.
+
+### 3. Match it
+
+Open `harness/patterns/manufacturing-bridge.md`. Six quality patterns cover most agent-system failure modes:
+
+- **Gradual braking** — warn first, tighten, then stop
+- **Structurally impossible** — architecture-level block instead of a rule
+- **Flaky vs systematic** — one-time glitch or recurring flaw
+- **Automatic stop + human judgment** — when the guardrail trips, who decides?
+
+If your problem doesn't fit any pattern, that's useful data. You might have found a new one.
+
+### 4. Decide
+
+Make a decision. Then immediately save it:
+
+```
+remember("Switched from n8n to launchd cron because ...", type="decision")
+```
+
+This single line is what separates a system that learns from one that repeats. Next session, `recall("decision: cron")` brings back the full context.
+
+### 5. Fix
+
+Know your autonomy tier:
+- **Tier 1-2**: Fix directly, no permission needed
+- **Tier 3**: Draft the fix proposal first
+- **Tier 4**: Summarize and wait
+
+For multi-step fixes, create a kanban task with a pipeline: `explorer → implementer → reviewer`. Each step spawns the right subagent.
+
+### 6. Archive
+
+Move the resolved incident from `P2-hippocampus/` (raw) to `P6-prefrontal/` (closed). The symptom is documented, the trace is recorded, the pattern is matched, the decision is permanent. Next time a similar problem shows up, the agent can start at step 3.
+
+**Most agents skip steps 2-4 and wonder why they keep rediscovering the same bugs.** The template is designed to make the full loop natural, not forced. You don't have to follow it every time — but when a problem recurs, the loop is already in place.
+
+---
+
 ## MCP Servers (Configuration)
 
 The template comes with example MCP server configs in `opencode.jsonc`:
