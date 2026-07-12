@@ -83,6 +83,50 @@ provenance:
 - **Ponytail** — YAGNI, stdlib first, no new deps unless necessary
 - **Answer-first** — conclusion before process in CLI output
 
+## Loading Protocol
+
+### Session start
+1. `router` tool → classify domain
+2. `recall("recent decisions")` — load context
+3. Domain-based lazy load:
+
+| Domain | Load |
+|--------|------|
+| engineering | `read .opencode/instructions/00-architecture.md` + `10-conventions.md` |
+| research | `read .opencode/instructions/20-knowledge-system.md` |
+| default | `read .opencode/instructions/00-architecture.md` |
+
+4. `remember(type="fact", "Session: loaded {file}")` — track context
+
+### During work
+- Patterns/decisions → `remember()` immediately
+- Causal questions → `graph-rca()` automatically
+
+## Ontology Layer
+
+This template includes a typed entity-relation graph on top of `knowledge.db`:
+
+```
+entity_types (24 types, 6 root categories)
+├── artifact → doc/code/project
+├── agent → persona/tool/script/skill
+├── decision → pattern/preference
+├── event → incident/session
+├── knowledge → concept/paper/reference
+└── meta → category/_task/fact
+
+relation_constraints (11 rule types)
+├── depends_on:  tool/script → tool/script
+├── fixed_by:    incident → pattern/decision
+├── led_to:      decision → decision
+├── caused:      decision/pattern → incident
+└── ...references, relates_to (any → any)
+```
+
+Initialize: `python3 scripts/ontology_setup.py`
+Ingest instructions: `python3 scripts/ingest_instructions.py`
+Inference: `python3 scripts/inference.py transitive --entity <name> --type depends_on`
+
 ## Generated Content Attribution
 
 For public-facing content only:
