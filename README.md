@@ -2,39 +2,57 @@
 
 [🇰🇷 한국어](README.ko.md)
 
-A personal AI agent template built on [opencode](https://opencode.ai).
-
-This is not a library or a framework. It's a **starter kit** — the architecture patterns, conventions, and infrastructure that a solo developer building their own AI agent would otherwise have to discover through months of trial and error. The philosophy is: **an agent should be as unique as the person building it.** A generic agent helps no one. A personalized agent, shaped by its creator's taste and workflow, is genuinely useful.
+AI 에이전트를 처음부터 만드는 대신, 이 **시작 키트**를 복제하세요.
 
 ---
 
-## Quick Start
+## 1. 설치 (2분)
+
+**필요한 것:** 터미널 + GitHub 계정.
 
 ```bash
-# 1. Install opencode
+# 1. opencode 설치 (이미 설치했다면 생략)
 curl -fsSL https://opencode.ai/install | sh
 
-# 2. Fork this repo on GitHub, then clone your fork
-git clone git@github.com:YOUR_USERNAME/opencode-drewgent.git ~/.youragent
+# 2. 이 레포를 복제
+git clone git@github.com:humanerd-drew/opencode-drewgent.git ~/.youragent
 cd ~/.youragent
 
-# 3. Install dependencies, create .env, set up launchd
-bash scripts/setup.sh
-
-# 4. Rename everything from "drewgent" to your agent name
-#    (inside opencode, run:)
-skill("rename-drewgent")
-
-# 5. Edit `@identity/` files to define your agent's personality
-#    Start with just the name and purpose — you can refine later.
-
-# 6. Start opencode
-opencode
+# 3. 실행 (설치 + 실행을 한 번에)
+bash scripts/setup.sh && opencode
 ```
 
----
+`opencode`가 열리면:
 
-## Why the Vault? (P0-P6)
+```
+# 4. 이름을 바꾸세요
+/rename "내 에이전트"
+```
+
+이제 에이전트가 명령을 기다립니다. `"내 프로젝트에 로그인 기능을 추가해줘"` 같은 걸 말해보세요.
+
+## 2. 이 키트가 주는 것
+
+| 사용법 | 결과 |
+|--------|------|
+| `remember("portone v2로 전환")` | 결정이 영구 저장됩니다. 이후 `recall("portone")`로 언제든 검색 가능 |
+| `recall("결제 오류")` | 지난 세션의 관련 내용을 찾아줍니다 |
+| `graph-rca("배포 실패")` | 문제의 원인을 추적해 리포트를 만듭니다 |
+| `"코드 리뷰해줘"` | 전담 리뷰어 에이전트가 검토합니다 |
+| `"코드 분석해줘"` | 탐색 전담 에이전트가 아키텍처를 분석합니다 |
+| `"이거 계획을 세워줘"` | 플래너 에이전트가 단계별 계획을 만듭니다 |
+
+## 3. 시작 후 할 일
+
+1. **이름 바꾸기** — `@identity/`와 `@action/` 폴더에 에이전트의 이름, 성격, 규칙이 있음
+2. **API 키 등록** — `.env` 파일에 LLM 제공자 키를 추가
+3. **맞춤 설정** — `skills/` 폴더에 새로운 능력을 추가할 수 있음
+
+> 궁금하면 `opencode` 안에서 `"이 프로젝트 구조가 어떻게 돼?"`라고 물어보세요.
+
+## 왜 이렇게 만들었나? (선택적 읽기)
+
+아래는 이 키트를 설계한 이유입니다. 몰라도 사용하는 데 지장 없습니다.
 
 The vault is the agent's long-term memory and identity. It uses a **brain metaphor** because an agent needs the same layers a human brain has: instincts, personality, memory, senses, reasoning, self-awareness, and planning.
 
