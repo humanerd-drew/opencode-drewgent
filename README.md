@@ -272,6 +272,28 @@ Don't add this to internal notes, private messages, or debug output.
 
 ---
 
+## Credits
+
+opencode-drewgent은 이 오픈소스 프로젝트들의 아이디어와 구조를 참고했습니다:
+
+| Project | Author | Contribution | License |
+|---------|--------|-------------|---------|
+| [opencode](https://opencode.ai) | [Anomaly](https://github.com/anomalyco) | AI 코딩 에이전트 플랫폼 | MIT |
+| [codebase-memory-mcp](https://github.com/anomalyco/opencode) | Anomaly | 코드베이스 지식 그래프 | MIT |
+| [Gajae-Code](https://github.com/Yeachan-Heo/gajae-code) | [Yeachan-Heo](https://github.com/Yeachan-Heo) | GJC Coordinator — worktree 격리, tmux 병렬 실행 | — |
+| [discord-mcp](https://github.com/anomalyco/discord-mcp) | Anomaly | Discord MCP 서버 | MIT |
+| [PortOne](https://developers.portone.io) | PortOne | 한국 결제 게이트웨이 SDK | — |
+| [Cloudflare Agents SDK](https://developers.cloudflare.com/agents) | Cloudflare | 상태 기반 에이전트 프레임워크 | MIT |
+| [Karpathy LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) | Andrej Karpathy | 컴파일 패턴 지식베이스 개념 | — |
+| [Ponytail](https://github.com/DietrichGebert/ponytail) | Dietrich Gebert | 코드 최소화 체크리스트 | — |
+| [NeuronFS](https://github.com/rhino-acoustic/NeuronFS) | [rhino-acoustic](https://github.com/rhino-acoustic) | 뇌 기반 거버넌스 시스템 | — |
+| [specification.website](https://specification.website) | [Joost de Valk](https://github.com/jdevalk) | 웹 스펙 체크리스트 MCP | — |
+| [ARD Spec](https://agenticresourcediscovery.org) | Google/MS | Agentic Resource Discovery 표준 | — |
+| [agent-wiki](https://github.com/lazymac2x/agent-wiki) | lazymac2x | 제조↔에이전트 하네스 동형성 개념 | MIT |
+| [opencrab](https://github.com/opencrab/opencrab) | opencrab | AI 에이전트용 지식 그래프 시스템 | Apache 2.0 |
+
+---
+
 ## License
 
 MIT — replace with your own license when forking.
