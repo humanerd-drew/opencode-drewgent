@@ -44,9 +44,9 @@ Your agent is ready. Try asking: `"Add a login feature to my project"`.
 
 ## 3. After Setup
 
-1. **Rename** — `@identity/` and `@action/` folders hold your agent's name, personality, and rules.
-2. **Add API keys** — Edit `.env` with your LLM provider keys.
-3. **Customize** — Add new skills in the `skills/` folder.
+1. **`/rename "my-agent"`** — Changes your agent's name throughout the template.
+2. **`/connect`** — Set up your LLM provider (opencode free tier works out of the box).
+3. **Just use it** — Try `"Add a login feature to my project"` or `"explain the codebase structure"`.
 
 > Inside opencode, ask `"How is this project structured?"` to explore.
 
