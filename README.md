@@ -50,9 +50,9 @@ bash scripts/setup.sh && opencode
 
 > 궁금하면 `opencode` 안에서 `"이 프로젝트 구조가 어떻게 돼?"`라고 물어보세요.
 
-## 왜 이렇게 만들었나? (선택적 읽기)
+## 설계 철학 — 왜 이렇게 만들었나
 
-아래는 이 키트를 설계한 이유입니다. 몰라도 사용하는 데 지장 없습니다.
+각 결정 뒤에는 이유가 있습니다. 이 섹션은 그 이유를 설명합니다.
 
 The vault is the agent's long-term memory and identity. It uses a **brain metaphor** because an agent needs the same layers a human brain has: instincts, personality, memory, senses, reasoning, self-awareness, and planning.
 
