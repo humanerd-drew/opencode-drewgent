@@ -137,6 +137,38 @@ skill("portone-payment-integration")
 
 대부분의 에이전트는 2-4단계를 건너뛰고 같은 버그를 반복해서 발견합니다.
 
+## 디스코드 게이트웨이
+
+디스코드 채널을 opencode 터미널로 바꿔줍니다. 디스코드 스레드에서 메시지를 보내면, 봇이 에이전트의 실시간 추론 과정, 도구 호출, 최종 답변을 같은 스레드로 스트리밍합니다.
+
+**설정** — 환경 변수 하나면 끝:
+
+```bash
+export DISCORD_BOT_TOKEN="your_bot_token"
+# 또는 .env 파일에 추가: DISCORD_BOT_TOKEN=your_bot_token
+```
+
+봇 실행:
+
+```bash
+python3 scripts/discord_bot.py
+```
+
+launchd에 등록하려면 `launchd/ai.yourgent.discord-bot.plist.example`를 참고하세요.
+
+**동작 방식:**
+
+| 개념 | 설명 |
+|------|------|
+| 스레드 = 세션 | 각 디스코드 스레드가 하나의 opencode 세션에 대응됩니다. 메시지를 보내면 스레드가 생성되고 에이전트가 작업을 시작합니다. |
+| 실시간 스트리밍 | 추론(`🤔`), 도구 호출(`💻`, `📝` 등), 최종 출력(`✅`)이 각각 별도 상태 메시지로 표시됩니다. |
+| 세션 지속성 | 스레드가 닫히면 세션이 저장됩니다. 다시 열면 이어서 작업합니다. |
+| 타이핑 인디케이터 | 첫 메시지가 도착하기도 전에 디스코드 타이핑 표시가 즉시 나타나, 사용자가 작업 중임을 알 수 있습니다. |
+
+파일: `scripts/discord_bot.py`, `scripts/discord_send.py`, `launchd/ai.yourgent.discord-bot.plist.example`
+
+---
+
 ## MCP 서버
 
 | 서버 | 타입 | 용도 |

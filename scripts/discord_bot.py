@@ -100,6 +100,46 @@ def chunk_text(text: str, limit: int = MAX_MSG_LEN) -> List[str]:
     return chunks or [""]
 
 
+TOOL_DISPLAY = {
+    "bash":              ("💻", lambda a: f'$ {a.get("command","")}'),
+    "terminal":          ("💻", lambda a: f'$ {a.get("command","")}'),
+    "browser_navigate":  ("🌐", lambda a: a.get("url","")),
+    "browser_click":     ("👆", lambda a: a.get("text","") or a.get("node","") or "..."),
+    "browser_snapshot":  ("📸", lambda _: "screenshot..."),
+    "write":             ("📝", lambda a: a.get("filePath","")),
+    "edit":              ("📝", lambda a: a.get("filePath","")),
+    "read":              ("📖", lambda a: a.get("filePath","")),
+    "webfetch":          ("🌐", lambda a: a.get("url","")),
+    "grep":              ("🔍", lambda a: a.get("pattern","")),
+    "glob":              ("📁", lambda a: a.get("pattern","")),
+    "task":              ("🤖", lambda a: a.get("description","")),
+    "delegate":          ("🔄", lambda a: f'{a.get("name","")}: {a.get("prompt","")}'),
+    "recall":            ("🧠", lambda a: a.get("query","")),
+    "remember":          ("💾", lambda a: a.get("fact","")),
+    "question":          ("❓", lambda a: a.get("question","")),
+    "skill":             ("📎", lambda a: a.get("name","")),
+    "todowrite":         ("📋", lambda a: ""),
+    "router":            ("🧭", lambda a: a.get("domain","")),
+}
+
+
+def _format_tool(name: str, args: dict) -> tuple[str, str]:
+    """Format a tool event for display. Returns (emoji, display_text)."""
+    fmt = TOOL_DISPLAY.get(name)
+    if fmt:
+        emoji, formatter = fmt
+        text = formatter(args or {})
+        if len(text) > 200:
+            text = text[:197] + "..."
+        return emoji, text
+    emoji = "🔧"
+    display = name
+    if args:
+        args_text = json.dumps(args, ensure_ascii=False)
+        display += f"({args_text[:200]}{'...' if len(args_text) > 200 else ''})"
+    return emoji, display
+
+
 def strip_thinking_tags(text: str) -> str:
     return re.sub(r"<thinking>.*?</thinking>", "", text, flags=re.DOTALL).strip()
 
@@ -111,6 +151,19 @@ def format_status(emoji: str, content: str) -> str:
     if len(content) > MAX_STATUS_CONTENT:
         content = "..." + content[-(MAX_STATUS_CONTENT - 3):]
     return f"{emoji} {content}"
+
+
+# ---------------------------------------------------------------------------
+# Typing heartbeat (module-level so on_message can start it immediately)
+# ---------------------------------------------------------------------------
+async def _typing_heartbeat(thread: discord.Thread) -> None:
+    """Trigger Discord typing indicator every 8s until cancelled."""
+    try:
+        while True:
+            await thread.trigger_typing()
+            await asyncio.sleep(8)
+    except asyncio.CancelledError:
+        pass
 
 
 # ---------------------------------------------------------------------------
@@ -128,7 +181,7 @@ def _find_session_id(data: dict) -> Optional[str]:
     return None
 
 
-async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -> None:
+async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str, typing_task: Optional[asyncio.Task] = None) -> None:
     """Run opencode as a streaming subprocess and update Discord in real time."""
     session = get_session(thread_id)
 
@@ -271,33 +324,7 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
                 if not name:
                     name = part.get("name") or data.get("name") or "tool"
                 args = part.get("arguments") or data.get("arguments") or {}
-                display = name
-                if args:
-                    args_text = json.dumps(args, ensure_ascii=False)
-                    display += f"({args_text[:200]}{'...' if len(args_text) > 200 else ''})"
-                tool_emojis = {
-                    "bash": "💻", "terminal": "💻", "command": "💻",
-                    "write": "📝", "edit": "📝", "apply_patch": "📝",
-                    "read": "📖",
-                    "webfetch": "🌐", "fetch": "🌐",
-                    "grep": "🔍", "search": "🔍",
-                    "glob": "📁",
-                    "task": "🤖",
-                    "discord": "💬", "discord_send": "💬",
-                    "sqlite": "🗄️", "sqlite3": "🗄️",
-                    "recall": "🧠", "query": "🧠",
-                    "lazyweb": "🎨",
-                    "todowrite": "📋",
-                    "skill": "📎",
-                    "question": "❓",
-                    "delegate": "🔄",
-                }
-                base = name.split("_")[0].split(".")[0].lower()
-                emoji = "🔧"
-                for k, v in tool_emojis.items():
-                    if k in name.lower():
-                        emoji = v
-                        break
+                emoji, display = _format_tool(name, args)
                 await _set_tool(emoji, display)
 
             elif etype == "file":
@@ -323,17 +350,6 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
                 )
                 await _set_tool("❌", str(err))
 
-    # Background typing heartbeat (Discord typing expires after ~10s).
-    async def _typing_heartbeat() -> None:
-        while True:
-            try:
-                await thread.trigger_typing()
-                await asyncio.sleep(8)
-            except asyncio.CancelledError:
-                break
-
-    typing_task = asyncio.create_task(_typing_heartbeat())
-
     try:
         await _read_stream()
     except asyncio.CancelledError:
@@ -343,7 +359,8 @@ async def stream_opencode(thread: discord.Thread, prompt: str, thread_id: str) -
         proc.kill()
         raise
     finally:
-        typing_task.cancel()
+        if typing_task is not None:
+            typing_task.cancel()
 
     # Clean up the subprocess and read any leftover stderr.
     if proc.returncode is None:
@@ -407,7 +424,10 @@ async def on_message(msg: discord.Message) -> None:
     if prev and not prev.done():
         prev.cancel()
 
-    task = asyncio.create_task(stream_opencode(thread, msg.clean_content, thread_id))  # type: ignore[arg-type]
+    # Start typing indicator immediately so the user knows we're working.
+    typing_task = asyncio.create_task(_typing_heartbeat(thread))
+
+    task = asyncio.create_task(stream_opencode(thread, msg.clean_content, thread_id, typing_task))  # type: ignore[arg-type]
     _active_tasks[thread_id] = task
     task.add_done_callback(lambda _: _active_tasks.pop(thread_id, None))
 

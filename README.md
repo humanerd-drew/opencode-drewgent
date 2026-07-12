@@ -137,6 +137,36 @@ Name it → Trace it → Match it → Decide → Fix → Archive
 
 Most agents skip steps 2-4 and rediscover the same bugs. The template makes the full loop natural.
 
+## Discord Gateway
+
+Turn any Discord channel into an opencode terminal. Users chat in a Discord thread, and the bot streams the agent's real-time reasoning, tool calls, and final answer back into that thread.
+
+**Setup** — one env var:
+
+```bash
+export DISCORD_BOT_TOKEN="your_bot_token"
+# Or add to .env: DISCORD_BOT_TOKEN=your_bot_token
+```
+
+Then run the bot (or use the provided launchd plist):
+
+```bash
+python3 scripts/discord_bot.py
+```
+
+**How it works:**
+
+| Concept | Behavior |
+|---------|----------|
+| Thread = Session | Each Discord thread maps to one opencode session. Type a message → a thread is created, and the agent starts working. |
+| Real-time streaming | Reasoning (`🤔`), tool calls (`💻`, `📝`, etc.), and final output (`✅`) appear as separate status messages in the thread. |
+| Session persistence | Thread is closed → session saved. Re-open the thread and the agent continues where it left off. |
+| Typing indicator | Discord's typing indicator fires immediately, so you know the agent is working even before the first message arrives. |
+
+Files: `scripts/discord_bot.py`, `scripts/discord_send.py`, `launchd/ai.yourgent.discord-bot.plist.example`
+
+---
+
 ## MCP Servers
 
 | Server | Type | Purpose |
