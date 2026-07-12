@@ -62,35 +62,30 @@ links:
 
 > Note: 위 링크는 NeuronFS .neuron 규칙 파일을 직접 가리킨다. (`P0-brainstem/brain/Drewgent-brain/P0-brainstem/禁/`)
 
-## Manufacturing Bridge — 6대 패턴 (3-tier enforcement)
+## Quality Patterns — 3-Layer Architecture
 
-**trigger:** "2026-07-02 agent-wiki 검토 — 실행 중인 패턴에 이름을 붙여 설명 비용 제로화"
-**decision:** "참조 문서 → graded enforcement로 승격. Tier 1(행동규칙) / Tier 2(lint WARNING) / Tier 3(禁 P1)"
-**정본:** [[harness/patterns/manufacturing-bridge]] — patterns registry, 파일별 구현체 매핑, 태그 참조
+**trigger:** "2026-07-11 quality pattern refactoring — 제조업 비유 축소, Layer 2 OFF by default"
+**decision:** "3-tier enforcement → 3-layer architecture. Layer 0(구조적) / Layer 1(원칙) / Layer 2(프로세스)"
+**정본:** [[harness/patterns/manufacturing-bridge]] — 3-layer 구조, 6개 패턴 매핑
 
-### Tier 1: 행동 규칙 (bridge-lint WARNING)
-모든 provenance 기록에 `manufacturing-bridge:<패턴id>` 태그 포함. 태그 누락 시 bridge-lint가 WARNING 출력.
+### Layer 0: 구조적 (Structural) — 항상 ON, OS/파일시스템 레벨
+| 패턴 | 적용 |
+|------|------|
+| poka-yoke | watcher exclude, chmod 600, vault_cli |
 
-| 패턴 | 태그 | 적용 |
-|------|------|------|
-| 점진제동 | `andon` | launchd/cron 장애 대응 4단계 |
-| 구조적 불가능 | `poka-yoke` | watcher exclude, chmod 600, vault_cli, ponytail |
-| 자동정지+HITL | `jidoka` | AskUserQuestion, kanban_block, prod-write guard |
-| flaky vs systematic | `spc` | cron 실패 분류, 재발방지 |
-| 두눈 실증 | `3-hyun` | build-green ≠ live-works, D1/knowledge.db 직접 쿼리 |
-| 사전 위험 식별 | `fmea` | 신규 cron/skill pre-mortem, RPN |
+### Layer 1: 원칙 (Principles) — 항상 ON, wisdom
+| 패턴 | 적용 |
+|------|------|
+| 점진제동 | launchd/cron 장애 대응 4단계 |
+| 자동정지+HITL | AskUserQuestion, kanban_block, prod-write guard |
+| flaky vs systematic | cron 실패 분류, 재발방지 |
+| 두눈 실증 | build-green ≠ live-works |
 
-### Tier 2: lint gate (WARNING)
-`scripts/bridge-lint.sh`가 변경된 .md 파일의 frontmatter 태그를 검증.
-- 태그 누락: WARNING (Tier 1 위반)
-- 미등록 태그: WARNING (확장 감지)
-- registry 기반이므로 패턴 추가 시 lint 자동 반영
-
-### Tier 3: 禁 rule (P1 결함)
-| 패턴 | 위반 조건 | 결함 등급 |
-|------|----------|-----------|
-| 두눈 실증 (3-hyun) | 검증 없이 완료 선언 | **P1** — task_qa_gate.neuron 참조 |
-| (향후) 자동정지+HITL | 정지만 하고 인간 판단 없이 진행 | P1? |
+### Layer 2: 프로세스 (Process) — OFF by default, 명시적 호출만
+| 패턴 | 적용 |
+|------|------|
+| FMEA | 신규 cron/skill pre-mortem, RPN |
+| bridge-lint | `bash scripts/bridge-lint.sh` 태그 검증 |
 
 ## 4 Karpathy Coding Principles
 
