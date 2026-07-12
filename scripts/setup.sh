@@ -73,8 +73,27 @@ else
     echo -e "  ${YELLOW}⚠ Not macOS — set up your own init system for cron scripts${NC}"
 fi
 
-# ── 5. Verify ──
-echo -e "\n${BLUE}[5/5] Quick verify...${NC}"
+# ── 5. Ontology initialization ──
+echo -e "\n${BLUE}[5/8] Ontology layer...${NC}"
+if "$PY" -c "import numpy" 2>/dev/null; then
+    echo -e "  ${GREEN}✓${NC} numpy (required for embeddings)"
+else
+    echo -e "  ${YELLOW}⚠ Installing numpy...${NC}"
+    "$PY" -m pip install --user numpy -q 2>&1 | tail -1 || echo -e "  ${RED}✗ numpy install failed${NC}"
+fi
+if "$PY" "$AGENT_DIR/scripts/ontology_setup.py" 2>&1; then
+    echo -e "  ${GREEN}✓${NC} ontology schema initialized"
+else
+    echo -e "  ${YELLOW}⚠ ontology init failed — run manually: python3 scripts/ontology_setup.py${NC}"
+fi
+if "$PY" "$AGENT_DIR/scripts/ingest_instructions.py" 2>&1; then
+    echo -e "  ${GREEN}✓${NC} instructions ingested into knowledge.db"
+else
+    echo -e "  ${YELLOW}⚠ instruction ingest failed — run manually: python3 scripts/ingest_instructions.py${NC}"
+fi
+
+# ── 6. Launchd services (macOS only) ──
+echo -e "\n${BLUE}[7/8] Quick verify...${NC}"
 "$PY" -c "import croniter" 2>/dev/null && echo -e "  ${GREEN}✓${NC} croniter (scheduler)" || echo -e "  ${YELLOW}⚠ croniter not found — cron schedule parsing limited${NC}"
 "$PY" -c "import yaml" 2>/dev/null && echo -e "  ${GREEN}✓${NC} pyyaml (config)" || echo -e "  ${YELLOW}⚠ pyyaml not found${NC}"
 if [ -f "$AGENT_DIR/kanban.db" ]; then
@@ -99,4 +118,5 @@ else
     echo -e "  4. (macOS) Install launchd: follow instructions above"
     echo -e "  5. (Optional) Set up Discord: add DISCORD_BOT_TOKEN to .env"
     echo -e "  6. (Optional) Set up knowledge.db: ${BLUE}brew install ollama && ollama pull nomic-embed-text${NC}"
+    echo -e "  7. (Optional) Upgrade relations: ${BLUE}python3 scripts/upgrade_relations.py${NC}"
 fi
