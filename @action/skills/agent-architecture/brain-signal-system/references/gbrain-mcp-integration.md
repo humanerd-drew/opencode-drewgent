@@ -22,8 +22,8 @@ gbrain init --pglite --no-embedding
 ## Import Vault
 
 ```bash
-gbrain sources add drewgent --path ~/.drewgent --name "Drewgent Vault"
-gbrain import ~/.drewgent --source drewgent --no-embed
+gbrain sources add {{AGENT_NAME_LOWER}} --path ~/.{{AGENT_NAME_LOWER}} --name "{{AGENT_NAME}} Vault"
+gbrain import ~/.{{AGENT_NAME_LOWER}} --source {{AGENT_NAME_LOWER}} --no-embed
 gbrain extract links --yes  # extract wikilinks
 ```
 

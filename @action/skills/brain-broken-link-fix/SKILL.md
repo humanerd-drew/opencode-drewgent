@@ -3,16 +3,16 @@ name: vault-health
 title: Vault Health
 type: skill
 space: outcome
-description: Maintain .drewgent as an Obsidian vault — graph connectivity overhaul (P-layer mesh, skill clusters, SEO article web), broken link detection, backlink density verification via Obsidian CLI, filename deduplication, bidirectional linking, auto-generated orphan management, cron output graph bloat prevention, and Obsidian compatibility.
+description: Maintain .{{AGENT_NAME_LOWER}} as an Obsidian vault — graph connectivity overhaul (P-layer mesh, skill clusters, SEO article web), broken link detection, backlink density verification via Obsidian CLI, filename deduplication, bidirectional linking, auto-generated orphan management, cron output graph bloat prevention, and Obsidian compatibility.
 tags: [outcome, vault, obsidian, graph]
 created: 2026-06-11
 updated: 2026-06-14
 links:
-  - "[[@identity/brain/Drewgent-brain/P0-brainstem/禁/禁brain_obsidian_graph.neuron]]"
+  - "[[@identity/brain/rules]]"
   - "[[@identity/brain/rules]]"
   - "[[@identity/persona/SOUL]]"
   - "[[@memory/kanban/KANBAN_INDEX]]"
-  - "[[@action/gateway/drewgent-architecture-dataflow]]"
+  - "[[@action/gateway/{{AGENT_NAME_LOWER}}-architecture-dataflow]]"
   - "[[@action/skills/SKILL-INDEX]]"
   - "[[@memory/growth/INTEGRATION_PROTOCOL]]"
   - "[[@memory/knowledge/NEURONFS_RULES]]"
@@ -22,7 +22,7 @@ links:
 
 # Vault Health
 
-Drewgent's internal knowledge base (.drewgent/) IS an Obsidian vault. This skill covers maintaining its health — broken link detection, backlink density, graph connectivity, auto-generated orphan management, and Obsidian compatibility.
+{{AGENT_NAME}}'s internal knowledge base (.{{AGENT_NAME_LOWER}}/) IS an Obsidian vault. This skill covers maintaining its health — broken link detection, backlink density, graph connectivity, auto-generated orphan management, and Obsidian compatibility.
 
 ## Principles
 
@@ -39,7 +39,7 @@ Drewgent's internal knowledge base (.drewgent/) IS an Obsidian vault. This skill
 
 ```bash
 # Dangling wikilinks (MEMORY.md targets that don't exist as files)
-bash ~/.hermes/scripts/drewgent_graph_gap_analysis.sh
+bash ~/.hermes/scripts/{{AGENT_NAME_LOWER}}_graph_gap_analysis.sh
 
 # Full vault audit (Python — see references/vault-audit.py)
 python3 references/vault-audit.py
@@ -51,7 +51,7 @@ python3 references/vault-audit.py
 
 `.neuron` files are the actual rule definitions (13 P0 neurons), but Obsidian ignores non-`.md` extensions.
 
-**Fix** (`~/.drewgent/.obsidian/app.json`):
+**Fix** (`~/.{{AGENT_NAME_LOWER}}/.obsidian/app.json`):
 ```json
 {
   "extensionOverrides": [".neuron"]
@@ -110,20 +110,20 @@ When encountering auto-generated orphans:
 
 ## Cron Output Graph Bloat
 
-Cron job output files (`~/.drewgent/cron/output/<job_id>/`) accumulate every run as `.md` files. When a cron job loads a skill with frontmatter `links:` containing wikilinks, each output file embeds those links — creating a **massive star cluster** in the Obsidian graph view where a few hub nodes each have thousands of connections.
+Cron job output files (`~/.{{AGENT_NAME_LOWER}}/cron/output/<job_id>/`) accumulate every run as `.md` files. When a cron job loads a skill with frontmatter `links:` containing wikilinks, each output file embeds those links — creating a **massive star cluster** in the Obsidian graph view where a few hub nodes each have thousands of connections.
 
 **Signature**: 3-5 hub nodes with 10K+ inbound edges each, forming a cluster that dwarfs the rest of the graph. The hub nodes are skill pages or implementation plans referenced in cron job context.
 
 **Diagnosis**:
 ```bash
 # Find the most common wikilinks — rank by frequency
-grep -roh '\[\[[^]]*\]\]' ~/.drewgent --include='*.md' | sort | uniq -c | sort -rn | head -20
+grep -roh '\[\[[^]]*\]\]' ~/.{{AGENT_NAME_LOWER}} --include='*.md' | sort | uniq -c | sort -rn | head -20
 
 # Check cron output volume
-find ~/.drewgent/cron/output -name '*.md' | wc -l
+find ~/.{{AGENT_NAME_LOWER}}/cron/output -name '*.md' | wc -l
 
 # Verify cron output embeds a skill with frontmatter links
-head -30 ~/.drewgent/cron/output/<job_id>/<recent-run>.md | grep -A5 '^links:'
+head -30 ~/.{{AGENT_NAME_LOWER}}/cron/output/<job_id>/<recent-run>.md | grep -A5 '^links:'
 ```
 
 **Root cause**: Cron job loads a skill → output template includes full skill text (frontmatter + body) → frontmatter `links:` wikilinks get baked into every output file → N runs × M links = N×M extra graph edges.
@@ -132,9 +132,9 @@ head -30 ~/.drewgent/cron/output/<job_id>/<recent-run>.md | grep -A5 '^links:'
 
 | Option | When to use | How |
 |--------|-------------|-----|
-| 1. Exclude from Obsidian | Cron outputs are reference-only (agent reads via `session_search`, not vault browser) | Add `"userIgnoreFilters": ["cron/output"]` to `~/.drewgent/.obsidian/app.json`. Note: use `cron/output` (not `cron/output/*`) — Obsidian interprets directory patterns as recursive. |
-| 2. Move to `.trash/` | Need recovery option before deletion | `mkdir -p ~/.drewgent/.trash && mv ~/.drewgent/cron/output/<job_id> ~/.drewgent/.trash/<label>-$(date +%Y%m%d)` |
-| 3. Periodic cleanup | Old outputs accumulate without value | `find ~/.drewgent/cron/output -name '*.md' -mtime +X -delete` as a cron job |
+| 1. Exclude from Obsidian | Cron outputs are reference-only (agent reads via `session_search`, not vault browser) | Add `"userIgnoreFilters": ["cron/output"]` to `~/.{{AGENT_NAME_LOWER}}/.obsidian/app.json`. Note: use `cron/output` (not `cron/output/*`) — Obsidian interprets directory patterns as recursive. |
+| 2. Move to `.trash/` | Need recovery option before deletion | `mkdir -p ~/.{{AGENT_NAME_LOWER}}/.trash && mv ~/.{{AGENT_NAME_LOWER}}/cron/output/<job_id> ~/.{{AGENT_NAME_LOWER}}/.trash/<label>-$(date +%Y%m%d)` |
+| 3. Periodic cleanup | Old outputs accumulate without value | `find ~/.{{AGENT_NAME_LOWER}}/cron/output -name '*.md' -mtime +X -delete` as a cron job |
 | 4. Fix cron template | You control the cron job; skill inline is unnecessary overhead | Strip frontmatter from output template, or remove wikilinks from stored artifact |
 
 **Reference**: `references/cron-output-graph-bloat.md` has a full session diagnosis with concrete numbers and commands used. Read it when investigating an active graph bloat incident.
@@ -218,7 +218,7 @@ obsidian backlinks path="P2-hippocampus/knowledge/seo-articles/2026/SEO_ai_llm_s
 # (Obsidian doesn't have a "links to" command, so use grep on frontmatter)
 
 # Verify Obsidian exclusion list
-cat ~/.drewgent/.obsidian/app.json
+cat ~/.{{AGENT_NAME_LOWER}}/.obsidian/app.json
 
 # Tag distribution
 obsidian tags sort=count counts

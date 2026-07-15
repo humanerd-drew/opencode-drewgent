@@ -121,6 +121,31 @@ Each skill is a directory with `SKILL.md`. The agent doesn't need to know everyt
 
 Rule of thumb: under 5 minutes and no isolation needed → `task()`. Otherwise → `gjc_delegate_*`.
 
+### Why Platform Services?
+
+Services run in the background so the agent is always available — even when your terminal is closed.
+
+| Platform | Service Manager | Config Location |
+|----------|----------------|-----------------|
+| macOS | launchd | `services/launchd/` |
+| Linux | systemd | `services/systemd/` |
+| Windows | Scheduled Tasks | `services/windows/` |
+
+Setup:
+
+```bash
+# macOS
+cp services/launchd/*.plist ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/ai.yourgent.*.plist
+
+# Linux
+sudo cp services/systemd/*.service /etc/systemd/system/
+sudo systemctl enable --now yourgent-*
+
+# Windows (PowerShell as Admin)
+powershell -ExecutionPolicy Bypass -File services/windows/setup-scheduled-tasks.ps1
+```
+
 ### Why Cron Automation?
 
 The scheduler (`scripts/drewgent_cron.py`) turns the agent from reactive to proactive. Jobs defined in `cron/jobs.json` run on schedule, not just when you talk.
@@ -163,7 +188,7 @@ python3 scripts/discord_bot.py
 | Session persistence | Thread is closed → session saved. Re-open the thread and the agent continues where it left off. |
 | Typing indicator | Discord's typing indicator fires immediately, so you know the agent is working even before the first message arrives. |
 
-Files: `scripts/discord_bot.py`, `scripts/discord_send.py`, `launchd/ai.yourgent.discord-bot.plist.example`
+Files: `scripts/discord_bot.py`, `scripts/discord_send.py`, `services/` (platform service configs)
 
 ---
 
@@ -182,7 +207,7 @@ Files: `scripts/discord_bot.py`, `scripts/discord_send.py`, `launchd/ai.yourgent
 
 - **Python 3.14**: `except json.JSONDecodeError:` causes `UnboundLocalError`. Fix: `__import__('json').loads()`.
 - **macOS bash 3.2**: No associative arrays. Use `date -j -f`.
-- **Launchd plists**: Use `KeepAlive { SuccessfulExit: false, ThrottleInterval: 10 }`.
+- **Platform services**: macOS → `services/launchd/`, Linux → `services/systemd/`, Windows → `services/windows/`.
 - **Token data**: In `~/.local/share/opencode/opencode.db`, not stderr.
 - **Rename first**: Running without renaming makes the agent think its name is "Drewgent".
 

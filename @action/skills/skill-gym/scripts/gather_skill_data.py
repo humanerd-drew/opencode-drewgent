@@ -2,7 +2,7 @@
 """
 skill-gym data gatherer
 =======================
-state.db + Drewgent vault에서 스킬 활용 데이터를 추출하고,
+state.db + {{AGENT_NAME}} vault에서 스킬 활용 데이터를 추출하고,
 JSON으로规范化하여 stdout으로 출력합니다.
 
 Usage:
@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
-DREWENT_HOME = Path.home() / ".drewgent"
+DREWENT_HOME = Path.home() / ".{{AGENT_NAME_LOWER}}"
 SKILLS_DIR   = DREWENT_HOME / "skills"
 MEMORIES_DIR = DREWENT_HOME / "memories"
 STATE_DB     = DREWENT_HOME / "state.db"
@@ -99,7 +99,7 @@ def extract_keywords(text: str, top_n: int = 30) -> list[tuple[str, int]]:
 
 
 def gather_project_context() -> dict:
-    """Drewgent vault에서 현재 프로젝트 맥락 추출"""
+    """{{AGENT_NAME}} vault에서 현재 프로젝트 맥락 추출"""
     context = {
         'keywords': [],
         'sources': [],
@@ -359,7 +359,7 @@ def generate_usage_scenario(skill: dict) -> str:
         'discord': ('Discord', "Discord 채널 모니터링이나 자동 알림 작업에 이 스킬을 사용할 수 있습니다."),
         'apple': ('Apple/macOS', "Apple 플랫폼(iMessage, Reminders 등) 자동화에 이 스킬을 활용할 수 있습니다."),
         'n8n': ('N8N 워크플로우', "N8N 워크플로우 관리나 자동화 파이프라인에서 이 스킬을 활용할 수 있습니다."),
-        'brain': ('Drewgent Brain/治理', "현재 Drewgent Brain/治理 체계 작업 중이라면 이 스킬로治理 규칙을 점검할 수 있습니다."),
+        'brain': ('{{AGENT_NAME}} Brain/治理', "현재 {{AGENT_NAME}} Brain/治理 체계 작업 중이라면 이 스킬로治理 규칙을 점검할 수 있습니다."),
         'mlops': ('MLOps', "머신러닝 운용 파이프라인 관련 작업에서 이 스킬을 활용할 수 있습니다."),
         'software-development': ('소프트웨어 개발', "소프트웨어 개발 워크플로우에서 이 스킬을 활용할 수 있습니다."),
         'creative': ('크리에이티브', "크리에이티브 콘텐츠 제작에 이 스킬을 활용할 수 있습니다."),
@@ -383,7 +383,7 @@ def generate_usage_scenario(skill: dict) -> str:
     else:
         # 카테고리명 → 한글 라벨
         cat_labels = {
-            'drewgent': 'Drewgent 내부 기능',
+            '{{AGENT_NAME_LOWER}}': '{{AGENT_NAME}} 내부 기능',
             'agent': '에이전트 관리',
             'productivity': '생산성',
             'automation': '자동화',

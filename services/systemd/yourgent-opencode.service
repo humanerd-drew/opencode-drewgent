@@ -1,0 +1,19 @@
+[Unit]
+Description=opencode Server ({{AGENT_NAME}})
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory={{AGENT_DIR}}
+ExecStart={{OPENCODE_PATH}} serve --port 8642 --hostname 0.0.0.0 --print-logs
+Restart=always
+RestartSec=10
+Environment=PATH={{PATH}}
+Environment=OPENCODE_API_KEY={{OPENCODE_API_KEY}}
+StandardOutput=append:{{AGENT_DIR}}/logs/opencode.stdout.log
+StandardError=append:{{AGENT_DIR}}/logs/opencode.stderr.log
+
+[Install]
+WantedBy=multi-user.target

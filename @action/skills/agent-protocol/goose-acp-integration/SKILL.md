@@ -1,6 +1,6 @@
 ---
 name: goose-acp-integration
-description: Integrate Drewgent with ACP (Agent Client Protocol) agents. Reverse-engineered from goose's Rust ACP provider implementation.
+description: Integrate {{AGENT_NAME}} with ACP (Agent Client Protocol) agents. Reverse-engineered from goose's Rust ACP provider implementation.
 space: outcome
 type: document
 tags: [acp, protocol, goose, integration]
@@ -10,7 +10,7 @@ links:
 created: 2026-05-10
 ---
 
-# Goose ACP Integration for Drewgent
+# Goose ACP Integration for {{AGENT_NAME}}
 
 ## What is ACP
 
@@ -51,7 +51,7 @@ let config = AcpProviderConfig {
     args: vec![],
     env: vec![],
     work_dir: current_dir,
-    mcp_servers: extension_configs_to_mcp_servers(&extensions),  // Drewgent tools as MCP
+    mcp_servers: extension_configs_to_mcp_servers(&extensions),  // {{AGENT_NAME}} tools as MCP
     session_mode_id: Some(mode_mapping[&goose_mode].clone()),
     // mode_mapping:
     //   Auto → bypassPermissions (fully autonomous)
@@ -68,22 +68,22 @@ AcpProvider (crates/goose/src/acp/provider.rs):
 - Streams `SessionNotification` back (tool calls, permissions)
 - Sends tool results via `CallToolResult`
 
-## Drewgent Implementation Points
+## {{AGENT_NAME}} Implementation Points
 
 ### 1. ACP Provider Tool
 Spawn any ACP agent as subprocess, communicate via newline-delimited JSON-RPC over stdio.
 
 ### 2. MCP Extension Bridge
-Convert Drewgent tools → MCP server definitions → pass to ACP agent via `mcp_servers` config.
+Convert {{AGENT_NAME}} tools → MCP server definitions → pass to ACP agent via `mcp_servers` config.
 
 ### 3. Permission Tiers
-Map Drewgent P0-P6 brain rules to ACP permission decisions (AllowAlways/AllowOnce/RejectOnce/RejectAlways/Cancel).
+Map {{AGENT_NAME}} P0-P6 brain rules to ACP permission decisions (AllowAlways/AllowOnce/RejectOnce/RejectAlways/Cancel).
 
 ## Implementation Plan
 
 **Phase 1:** `tools/acp_provider.py` — subprocess spawn + JSON-RPC over stdio + session lifecycle
-**Phase 2:** Delegate to Claude Code via `claude-agent-acp`, pass Drewgent tools as MCP servers
-**Phase 3:** Permission callback system bridging Drewgent P0 rules to ACP permission requests
+**Phase 2:** Delegate to Claude Code via `claude-agent-acp`, pass {{AGENT_NAME}} tools as MCP servers
+**Phase 3:** Permission callback system bridging {{AGENT_NAME}} P0 rules to ACP permission requests
 
 ## References
 

@@ -1,7 +1,7 @@
 ---
 name: brain-signal-system
 title: Brain Signal System
-description: Drewgent brain signal architecture — event bus, signal processor, awareness reporter, brain monitor
+description: {{AGENT_NAME}} brain signal architecture — event bus, signal processor, awareness reporter, brain monitor
 type: guide
 space: outcome
 tags: [brain, signal, architecture, agent]
@@ -10,18 +10,18 @@ updated: 2026-06-11
 links:
   - "[[@identity/SELF_MODEL]]"
   - "[[@identity/persona/SOUL]]"
-  - "[[@action/gateway/drewgent-architecture-dataflow]]"
+  - "[[@action/gateway/{{AGENT_NAME_LOWER}}-architecture-dataflow]]"
   - "[[@identity/brain/rules]]"
   - "[[@action/resolver/RESOLVER]]"
   - "[[@memory/growth/INTEGRATION_PROTOCOL]]"
 ---
 
-# Brain Signal System — Drewgent Self-Awareness Infrastructure
+# Brain Signal System — {{AGENT_NAME}} Self-Awareness Infrastructure
 
 **Date**: 2026-05-31 (updated 2026-06-11)
 **Status**: Operational
 **Source**: `agent/brain_signals.py`, `agent/signal_processor.py`, `agent/event_bus.py`, `agent/awareness_reporter.py`, `agent/brain_monitor.py`
-**Purpose**: Single source of truth for Drewgent's brain signal architecture.
+**Purpose**: Single source of truth for {{AGENT_NAME}}'s brain signal architecture.
 
 ---
 
@@ -49,14 +49,14 @@ except Exception as e:
 ### Cleanup
 
 ```bash
-rm ~/.drewgent/monitor/brain_signals_*.md  # 5,123 files → 0
-# Retained: ~/.drewgent/monitor/brain_signal_log.jsonl (5KB, compressed alternative)
+rm ~/.{{AGENT_NAME_LOWER}}/monitor/brain_signals_*.md  # 5,123 files → 0
+# Retained: ~/.{{AGENT_NAME_LOWER}}/monitor/brain_signal_log.jsonl (5KB, compressed alternative)
 ```
 
 ### Verification
 
 ```bash
-ls ~/.drewgent/monitor/  # should show only brain_signal_log.jsonl
+ls ~/.{{AGENT_NAME_LOWER}}/monitor/  # should show only brain_signal_log.jsonl
 ```
 
 ### Pitfall

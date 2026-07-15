@@ -54,23 +54,34 @@ else
     echo -e "  ${YELLOW}    OLLAMA_HOST           (optional — knowledge.db vector search)${NC}"
 fi
 
-# ── 4. Launchd services (macOS only) ──
-echo -e "\n${BLUE}[4/5] Launchd services (macOS)...${NC}"
-if [ "$(uname)" = "Darwin" ]; then
-    LAUNCH_DIR="$AGENT_DIR/launchd"
-    if [ -d "$LAUNCH_DIR" ]; then
-        COUNT=$(ls "$LAUNCH_DIR"/*.plist.example 2>/dev/null | wc -l | tr -d ' ')
-        echo -e "  ${GREEN}✓${NC} $COUNT template plists found in launchd/"
-        echo -e "  ${YELLOW}  To install:${NC}"
-        echo -e "  ${YELLOW}    for f in launchd/*.plist.example; do${NC}"
-        echo -e "  ${YELLOW}      n=\$(basename \"\$f\" .example)${NC}"
-        echo -e "  ${YELLOW}      cp \"\$f\" ~/Library/LaunchAgents/\"\$n\"${NC}"
-        echo -e "  ${YELLOW}      launchctl load ~/Library/LaunchAgents/\"\$n\"${NC}"
-        echo -e "  ${YELLOW}    done${NC}"
-        echo -e "  ${YELLOW}  (Edit plists first to replace {{PLACEHOLDERS}} with your values)${NC}"
-    fi
-else
-    echo -e "  ${YELLOW}⚠ Not macOS — set up your own init system for cron scripts${NC}"
+# ── 4. Platform services ──
+echo -e "\n${BLUE}[4/5] Platform services...${NC}"
+SVC_DIR="$AGENT_DIR/services"
+if [ -d "$SVC_DIR" ]; then
+    case "$(uname)" in
+        Darwin)
+            COUNT=$(ls "$SVC_DIR/launchd"/*.plist.example 2>/dev/null | wc -l | tr -d ' ')
+            echo -e "  ${GREEN}✓${NC} $COUNT launchd templates found in services/launchd/"
+            echo -e "  ${YELLOW}  To install:${NC}"
+            echo -e "  ${YELLOW}    for f in services/launchd/*.plist.example; do${NC}"
+            echo -e "  ${YELLOW}      n=\$(basename \"\$f\" .example)${NC}"
+            echo -e "  ${YELLOW}      cp \"\$f\" ~/Library/LaunchAgents/\"\$n\"${NC}"
+            echo -e "  ${YELLOW}      launchctl load ~/Library/LaunchAgents/\"\$n\"${NC}"
+            echo -e "  ${YELLOW}    done${NC}"
+            echo -e "  ${YELLOW}  (Edit plists first to replace {{PLACEHOLDERS}})${NC}"
+            ;;
+        Linux)
+            COUNT=$(ls "$SVC_DIR/systemd"/*.service 2>/dev/null | wc -l | tr -d ' ')
+            echo -e "  ${GREEN}✓${NC} $COUNT systemd templates found in services/systemd/"
+            echo -e "  ${YELLOW}  To install:${NC}"
+            echo -e "  ${YELLOW}    sudo cp services/systemd/*.service /etc/systemd/system/${NC}"
+            echo -e "  ${YELLOW}    sudo systemctl enable --now yourgent-*${NC}"
+            echo -e "  ${YELLOW}  (Edit .service files first to replace {{PLACEHOLDERS}})${NC}"
+            ;;
+        *)
+            echo -e "  ${YELLOW}  See services/windows/ for setup instructions${NC}"
+            ;;
+    esac
 fi
 
 # ── 5. Ontology initialization ──

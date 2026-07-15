@@ -1,0 +1,19 @@
+[Unit]
+Description={{AGENT_NAME}} Discord Bot
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory={{AGENT_DIR}}
+ExecStart={{PYTHON_PATH}} {{AGENT_DIR}}/scripts/discord_bot.py
+Restart=always
+RestartSec=10
+Environment=PATH={{PATH}}
+Environment=DISCORD_BOT_TOKEN={{DISCORD_BOT_TOKEN}}
+StandardOutput=append:{{AGENT_DIR}}/logs/discord-bot.log
+StandardError=append:{{AGENT_DIR}}/logs/discord-bot.err.log
+
+[Install]
+WantedBy=multi-user.target

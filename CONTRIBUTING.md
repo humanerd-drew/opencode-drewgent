@@ -97,12 +97,12 @@ npm install
 ### Configure for development
 
 ```bash
-mkdir -p ~/.drewgent/{cron,sessions,logs,memories,skills}
-cp cli-config.yaml.example ~/.drewgent/config.yaml
-touch ~/.drewgent/.env
+mkdir -p ~/.{{AGENT_NAME_LOWER}}/{cron,sessions,logs,memories,skills}
+cp cli-config.yaml.example ~/.{{AGENT_NAME_LOWER}}/config.yaml
+touch ~/.{{AGENT_NAME_LOWER}}/.env
 
 # Add at minimum an LLM provider key:
-echo 'OPENROUTER_API_KEY=sk-or-v1-your-key' >> ~/.drewgent/.env
+echo 'OPENROUTER_API_KEY=sk-or-v1-your-key' >> ~/.{{AGENT_NAME_LOWER}}/.env
 ```
 
 ### Run
@@ -185,29 +185,29 @@ drewgent-agent/
 │   ├── install.ps1               # Windows PowerShell installer
 │   └── whatsapp-bridge/          # Node.js WhatsApp bridge (Baileys)
 │
-├── skills/                   # Bundled skills (copied to ~/.drewgent/skills/ on install)
+├── skills/                   # Bundled skills (copied to ~/.{{AGENT_NAME_LOWER}}/skills/ on install)
 ├── optional-skills/          # Official optional skills (discoverable via hub, not activated by default)
 ├── environments/             # RL training environments (Atropos integration)
 ├── tests/                    # Test suite
 ├── website/                  # Documentation site (docs.YOUR_AGENT_DOMAIN)
 │
-├── cli-config.yaml.example   # Example configuration (copied to ~/.drewgent/config.yaml)
+├── cli-config.yaml.example   # Example configuration (copied to ~/.{{AGENT_NAME_LOWER}}/config.yaml)
 └── AGENTS.md                 # Development guide for AI coding assistants
 ```
 
-### User configuration (stored in `~/.drewgent/`)
+### User configuration (stored in `~/.{{AGENT_NAME_LOWER}}/`)
 
 | Path | Purpose |
 |------|---------|
-| `~/.drewgent/config.yaml` | Settings (model, terminal, toolsets, compression, etc.) |
-| `~/.drewgent/.env` | API keys and secrets |
-| `~/.drewgent/auth.json` | OAuth credentials (Nous Portal) |
-| `~/.drewgent/skills/` | All active skills (bundled + hub-installed + agent-created) |
-| `~/.drewgent/memories/` | Persistent memory (MEMORY.md, USER.md) |
-| `~/.drewgent/state.db` | SQLite session database |
-| `~/.drewgent/sessions/` | JSON session logs |
-| `~/.drewgent/cron/` | Scheduled job data |
-| `~/.drewgent/whatsapp/session/` | WhatsApp bridge credentials |
+| `~/.{{AGENT_NAME_LOWER}}/config.yaml` | Settings (model, terminal, toolsets, compression, etc.) |
+| `~/.{{AGENT_NAME_LOWER}}/.env` | API keys and secrets |
+| `~/.{{AGENT_NAME_LOWER}}/auth.json` | OAuth credentials (Nous Portal) |
+| `~/.{{AGENT_NAME_LOWER}}/skills/` | All active skills (bundled + hub-installed + agent-created) |
+| `~/.{{AGENT_NAME_LOWER}}/memories/` | Persistent memory (MEMORY.md, USER.md) |
+| `~/.{{AGENT_NAME_LOWER}}/state.db` | SQLite session database |
+| `~/.{{AGENT_NAME_LOWER}}/sessions/` | JSON session logs |
+| `~/.{{AGENT_NAME_LOWER}}/cron/` | Scheduled job data |
+| `~/.{{AGENT_NAME_LOWER}}/whatsapp/session/` | WhatsApp bridge credentials |
 
 ---
 
@@ -234,7 +234,7 @@ User message → AIAgent._run_agent_loop()
 
 - **Self-registering tools**: Each tool file calls `registry.register()` at import time. `model_tools.py` triggers discovery by importing all tool modules.
 - **Toolset grouping**: Tools are grouped into toolsets (`web`, `terminal`, `file`, `browser`, etc.) that can be enabled/disabled per platform.
-- **Session persistence**: All conversations are stored in SQLite (`drewgent_state.py`) with full-text search and unique session titles. JSON logs go to `~/.drewgent/sessions/`.
+- **Session persistence**: All conversations are stored in SQLite (`drewgent_state.py`) with full-text search and unique session titles. JSON logs go to `~/.{{AGENT_NAME_LOWER}}/sessions/`.
 - **Ephemeral injection**: System prompts and prefill messages are injected at API call time, never persisted to the database or logs.
 - **Provider abstraction**: The agent works with any OpenAI-compatible API. Provider resolution happens at init time (Nous Portal OAuth, OpenRouter API key, or custom endpoint).
 - **Provider routing**: When using OpenRouter, `provider_routing` in config.yaml controls provider selection (sort by throughput/latency/price, allow/ignore specific providers, data retention policies). These are injected as `extra_body.provider` in API requests.
@@ -339,7 +339,7 @@ Drewgent uses **SQLite** as its primary data store. Multiple components share th
 ```python
 from drewgent_state import SessionDB
 
-db = SessionDB()                     # Default: ~/.drewgent/state.db
+db = SessionDB()                     # Default: ~/.{{AGENT_NAME_LOWER}}/state.db
 db = SessionDB(db_path=Path(...))    # Custom path (use only in tests)
 ```
 
@@ -423,7 +423,7 @@ class MyFeatureDB:
 
 ### Path Management (Critical)
 
-**Never hardcode `~/.drewgent`** in code. Use:
+**Never hardcode `~/.{{AGENT_NAME_LOWER}}`** in code. Use:
 
 ```python
 from drewgent_constants import get_drewgent_home, display_drewgent_home
@@ -637,7 +637,7 @@ prerequisites:
   commands: [curl, jq]            # Advisory CLI checks
 ```
 
-Gateway and messaging sessions never collect secrets in-band; they instruct the user to run `drewgent setup` or update `~/.drewgent/.env` locally.
+Gateway and messaging sessions never collect secrets in-band; they instruct the user to run `drewgent setup` or update `~/.{{AGENT_NAME_LOWER}}/.env` locally.
 
 **When to declare required environment variables:**
 - The skill uses an API key or token that should be collected securely at load time
@@ -664,7 +664,7 @@ Drewgent uses a data-driven skin system — no code changes needed to add a new 
 
 **Option A: User skin (YAML file)**
 
-Create `~/.drewgent/skins/<name>.yaml`:
+Create `~/.{{AGENT_NAME_LOWER}}/skins/<name>.yaml`:
 
 ```yaml
 name: mytheme

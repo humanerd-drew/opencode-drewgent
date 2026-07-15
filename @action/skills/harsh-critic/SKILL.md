@@ -18,7 +18,7 @@ links: [[@action/skills/SKILL-INDEX]]]
 
 ## Purpose
 
-Before Drewgent declares "done", Harsh Critic asks:
+Before {{AGENT_NAME}} declares "done", Harsh Critic asks:
 **"If the user saw this right now, what would they say?"**
 
 This defends against the 5 structural LLM completion biases:
@@ -244,7 +244,7 @@ Continue, but note the warning.
 
 ## Logging
 
-All checks logged to `~/.drewgent/harsh_critic_log.jsonl`:
+All checks logged to `~/.{{AGENT_NAME_LOWER}}/harsh_critic_log.jsonl`:
 
 ```json
 {"timestamp": "...", "tier": "EXTREME", "pattern": "...", "text": "..."}
@@ -258,10 +258,10 @@ This log feeds `/self-improve` for pattern analysis.
 
 | Purpose | Path |
 |---------|------|
-| Plugin | `~/.drewgent/plugins/loopy-era-harness/` |
-| Hard gates | `~/.drewgent/plugins/loopy-era-harness/__init__.py` |
-| Log | `~/.drewgent/harsh_critic_log.jsonl` |
-| Rules | `~/.drewgent/rules/` |
+| Plugin | `~/.{{AGENT_NAME_LOWER}}/plugins/loopy-era-harness/` |
+| Hard gates | `~/.{{AGENT_NAME_LOWER}}/plugins/loopy-era-harness/__init__.py` |
+| Log | `~/.{{AGENT_NAME_LOWER}}/harsh_critic_log.jsonl` |
+| Rules | `~/.{{AGENT_NAME_LOWER}}/rules/` |
 
 ---
 

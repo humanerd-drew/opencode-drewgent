@@ -1,6 +1,6 @@
 ---
 name: self-replicating-agent-tdd
-description: TDD-PDCA plan for building a self-replicating branching agent in Drewgent. 단일 에이전트가 스스로 서브에이전트를 분기하고, 결과를 수렴시키는 구조.
+description: TDD-PDCA plan for building a self-replicating branching agent in {{AGENT_NAME}}. 단일 에이전트가 스스로 서브에이전트를 분기하고, 결과를 수렴시키는 구조.
 triggers:
   - "자가 증식 에이전트"
   - "branching agent"
@@ -15,10 +15,10 @@ links:
 created: 2026-05-10
 ---
 
-# TDD-PDCA: Self-Replicating Branching Agent for Drewgent
+# TDD-PDCA: Self-Replicating Branching Agent for {{AGENT_NAME}}
 
 ## Goal
-Drewgent (단일 에이전트)이 복잡한 문제를 감지 → 스스로 서브에이전트를 분기 (branch) → 병렬 추론 → 결과를 부모가 수렴 → 최종 응답 형성.
+{{AGENT_NAME}} (단일 에이전트)이 복잡한 문제를 감지 → 스스로 서브에이전트를 분기 (branch) → 병렬 추론 → 결과를 부모가 수렴 → 최종 응답 형성.
 
 ---
 
@@ -107,13 +107,13 @@ Phase 3 (COMPLETE): Structural bugs fixed + integration tests written. 23 tests 
 
 Threshold: 0.30
 
-**Tool Name Extraction — CRITICAL FIX**: Must extract from BOTH `assistant.tool_calls[].function.name` (OpenAI format) AND `tool` role messages with `tool_name` field (Drewgent format).
+**Tool Name Extraction — CRITICAL FIX**: Must extract from BOTH `assistant.tool_calls[].function.name` (OpenAI format) AND `tool` role messages with `tool_name` field ({{AGENT_NAME}} format).
 
 **Trigger**: api_call_count == 1 — after FIRST tool-call turn completes.
 
 ### Pitfalls Found and Fixed
 
-1. tool_names NOT extracted from tool role messages (Drewgent uses `{"role": "tool", "tool_name": "..."}`)
+1. tool_names NOT extracted from tool role messages ({{AGENT_NAME}} uses `{"role": "tool", "tool_name": "..."}`)
 2. COMPLEXITY_THRESHOLD was 0.45 — complex debugging only scored 0.36. Lowered to 0.30.
 3. Duplicate function definition left by patch tool — removed stale first def.
 4. original_user_message not available in concurrent execution path — added as parameter.

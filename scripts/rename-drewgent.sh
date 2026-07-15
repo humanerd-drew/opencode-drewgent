@@ -39,7 +39,7 @@ find . -type f \( -name "*.md" -o -name "*.py" -o -name "*.json" -o -name "*.jso
   -not -path "./.git/*" -not -path "*/node_modules/*" -not -path "*/__pycache__/*" \
   -print0 | xargs -0 "${SED_INPLACE[@]}" "s/$CAP_OLD/$CAP_NEW/g" 2>/dev/null || true
 
-# 3. Rename the directory if $ROOT is ~/.drewgent
+# 3. Rename the directory if $ROOT is ~/.{{AGENT_NAME_LOWER}}
 if [ "$ROOT" = "$HOME/.drewgent" ] && [ "$OLD" = "drewgent" ]; then
   NEW_ROOT="$HOME/.$NEW"
   echo "  Renaming directory $ROOT → $NEW_ROOT ..."

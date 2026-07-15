@@ -20,7 +20,7 @@ links:
 
 # Tool Integration Protocol
 
-Drewgent에 새로운 도구를 추가할 때 사용하는 표준 절차.
+{{AGENT_NAME}}에 새로운 도구를 추가할 때 사용하는 표준 절차.
 
 ## 3단계 통합 패턴
 

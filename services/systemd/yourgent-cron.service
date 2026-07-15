@@ -1,0 +1,18 @@
+[Unit]
+Description={{AGENT_NAME}} Cron Runner
+After=network.target
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory={{AGENT_DIR}}
+ExecStart={{PYTHON_PATH}} {{AGENT_DIR}}/scripts/{{AGENT_NAME_LOWER}}_cron.py
+Restart=always
+RestartSec=10
+Environment=PATH={{PATH}}
+Environment=PYTHONUNBUFFERED=1
+StandardOutput=append:{{AGENT_DIR}}/logs/cron.stdout.log
+StandardError=append:{{AGENT_DIR}}/logs/cron.stderr.log
+
+[Install]
+WantedBy=multi-user.target

@@ -9,7 +9,7 @@ import os
 import re
 from collections import defaultdict, Counter
 
-VAULT = os.path.expanduser("~/.drewgent")
+VAULT = os.path.expanduser("~/.{{AGENT_NAME_LOWER}}")
 CORE_ZONES = ['P0-brainstem', 'P1-limbic', 'P3-sensors', 'P4-cortex', 'P5-ego', 'P6-prefrontal']
 WIKILINK_RE = re.compile(r'\[\[([^\]]+?)(?:\|[^\]]+)?\]\]')
 NON_FILE_RE = re.compile(r'^(read-time|elapsedTime|totalTime|duration|pagename|publish|draft|type|space|domain|tags?|created|updated|status)$')

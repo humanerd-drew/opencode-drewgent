@@ -4,7 +4,7 @@ Cron job scheduler - executes due jobs.
 Provides tick() which checks for due jobs and runs them. The gateway
 calls this every 60 seconds from a background thread.
 
-Uses a file-based lock (~/.drewgent/cron/.tick.lock) so only one tick
+Uses a file-based lock (~/.{{AGENT_NAME_LOWER}}/cron/.tick.lock) so only one tick
 runs at a time if multiple processes overlap.
 """
 
@@ -684,7 +684,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
                 timeout=None,  # Timeout is handled by cron_runner.py internally
             )
             # Read output file written by cron_runner.py
-            # Output dir: ~/.drewgent/cron/output/{job_id}/
+            # Output dir: ~/.{{AGENT_NAME_LOWER}}/cron/output/{job_id}/
             output_dir = _OUTPUT_DIR / job_id
             if output_dir.exists():
                 # Get most recent output file

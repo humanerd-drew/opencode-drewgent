@@ -7,7 +7,6 @@ created: 2026-05-10
 updated: 2026-05-20
 links:
   - "[[@identity/brain/rules]]"
-  - "[[@action/gateway/drewgent-architecture-dataflow]]"
   - "[[@action/skills/agent-architecture/brain-signal-system/SKILL]]"
   - "[[@action/skills/agent-architecture/self-replicating-agent-tdd/SKILL]]"
   - "[[@action/skills/agent-protocol/goose-acp-integration/SKILL]]"
@@ -29,11 +28,11 @@ links:
   - "[[@memory/knowledge/NEURONFS_RULES]]"---
 
 
-# Skill Index - Hugh Kim's Skills → Drewgent P3-sensors
+# Skill Index - Hugh Kim's Skills → {{AGENT_NAME}} P3-sensors
 
 ## Category Mapping
 
-| Hugh Category | Drewgent P3-sensors | Description |
+| Hugh Category | {{AGENT_NAME}} P3-sensors | Description |
 |---------------|---------------------|-------------|
 | QA | `skills/qa/` | Contract-first QA, scenario generation, functional testing |
 | SECURITY | `skills/security/` | Vulnerability scanning, pentest checklists |
@@ -41,31 +40,31 @@ links:
 | MEMORY | `skills/memory/` | Agent memory, context window management |
 | DOCS | `skills/docs/` | Documentation generation, changelog |
 
-## Hugh's Skill List → Drewgent Mapping
+## Hugh's Skill List → {{AGENT_NAME}} Mapping
 
 ### QA Skills
-| Hugh Skill | Drewgent Path | Status |
+| Hugh Skill | {{AGENT_NAME}} Path | Status |
 |------------|--------------|--------|
 | qa-scenario-gen | `skills/qa/qa-scenario-gen/` | TODO |
 | qa-cycle | `skills/qa/qa-cycle/` | TODO |
 | qa-functional | `skills/qa/qa-functional/` | TODO |
 
 ### SECURITY Skills
-| Hugh Skill | Drewgent Path | Status |
+| Hugh Skill | {{AGENT_NAME}} Path | Status |
 |------------|--------------|--------|
 | security-best-practices | `skills/security/security-best-practices/` | TODO |
 | vulnerability-scanner | `skills/security/vulnerability-scanner/` | TODO |
 | pentest-checklist | `skills/security/pentest-checklist/` | TODO |
 
 ### DEV TOOLS Skills
-| Hugh Skill | Drewgent Path | Status |
+| Hugh Skill | {{AGENT_NAME}} Path | Status |
 |------------|--------------|--------|
 | git-commit | `skills/dev-tools/git-commit/` | TODO |
 | dependency-updater | `skills/dev-tools/dependency-updater/` | TODO |
 | changelog-gen | `skills/dev-tools/changelog-gen/` | TODO |
 
 ### MEMORY Skills
-| Hugh Skill | Drewgent Path | Status |
+| Hugh Skill | {{AGENT_NAME}} Path | Status |
 |------------|--------------|--------|
 | memory | `skills/memory/memory/` | Existing |
 | remember-this | `skills/memory/remember-this/` | TODO |
@@ -73,7 +72,7 @@ links:
 | context-window | `skills/memory/context-window/` | TODO |
 
 ### DOCS Skills
-| Hugh Skill | Drewgent Path | Status |
+| Hugh Skill | {{AGENT_NAME}} Path | Status |
 |------------|--------------|--------|
 | init-project | `skills/docs/init-project/` | TODO |
 | prompt-engineering | `skills/docs/prompt-engineering/` | Existing |
@@ -107,7 +106,7 @@ Each skill category directory contains a `DESCRIPTION.md` that describes the cat
 | [[@action/skills/docs/DESCRIPTION]] | DOCS — Documentation generation, changelog |
 | [[@action/skills/apple/DESCRIPTION]] | Apple/macOS — iMessage, Reminders, Notes, FindMy, automation |
 | [[@action/skills/autonomous-ai-agents/DESCRIPTION]] | Autonomous AI Agents — Spawning and orchestrating autonomous agents |
-| [[@action/skills/brain/DESCRIPTION]] | Brain — Drewgent brain signal system, governance, self-improvement |
+| [[@action/skills/brain/DESCRIPTION]] | Brain — {{AGENT_NAME}} brain signal system, governance, self-improvement |
 | [[@action/skills/creative/DESCRIPTION]] | Creative — ASCII art, hand-drawn diagrams, Excalidraw, animation |
 | [[@action/skills/data-science/DESCRIPTION]] | Data Science — Jupyter, data analysis, visualization |
 | [[@action/skills/diagramming/DESCRIPTION]] | Diagramming — Excalidraw, technical diagrams |
@@ -133,7 +132,7 @@ Each skill category directory contains a `DESCRIPTION.md` that describes the cat
 ## Notes
 
 - Hugh's skills are primarily slash commands in Claude Code
-- Drewgent's skills are stored in `~/.drewgent/skills/` or `P3-sensors/skills/`
+- {{AGENT_NAME}}'s skills are stored in `~/.{{AGENT_NAME_LOWER}}/skills/` or `P3-sensors/skills/`
 - Skills with `/` prefix in Hugh (e.g., `/team`, `/branch`) are Commands, not Skills
 - Integration: QA Evidence Manager can be called by qa-* skills
 
@@ -189,8 +188,7 @@ Each skill category directory contains a `DESCRIPTION.md` that describes the cat
 - [[skills/autonomous-ai-agents/DESCRIPTION]]
 - [[skills/autonomous-ai-agents/claude-code/SKILL]]
 - [[skills/autonomous-ai-agents/codex/SKILL]]
-- [[skills/autonomous-ai-agents/drewgent-agent/SKILL]]
-- [[skills/autonomous-ai-agents/drewgent-update-checker/SKILL]]
+- [[skills/autonomous-ai-agents/{{AGENT_NAME_LOWER}}-agent/SKILL]]
 - [[skills/autonomous-ai-agents/opencode/SKILL]]
 - [[skills/brain/pass-zero-secret-store/SKILL]]
 - [[skills/creative/DESCRIPTION]]
@@ -480,4 +478,4 @@ Each skill category directory contains a `DESCRIPTION.md` that describes the cat
 
 ## Links
 - [[@identity/brain/rules]]
-- [[@action/gateway/drewgent-architecture-dataflow]]
+- [[@action/skills/SKILL-INDEX]]

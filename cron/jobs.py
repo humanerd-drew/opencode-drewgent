@@ -1,8 +1,8 @@
 """
 Cron job storage and management.
 
-Jobs are stored in ~/.drewgent/cron/jobs.json
-Output is saved to ~/.drewgent/cron/output/{job_id}/{timestamp}.md
+Jobs are stored in ~/.{{AGENT_NAME_LOWER}}/cron/jobs.json
+Output is saved to ~/.{{AGENT_NAME_LOWER}}/cron/output/{job_id}/{timestamp}.md
 """
 
 import copy

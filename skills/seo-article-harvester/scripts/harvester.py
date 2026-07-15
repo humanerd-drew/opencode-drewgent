@@ -57,7 +57,7 @@ TITLE_JUNK_PATTERNS = [
 # Content-dedup: 같은 본문의 중복 저장 방지
 DEDUP_HASH_CACHE_SIZE = 500  # 최근 N개 body hash 보관
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_SEO")  # 환경변수에서 설정
-DISCORD_CHANNEL_ID = "1504328297419640872"
+DISCORD_CHANNEL_ID = os.environ.get("HARVESTER_DISCORD_CHANNEL_ID", "")
 
 # ── 주제 필터 (2026-06-05) ──
 # SEO 전용 피드의 모든 글은 통과. 나머지는 제목 기반 키워드 필터 적용.

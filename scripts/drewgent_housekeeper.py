@@ -7,7 +7,7 @@ Cron schedule:
 
 Reports to Discord channel #status-monitoring → 하우스키핑 thread.
 """
-import json, os, shutil, sqlite3, subprocess, time
+import json, os, shutil, sqlite3, subprocess, sys, time
 from datetime import datetime
 from pathlib import Path
 
@@ -89,7 +89,20 @@ def check_tmux():
             killed += 1
     return killed
 
-def check_launchd():
+def check_services():
+    """Check core services for the current platform."""
+    platform = sys.platform
+    if platform == "darwin":
+        return _check_launchd()
+    elif platform == "linux":
+        return _check_systemd()
+    elif platform == "win32":
+        return _check_windows()
+    return {"unknown platform"}, []
+
+
+def _check_launchd():
+    """macOS: check launchd services."""
     r = subprocess.run(["launchctl", "list"], capture_output=True, text=True, timeout=5)
     services = {"ai.drewgent.opencode", "ai.drewgent.discord-bot",
                 "ai.drewgent.cron", "ai.drewgent.content-schedule",
@@ -107,6 +120,44 @@ def check_launchd():
                     dead.append(f"{label} (exit={last_exit})")
     missing = services - running
     return missing, dead
+
+
+def _check_systemd():
+    """Linux: check systemd services."""
+    services = ["drewgent-opencode", "drewgent-discord-bot",
+                "drewgent-cron"]
+    missing = []
+    dead = []
+    for name in services:
+        r = subprocess.run(["systemctl", "is-active", name],
+                           capture_output=True, text=True, timeout=5)
+        status = r.stdout.strip()
+        if status == "active":
+            continue
+        elif status == "inactive" or status == "dead":
+            dead.append(f"{name} ({status})")
+        else:
+            missing.append(name)
+    return set(missing), dead
+
+
+def _check_windows():
+    """Windows: check scheduled tasks."""
+    tasks = ["drewgent-cron", "drewgent-discord-bot", "drewgent-opencode"]
+    missing = []
+    dead = []
+    for name in tasks:
+        r = subprocess.run(
+            ["powershell", "-Command",
+             f"Get-ScheduledTask -TaskName '{name}' | Select-Object -ExpandProperty State"],
+            capture_output=True, text=True, timeout=10
+        )
+        status = r.stdout.strip()
+        if not status:
+            missing.append(name)
+        elif status != "Ready":
+            dead.append(f"{name} ({status})")
+    return set(missing), dead
 
 def check_knowledge_db():
     for p in [KNOWLEDGE_DB, DREW_HOME / "knowledge.db"]:
@@ -440,7 +491,7 @@ def main():
     is_deep = now.hour == 4 and now.minute < 45
 
     tmux_killed = check_tmux()
-    missing_svc, dead_svc = check_launchd()
+    missing_svc, dead_svc = check_services()
     embedding_cnt = check_knowledge_db()
     stale = check_kanban_stale()
     stopped = check_cron_jobs()

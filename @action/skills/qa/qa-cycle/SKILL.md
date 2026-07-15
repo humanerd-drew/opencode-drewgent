@@ -11,7 +11,7 @@ tags: [qa, testing, contract-first, verification]
 links:
   - "[[@action/skills/qa/DESCRIPTION]]"
   - "[[@action/skills/SKILL-INDEX]]"
-source: Hugh Kim's Loopy-Era Harness, Drewgent P2-hippocampus
+source: Hugh Kim's Loopy-Era Harness, {{AGENT_NAME}} P2-hippocampus
 ---
 
 # qa-cycle — Contract-First QA Pipeline

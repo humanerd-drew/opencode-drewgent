@@ -83,24 +83,22 @@ provenance:
 - **Ponytail** — YAGNI, stdlib first, no new deps unless necessary
 - **Answer-first** — conclusion before process in CLI output
 
-## Loading Protocol
+## Session Protocol
 
-### Session start
-1. `router` tool → classify domain
-2. `recall("recent decisions")` — load context
-3. Domain-based lazy load:
+### Start
+1. Read `.opencode/instructions/` files by domain:
 
 | Domain | Load |
 |--------|------|
-| engineering | `read .opencode/instructions/00-architecture.md` + `10-conventions.md` |
-| research | `read .opencode/instructions/20-knowledge-system.md` |
-| default | `read .opencode/instructions/00-architecture.md` |
+| engineering | `00-architecture.md` + `10-conventions.md` |
+| research | `20-knowledge-system.md` |
+| default | `00-architecture.md` |
 
-4. `remember(type="fact", "Session: loaded {file}")` — track context
+2. If memory tools available (`agent-memory_recall`), load recent context
 
 ### During work
-- Patterns/decisions → `remember()` immediately
-- Causal questions → `graph-rca()` automatically
+- Save patterns/decisions to `@identity/brain/rules.md` or memory
+- For causal questions, if `graph-rca` tool available, use it
 
 ## Ontology Layer
 

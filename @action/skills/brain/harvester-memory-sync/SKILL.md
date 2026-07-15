@@ -7,7 +7,7 @@ tags: [growth, memory, sync, P2, P4, harvester]
 links:
   - "[[@action/skills/brain/DESCRIPTION]]"
   - "[[@action/skills/SKILL-INDEX]]"
-source: Drewgent P4→P2 pipeline, Loopy-Era integration
+source: {{AGENT_NAME}} P4→P2 pipeline, Loopy-Era integration
 ---
 
 # Harvester Memory Sync — P4→P2 Bridge
@@ -56,11 +56,11 @@ P2-hippocampus/memories/
 
 - Use content hash (MD5 of trend URL or description) as dedup key
 - Check if same hash already exists in target before writing
-- Track synced hashes in `drewgent_hidden_state.json["harvester_synced_hashes"]`
+- Track synced hashes in `{{AGENT_NAME_LOWER}}_hidden_state.json["harvester_synced_hashes"]`
 
 ## State Tracking
 
-Read/write from `P4-cortex/knowledge/drewgent_hidden_state.json`:
+Read/write from `P4-cortex/knowledge/{{AGENT_NAME_LOWER}}_hidden_state.json`:
 
 ```json
 {

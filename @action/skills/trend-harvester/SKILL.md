@@ -145,7 +145,7 @@ Uses fast model (deepseek-v4-flash). If still timing out, check opencode-go API 
 ### Kanban Worker Not Picking Up Tasks
 Check kanban dispatcher is running (`launchctl list | grep cron-runner`)
 
-## Integration with Drewgent
+## Integration with {{AGENT_NAME}}
 
 - **P4-cortex/growth/trend-harvester/** — Storage
 - **P4-cortex/knowledge/harvester_sync_state.json** — Memory sync state

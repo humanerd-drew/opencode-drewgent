@@ -24,7 +24,7 @@ All notable changes to opencode-drewgent are documented here.
 - **Hermes legacy removed**: All 930+ files (379K lines) from the NousResearch Hermes-Agent fork deleted. `agent/`, `gateway/`, `tools/`, `drewgent_cli/`, `plugins/`, `hooks/`, `tests/` and 50+ root files removed. Template is now opencode-native only.
 - **Junk cleanup**: `Ep.2-8.html`, `refactor_plan_phase_*.md`, `RELEASE_v0.*.md`, `SOUL.md` (duplicate), `cq-all-zones.png`, and 12 other stale files removed.
 - **Private scripts excluded**: 24 private scripts (`content_*`, `ingest_*`, `seo_*`, `trend_*`, `recall.py`, `wordpress-mcp-server.js`, etc.) excluded from template.
-- **Separate repo**: Template now lives at `~/.drewgent/opencode-drewgent/` as standalone git repo. Direct `git push origin main`.
+- **Separate repo**: Template now lives at `~/.{{AGENT_NAME_LOWER}}/opencode-drewgent/` as standalone git repo. Direct `git push origin main`.
 - **sync-template.sh**: Replaces push-template.sh. Simple cp + sanitize + commit + push.
 - **@identity/ restored**: SELF_MODEL, rules, persona, writing-style-guide included.
 - **README reordered**: Quick Start moved above Philosophy. wordpress-mcp-server.js references removed.
@@ -93,15 +93,15 @@ Drewgent now has a full kanban-based autonomous worker system. Workers claim tas
 
 #### Why
 
-The Drewgent agent needed to handle multiple tasks concurrently, queue work, and provide visibility into task state. The kanban board (SQLite-based, stored in `~/.drewgent/P2-hippocampus/kanban/state/drewgent_tasks.db`) now serves as the task queue and state store.
+The Drewgent agent needed to handle multiple tasks concurrently, queue work, and provide visibility into task state. The kanban board (SQLite-based, stored in `~/.{{AGENT_NAME_LOWER}}/P2-hippocampus/kanban/state/drewgent_tasks.db`) now serves as the task queue and state store.
 
 #### Files changed
 
 | File | Change | Location |
 |------|--------|----------|
-| `scripts/run_kanban_worker.py` | **NEW** — Worker script that reads `KANBAN_TASK_ID`, fetches task from DB, spawns AIAgent subprocess with task body, sends heartbeats every 60s, reports completion/failure | `~/.drewgent/scripts/` |
-| `scripts/dispatch_once_content.py` | Updated to spawn `run_kanban_worker.py` via tempfile + venv python | `~/.drewgent/scripts/` |
-| `scripts/dispatch_once_default.py` | Updated to spawn `run_kanban_worker.py` via tempfile + venv python | `~/.drewgent/scripts/` |
+| `scripts/run_kanban_worker.py` | **NEW** — Worker script that reads `KANBAN_TASK_ID`, fetches task from DB, spawns AIAgent subprocess with task body, sends heartbeats every 60s, reports completion/failure | `~/.{{AGENT_NAME_LOWER}}/scripts/` |
+| `scripts/dispatch_once_content.py` | Updated to spawn `run_kanban_worker.py` via tempfile + venv python | `~/.{{AGENT_NAME_LOWER}}/scripts/` |
+| `scripts/dispatch_once_default.py` | Updated to spawn `run_kanban_worker.py` via tempfile + venv python | `~/.{{AGENT_NAME_LOWER}}/scripts/` |
 | `drewgent_cli/providers.py` | Fixed `determine_api_mode()` — moved URL heuristic (checking for `/anthropic` in endpoint) **before** provider transport lookup, so MiniMax with `/anthropic` endpoint correctly gets `anthropic_messages` mode | `providers.py` |
 | `run_agent.py` | Fixed 1) `determine_api_mode()` called early in `__init__` before provider-known check; 2) `base_url` and `api_key` resolution for known third-party providers (minimax, minimax-cn, alibaba, deepseek) in `anthropic_messages` path — `effective_key`/`_anthropic_api_key` now properly set from resolved credentials | `run_agent.py` |
 | `P4-cortex/scripts/kanban_dashboard_server.py` | **NEW** — Full rewrite with SSE real-time updates, drag-and-drop between columns, mobile responsive design, board-tab layout (5 columns in one row, board filter via tabs), new SSE broadcast system for card actions | `P4-cortex/scripts/` |
@@ -251,10 +251,10 @@ Drewgent was repeating common LLM coding mistakes: wrong assumptions as facts, o
 
 | File | Change | Location |
 |------|--------|----------|
-| `~/.drewgent/SOUL.md` | Rewritten with Karpathy 4 principles (primary identity) | Drewgent home |
-| `~/.drewgent/P1-limbic/persona/SOUL.md` | Same content (P1 fallback) | P1-limbic layer |
-| `~/.drewgent/AGENTS.md` | Created from writing-style-guide.md + expanded with coding guidelines | Drewgent home project context |
-| `~/.drewgent/brain/Drewgent-brain/P0-brainstem/禁karpathy_coding_principles.neuron` | **NEW** — P0 brainstem enforcement rule | Brain filesystem |
+| `~/.{{AGENT_NAME_LOWER}}/SOUL.md` | Rewritten with Karpathy 4 principles (primary identity) | Drewgent home |
+| `~/.{{AGENT_NAME_LOWER}}/P1-limbic/persona/SOUL.md` | Same content (P1 fallback) | P1-limbic layer |
+| `~/.{{AGENT_NAME_LOWER}}/AGENTS.md` | Created from writing-style-guide.md + expanded with coding guidelines | Drewgent home project context |
+| `~/.{{AGENT_NAME_LOWER}}/brain/Drewgent-brain/P0-brainstem/禁karpathy_coding_principles.neuron` | **NEW** — P0 brainstem enforcement rule | Brain filesystem |
 
 #### Cross-reference chain (organic brain system)
 
@@ -322,7 +322,7 @@ P0-brainstem neurons: 10 total
 
 #### Related components (unchanged, verified working)
 
-- `agent/prompt_builder.py` — SOUL.md loading (primary: ~/.drewgent/SOUL.md, fallback: P1-limbic/persona/)
+- `agent/prompt_builder.py` — SOUL.md loading (primary: ~/.{{AGENT_NAME_LOWER}}/SOUL.md, fallback: P1-limbic/persona/)
 - `agent/prompt_builder.py` — AGENTS.md loading via `_load_agents_md(drew_home)`
 - `drewgent_cli/brain_manager.py` — scan_brain/emit_brain for neuron filesystem
 - `docs/DREWGENT_ARCHITECTURE.md` — brain system documentation (Version 1.0, 2026-04-15)

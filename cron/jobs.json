@@ -1,63 +1,30 @@
 {
   "jobs": [
     {
-      "id": "health-check-example",
-      "name": "System health check",
-      "prompt": "Run a quick health check and report any issues.",
+      "id": "example-agent-job",
+      "name": "Example: daily health report",
+      "prompt": "Check system health: disk usage, running processes, recent errors. Summarize in 3 bullet points.",
       "skills": [],
       "skill": null,
       "model": null,
       "provider": null,
       "base_url": null,
-      "script": "~/scripts/health_check.py",
-      "script_only": true,
-      "schedule": {
-        "kind": "interval",
-        "minutes": 5,
-        "display": "every 5m"
-      },
-      "schedule_display": "every 5m",
-      "repeat": {
-        "times": null,
-        "completed": 0
-      },
-      "enabled": true,
-      "state": "scheduled",
-      "paused_at": null,
-      "paused_reason": null,
-      "created_at": "2026-01-01T00:00:00+00:00",
-      "next_run_at": null,
-      "last_run_at": null,
-      "last_status": null,
-      "last_error": null,
-      "deliver": "local",
-      "origin": null
-    },
-    {
-      "id": "cleanup-example",
-      "name": "Daily temp cleanup",
-      "prompt": "Clean up temporary files and rotate logs.",
-      "skills": [],
-      "skill": null,
-      "model": null,
-      "provider": null,
-      "base_url": null,
-      "script": "~/scripts/cleanup.py",
-      "script_only": true,
+      "script": null,
+      "script_only": false,
       "schedule": {
         "kind": "cron",
-        "expr": "0 4 * * *",
-        "display": "0 4 * * *"
+        "expr": "0 8 * * *",
+        "display": "0 8 * * *"
       },
-      "schedule_display": "0 4 * * *",
+      "schedule_display": "0 8 * * *",
       "repeat": {
         "times": null,
         "completed": 0
       },
-      "enabled": true,
-      "state": "scheduled",
+      "enabled": false,
+      "state": "paused",
       "paused_at": null,
-      "paused_reason": null,
+      "paused_reason": "Example — enable after setup",
       "created_at": "2026-01-01T00:00:00+00:00",
       "next_run_at": null,
       "last_run_at": null,
@@ -68,7 +35,7 @@
     },
     {
       "id": "example-cron-format",
-      "name": "Example: agent job (disabled)",
+      "name": "Example: weekly report (disabled)",
       "prompt": "This is an example of an agent-based cron job. Replace with your own prompt.",
       "skills": ["baseline-ui"],
       "skill": "baseline-ui",

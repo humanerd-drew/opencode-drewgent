@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sync-template.sh — Sync template-worthy files from ~/.drewgent/ to opencode-drewgent/
+# sync-template.sh — Sync template-worthy files from ~/.{{AGENT_NAME_LOWER}}/ to opencode-drewgent/
 # Direct push to humanerd-drew/opencode-drewgent.
 set -euo pipefail
 
@@ -12,13 +12,13 @@ echo -e "${BLUE}╔════════════════════�
 echo -e "${BLUE}║  opencode-drewgent → Template Sync          ║${NC}"
 echo -e "${BLUE}╚══════════════════════════════════════════════╝${NC}"
 
-# ── Tooling paths (sync from ~/.drewgent/ to template) ──
+# ── Tooling paths (sync from ~/.{{AGENT_NAME_LOWER}}/ to template) ──
 # Blueprint docs (AGENTS.md, README, @identity/, @action/) are maintained
 # directly in the template repo — NOT synced.
 PATHS=(
   .opencode opencode.jsonc
   .env.example .gitignore .github
-  launchd cron harness
+  services cron harness
   skills
   .well-known
 )
