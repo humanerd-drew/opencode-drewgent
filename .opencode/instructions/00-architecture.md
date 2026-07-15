@@ -44,6 +44,24 @@ relations (typed edges)
 
 Run `python3 scripts/ontology_setup.py` to initialize.
 
+## Per-Turn Context Injection
+
+Every user turn injects four context layers into the LLM message, in order:
+
+```
+[Brain context]     ← AutoLearner.query_wiki()     → Obsidian wiki (entities/concepts/insights)
+[Agent memories]    ← _query_memory_db()            → knowledge.db FTS5 (preferences/decisions/incidents)
+[Plugin context]    ← pre_llm_call hooks            → plugin-provided context
+[Memory context]    ← _memory_manager.prefetch_all() → embedding vector store
+```
+
+**Brain context** reads the Obsidian vault — structured knowledge written by the agent itself.
+**Agent memories** queries the same `knowledge.db` that `agent-memory_remember()` writes to — cross-session preferences, decisions, and incidents surface automatically. Uses SQLite FTS5 (`memory_fts` virtual table).
+**Plugin context** comes from `pre_llm_call` hooks registered by plugins.
+**Memory context** is an external embedding store (MiniMax or local fallback).
+
+All four are ephemeral — injected per-turn, never persisted to session DB.
+
 ## Self-Healing
 
 - launchd (macOS) or systemd (Linux): auto-restart on crash
