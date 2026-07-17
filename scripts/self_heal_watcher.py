@@ -167,6 +167,7 @@ def main() -> str:
     applied_fixes = []
     unknown_errors = []
     skipped_retries = []
+    reenabled_jobs = []
 
     escalation_actions = {
         "undefined_name": ["check import path", "verify module installed", "reinstall package"],
@@ -235,6 +236,30 @@ def main() -> str:
             lines.append(f"- **{name}**: {label}")
         lines.append("")
 
+    # ── Re-enable stuck cron jobs ─────────────────────────────────────
+    # Jobs with enabled=false + next_run_at=None + recurring schedule are
+    # stuck in a completed state.  Re-enable them if they have a valid
+    # cron/interval schedule (not once, not repeat-limited).
+    for job in jobs:
+        if job.get("enabled") or job.get("state") != "completed":
+            continue
+        schedule = job.get("schedule")
+        if not schedule or schedule.get("kind") == "once":
+            continue
+        repeat = job.get("repeat", {})
+        if repeat.get("times") is not None and repeat.get("completed", 0) >= repeat["times"]:
+            continue
+        job["enabled"] = True
+        job["state"] = "scheduled"
+        job["paused_at"] = None
+        job["paused_reason"] = None
+        try:
+            job["next_run_at"] = compute_next_run(schedule)
+        except Exception:
+            job["next_run_at"] = now.isoformat()
+        reenabled_jobs.append(job.get("name", job["id"]))
+        jobs_changed = True
+
     # ── Close the loop: clear the watcher's own stale last_error ─────
     # Without this step a job that failed once keeps its last_error
     # forever, even after the fix is deployed and subsequent runs succeed.
@@ -251,6 +276,11 @@ def main() -> str:
 
     if jobs_changed:
         save_jobs(jobs)
+
+    if reenabled_jobs:
+        lines.append(f"## Re-enabled stuck jobs: {len(reenabled_jobs)}")
+        for name in reenabled_jobs:
+            lines.append(f"- **{name}**: was completed, re-enabled with recurring schedule")
 
     if not applied_fixes and not unknown_errors and not skipped_retries:
         return "[SILENT]"
