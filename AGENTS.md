@@ -118,6 +118,17 @@ provenance:
 - Save patterns/decisions to `@identity/brain/rules.md` or memory
 - For causal questions, if `graph-rca` tool available, use it
 
+### Systemic diagnosis approach
+When something breaks repeatedly or behaves unpredictably:
+
+1. **Map the behavior chain** — trace the full lifecycle of the failed action: write→read, schedule→execute, fail→recover. Every component has one.
+2. **Model mathematically** — define state space S, observation function f: S→O. Is it open-loop? Is SNR zero? Is the observation many-to-one?
+3. **Find missing link** — the chain breaks somewhere. Identify the unhandled transition, not just the symptom.
+4. **Fix** — add the missing step to close the loop.
+5. **Verify** — does the system now converge to the desired state?
+
+Rule: don't optimize what you haven't traced. Don't trace what hasn't failed.
+
 ## Ontology Layer
 
 This template includes a typed entity-relation graph on top of `knowledge.db`:

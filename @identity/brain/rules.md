@@ -28,6 +28,7 @@ P0 (Brainstem) rules always override higher layers. No exceptions.
 | No big-bang refactoring | One change at a time, verify between |
 | YAGNI | No speculative abstraction, minimize deps |
 | Answer-first | Conclusion before process in CLI output |
+| Trace before fix | Before modifying any system: map the full behavior chain, find the missing link, then fix. Never skip diagnosis. |
 
 ## 4 Karpathy Coding Principles
 
