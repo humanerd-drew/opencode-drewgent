@@ -214,12 +214,12 @@ def check_disk():
 
 def check_agent_health():
     warnings = []
-    agents = Path.home() / ".drewgent" / "AGENTS.md"
+    agents = DREW_HOME / "AGENTS.md"
     if agents.exists():
         lines = agents.read_text().count("\n")
         if lines > 1050:
             warnings.append(f"AGENTS.md {lines} lines (limit 1050)")
-    skills_dir = Path.home() / ".drewgent" / "skills"
+    skills_dir = DREW_HOME / "skills"
     no_desc = 0
     for f in skills_dir.rglob("SKILL.md"):
         text = f.read_text()
@@ -227,7 +227,7 @@ def check_agent_health():
             no_desc += 1
     if no_desc > 0:
         warnings.append(f"skills description 누락 {no_desc}개")
-    cron_file = Path.home() / ".drewgent" / "cron" / "jobs.json"
+    cron_file = DREW_HOME / "cron" / "jobs.json"
     if cron_file.exists():
         try:
             data = json.loads(cron_file.read_text())

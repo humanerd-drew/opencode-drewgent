@@ -13,6 +13,7 @@ import concurrent.futures
 import json
 import logging
 import os
+import shutil
 import subprocess
 import sys
 
@@ -73,6 +74,14 @@ _drewgent_home = get_drewgent_home()
 # File-based lock prevents concurrent ticks from gateway + daemon + systemd timer
 _LOCK_DIR = _drewgent_home / "cron"
 _LOCK_FILE = _LOCK_DIR / ".tick.lock"
+
+# Startup assertions: fail at import time, not at 3am during a cron run
+_CRON_RUNNER = _AGENT_ROOT / "scripts" / "cron_runner.py"
+if not _CRON_RUNNER.exists():
+    raise FileNotFoundError(
+        f"cron_runner.py not found at {_CRON_RUNNER}. "
+        "Deployment structure mismatch — expected scripts/cron_runner.py under agent root."
+    )
 
 
 def _resolve_origin(job: dict) -> Optional[dict]:
@@ -351,13 +360,24 @@ def _run_job_script(script_path: str) -> tuple[bool, str]:
         return False, f"Script path is not a file: {path}"
 
     try:
-        result = subprocess.run(
-            [sys.executable, str(path)],
-            capture_output=True,
-            text=True,
-            timeout=_SCRIPT_TIMEOUT,
-            cwd=str(path.parent),
-        )
+        # Shell scripts must be run via bash, not Python.
+        if str(path).endswith('.sh'):
+            bash = shutil.which('bash') or '/bin/bash'
+            result = subprocess.run(
+                [bash, str(path)],
+                capture_output=True,
+                text=True,
+                timeout=_SCRIPT_TIMEOUT,
+                cwd=str(path.parent),
+            )
+        else:
+            result = subprocess.run(
+                [sys.executable, str(path)],
+                capture_output=True,
+                text=True,
+                timeout=_SCRIPT_TIMEOUT,
+                cwd=str(path.parent),
+            )
         stdout = (result.stdout or "").strip()
         stderr = (result.stderr or "").strip()
 
@@ -676,7 +696,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
             # lacks openai in site-packages — cron_runner.py is built to handle
             # this by also using the venv python, but we call it directly here
             # to guarantee openai is available on the first try.
-            runner_path = str(_AGENT_ROOT / "cron_runner.py")
+            runner_path = str(_AGENT_ROOT / "scripts" / "cron_runner.py")
             result = subprocess.run(
                 [_venv_python, runner_path, env_json_path],
                 capture_output=True,
@@ -685,7 +705,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
             )
             # Read output file written by cron_runner.py
             # Output dir: ~/.{{AGENT_NAME_LOWER}}/cron/output/{job_id}/
-            output_dir = _OUTPUT_DIR / job_id
+            output_dir = OUTPUT_DIR / job_id
             if output_dir.exists():
                 # Get most recent output file
                 output_files = sorted(output_dir.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True)
