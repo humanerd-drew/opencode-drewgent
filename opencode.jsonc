@@ -6,6 +6,7 @@
   "small_model": "opencode-go/deepseek-v4-pro",
 
   // Loaded as system instructions on every session
+  "subagent_depth": 0,
   "instructions": ["AGENTS.md"],
 
   // Skill paths — relative to this config file
@@ -28,7 +29,7 @@
     "gajae-code": {
       "type": "local",
       "command": ["gjc", "mcp-serve", "coordinator"],
-      "env": { "OPENCODE_API_KEY": "{env:OPENCODE_API_KEY}" },
+      "env": { "OPENCODE_API_KEY": "{file:~/.config/drewgent/opencode-api-key}" },
       "enabled": false
     },
     "wordpress": {

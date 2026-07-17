@@ -251,7 +251,7 @@ def run_worker(task_id):
         f"os.environ['KANBAN_TASK_ID'] = '{task_id}'\n"
         f"os.environ['KANBAN_WORKER_MODE'] = '1'\n"
         f"\n"
-        f"from run_agent import AIAgent\n"
+        f"from agent.run_agent import AIAgent\n"
         f"\n"
         f"prompt = '{escaped_prompt}'.replace('\\\\\\\\n', '\\\\n').replace('\\\\\\\\x27', \"'\")\n"
         f"\n"

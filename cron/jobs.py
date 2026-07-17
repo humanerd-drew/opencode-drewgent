@@ -16,7 +16,7 @@ import uuid
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 from pathlib import Path
-from drewgent_constants import get_drewgent_home
+from agent.drewgent_constants import get_drewgent_home
 from typing import Optional, Dict, List, Any, Iterator
 
 try:
@@ -34,7 +34,7 @@ _jobs_lock_local = threading.local()
 
 logger = logging.getLogger(__name__)
 
-from drewgent_time import now as _drewgent_now
+from agent.drewgent_time import now as _drewgent_now
 
 try:
     from croniter import croniter

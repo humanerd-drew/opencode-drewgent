@@ -18,6 +18,24 @@ opencode-drewgent provides a structured agent system built on [opencode](https:/
 - **Kanban pipeline** — task decomposition with leverage scoring
 - **Cron automation** — example jobs for housekeeping, content, and monitoring
 
+### Structure Principles
+
+```
+.
+├── agent/          ← Core .py package (NOT root-level .py files)
+├── gateway/        ← Platform adapters
+├── cron/           ← Scheduler
+├── tools/          ← Tool implementations
+├── skills/         ← Agent skills
+├── projects/       ← External work (one subdir per project)
+├── brain/          ← P0-P6 vault + @identity
+├── state/          ← DBs, logs, sessions
+├── config/         ← Settings, dotfiles
+└── docs/           ← Documentation
+```
+
+**Key rule:** Root must stay lean. Agent code goes in `agent/`. External work goes in `projects/`. Flat root accumulation is tech debt — each file at root is a decision that needs a justification.
+
 ## Subagent Profiles
 
 See `.opencode/agents/*.md` for the full list. Key profiles:
@@ -152,6 +170,12 @@ opencode stderr logs show `tokens.input=0`. Real data is in `~/.local/share/open
 3. Set up your API keys in `.env`
 4. Customize agent profiles in `.opencode/agents/`
 5. Run `scripts/setup.sh` for first-time setup
+
+## Sync Strategy
+
+`sync-template.sh` auto-syncs from your live workspace to this template:
+- **Auto-synced:** `.opencode/`, `cron/`, `skills/`, `services/`, `.env.example`, `.github/`
+- **Manual (keep in template only):** `AGENTS.md`, `README.md`, `@identity/`, `@action/` — these are the blueprint layer, not workspace state
 
 ## Links
 

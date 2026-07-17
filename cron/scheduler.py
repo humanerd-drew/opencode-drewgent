@@ -43,9 +43,9 @@ _venv_python = str(Path(__file__).parent.parent / "source" / "drewgent-agent" / 
 # the module) fail with ModuleNotFoundError for drewgent_time et al.
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from drewgent_constants import get_drewgent_home
+from agent.drewgent_constants import get_drewgent_home
 from drewgent_cli.config import load_config
-from drewgent_time import now as _drewgent_now
+from agent.drewgent_time import now as _drewgent_now
 
 logger = logging.getLogger(__name__)
 
@@ -323,7 +323,7 @@ def _run_job_script(script_path: str) -> tuple[bool, str]:
         (success, output) — on failure *output* contains the error message so the
         LLM can report the problem to the user.
     """
-    from drewgent_constants import get_drewgent_home
+    from agent.drewgent_constants import get_drewgent_home
 
     scripts_dir = get_drewgent_home() / "scripts"
     scripts_dir.mkdir(parents=True, exist_ok=True)
@@ -534,7 +534,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
     """
     _session_db = None
     try:
-        from drewgent_state import SessionDB
+        from agent.drewgent_state import SessionDB
         _session_db = SessionDB()
     except Exception as e:
         logger.debug("Job '%s': SQLite session store not available: %s", job.get("id", "?"), e)
@@ -592,7 +592,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
         if _cron_model_cfg.get("model") and not job.get("model"):
             model = _cron_model_cfg["model"]
 
-        from drewgent_constants import parse_reasoning_effort
+        from agent.drewgent_constants import parse_reasoning_effort
         effort = os.getenv("DREW_REASONING_EFFORT", "")
         if not effort:
             effort = str(_cfg.get("agent", {}).get("reasoning_effort", "")).strip()

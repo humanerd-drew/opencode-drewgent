@@ -41,7 +41,7 @@ def create_cron_agent(
     Returns:
         AIAgent instance ready for run_conversation() / chat()
     """
-    from run_agent import AIAgent
+    from agent.run_agent import AIAgent
 
     return AIAgent(
         model=model,
